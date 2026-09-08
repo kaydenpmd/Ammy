@@ -54,8 +54,13 @@ jobs:
           cp -R build/Build/Products/Release-iphoneos/Ammy.app Payload/
           zip -qry "${{ steps.ver.outputs.name }}.ipa" Payload
 
-      - uses: actions/upload-artifact@v4
+      # archive: false requires upload-artifact v7+. Without it GitHub zips the
+      # upload, and since an .ipa is already a zip you download a zip containing
+      # a zip and have to extract before SideStore will take it. With it, the
+      # browser download is the .ipa itself.
+      - uses: actions/upload-artifact@v7
         with:
           name: ${{ steps.ver.outputs.name }}
           path: ${{ steps.ver.outputs.name }}.ipa
+          archive: false
           if-no-files-found: error
