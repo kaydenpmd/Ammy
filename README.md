@@ -1,4 +1,4 @@
-# AM Presence
+# Ammy
 
 Apple Music on iPhone → Discord Rich Presence on desktop, via a relay you host.
 
