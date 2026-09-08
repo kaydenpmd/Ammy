@@ -1,0 +1,20 @@
+# Python bytecode, created by any `python -m py_compile` or import of relay.py
+__pycache__/
+*.py[cod]
+
+# Relay runtime state — these belong beside the running copy, not in the repo.
+# .env carries DISCORD_CLIENT_ID and RELAY_SECRET and must never be committed.
+bridge/.env
+bridge/relay.log
+bridge/ammy-uptime.log
+bridge/art_cache/
+
+# XcodeGen generates these; only project.yml is committed.
+*.xcodeproj/
+Ammy/Info.plist
+
+# macOS / build leftovers
+.DS_Store
+build/
+Payload/
+*.ipa

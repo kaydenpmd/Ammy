@@ -114,7 +114,11 @@ PORT = int(os.environ.get("RELAY_PORT", "8787"))
 #          otherwise; the worker read that as a dead socket and reconnect-looped
 #          until the song changed. Fields are padded, payload rejections are
 #          distinguished from connection loss, and the retry path can't spin.
-RELAY_VERSION = "1.3.0"
+#   1.3.1  the padding notice logs once per value instead of once per second.
+#   1.4.0  uptime lines carry the relay and phone build. --summary groups gaps
+#          by app build, which is the thing that governs whether the phone
+#          survives backgrounding. Needs the app to send app_version.
+RELAY_VERSION = "1.4.0"
 
 # Which field shows on the one-line member-list view: name / state / details.
 STATUS_LINE = os.environ.get("STATUS_LINE", "state").strip().lower()
@@ -193,13 +197,31 @@ _artwork_cache: dict[str, str] = {}
 # comes back. Written only by the RPC worker thread, so no lock is needed.
 _silence_logged_at: float | None = None
 
+# Which Ammy build is talking to us, as reported on every push. The phone's
+# build is what governs whether it survives backgrounding, so it's the axis
+# worth attributing gaps to — the relay's own version barely matters here.
+_phone_version = "unknown"
 
+
+def record_phone_version(value: object) -> None:
+    global _phone_version
+    if not value:
+        return
+    text = str(value)[:32]
+    if text != _phone_version:
+        print(f"[init] phone reports Ammy {text}")
+        _phone_version = text
 
 
 def _log_line(text: str) -> None:
     stamp = time.strftime("%Y-%m-%dT%H:%M:%S")
-    line = f"{stamp}  {text}"
-    print(f"[uptime] {text}")
+    # Versions go on the line rather than into separate files. Splitting the log
+    # per version can't be undone and fragments it by a variable that changes
+    # far more often than the thing being measured; a stamped line can still be
+    # grouped any way you like afterwards, and keeps one continuous history.
+    tags = f"[relay {RELAY_VERSION} / app {_phone_version}]"
+    line = f"{stamp}  {text}  {tags}"
+    print(f"[uptime] {text}  {tags}")
     try:
         with UPTIME_LOG.open("a", encoding="utf-8") as fh:
             fh.write(line + "\n")
@@ -269,8 +291,16 @@ def print_summary() -> None:
         print("No uptime log yet.")
         return
 
-    starts, silences, phone_gaps, mixed_gaps = 0, 0, [], []
+    starts, silences, mixed = 0, 0, 0
+    # Grouped by the app build that was running, so a regression in one iOS
+    # build stands out instead of being averaged into everything before it.
+    # Lines predating the stamping have no build to attribute.
+    by_app: dict[str, list[int]] = {}
+
     for line in UPTIME_LOG.read_text(encoding="utf-8").splitlines():
+        tag = re.search(r"app ([^\]]+)\]", line)
+        app = tag.group(1).strip() if tag else "before builds were recorded"
+
         if "relay started" in line:
             starts += 1
         elif "stopped checking in" in line:
@@ -278,26 +308,34 @@ def print_summary() -> None:
         elif "gap " in line:
             try:
                 hhmmss = line.split("gap ")[1].split()[0]
-                h, m, s = (int(x) for x in hhmmss.split(":"))
-                seconds = h * 3600 + m * 60 + s
+                hours, minutes, secs = (int(x) for x in hhmmss.split(":"))
             except (IndexError, ValueError):
                 continue
-            (phone_gaps if "phone silent" in line else mixed_gaps).append(seconds)
+            if "phone silent" in line:
+                by_app.setdefault(app, []).append(hours * 3600 + minutes * 60 + secs)
+            else:
+                mixed += 1
 
+    counted = sum(len(v) for v in by_app.values())
     print(f"relay starts            : {starts}")
     print(f"silences detected live  : {silences}")
-    unreturned = silences - len(phone_gaps) - len(mixed_gaps)
+    unreturned = silences - counted - mixed
     if unreturned > 0:
         print(f"  never came back       : {unreturned}   <- app died and stayed dead")
-    print(f"phone-only gaps         : {len(phone_gaps)}")
-    if phone_gaps:
-        print(f"  longest               : {_format_gap(max(phone_gaps))}")
-        print(f"  median                : "
-              f"{_format_gap(sorted(phone_gaps)[len(phone_gaps) // 2])}")
-        print(f"  total silent time     : {_format_gap(sum(phone_gaps))}")
-    print(f"gaps including downtime : {len(mixed_gaps)}")
-    if not phone_gaps:
+    print(f"gaps including downtime : {mixed}")
+
+    if not by_app:
         print("\nNo unexplained phone gaps recorded — backgrounding is holding.")
+        return
+
+    print("\nphone-only gaps, by app build")
+    for app in sorted(by_app):
+        gaps = sorted(by_app[app])
+        print(f"  {app}")
+        print(f"    count    : {len(gaps)}")
+        print(f"    longest  : {_format_gap(gaps[-1])}")
+        print(f"    median   : {_format_gap(gaps[len(gaps) // 2])}")
+        print(f"    total    : {_format_gap(sum(gaps))}")
 
 
 # Apple Music page URLs keyed by store ID, filled in as a side effect of the
@@ -629,12 +667,20 @@ _DISCORD_MIN_FIELD = 2
 _INVISIBLE_PAD = "⁠"
 
 
+_padded_seen: set[str] = set()
+
+
 def pad_for_discord(text: str, label: str) -> str:
     if not text.strip():
         return "Unknown"
     if len(text) >= _DISCORD_MIN_FIELD:
         return text
-    print(f"[rpc] padded {label} {text!r} — Discord requires 2+ characters")
+    # Once per value, not once per push. build_payload runs every second, so
+    # the first short title to come along ("i", Kendrick Lamar) wrote 189
+    # identical lines over one song.
+    if text not in _padded_seen:
+        _padded_seen.add(text)
+        print(f"[rpc] padded {label} {text!r} — Discord requires 2+ characters")
     return text + _INVISIBLE_PAD * (_DISCORD_MIN_FIELD - len(text))
 
 
@@ -840,6 +886,7 @@ class Handler(BaseHTTPRequestHandler):
             return self._reply(400, "bad json")
 
         _, previous = state.get()
+        record_phone_version(body.get("app_version"))
         state.set(body if body.get("playing") else None)
         note_checkin(previous)
         self._reply(204)

@@ -1,9 +1,23 @@
 # Context for Claude Code
 
-The app is called **Ammy** on the Home Screen. The Xcode target, scheme, and
-bundle ID are all still `AMPresence` / `com.local.ampresence` — deliberately,
-so builds keep working and SideStore upgrades in place instead of installing a
-second copy. Don't rename them.
+Everything is called **Ammy** — Home Screen name, Xcode target, scheme, source
+folder, and bundle ID `com.local.ammy`. This used to be `AMPresence` /
+`com.local.ampresence`.
+
+**The rename is not finished.** It exists in the working tree only: as of 8 Sept
+2026 it is uncommitted, unpushed, unbuilt and uninstalled. Check `git log`
+before believing otherwise — this paragraph was originally written in the past
+tense, describing an outcome that had not happened, and the next session caught
+the contradiction rather than the docs catching it.
+
+Changing the bundle ID makes iOS treat the next build as a **new app** rather
+than an upgrade, so installing it will cost one re-pairing: delete the old Ammy
+from the phone first (otherwise both copies run and both push to the relay),
+then re-enter the endpoint and secret and re-grant media-library and
+notification permissions.
+
+**Don't change the bundle ID again** without wanting that. Nothing displays it,
+so there is never a cosmetic reason to.
 
 Apple Music on iPhone → Discord Rich Presence on a Windows desktop.
 
@@ -34,13 +48,13 @@ project.yml                     XcodeGen spec — no .xcodeproj is committed
 .github/workflows/build-ipa.yml CI producing an unsigned, versioned IPA
 bridge/relay.py                 Desktop relay + Discord IPC client
 bridge/ipc_test.py              Minimal pypresence test, no HTTP layer
-AMPresence/
-  AMPresenceApp.swift           SwiftUI entry point + settings screen
+Ammy/
+  AmmyApp.swift                 SwiftUI entry point + settings screen
   PresenceController.swift      Wires playback changes to relay pushes
   NowPlayingMonitor.swift       MediaPlayer observation; store ID + cover art
   PresenceRelay.swift           HTTPS client for the relay
   KeepAlive.swift               Silent audio to survive backgrounding
-  SilenceWatchdog.swift         Notification that fires if the app dies
+  SilenceWatchdog.swift         Notification for when the app isn't running
 ```
 
 **The running relay is not in the repo tree.** On the main PC the live copy is
@@ -93,6 +107,26 @@ socket, producing an infinite connect/fail/reconnect loop. Use
 `ActivityType.LISTENING` and `StatusDisplayType.*`. `push_with_fallback()`
 exists to shed unsupported kwargs rather than tearing down the connection.
 
+**A rejected payload is not a dead socket.** This has now bitten twice, from
+two different triggers, and the second cost an hour of confusion.
+
+Discord requires `details` and `state` to be at least two characters and
+refuses the entire activity otherwise. One-character titles are not exotic —
+the track that exposed this was **"i" by Kendrick Lamar**, hit by shuffling.
+The refusal arrives as a `ServerError`,
+the worker's catch-all read it as a lost connection, closed the socket,
+reconnected, re-sent the identical payload, and looped. Presence stayed empty
+for about a minute until the song changed and broke the cycle.
+
+Diagnosing it was harder than it should have been because `print(f"[rpc] ...")`
+runs *after* a successful push, so the one track responsible is the only one
+that leaves no line in the log.
+
+Fixed three ways in 1.3.0: `pad_for_discord()` pads short fields with U+2060,
+`PAYLOAD_REJECTED` exceptions are caught separately and the track skipped
+rather than the connection torn down, and the reconnect path sleeps so it
+cannot spin. **Don't collapse those two `except` clauses back together.**
+
 **`push_with_fallback` matches quoted field names.** It identifies which field
 to drop from `'x'` in "unexpected keyword argument 'x'". A bare substring test
 is wrong: `state` is a substring of `state_url`, so an error about `state_url`
@@ -105,11 +139,28 @@ elapsed at send time (not from the Combine-captured snapshot) and fires a
 correction push 2.5s after every change. Removing that correction reintroduces
 wrong progress bars on skip.
 
-**Timestamp jitter.** `start` is recomputed on every push as `now - elapsed`,
-so rounding makes it drift ±1s even when nothing changed. Comparing payloads
-directly re-pushes on every heartbeat and visibly nudges the progress bar.
-`_materially_different()` applies a 2-second tolerance to `start`/`end`. See
-the open playhead bug below — this mitigation is not sufficient.
+**The playhead anchor is paired with the push's arrival time, never with
+`time.time()`.** This is the single most expensive bug the project has had, and
+it is invisible on inspection because every individual calculation looks right.
+
+`build_payload()` runs once per second in the RPC worker. The phone refreshes
+`elapsed` once every thirty. So for thirty consecutive calls the same frozen
+reading is in hand — and computing `start = time.time() - elapsed` against it
+slides the anchor forward one second per second. Discord's bar falls steadily
+behind for thirty seconds, then snaps forward when the next push lands. That
+was the rubberbanding.
+
+`Playhead.anchor()` takes an `observed_at` argument for exactly this reason,
+and `build_payload()` receives it from `state.get()`. Never pass either one
+`time.time()`.
+
+Diagnosis tip: the giveaway was `[playhead] re-anchored +10.0s` repeating with
+*identical* drift. A noisy sensor gives varying numbers; a constant drift is a
+clock, not a measurement.
+
+`_materially_different()` still applies a 2-second tolerance to `start`/`end`,
+which is now belt-and-braces rather than load-bearing — a correct anchor
+doesn't move between pushes at all.
 
 **KeepAlive must survive interruptions.** The silent audio holds the app alive
 only while its `AVAudioSession` is active. A call, alarm or Siri invocation
@@ -284,11 +335,44 @@ that never got a matching return as "app died and stayed dead".
 On the phone, `SilenceWatchdog` is the third leg: it tells you *that* it died,
 15 minutes after the fact. The relay logs tell you how long.
 
+Each entry is stamped `[relay <version> / app <build>]`, the app build coming
+from `app_version` on every push. **Don't split the log into per-version
+files.** Whether the phone survives backgrounding is decided by the iOS build,
+not the relay's, and the relay restarts far more often than the app changes —
+splitting would fragment the data by the wrong variable and can't be undone.
+A stamped line can be grouped any way you like later, which is what
+`--summary` does. Entries predating the stamping group as "before builds were
+recorded", so the pre-KeepAlive era stays visible as history without skewing
+current numbers — no archiving needed.
+
 ## Where things stand (September 2026)
 
 Working and verified: autostart, artwork via store ID, clickable title/artist/
-cover, album line removed, notification permission granted, versioning on both
-halves, and both secrets rotated.
+cover, album line removed, versioning on both halves, both secrets rotated, and
+the progress bar.
+
+**Verified — the watchdog fires, and survives the device powering off.** A
+manual kill produced a notification 15 minutes later, corroborated by a
+`00:16:02` gap. Better: on Sept 2 the phone's battery died at 20:17; the
+notification was scheduled before that, fired at ~20:32 while the device was
+off, and iOS delivered it on boot. The "pending notifications outlive the
+process" premise is no longer theoretical.
+
+**A gap is not proof that iOS killed the app.** Before concluding that,
+account for the phone being off and for the app simply not having been
+relaunched — nothing restarts Ammy after a reboot. The 01:25:34 gap on Sept 2
+looked alarming and was a dead battery plus an hour before the owner reopened
+the app. Since the `KeepAlive` fix, every recorded gap has had a mundane
+explanation and none has been an iOS reclaim.
+
+**Verified — the app survives the night.** Roughly eight unbroken hours on
+Sept 2 with no gap logged, the first clean night on record. Compare the 39-hour
+silent death of Aug 27–29 that prompted the `KeepAlive` interruption fix. One
+night is not proof; check `--summary` periodically and watch whether
+"never came back" ever appears.
+
+Lifetime figures in `--summary` still include pre-fix history — the 39-hour
+death dominates "longest" and "total silent time" and will for a long while.
 
 **Done — secrets rotated (Sept 2 2026).** `RELAY_SECRET` regenerated locally by
 PowerShell straight into `.env` so the value never appeared in a chat or a
@@ -300,17 +384,17 @@ Verified end to end with `https://ammy.kaydenpmd.net/version`.
 **Done — the laptop connector is gone.** The tunnel now lists one connector,
 `KaydensPC`. Nothing to clean up.
 
-**Open — playhead jitter and lag.** The Discord progress bar runs several
-seconds behind Apple Music and nudges around. The relay sets
-`start = now - elapsed`, so Discord displays exactly the `elapsed` the phone
-reported, ticking forward from there — a stale read leaves the bar behind until
-the next push corrects it, and `currentPlaybackTime` on a backgrounded app is
-exactly where staleness comes from. Recomputing `start` every push also drags
-the anchor around, which is the jitter. Useful property: the error runs one
-direction only, since a stale read makes the position look *earlier*, never
-later. Likely fix is to anchor `start` once per track, re-anchor only on a
-genuine seek, and pick the anchor implying the furthest-along position across
-recent samples.
+**Done — playhead fixed (Sept 2 2026).** Cause was the arrival-time bug above,
+not staleness in `currentPlaybackTime` as long assumed. After the fix: zero
+`[playhead]` log lines, and 19 pushes across 15 tracks where a single track
+used to generate thirty-odd — heartbeats now produce identical payloads and get
+suppressed.
+
+The `Playhead` class also carries seek detection and a rule that prefers any
+reading implying the song is further along, on the theory that a stale read can
+only ever make it look earlier. In practice **no staleness has been observed at
+all**, so that rule has never fired. It is insurance, not a working mechanism;
+don't cite it as evidence that staleness exists.
 
 Should either secret need rotating again: the tunnel token lives in the
 cloudflared Windows service's registry `ImagePath`, not in a `config.yml` —
@@ -329,9 +413,15 @@ not writing code. Prefers concise, concrete instructions over conceptual
 explanation. Give **one command at a time** and wait for output; stacked
 commands hide failures when an early one hangs.
 
-There is no local clone of this repo on the PC. Changes reach GitHub by
-uploading files through the web interface, so hand over complete files rather
-than diffs or patch fragments.
+The repo is cloned at `C:\Users\links\repos\ampresence`. Edit the files in
+place; there is no need to hand over whole files for web upload, which is what
+this document used to say from before the clone existed.
+
+**Git commands are the owner's to run, and this is not a preference.** Under
+local Cowork the shell is a separate Linux VM, and its mount of host folders
+does not permit unlink — so `git rm`, `git reset --hard`, and even `git status`
+fail partway and leave a stale `.git/index.lock` that blocks the owner's next
+command. Edit with the file tools, hand over the git lines.
 
 **Verify, don't assert.** This project has burned several rounds on confident
 wrong answers — that Discord couldn't hyperlink activity text (it can:

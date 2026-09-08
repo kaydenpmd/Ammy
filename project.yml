@@ -1,4 +1,4 @@
-name: AMPresence
+name: Ammy
 
 options:
   bundleIdPrefix: com.local
@@ -7,14 +7,14 @@ options:
   createIntermediateGroups: true
 
 targets:
-  AMPresence:
+  Ammy:
     type: application
     platform: iOS
     sources:
-      - path: AMPresence
+      - path: Ammy
 
     info:
-      path: AMPresence/Info.plist
+      path: Ammy/Info.plist
       properties:
         CFBundleDisplayName: Ammy
         # Declared explicitly rather than relying on XcodeGen's defaults, since
@@ -33,18 +33,16 @@ targets:
         # Lets Shortcuts launch the app and say what it should do afterwards:
         #   ammy://music       → start, then reopen Apple Music
         #   ammy://background  → start, then drop to the Home Screen
-        # ampresence:// is kept so any existing Shortcuts keep working.
         CFBundleURLTypes:
           - CFBundleURLName: net.kaydenpmd.ammy
             CFBundleURLSchemes:
               - ammy
-              - ampresence
         LSApplicationQueriesSchemes:
           - music
 
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.local.ampresence
+        PRODUCT_BUNDLE_IDENTIFIER: com.local.ammy
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         # The only version number a human sets. The build number beside it is
         # the CI run, passed in by build-ipa.yml — the "1" here is just a

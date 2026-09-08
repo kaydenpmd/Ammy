@@ -29,7 +29,7 @@ enum BounceTarget {
 }
 
 @main
-struct AMPresenceApp: App {
+struct AmmyApp: App {
     @StateObject private var controller = PresenceController()
 
     var body: some Scene {
