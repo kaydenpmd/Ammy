@@ -67,13 +67,34 @@ interactive session, not as a Windows service — Discord's IPC pipe belongs to
 the logged-in session, and a session 0 task will start cleanly, listen on 8787,
 and never reach Discord.
 
-### Checking which relay is running
+### Checking on it
 
 ```
 python bridge\relay.py --version
 python bridge\relay.py --summary     # phone check-in gaps over time
 curl https://ammy.yourdomain.com/version
+curl -H "X-Relay-Secret: your_secret" https://ammy.yourdomain.com/diag
 ```
+
+`/diag` returns the phone's most recent self-report: whether the silent-audio
+engine is actually running, how often it has been restarted and why, how many
+audio route changes and interruptions there have been, memory footprint, and
+both app and device uptime.
+
+That report exists because **the app cannot tell you it died.** By the time
+anyone notices it is gone there is nothing left running to ask. So the phone
+sends its condition with every push, the relay keeps the latest one, and the
+"phone stopped checking in" line in `ammy-uptime.log` carries it:
+
+```
+phone stopped checking in  last seen 17:22:13  last state: engine=no want=yes
+route=BluetoothA2DP resumes=3 fails=0 heals=0 cfg=1 routechg=4 int=2/1
+mem=38MB state=background lpm=no thermal=nominal appup=1840s devup=402118s
+```
+
+`engine=no want=yes` means the keepalive was already dead before the app was.
+A climbing `mem` before a death means iOS reclaimed the app under memory
+pressure instead — a different problem, with a different fix.
 
 ## 3. Build the IPA without a Mac
 
@@ -88,8 +109,11 @@ macOS runner minutes bill at 10× on private repos. A public repo is free.
 
 ## 4. Install
 
-Download the artifact, unzip, and sideload with **SideStore**. A free Apple ID
-means re-signing every 7 days, which SideStore does on-device.
+Download the artifact and sideload it with **SideStore**. The upload uses
+`archive: false`, so what you download is the `.ipa` itself rather than a zip
+containing one — an `.ipa` is already a zip, and wrapping it in another just
+adds a step. A free Apple ID means re-signing every 7 days, which SideStore
+does on-device.
 
 AltStore also works in principle, but AltServer requires iTunes *and* iCloud
 direct from Apple; if you have the Microsoft Store versions installed, you'll
@@ -100,8 +124,13 @@ hit "The provided anisette data is invalid" and there is no clean way back.
 Enter `https://ammy.yourdomain.com/now-playing` and your shared secret, tap
 Start, grant media library access, and allow notifications when asked.
 
-The **Version** row on that screen shows `1.0 (7)` — the build number matches
-the artifact name, so you can always tell which build is on the phone.
+Notifications are not optional. `UNUserNotificationCenter.add()` succeeds on an
+unauthorized center and delivers nothing, so declining leaves the watchdog
+silently inert rather than visibly broken.
+
+The **Version** row on that screen shows something like `1.0 (24)` — the build
+number matches the artifact name, so you can always tell which build is on the
+phone.
 
 ### Shortcuts
 
@@ -126,10 +155,15 @@ the gap.
   `suspend` selector are both App Review violations. This can never ship on the
   App Store, and that's a deliberate trade, not an oversight.
 - **Background survival is best-effort.** The silent audio holds the app alive
-  only while its audio session is active, and `KeepAlive` restarts it after
-  interruptions. It still dies on force quit. `SilenceWatchdog` notifies you 15
-  minutes after check-ins stop, which survives force quit, eviction and reboot
-  because the notification is already queued with iOS.
+  only while its audio session is active, and four separate things stop it: an
+  interruption, a media services reset, a configuration change when the audio
+  route switches (AirPods, headphones, CarPlay), and a session that simply
+  refuses to activate. `KeepAlive` handles all four, retries instead of giving
+  up, and re-checks `engine.isRunning` every 10 seconds — and reports all of it
+  so a failure shows up in the log rather than as unexplained silence. It still
+  dies on force quit. `SilenceWatchdog` notifies you 15 minutes after check-ins
+  stop, which survives force quit, eviction and reboot because the notification
+  is already queued with iOS.
 - **Cloud tracks are inconsistent.** `nowPlayingItem` is reliable for library
   content and usually fine for streamed catalog tracks, but does return nil
   sometimes. The 5s poll covers missed notifications, not nil.
@@ -144,6 +178,7 @@ the gap.
 project.yml                     XcodeGen spec — no .xcodeproj is committed
 .github/workflows/build-ipa.yml CI producing the unsigned, versioned IPA
 bridge/relay.py                 Desktop relay + Discord IPC client
+bridge/install-task.ps1         Registers the logon Scheduled Task
 bridge/ipc_test.py              Minimal pypresence test, no HTTP layer
 Ammy/
   AmmyApp.swift                 SwiftUI entry point and settings screen
@@ -151,6 +186,7 @@ Ammy/
   NowPlayingMonitor.swift       MediaPlayer observation, store ID + cover art
   PresenceRelay.swift           HTTPS client for the relay
   KeepAlive.swift               Silent audio to survive backgrounding
+  Diagnostics.swift             The phone's self-report, sent with every push
   SilenceWatchdog.swift         Notification for when the app isn't running
 ```
 
