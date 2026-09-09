@@ -94,11 +94,19 @@ final class PresenceController: ObservableObject {
     private func sendNow() {
         guard let relay else { return }
 
+        // Confirm the silence is actually still playing before reporting on it,
+        // so the snapshot below describes a checked state rather than a
+        // remembered one. This also guarantees the engine gets verified at
+        // least every 30s even if KeepAlive's own timer is throttled while the
+        // app is in the background.
+        keepAlive.verify()
+        let diag = DeviceDiagnostics.snapshot(keepAlive: keepAlive.diagnostics)
+
         monitor.refresh()
         guard var track = monitor.track, monitor.isPlaying else {
             lastPushed = "Nothing playing"
             Task {
-                let ok = await relay.push(track: nil, playing: false)
+                let ok = await relay.push(track: nil, playing: false, diag: diag)
                 await MainActor.run {
                     self.linkStatus = ok ? "Running" : "Relay unreachable"
                     // The watchdog measures whether the app is alive, not
@@ -115,7 +123,7 @@ final class PresenceController: ObservableObject {
         let label = "\(track.title) — \(track.artist)"
 
         Task {
-            let ok = await relay.push(track: track, playing: true)
+            let ok = await relay.push(track: track, playing: true, diag: diag)
             await MainActor.run {
                 self.lastPushed = label
                 self.linkStatus = ok ? "Running" : "Relay unreachable"

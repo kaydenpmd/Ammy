@@ -25,7 +25,7 @@ actor PresenceRelay {
     }
 
     @discardableResult
-    func push(track: Track?, playing: Bool) async -> Bool {
+    func push(track: Track?, playing: Bool, diag: PushDiagnostics? = nil) async -> Bool {
         // The relay stamps this onto every uptime entry. Whether the app
         // survives backgrounding is decided by code in *this* build, so the
         // build number is the axis worth attributing gaps to — without it the
@@ -34,6 +34,14 @@ actor PresenceRelay {
             "playing": playing && track != nil,
             "app_version": Bundle.main.displayVersion,
         ]
+
+        // The app cannot report its own death, so every push carries a snapshot
+        // of its condition and the relay keeps the most recent one. When the
+        // pushes stop, that snapshot is the only account of what was happening
+        // beforehand — see PushDiagnostics here and note_silence() in relay.py.
+        if let diag {
+            body["diag"] = diag.dictionary
+        }
 
         // Set only when this push actually carries the cover, so a failed
         // request doesn't mark it delivered.

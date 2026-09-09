@@ -118,7 +118,14 @@ PORT = int(os.environ.get("RELAY_PORT", "8787"))
 #   1.4.0  uptime lines carry the relay and phone build. --summary groups gaps
 #          by app build, which is the thing that governs whether the phone
 #          survives backgrounding. Needs the app to send app_version.
-RELAY_VERSION = "1.4.0"
+#   1.5.0  the phone sends a `diag` snapshot on every push and the relay keeps
+#          the most recent one. Keepalive state changes and failures are logged
+#          as they happen, and the last snapshot is printed onto the "phone
+#          stopped checking in" line — the app cannot report its own death, so
+#          that snapshot is the only account of what preceded the silence.
+#          GET /diag returns it. Builds that don't send diag are unaffected and
+#          simply record nothing.
+RELAY_VERSION = "1.5.0"
 
 # Which field shows on the one-line member-list view: name / state / details.
 STATUS_LINE = os.environ.get("STATUS_LINE", "state").strip().lower()
@@ -202,6 +209,30 @@ _silence_logged_at: float | None = None
 # worth attributing gaps to — the relay's own version barely matters here.
 _phone_version = "unknown"
 
+# The phone's most recent `diag` snapshot, and when it arrived.
+#
+# The app cannot report its own death — by the time anyone notices it is gone
+# there is nothing left running to ask. So the relay keeps the last snapshot and
+# prints it on the silence line. Two readings decide most cases:
+#
+#   engine_running false while running is true — the keepalive was already dead
+#   before the app was, and iOS suspended it for having no audio to justify its
+#   background time.
+#
+#   mem_mb climbing towards a death — iOS reclaimed the app under memory
+#   pressure instead, which is a different bug and is not fixed by anything in
+#   KeepAlive.swift.
+_phone_diag: dict = {}
+_phone_diag_at = 0.0
+
+# Logged the moment they change, rather than only at a death.
+_DIAG_FLAGS = ("engine_running", "running", "low_power", "app_state", "route", "thermal")
+
+# Counters only ever climb, so any increase is an event that just happened.
+_DIAG_COUNTERS = (
+    "resume_failures", "self_heals", "config_changes", "media_resets", "int_began",
+)
+
 
 def record_phone_version(value: object) -> None:
     global _phone_version
@@ -211,6 +242,76 @@ def record_phone_version(value: object) -> None:
     if text != _phone_version:
         print(f"[init] phone reports Ammy {text}")
         _phone_version = text
+
+
+def record_phone_diag(value: object) -> None:
+    """Store the phone's latest self-report, and log whatever changed.
+
+    Logging changes as they happen — rather than only dumping state at a death —
+    is what turns the log into a sequence: a route change stopping the engine, a
+    resume failing, a self-heal putting it back. A death preceded by
+    "config_changes +1" and no recovery says something a timestamp cannot."""
+    global _phone_diag, _phone_diag_at
+
+    if not isinstance(value, dict):
+        return
+
+    previous = _phone_diag
+    _phone_diag = value
+    _phone_diag_at = time.time()
+
+    if not previous:
+        print(f"[keepalive] first report: {_diag_summary()}")
+        return
+
+    changes = []
+    for key in _DIAG_FLAGS:
+        if key in value and previous.get(key) != value.get(key):
+            changes.append(f"{key} {previous.get(key)!r} -> {value.get(key)!r}")
+    for key in _DIAG_COUNTERS:
+        was, now = previous.get(key, 0), value.get(key, 0)
+        if isinstance(was, int) and isinstance(now, int) and now > was:
+            changes.append(f"{key} +{now - was} (now {now})")
+
+    if changes:
+        print(f"[keepalive] {'; '.join(changes)}")
+
+    error = value.get("last_error")
+    if error and error != previous.get("last_error"):
+        print(f"[keepalive] resume failed: {error}")
+
+
+def _diag_summary() -> str:
+    """The phone's last self-report on one line, for the silence entry."""
+    d = _phone_diag
+    if not d:
+        return "no diagnostics (app build predates them)"
+
+    def flag(key: str) -> str:
+        return "yes" if d.get(key) else "no"
+
+    parts = [
+        f"engine={flag('engine_running')}",
+        f"want={flag('running')}",
+        f"route={d.get('route', '?')}",
+        f"resumes={d.get('resumes', '?')}",
+        f"fails={d.get('resume_failures', '?')}",
+        f"heals={d.get('self_heals', '?')}",
+        f"cfg={d.get('config_changes', '?')}",
+        f"routechg={d.get('route_changes', '?')}",
+        f"int={d.get('int_began', '?')}/{d.get('int_ended', '?')}",
+        f"mem={d.get('mem_mb', '?')}MB",
+        f"state={d.get('app_state', '?')}",
+        f"lpm={flag('low_power')}",
+        f"thermal={d.get('thermal', '?')}",
+        f"appup={d.get('app_uptime_s', '?')}s",
+        f"devup={d.get('device_uptime_s', '?')}s",
+    ]
+    if d.get("bg_secs_left") is not None:
+        parts.append(f"bgleft={d['bg_secs_left']}s")
+    if d.get("last_error"):
+        parts.append(f"last_error={d['last_error']!r}")
+    return " ".join(parts)
 
 
 def _log_line(text: str) -> None:
@@ -282,7 +383,11 @@ def note_silence(last_seen: float) -> None:
 
     _silence_logged_at = last_seen
     when = time.strftime("%H:%M:%S", time.localtime(last_seen))
-    _log_line(f"phone stopped checking in  last seen {when}")
+    # What the phone was last doing is the whole point of this line. Without it
+    # a death is only a timestamp, which is how the September 2026 keepalive
+    # regression went four days without anyone being able to say why.
+    _log_line(f"phone stopped checking in  last seen {when}"
+              f"  last state: {_diag_summary()}")
 
 
 def print_summary() -> None:
@@ -887,6 +992,7 @@ class Handler(BaseHTTPRequestHandler):
 
         _, previous = state.get()
         record_phone_version(body.get("app_version"))
+        record_phone_diag(body.get("diag"))
         state.set(body if body.get("playing") else None)
         note_checkin(previous)
         self._reply(204)
@@ -901,6 +1007,17 @@ class Handler(BaseHTTPRequestHandler):
 
         if path == "/version":
             return self._reply(200, RELAY_VERSION)
+
+        # The phone's last self-report, so you can check on the keepalive
+        # without waiting for something to die. Authenticated, because it
+        # describes the device rather than the relay.
+        if path == "/diag":
+            if not SECRET or self.headers.get("X-Relay-Secret", "") != SECRET:
+                return self._reply(401, "unauthorized")
+            if not _phone_diag:
+                return self._reply(200, "no diagnostics yet")
+            age = int(time.time() - _phone_diag_at)
+            return self._reply(200, f"{age}s ago: {_diag_summary()}")
 
         # Lets a Shortcut check whether the phone is still reporting before it
         # bothers launching the app — iOS has no way to ask that locally, but
