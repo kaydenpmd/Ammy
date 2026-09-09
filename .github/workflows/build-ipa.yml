@@ -3,6 +3,16 @@ name: Build unsigned IPA
 on:
   push:
     branches: [main]
+    # Only build when something that can change the app changes. Relay and
+    # documentation commits used to trigger a build each, which burned macOS
+    # minutes and — worse — advanced the build number without a line of Swift
+    # moving. The whole versioning scheme rests on the Version row matching the
+    # artifact name, so a build number that climbs for reasons unrelated to the
+    # app quietly erodes the one check that tells you what the phone is running.
+    paths-ignore:
+      - '**.md'
+      - 'bridge/**'
+  # Kept so a build can still be forced by hand when paths-ignore skips one.
   workflow_dispatch:
 
 jobs:
