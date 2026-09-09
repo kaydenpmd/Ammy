@@ -132,7 +132,11 @@ PORT = int(os.environ.get("RELAY_PORT", "8787"))
 #          song highlighted. collectionViewUrl arrives carrying ?i=<trackId>,
 #          which made large_url a duplicate of details_url; the track id is
 #          stripped so the two links mean different things.
-RELAY_VERSION = "1.5.2"
+#   1.6.0  GET /now-playing returns the current track as JSON, so Discord stops
+#          being the only thing that can consume the feed. Authenticated like
+#          the other read routes unless PUBLIC_READ=1, which drops the secret
+#          and adds CORS for web pages. Never performs a lookup.
+RELAY_VERSION = "1.6.0"
 
 # Which field shows on the one-line member-list view: name / state / details.
 STATUS_LINE = os.environ.get("STATUS_LINE", "state").strip().lower()
@@ -159,6 +163,13 @@ ART_MAX_BYTES = 3 * 1024 * 1024
 # Public base URL of the relay, needed because Discord's CDN fetches the image
 # itself and can't reach 127.0.0.1. Derived from the endpoint the phone uses.
 PUBLIC_BASE = os.environ.get("PUBLIC_BASE", "").rstrip("/")
+
+# Opt-in: serve GET /now-playing without the shared secret, with CORS, so a web
+# page can read it directly. Off by default, and deliberately a separate switch
+# rather than a side effect of anything else — turning it on publishes what you
+# are listening to at a URL anyone holding the link can poll. A secret cannot
+# be the answer here, because a public page would have to embed it.
+PUBLIC_READ = os.environ.get("PUBLIC_READ", "0").strip().lower() in ("1", "true", "yes", "on")
 
 # Append-only record of when the phone stopped checking in, so the question
 # "does iOS actually kill this?" becomes data instead of speculation.
@@ -400,6 +411,51 @@ def note_silence(last_seen: float) -> None:
     # regression went four days without anyone being able to say why.
     _log_line(f"phone stopped checking in  last seen {when}"
               f"  last state: {_diag_summary()}")
+
+
+def public_state() -> dict:
+    """Current now-playing, shaped for GET /now-playing.
+
+    A projection, not the raw push body — that body carries `artwork_b64`
+    (~80KB of base64) and the whole `diag` block, and neither belongs in a
+    response that may be served publicly. Add fields here deliberately.
+
+    Nothing in here performs a lookup. A GET must never trigger an outbound
+    iTunes request, or a public endpoint becomes a way for a stranger to make
+    this machine issue traffic. Artwork and links are read from cache or
+    omitted."""
+    track, updated_at = state.get()
+    age = (time.time() - updated_at) if updated_at else None
+    fresh = age is not None and age < IDLE_TIMEOUT
+
+    payload: dict = {
+        "playing": bool(track) and fresh,
+        "stale": not fresh,
+        "updated_ago": round(age, 1) if age is not None else None,
+    }
+    if not track or not fresh:
+        return payload
+
+    for field in ("title", "artist", "album"):
+        value = track.get(field)
+        if value:
+            payload[field] = str(value)
+
+    for field in ("duration", "elapsed"):
+        value = track.get(field)
+        if isinstance(value, (int, float)):
+            payload[field] = round(float(value), 1)
+
+    store_id = str(track.get("store_id") or "")
+    if store_id:
+        cached = _artwork_cache.get(f"id:{store_id}")
+        if cached and cached[0]:
+            payload["artwork"] = cached[0]
+        links = catalog_links(store_id)
+        if links:
+            payload["links"] = links
+
+    return payload
 
 
 def print_summary() -> None:
@@ -1004,6 +1060,19 @@ class QuietHTTPServer(ThreadingHTTPServer):
 class Handler(BaseHTTPRequestHandler):
     protocol_version = "HTTP/1.1"
 
+    def _reply_json(self, code: int, payload: dict, cors: bool = False) -> None:
+        data = json.dumps(payload).encode()
+        self.send_response(code)
+        self.send_header("Content-Type", "application/json")
+        self.send_header("Content-Length", str(len(data)))
+        if cors:
+            # Without this a browser on any other origin cannot read the body,
+            # which is the entire point of PUBLIC_READ.
+            self.send_header("Access-Control-Allow-Origin", "*")
+        self.send_header("Cache-Control", "no-store")
+        self.end_headers()
+        self.wfile.write(data)
+
     def _reply(self, code: int, body: str = "") -> None:
         data = body.encode()
         self.send_response(code)
@@ -1074,6 +1143,15 @@ class Handler(BaseHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(blob)
             return
+
+        # Reads what the phone last pushed. POST /now-playing writes, GET reads
+        # — same path, opposite directions. This is what lets anything that
+        # isn't Discord consume the feed: a web page, an overlay, a bot.
+        if path == "/now-playing":
+            if not PUBLIC_READ:
+                if not SECRET or self.headers.get("X-Relay-Secret", "") != SECRET:
+                    return self._reply(401, "unauthorized")
+            return self._reply_json(200, public_state(), cors=PUBLIC_READ)
 
         if path == "/status":
             if not SECRET or self.headers.get("X-Relay-Secret", "") != SECRET:
