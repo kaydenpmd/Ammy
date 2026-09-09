@@ -2,19 +2,17 @@
 
 Everything is called **Ammy** — Home Screen name, Xcode target, scheme, source
 folder, and bundle ID `com.local.ammy`. This used to be `AMPresence` /
-`com.local.ampresence`.
+`com.local.ampresence`. The rename landed on **8 Sept 2026** — committed,
+pushed, built and installed — and cost the one re-pairing it was always going to.
+Changing the bundle ID makes iOS treat the build as a new app rather than an
+upgrade, so the old copy had to be deleted first (otherwise both run and both
+push to the relay), and the endpoint, secret, media-library permission and
+notification permission were all re-entered.
 
-**The rename is not finished.** It exists in the working tree only: as of 8 Sept
-2026 it is uncommitted, unpushed, unbuilt and uninstalled. Check `git log`
-before believing otherwise — this paragraph was originally written in the past
-tense, describing an outcome that had not happened, and the next session caught
-the contradiction rather than the docs catching it.
-
-Changing the bundle ID makes iOS treat the next build as a **new app** rather
-than an upgrade, so installing it will cost one re-pairing: delete the old Ammy
-from the phone first (otherwise both copies run and both push to the relay),
-then re-enter the endpoint and secret and re-grant media-library and
-notification permissions.
+This paragraph has now been wrong in **both** directions: first written in the
+past tense before the work happened, then left in the present tense after it
+did. Documented state decays in whichever direction you are not looking.
+**Check `git log`, not this file.**
 
 **Don't change the bundle ID again** without wanting that. Nothing displays it,
 so there is never a cosmetic reason to.
@@ -162,13 +160,34 @@ clock, not a measurement.
 which is now belt-and-braces rather than load-bearing — a correct anchor
 doesn't move between pushes at all.
 
-**KeepAlive must survive interruptions.** The silent audio holds the app alive
-only while its `AVAudioSession` is active. A call, alarm or Siri invocation
-stops the engine, and nothing restarts it on its own — the app then has no
-audio justifying its background time and iOS reclaims it minutes or hours
-later. `KeepAlive` observes `interruptionNotification` and
-`mediaServicesWereResetNotification` and rebuilds. Before that fix, the app
-died silently for 39 hours straight (Aug 27–29).
+**KeepAlive must survive interruptions — and `.ended` is not guaranteed.** The
+silent audio holds the app alive only while its `AVAudioSession` is active. Four
+separate things stop it: an interruption (call, alarm, Siri), a media services
+reset, an `AVAudioEngineConfigurationChange` when the audio route switches
+(AirPods, headphones, CarPlay), and a `resume()` that simply fails. All four are
+handled; before September 2026 only the first two were, and the app died
+silently for 39 hours straight (Aug 27–29).
+
+The rule that matters is **never conclude the keepalive is off.** `running`
+means "we want silence playing"; a failure leaves it true and lets a 10-second
+timer retry. The old `start()` returned early on a failed `resume()` with
+`running` still false, so the observers were never installed and nothing ever
+retried — the app then ran with no keepalive at all and nothing anywhere said so.
+
+**Recovery must not depend on `.ended` alone.** iOS does not reliably deliver
+the `.ended` half of an interruption, particularly when it finishes while the
+app is suspended. This is not theoretical: the first instrumented build reported
+`int=3/2` — three interruptions began, two ended. Under the old code the engine
+would have stayed stopped from that moment onward. `.began` and `.ended` are
+counted separately precisely so that mismatch is visible.
+
+Diagnosis note from Sept 2026: every death recorded on build 25 carried
+`engine=yes want=yes`. The audio engine was alive at the moment the app stopped
+checking in, every time — so a dead keepalive was *not* the cause of the deaths
+that remained, and `config_changes` was 0 across five route changes. The fix
+that demonstrably paid off was the retry-and-recheck loop, not the
+configuration-change observer. Don't remove either on the strength of that;
+`resume_failures` and `self_heals` both fired and both recovered.
 
 **Notification permission is not optional.** `UNUserNotificationCenter.add()`
 on an unauthorized center succeeds and delivers nothing — no error, no crash.
@@ -193,6 +212,43 @@ copied from a screenshot with one digit misread, and Discord answered
 `Error Code: 4000 Message: Client ID is Invalid` — which reads like a deleted
 application, not a typo. Have PowerShell write the file from the live variables
 instead, and print `.Length` rather than the value when checking secrets.
+
+## Diagnostics
+
+**The app cannot report its own death.** By the time anyone notices it is gone
+there is nothing left running to ask, and the relay only ever sees that pushes
+stopped — never why. So every push carries a `diag` snapshot of the phone's
+condition, the relay keeps the most recent one, and `note_silence()` prints it
+onto the "phone stopped checking in" line. That last snapshot is the entire
+account of what preceded a silence.
+
+```
+phone stopped checking in  last seen 00:39:33  last state: engine=yes want=yes
+route=BluetoothA2DPOutput resumes=1 fails=0 heals=0 cfg=0 routechg=1 int=0/0
+mem=19MB state=background lpm=no thermal=fair appup=3554s devup=31067s
+```
+
+How to read it:
+
+- `engine` is `AVAudioEngine.isRunning`; `want` is what `KeepAlive` believes.
+  **They disagree only when the keepalive is dead and the app is on borrowed
+  time.** Agreeing means look elsewhere.
+- `int=began/ended` — began outrunning ended is a missed `.ended`, see above.
+- `appup` is seconds since the app launched, so on a death line it *is* that
+  instance's lifetime. `devup` dates the last reboot, which turned a remembered
+  claim about a phone restart into a checkable one.
+- `mem` is `phys_footprint`, the number jetsam actually measures — not
+  `resident_size`, which reads high and matches nothing. Observed 16–25MB.
+- `thermal` was added on spec with no theory behind it and immediately became
+  the most interesting unexplained signal: it flaps to `serious` repeatedly.
+  When you are debugging blind, record everything cheap; you cannot correlate a
+  signal you did not keep.
+
+`[keepalive]` lines in `relay.log` record changes as they happen, so the log
+shows the *sequence* leading to a death rather than only the state at the end of
+it. `GET /diag` returns the latest snapshot on demand, authenticated.
+
+Builds that predate `diag` are unaffected and simply record nothing.
 
 ## Artwork
 
@@ -235,7 +291,13 @@ accepts all of it:
 |---|---|---|
 | `details_url` | the title line | `trackViewUrl` |
 | `state_url` | the artist line | `artistViewUrl` |
-| `large_url` | the cover art | `collectionViewUrl` |
+| `large_url` | the cover art | `collectionViewUrl`, with `?i=` stripped |
+
+`collectionViewUrl` arrives carrying `?i=<trackId>`, which opens the album with
+the current song selected — the same destination `details_url` already provides.
+`_album_url()` drops that one parameter and leaves the rest of the query alone,
+so the two links mean different things: title goes to the song, cover goes to
+the album.
 
 All three come out of the same iTunes lookup that fetches artwork, so links
 cost no extra requests. They are populated **only from the exact store-ID
@@ -406,6 +468,92 @@ Cloudflare docs still call "Add a replica".
 every track played so far has been in the catalog. It's a genuine fallback now
 rather than the only hope, but it has never actually run.
 
+**Done — the rename shipped (8 Sept 2026).** Committed, pushed, and installed as
+build 25. See the top of this file.
+
+**Done — KeepAlive rewritten and instrumented (8 Sept 2026).** Configuration
+changes observed, `.began` counted separately from `.ended`, resume failures
+retried rather than swallowed, `engine.isRunning` re-checked every 10s and again
+on every push. The relay learned to record the `diag` payload and stamp it onto
+death lines.
+
+**The September regression, and what it actually was.** From 4 Sept the app began
+dying every 7–63 minutes during waking hours; before that, windows ran 8–87
+hours. The break dates precisely to a phone reboot at 13:03–13:19 on 4 Sept, and
+the relay ran unrestarted across it, so the change was entirely phone-side. The
+first instrumented build then showed `int=3/2` — a missed `.ended` — which the
+old code could not have survived. It also showed `engine=yes` at every remaining
+death, so that is not the whole story.
+
+**Under test — stability.** Stress-test window opened 9 Sept 11:28 CDT with all
+Shortcuts relaunch automations deleted, so every alive window from then on is the
+app's own unaided lifetime and `appup` on a death line reads as that lifetime
+directly. First data point: one continuous run of 8h34m through a normal
+morning, against a 7–63 minute baseline. One run is not a result; check
+`--summary` grouped by build before concluding anything.
+
+## Open work
+
+Moved here from `AMMY-HANDOFF.md` on 9 Sept 2026, which was then deleted.
+
+**1. Shippable to others**, in the order things actually block:
+
+- **The tunnel is the wall.** A stranger needs a domain and a Cloudflare account
+  before anything else works. Tailscale is the likely answer. Cloudflare quick
+  tunnels avoid the domain but hand out a new hostname each restart, which breaks
+  the endpoint saved in the app.
+- **The relay is a dead end on first run** — it exits with "Set RELAY_SECRET",
+  which a new user cannot act on. It should generate its own secret, write its
+  own `.env`, and show it (a QR the app scans would remove the typing entirely).
+- **"Relay unreachable" means two different things** — a dead relay and a wrong
+  secret produce the same message. The app already knows the difference between a
+  connection failure and a 401. Small fix; would otherwise be most of the support
+  load.
+- **Autostart is Windows-only.**
+- **Each user needs their own Discord application**, which is a five-step detour
+  of its own. Note the application's *name* is the "Listening to" text, so it
+  stays `Apple Music` — that string describes the source, not the bridge. Fine
+  for one person; think hard before it is on hundreds of profiles.
+- Counted end to end, a stranger currently needs four accounts and about ten
+  steps. The single biggest lever is packaging the relay as one self-provisioning
+  executable that registers its own autostart — that collapses Python, the relay,
+  the secret and autostart into one download.
+
+**2. Shortcuts relaunch automations.** Built 9 Sept, then deleted to get a clean
+stability measurement. Worth rebuilding only if the app still dies. The recipe,
+so it is not re-derived:
+
+- One shortcut holds the logic and the secret: `GET /status` with an
+  `X-Relay-Secret` header → `If` contents **contains** `stale` → `If Is Locked`
+  (do nothing; an app cannot be launched from the lock screen) → `Otherwise`
+  `Open App [Ammy]` then `Open App [Current App]`.
+- `Get Current App` must run **first**, before anything else — once Ammy is
+  foregrounded, "current app" is Ammy.
+- Use `Open App`, not `Open URLs ammy://...`. The URL scheme makes Ammy navigate
+  to the Home Screen itself, which races the return. Launching the app directly
+  needs no delay at all.
+- Triggers are per-device and **cannot be shared** — Apple: "Personal automation
+  is specific to a device." Only the shortcut can be handed over, as an iCloud
+  link. A tutorial has to list the triggers for people to recreate.
+- Good triggers are transitions: Music opened, Bluetooth connects, CarPlay.
+  Wi-Fi join/leave mostly fires while the phone is locked, when nothing can
+  launch anyway.
+
+**3. `Is Running` is unverified.** The Shortcuts App type exposes `Is Running`,
+which would let the phone answer "is Ammy alive?" locally — no network call, no
+secret in the shortcut, and the single worst onboarding trap gone. Apple
+documents none of these properties. The property set mirrors macOS's
+`NSRunningApplication`, which is encouraging but not evidence. **Test it against
+a real death, not a force-quit** — force-quitting removes the app-switcher card,
+so it cannot reproduce the case that matters. If `Is Running` is switcher-based
+it will report `true` for an iOS-killed app: wrong in exactly the situation it
+is needed, and silently.
+
+**4. tvOS** was investigated. `MPMusicPlayerController`, `systemMusicPlayer` and
+`nowPlayingItem` are all available on tvOS 14+, so the reading side ports.
+Unknown: whether the silent-audio keepalive survives tvOS backgrounding. Cheap
+to test with a stub target before committing to it.
+
 ## Working with the owner
 
 Limited coding experience — comfortable running commands and reading output,
@@ -413,15 +561,24 @@ not writing code. Prefers concise, concrete instructions over conceptual
 explanation. Give **one command at a time** and wait for output; stacked
 commands hide failures when an early one hangs.
 
-The repo is cloned at `C:\Users\links\repos\ampresence`. Edit the files in
-place; there is no need to hand over whole files for web upload, which is what
-this document used to say from before the clone existed.
+The repo is cloned at `C:\Users\links\Repos\Ammy` (renamed from
+`repos\ampresence` on 9 Sept 2026). Edit the files in place; there is no need to
+hand over whole files for web upload, which is what this document said from
+before the clone existed.
 
 **Git commands are the owner's to run, and this is not a preference.** Under
-local Cowork the shell is a separate Linux VM, and its mount of host folders
-does not permit unlink — so `git rm`, `git reset --hard`, and even `git status`
-fail partway and leave a stale `.git/index.lock` that blocks the owner's next
-command. Edit with the file tools, hand over the git lines.
+local Cowork the shell is a separate Linux VM whose mount of host folders does
+not permit unlink — `git rm`, `git reset --hard`, even `git status` fail partway
+and leave a stale `.git/index.lock` blocking the owner's next command. Under
+cloud Cowork there is no shell on the machine at all; files are reached through
+the desktop app, and `.github/workflows/` is refused outright as a protected
+path. Either way: edit with the file tools, hand over the git lines.
+
+Most "what state is this in?" questions can be answered without running
+anything. `.git/logs/HEAD` is the reflog, `.git/logs/refs/remotes/origin/main`
+records pushes, and `.git/config` holds the remote URL. Reading those three
+settled "is the rename committed?" in one call on 8 Sept, against a handoff note
+that claimed otherwise.
 
 **Verify, don't assert.** This project has burned several rounds on confident
 wrong answers — that Discord couldn't hyperlink activity text (it can:
