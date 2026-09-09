@@ -125,7 +125,14 @@ PORT = int(os.environ.get("RELAY_PORT", "8787"))
 #          that snapshot is the only account of what preceded the silence.
 #          GET /diag returns it. Builds that don't send diag are unaffected and
 #          simply record nothing.
-RELAY_VERSION = "1.5.0"
+#   1.5.1  int_ended is logged alongside int_began. Only began was counted, so a
+#          missing .ended — the exact failure the two counters exist to expose —
+#          left no trace.
+#   1.5.2  the cover art opens the album rather than the album with the current
+#          song highlighted. collectionViewUrl arrives carrying ?i=<trackId>,
+#          which made large_url a duplicate of details_url; the track id is
+#          stripped so the two links mean different things.
+RELAY_VERSION = "1.5.2"
 
 # Which field shows on the one-line member-list view: name / state / details.
 STATUS_LINE = os.environ.get("STATUS_LINE", "state").strip().lower()
@@ -230,7 +237,12 @@ _DIAG_FLAGS = ("engine_running", "running", "low_power", "app_state", "route", "
 
 # Counters only ever climb, so any increase is an event that just happened.
 _DIAG_COUNTERS = (
-    "resume_failures", "self_heals", "config_changes", "media_resets", "int_began",
+    "resume_failures", "self_heals", "config_changes", "media_resets",
+    # Both halves of the interruption pair. began outrunning ended is the case
+    # KeepAlive.swift warns about — iOS does not guarantee .ended, and before
+    # 1.5.1 only began was logged, so the mismatch that motivated counting them
+    # separately was the one thing the log could not show.
+    "int_began", "int_ended",
 )
 
 
@@ -452,6 +464,30 @@ def print_summary() -> None:
 _links_cache: dict[str, dict[str, str]] = {}
 
 
+def _album_url(url: str) -> str:
+    """The album's own URL, with Apple's ?i=<trackId> removed.
+
+    `collectionViewUrl` comes back from the lookup carrying the track id, so
+    opening it lands on the album with the current song selected. That is what
+    the title line already does — `details_url` is `trackViewUrl` and points at
+    the song. The cover art should point at the album itself, or the two links
+    are the same link wearing different hats.
+
+    Everything else in the query string is left alone; only `i` is dropped.
+    """
+    if not url:
+        return ""
+    parts = urllib.parse.urlsplit(url)
+    kept = [
+        (key, value)
+        for key, value in urllib.parse.parse_qsl(parts.query, keep_blank_values=True)
+        if key != "i"
+    ]
+    return urllib.parse.urlunsplit(
+        parts._replace(query=urllib.parse.urlencode(kept))
+    )
+
+
 def catalog_links(store_id: str) -> dict[str, str]:
     """Apple Music URLs for a store ID, if its lookup has already run."""
     return _links_cache.get(store_id, {})
@@ -481,7 +517,7 @@ def artwork_by_store_id(store_id: str) -> tuple[str | None, str]:
                 name: url for name, url in (
                     ("song", entry.get("trackViewUrl") or ""),
                     ("artist", entry.get("artistViewUrl") or ""),
-                    ("album", entry.get("collectionViewUrl") or ""),
+                    ("album", _album_url(entry.get("collectionViewUrl") or "")),
                 ) if url
             }
 
