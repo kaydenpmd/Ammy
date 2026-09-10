@@ -322,6 +322,12 @@ runner. It reads `MARKETING_VERSION` out of `project.yml`, passes
 
 Repo is public — macOS runner minutes bill at 10× on private repos.
 
+**A paid Apple Developer account changes the expiry from 7 days to 365**, and
+removes the free tier's three-active-apps cap. SideStore's own FAQ states both.
+$99/year, and it is the single cheapest quality-of-life fix available — but it
+only helps whoever owns the account. It does nothing for anyone else installing
+the IPA.
+
 Install path is **SideStore**, not AltStore. AltStore's AltServer requires
 iTunes *and* iCloud direct from Apple; the owner keeps the Microsoft Store
 Apple apps, and harvesting the 2020 iCloud components produced "The provided
@@ -551,7 +557,45 @@ so it cannot reproduce the case that matters. If `Is Running` is switcher-based
 it will report `true` for an iOS-killed app: wrong in exactly the situation it
 is needed, and silently.
 
-**4. tvOS** was investigated. `MPMusicPlayerController`, `systemMusicPlayer` and
+**4. Distribution — decided 10 Sept 2026, don't re-open without new facts.**
+The IPA stays as it is: published unsigned from CI, and people install it however
+they like — SideStore, AltStore, a jailbreak, whatever they already have. That is
+a deliberate choice, not a fallback.
+
+What was considered and why it lost:
+
+- **App Store: structurally impossible.** The silent-audio keepalive and the
+  private `suspend` selector are both straight rejections, and no legitimate
+  background mode delivers 30-second updates — `audio` demands real audio,
+  `fetch` and `processing` are opportunistic and measured in hours. There is no
+  version of this app, as designed, that passes review.
+- **AltStore PAL: wrong audience, and Apple stays in the loop.** A developer can
+  distribute from anywhere, but users must be in the EU, Japan or Brazil, which
+  excludes the owner and most people near them. It also requires notarization of
+  every build (nobody has established whether a silent-audio keepalive survives
+  it), a paid account, the Alternative Terms Addendum, and self-hosting the
+  distribution package. Worth revisiting only as a bonus channel for those
+  regions, once the app is stable and the setup documented.
+- **Ad-hoc distribution** off a paid account is real and works — 100 device UDIDs
+  a year, one-year validity, recipients need no sideloader at all. Front-loads the
+  friction onto the owner instead of every user. Available if a small circle ever
+  wants it, with the caveat that it means signing a review-violating app under
+  your own developer identity.
+
+The observation worth keeping: the unofficial route grants *more* freedom than
+the sanctioned one. SideStore uses developer provisioning — the mechanism Apple
+leaves open for testing your own apps — and that path carries no notarization, no
+terms addendum and no geofence. The price is paid in expiry dates rather than in
+permission.
+
+The only thing that would dissolve the problem instead of managing it is a
+**different sender**: Apple Music's API can report recently-played tracks with no
+iOS app at all, so nothing to sideload, nothing to keep alive, nothing to die.
+The cost is real — no playback position, so no progress bar, and updates lag
+rather than being live. It fits the modular shape though: same relay, two
+senders, one live and one effortless.
+
+**5. tvOS** was investigated. `MPMusicPlayerController`, `systemMusicPlayer` and
 `nowPlayingItem` are all available on tvOS 14+, so the reading side ports.
 Unknown: whether the silent-audio keepalive survives tvOS backgrounding. Cheap
 to test with a stub target before committing to it.
