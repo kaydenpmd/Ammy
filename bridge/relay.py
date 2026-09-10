@@ -136,7 +136,11 @@ PORT = int(os.environ.get("RELAY_PORT", "8787"))
 #          being the only thing that can consume the feed. Authenticated like
 #          the other read routes unless PUBLIC_READ=1, which drops the secret
 #          and adds CORS for web pages. Never performs a lookup.
-RELAY_VERSION = "1.6.0"
+#   1.6.1  records the phone's memory headroom (mem_avail_mb, and the low-water
+#          mark since launch) and its memory-warning count. Footprint alone
+#          cannot say whether a death was jetsam — a 19MB app dies just as
+#          readily as a large one when the pressure is elsewhere.
+RELAY_VERSION = "1.6.1"
 
 # Which field shows on the one-line member-list view: name / state / details.
 STATUS_LINE = os.environ.get("STATUS_LINE", "state").strip().lower()
@@ -249,6 +253,9 @@ _DIAG_FLAGS = ("engine_running", "running", "low_power", "app_state", "route", "
 # Counters only ever climb, so any increase is an event that just happened.
 _DIAG_COUNTERS = (
     "resume_failures", "self_heals", "config_changes", "media_resets",
+    # A memory warning arriving before a death is direct evidence of pressure,
+    # rather than the inference you are left with from footprint alone.
+    "mem_warnings",
     # Both halves of the interruption pair. began outrunning ended is the case
     # KeepAlive.swift warns about — iOS does not guarantee .ended, and before
     # 1.5.1 only began was logged, so the mismatch that motivated counting them
@@ -324,6 +331,9 @@ def _diag_summary() -> str:
         f"routechg={d.get('route_changes', '?')}",
         f"int={d.get('int_began', '?')}/{d.get('int_ended', '?')}",
         f"mem={d.get('mem_mb', '?')}MB",
+        f"avail={d.get('mem_avail_mb', '?')}MB",
+        f"availmin={d.get('mem_avail_min_mb', '?')}MB",
+        f"memwarn={d.get('mem_warnings', '?')}",
         f"state={d.get('app_state', '?')}",
         f"lpm={flag('low_power')}",
         f"thermal={d.get('thermal', '?')}",

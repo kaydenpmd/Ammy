@@ -45,6 +45,7 @@ That's accepted, not a bug to fix.
 project.yml                     XcodeGen spec — no .xcodeproj is committed
 .github/workflows/build-ipa.yml CI producing an unsigned, versioned IPA
 bridge/relay.py                 Desktop relay + Discord IPC client
+bridge/install-task.ps1         Registers the logon Scheduled Task
 bridge/ipc_test.py              Minimal pypresence test, no HTTP layer
 Ammy/
   AmmyApp.swift                 SwiftUI entry point + settings screen
@@ -52,6 +53,7 @@ Ammy/
   NowPlayingMonitor.swift       MediaPlayer observation; store ID + cover art
   PresenceRelay.swift           HTTPS client for the relay
   KeepAlive.swift               Silent audio to survive backgrounding
+  Diagnostics.swift             The phone's self-report, sent with every push
   SilenceWatchdog.swift         Notification for when the app isn't running
 ```
 

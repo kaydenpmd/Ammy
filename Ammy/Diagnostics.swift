@@ -1,5 +1,6 @@
 import Darwin
 import Foundation
+import os
 import UIKit
 
 /// Everything the phone knows about its own condition at the moment of a push,
@@ -29,6 +30,12 @@ struct PushDiagnostics: Sendable {
     /// in the foreground and the question is meaningless.
     var backgroundTimeRemaining: Double
     var memoryMB: Double
+    /// Headroom before iOS kills the app, and the lowest that headroom has been
+    /// since launch. The current reading can recover before a push goes out; the
+    /// low-water mark is what survives to describe the squeeze.
+    var availableMemoryMB: Double
+    var lowestAvailableMemoryMB: Double
+    var memoryWarnings: Int
     var lowPowerMode: Bool
     var thermalState: String
     var appUptime: TimeInterval
@@ -38,6 +45,9 @@ struct PushDiagnostics: Sendable {
         var d = keepAlive.dictionary
         d["app_state"] = appState
         d["mem_mb"] = Int(memoryMB.rounded())
+        d["mem_avail_mb"] = Int(availableMemoryMB.rounded())
+        d["mem_avail_min_mb"] = Int(lowestAvailableMemoryMB.rounded())
+        d["mem_warnings"] = memoryWarnings
         d["low_power"] = lowPowerMode
         d["thermal"] = thermalState
         d["app_uptime_s"] = Int(appUptime)
@@ -56,8 +66,33 @@ enum DeviceDiagnostics {
     /// relaunch from a reboot.
     static let launchedAt = Date()
 
+    /// Count of memory warnings this launch, and the observer that maintains
+    /// it. Statics, so both reset when the process does — which is what makes
+    /// them comparable with `appUptime` on a death line.
+    private static var memoryWarnings = 0
+    private static var lowestAvailable = Double.greatestFiniteMagnitude
+    private static var warningObserver: NSObjectProtocol?
+
+    @MainActor
+    private static func observeMemoryWarningsIfNeeded() {
+        guard warningObserver == nil else { return }
+        warningObserver = NotificationCenter.default.addObserver(
+            forName: UIApplication.didReceiveMemoryWarningNotification,
+            object: nil, queue: .main
+        ) { _ in
+            memoryWarnings += 1
+        }
+    }
+
     @MainActor
     static func snapshot(keepAlive: KeepAliveDiagnostics) -> PushDiagnostics {
+        observeMemoryWarningsIfNeeded()
+
+        let available = availableMemoryMB()
+        if available >= 0 {
+            lowestAvailable = min(lowestAvailable, available)
+        }
+
         let app = UIApplication.shared
 
         let state: String
@@ -88,6 +123,10 @@ enum DeviceDiagnostics {
             appState: state,
             backgroundTimeRemaining: bg,
             memoryMB: memoryFootprintMB(),
+            availableMemoryMB: available,
+            lowestAvailableMemoryMB: lowestAvailable == .greatestFiniteMagnitude
+                ? -1 : lowestAvailable,
+            memoryWarnings: memoryWarnings,
             lowPowerMode: ProcessInfo.processInfo.isLowPowerModeEnabled,
             thermalState: thermal,
             appUptime: Date().timeIntervalSince(launchedAt),
@@ -101,6 +140,24 @@ enum DeviceDiagnostics {
     ///
     /// Returns -1 rather than 0 on failure, so a broken read is distinguishable
     /// from an app using no memory.
+    /// How much more the app may allocate before iOS terminates it.
+    ///
+    /// This is the number the footprint alone cannot give you. Ammy sitting at
+    /// 19MB says nothing about whether it is about to be killed — jetsam decides
+    /// by system-wide pressure and priority band, not by how small the victim
+    /// is. If this figure collapses in the minutes before a death, the cause is
+    /// memory pressure from everything *else* running. If it stays comfortable,
+    /// the app was killed for some other reason and we can stop guessing at
+    /// memory.
+    ///
+    /// Returns -1 rather than 0 when unavailable, so "unknown" stays
+    /// distinguishable from "nothing left".
+    static func availableMemoryMB() -> Double {
+        let bytes = os_proc_available_memory()
+        guard bytes > 0 else { return -1 }
+        return Double(bytes) / (1024 * 1024)
+    }
+
     static func memoryFootprintMB() -> Double {
         var info = task_vm_info_data_t()
         var count = mach_msg_type_number_t(
