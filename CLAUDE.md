@@ -493,12 +493,45 @@ first instrumented build then showed `int=3/2` — a missed `.ended` — which t
 old code could not have survived. It also showed `engine=yes` at every remaining
 death, so that is not the whole story.
 
-**Under test — stability.** Stress-test window opened 9 Sept 11:28 CDT with all
-Shortcuts relaunch automations deleted, so every alive window from then on is the
-app's own unaided lifetime and `appup` on a death line reads as that lifetime
-directly. First data point: one continuous run of 8h34m through a normal
-morning, against a 7–63 minute baseline. One run is not a result; check
-`--summary` grouped by build before concluding anything.
+**Settled — the September regression, 10 Sept 2026.** The keepalive rewrite
+worked, and the cause is confirmed with a number rather than a theory.
+
+Measured on build 30, unaided (all Shortcuts relaunch automations deleted 9 Sept
+11:28, so `appup` on a death line is the true lifetime):
+
+```
+17:29:49  phone stopped checking in  last seen 17:28:18
+engine=yes want=yes  resumes=19 fails=3 heals=12  cfg=4 routechg=29  int=12/4
+mem=27MB  avail=2071MB  availmin=2068MB  memwarn=26
+lpm=no  thermal=nominal  appup=61445s
+```
+
+**17h04m in one continuous run**, overnight and through a full working day,
+against a 7–63 minute baseline in the broken period. Prior instance on build 25
+managed 12h37m.
+
+**`int=12/4` is the whole story.** Twelve interruptions began, four ended —
+**eight `.ended` events never arrived**. Under the pre-September code, recovery
+depended solely on `.ended`, so the *first* of those eight would have stopped the
+audio engine permanently and the app would have been reclaimed within the hour.
+`heals=12` is the self-heal catching each one; `fails=3` is resume failures that
+retried and recovered. Do not remove the retry loop or the periodic
+`engine.isRunning` check — this line is what they are for.
+
+**Three suspects eliminated, and worth not re-testing:**
+
+- *Memory / jetsam.* `availmin=2068MB` across seventeen hours, while `memwarn=26`
+  says the system was under pressure repeatedly and told the app about it. The
+  app's own headroom was never threatened. A 27MB footprint dying is not a
+  memory story.
+- *Low Power Mode.* A death on 9 Sept occurred with `lpm=no` after an earlier one
+  with `lpm=yes` had made it look causal. It is not.
+- *Thermal.* Deaths have occurred at `nominal`, the coolest state.
+
+**Still unexplained: what ends a run.** Every death recorded since the fix has
+carried `engine=yes want=yes` — a healthy audio engine — with no correlate in any
+signal collected. It is now a roughly once-a-day event rather than an hourly one.
+Whether that is worth chasing further is a judgement call, not an open bug.
 
 ## Open work
 
