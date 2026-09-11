@@ -69,19 +69,37 @@ struct ContentView: View {
                 // Labels persist where placeholders vanish, so the row names
                 // live on the left and the value column carries only whether the
                 // field must be filled in.
+                // Label above a full-width field, rather than Mail's two-column
+                // row. Both values here are long enough to overflow a shared
+                // row, and LabeledContent's response to that is to stack them
+                // anyway — so the layout would silently change shape depending
+                // on how long someone's address happened to be. Doing it on
+                // purpose keeps it fixed, and gives the value the whole width.
+                //
+                // Both rows get the same treatment even though "Optional" would
+                // fit on one line: matching rows read as one thing, and the key
+                // is as long as the URL in practice.
+                //
+                // The visible label is hidden from VoiceOver and applied to the
+                // field instead, so it is announced once as a labelled control
+                // rather than twice as loose text.
                 Section {
-                    LabeledContent("URL") {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("URL")
+                            .accessibilityHidden(true)
                         TextField("Required", text: $controller.endpoint)
-                            .multilineTextAlignment(.trailing)
                             .textInputAutocapitalization(.never)
                             .autocorrectionDisabled()
                             .keyboardType(.URL)
+                            .accessibilityLabel("URL")
                     }
-                    LabeledContent("Key") {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Key")
+                            .accessibilityHidden(true)
                         SecureField("Optional", text: $controller.key)
-                            .multilineTextAlignment(.trailing)
                             .textInputAutocapitalization(.never)
                             .autocorrectionDisabled()
+                            .accessibilityLabel("Key")
                     }
                 } header: {
                     Text("Endpoint")
