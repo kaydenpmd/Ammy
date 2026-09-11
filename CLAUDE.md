@@ -695,6 +695,15 @@ The IPA stays as it is: published unsigned from CI, and people install it howeve
 they like — SideStore, AltStore, a jailbreak, whatever they already have. That is
 a deliberate choice, not a fallback.
 
+**The floor is iOS 26, raised from 17.0 on 11 Sept 2026.** The Start button sits
+in a `safeAreaBar`, which is iOS 26-only and is what supplies the scroll edge
+effect behind it; there is no pre-26 equivalent, and a hand-rolled fallback would
+be a second code path visible only on devices the owner does not have and cannot
+test. Anyone on 18 or earlier can no longer install the IPA at all. That is a real
+cost and it was accepted knowingly — it is recorded here rather than left to be
+discovered from a build error, and the reason is repeated beside
+`deploymentTarget` in `project.yml` so it does not get quietly reverted.
+
 What was considered and why it lost:
 
 - **App Store: structurally impossible.** The silent-audio keepalive is a

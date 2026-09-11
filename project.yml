@@ -2,8 +2,11 @@ name: Ammy
 
 options:
   bundleIdPrefix: com.local
+  # iOS 26: safeAreaBar and the scroll edge effect behind the Start button in
+  # AmmyApp.swift have no pre-26 equivalent, and a hand-rolled fallback would
+  # look wrong on the only devices that would ever see it.
   deploymentTarget:
-    iOS: "17.0"
+    iOS: "26.0"
   createIntermediateGroups: true
 
 targets:

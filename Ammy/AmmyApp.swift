@@ -100,50 +100,54 @@ struct ContentView: View {
 
             }
             .navigationTitle("Ammy")
-            // Pinned rather than overlaid. safeAreaInset grows the Form's
-            // scroll content inset by exactly this height, so the last row can
-            // still be scrolled clear of the button and the scroll indicator
-            // stops in the right place. An overlay looks identical and
-            // permanently buries whatever ends up underneath it.
+            // safeAreaBar, not safeAreaInset. Both reserve the space — which
+            // is what keeps the last row scrollable clear of the button
+            // instead of permanently buried, as an overlay would — but the bar
+            // also applies the scroll edge effect, so content blurs out as it
+            // passes underneath. That is the whole reason no background is set
+            // here: a hard fill would be doing badly what the system already
+            // does properly, and it is what made the first attempt look stuck
+            // on rather than floating.
             //
             // Start/Stop lives here because it is the only control on this
             // screen anyone touches twice, and the only one that used to
             // scroll out of reach. The Form is what you set up once; this is
             // what you actually do.
-            .safeAreaInset(edge: .bottom, spacing: 0) {
-                VStack(spacing: 0) {
-                    Divider()
-                    Button(running ? "Stop" : "Start") {
-                        if running {
-                            Task {
-                                await controller.stop()
-                                didAutoStart = true   // don't immediately restart
-                                running = false
-                            }
-                            return
+            .safeAreaBar(edge: .bottom) {
+                Button {
+                    if running {
+                        Task {
+                            await controller.stop()
+                            didAutoStart = true   // don't immediately restart
+                            running = false
                         }
-
-                        // Only ever asked once per address: start() writes the
-                        // resolved URL back, so the stored value has a scheme
-                        // from then on and this never fires again for it.
-                        if PresenceRelay.needsScheme(controller.endpoint),
-                           let resolved = PresenceRelay.normalised(controller.endpoint) {
-                            schemeToConfirm = resolved.absoluteString
-                        } else {
-                            Task { await start() }
-                        }
+                        return
                     }
-                    .buttonStyle(.borderedProminent)
-                    .controlSize(.large)
-                    .frame(maxWidth: .infinity)
-                    .disabled(!canAutoStart)
-                    .padding(.horizontal)
-                    .padding(.vertical, 12)
+
+                    // Only ever asked once per address: start() writes the
+                    // resolved URL back, so the stored value has a scheme
+                    // from then on and this never fires again for it.
+                    if PresenceRelay.needsScheme(controller.endpoint),
+                       let resolved = PresenceRelay.normalised(controller.endpoint) {
+                        schemeToConfirm = resolved.absoluteString
+                    } else {
+                        Task { await start() }
+                    }
+                } label: {
+                    // The frame belongs on the *label*, not on the Button. A
+                    // bordered style sizes its fill to the label and then sits
+                    // centred inside whatever frame you give the button — which
+                    // is why the first version rendered as a small pill floating
+                    // in the middle rather than a full-width button.
+                    Text(running ? "Stop" : "Start")
+                        .frame(maxWidth: .infinity)
                 }
-                // ignoresSafeAreaEdges defaults to .all, so the material
-                // reaches the physical bottom edge while the button itself
-                // stays above the home indicator.
-                .background(.bar)
+                .buttonStyle(.borderedProminent)
+                .controlSize(.large)
+                .disabled(!canAutoStart)
+                // Matches the Form's card inset, so the button lines up with
+                // the sections above it rather than sitting to its own margin.
+                .padding(.horizontal)
             }
             .alert("Add https://?", isPresented: Binding(
                 get: { schemeToConfirm != nil },
