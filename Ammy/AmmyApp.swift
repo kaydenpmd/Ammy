@@ -134,18 +134,23 @@ struct ContentView: View {
                         Task { await start() }
                     }
                 }
-                .buttonStyle(.borderedProminent)
-                .controlSize(.large)
-                // iOS 26's own way to say "fill the width". The pre-26 move was
-                // .frame(maxWidth: .infinity) on the *label* — which worked only
-                // by accident of how bordered styles measure themselves, and
-                // required a trailing-closure label whose entire job was to hold
-                // that frame. This says the same thing on purpose.
+                // Build 43 exists to answer one question: does .glassProminent
+                // already carry the interactive layer — the scale, shimmer and
+                // touch-point glow that make the material answer a finger? The
+                // write-ups contradict each other and pressing it settles it in
+                // two seconds, which is cheaper than reasoning about it.
                 //
-                // The shape is left undeclared deliberately. Capsule is the iOS
-                // 26 default for a text button, and it should keep tracking the
-                // platform; pinning .buttonBorderShape(.capsule) here would
-                // freeze it against a future OS that moves on.
+                // If it turns out dead under a thumb, the fallback is
+                //     .buttonStyle(.plain)
+                //     .glassEffect(.regular.tint(.accentColor).interactive(), in: .capsule)
+                // which states interactivity outright. That was tried first and
+                // reverted, because it costs the height, the width, the label
+                // styling and the disabled treatment — everything the two
+                // modifiers below supply for free — to buy one certainty that a
+                // single install provides anyway. Don't reach for it until this
+                // has actually been pressed.
+                .buttonStyle(.glassProminent)
+                .controlSize(.large)
                 .buttonSizing(.flexible)
                 .disabled(!canAutoStart)
                 // Matches the Form's card inset, so the button lines up with
