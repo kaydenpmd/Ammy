@@ -114,7 +114,7 @@ struct ContentView: View {
             // scroll out of reach. The Form is what you set up once; this is
             // what you actually do.
             .safeAreaBar(edge: .bottom) {
-                Button(running ? "Stop" : "Start") {
+                Button {
                     if running {
                         Task {
                             await controller.stop()
@@ -133,6 +133,23 @@ struct ContentView: View {
                     } else {
                         Task { await start() }
                     }
+                } label: {
+                    // The style does not supply enough weight on its own.
+                    // Measured at identical 26px cap height, in clean
+                    // screenshots: this label's stroke-to-cap ratio was 0.154
+                    // against 0.19 for Apple's own filled buttons in Health —
+                    // regular against semibold. A photo of Setup Assistant's
+                    // Continue button agrees but cannot prove it; at that
+                    // resolution the stroke quantises to 2px or 3px and nothing
+                    // between.
+                    //
+                    // Overriding a style's default is usually the wrong move
+                    // (see the shape note below), but weight is not a platform
+                    // default that should drift — a primary action reads as one
+                    // or it doesn't, and glass is *lower* contrast than an
+                    // opaque fill, so it wants more weight here, not less.
+                    Text(running ? "Stop" : "Start")
+                        .fontWeight(.semibold)
                 }
                 // Two styles, not one. Start is the prominent blue; Stop is
                 // plain glass — the quiet half of the same pair, the way
