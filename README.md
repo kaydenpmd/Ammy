@@ -4,7 +4,7 @@ Apple Music on iPhone → Discord Rich Presence on a Windows desktop, via a rela
 you host yourself.
 
 ```
-iPhone ──https──▶ Cloudflare Tunnel ──▶ relay.py ──IPC──▶ Discord desktop
+iPhone ──https──▶ Tailscale Funnel ──▶ relay.py ──IPC──▶ Discord desktop
 ```
 
 No user token, no self-botting. Discord has no Rich Presence SDK on iOS, and
@@ -15,6 +15,16 @@ your PC, and the relay uses the desktop client's local IPC socket, which is the
 sanctioned path.
 
 The cost of that design is the first limitation below, and it isn't a bug.
+
+## Before you start
+
+- A Windows PC that stays awake, running Discord desktop.
+- Python 3.10+.
+- A free **Tailscale** account. No domain, no DNS records, no port forwarding,
+  and nothing exposed on your LAN.
+- A **Discord** account, to create the application whose name becomes the
+  "Listening to" text.
+- An **Apple ID** for sideloading. A free one re-signs every 7 days.
 
 ## 1. Discord application
 
@@ -33,32 +43,72 @@ Create `bridge/.env` next to `relay.py`:
 
 ```
 DISCORD_CLIENT_ID=your_application_id
-RELAY_SECRET=paste_a_long_random_string
-PUBLIC_BASE=https://ammy.yourdomain.com
+RELAY_KEY=paste_a_long_random_string
+PUBLIC_BASE=https://your-pc.your-tailnet.ts.net
 ```
 
 A file rather than environment variables, because variables set in a PowerShell
 window vanish with it — and a scheduled task inherits none of them.
 
+`PUBLIC_BASE` is the URL you'll get from step 3, so come back and fill it in.
+It's required for artwork on tracks that aren't in Apple's catalog: the phone
+uploads the cover and Discord's CDN fetches it back from the relay, so the relay
+has to know its own public address.
+
 ```
 python bridge\relay.py
 ```
 
-Then expose it with `cloudflared` and your own domain:
+The relay binds to `127.0.0.1` on purpose. Nothing reaches it except through the
+tunnel, and `RELAY_KEY` is checked on every request.
+
+> `RELAY_SECRET` and the `X-Relay-Secret` header are the old names. Both are
+> still read, so an existing `.env` and an older build of the app keep working.
+
+## 3. Expose it with Tailscale Funnel
+
+Install Tailscale on the PC and sign in. Then:
 
 ```
-cloudflared tunnel create ammy
-cloudflared tunnel route dns ammy ammy.yourdomain.com
-cloudflared tunnel run --url http://localhost:8787 ammy
+tailscale funnel --bg --https=443 localhost:8787
 ```
 
-The relay binds to `127.0.0.1` on purpose — the tunnel is the only way in, so
-there's no port forwarding and nothing exposed on your LAN. The shared secret is
-checked on every request.
+That prints your public URL:
 
-`PUBLIC_BASE` is required for artwork on tracks that aren't in Apple's catalog:
-the phone uploads the cover and Discord's CDN fetches it back from the relay, so
-the relay has to know its own public URL.
+```
+https://your-pc.your-tailnet.ts.net
+```
+
+`--bg` is what makes it persist — Funnel resumes by itself after a reboot or a
+Tailscale restart. Without it you have to re-run the command every time.
+
+```
+tailscale funnel status                      # what's currently served
+tailscale funnel --bg --https=443 off        # stop serving
+```
+
+Three things have to be true on your tailnet, and Tailscale will link you
+straight to whichever one is missing on first run: **MagicDNS** enabled, **HTTPS
+certificates** enabled, and the `funnel` node attribute present in the policy
+file. The default policy grants it to every member.
+
+### Pin the machine name
+
+Your URL is `https://<machine>.<tailnet>.ts.net`, and the machine half is
+generated from the PC's OS hostname by default — so renaming the PC silently
+moves your endpoint and the address saved in the app stops resolving. In the
+admin console, open the machine and **turn off "Auto-generate from OS
+hostname."** Do it before you type the URL into the phone.
+
+The tailnet half (`tail1a2b3.ts.net`, or a word-pair if you picked one) is fixed
+once HTTPS certificates have been issued for it.
+
+Funnel can only listen on 443, 8443 and 10000 publicly. The local port it
+forwards to is whatever you like; 8787 is the relay's default.
+
+> Already have a domain and a Cloudflare account? `cloudflared tunnel run
+> --url http://localhost:8787` still works fine. The relay doesn't care what's
+> in front of it. Tailscale is the default here because it needs neither.
 
 ### Autostart
 
@@ -72,8 +122,8 @@ and never reach Discord.
 ```
 python bridge\relay.py --version
 python bridge\relay.py --summary     # phone check-in gaps over time
-curl https://ammy.yourdomain.com/version
-curl -H "X-Relay-Secret: your_secret" https://ammy.yourdomain.com/diag
+curl https://your-pc.your-tailnet.ts.net/version
+curl -H "X-Relay-Key: your_key" https://your-pc.your-tailnet.ts.net/diag
 ```
 
 `/diag` returns the phone's most recent self-report: whether the silent-audio
@@ -96,7 +146,7 @@ mem=38MB state=background lpm=no thermal=nominal appup=1840s devup=402118s
 A climbing `mem` before a death means iOS reclaimed the app under memory
 pressure instead — a different problem, with a different fix.
 
-## 3. Build the IPA without a Mac
+## 4. Build the IPA without a Mac
 
 Push to `main` and the **Build unsigned IPA** workflow runs: a macOS runner
 generates the Xcode project from `project.yml` via XcodeGen, compiles with
@@ -107,7 +157,7 @@ time. That also means no certificates in CI secrets.
 
 macOS runner minutes bill at 10× on private repos. A public repo is free.
 
-## 4. Install
+## 5. Install
 
 Download the artifact and sideload it with **SideStore**. The upload uses
 `archive: false`, so what you download is the `.ipa` itself rather than a zip
@@ -119,10 +169,27 @@ AltStore also works in principle, but AltServer requires iTunes *and* iCloud
 direct from Apple; if you have the Microsoft Store versions installed, you'll
 hit "The provided anisette data is invalid" and there is no clean way back.
 
-## 5. Run it
+## 6. Run it
 
-Enter `https://ammy.yourdomain.com/now-playing` and your shared secret, tap
-Start, grant media library access, and allow notifications when asked.
+In the **Endpoint** section, put your Funnel URL with `/now-playing` on the end
+into **URL**, and whatever you set as `RELAY_KEY` into **Key**:
+
+```
+your-pc.your-tailnet.ts.net/now-playing
+```
+
+You can leave off `https://` — Ammy asks before adding it, rather than rewriting
+what you typed behind your back, and stores the result so it only asks once.
+Plain `http://` is refused outright: iOS blocks it at the network layer, and
+without the explicit message that failure is indistinguishable from a relay
+that's simply down.
+
+The key is optional. Ammy will POST without it, and omits the header entirely
+rather than sending an empty one — "no key configured" is a clearer signal to a
+receiver than a header with nothing after it. `relay.py` refuses unauthenticated
+requests, so you do need one here; a receiver of your own may not.
+
+Tap Start, grant media library access, and allow notifications when asked.
 
 Notifications are not optional. `UNUserNotificationCenter.add()` succeeds on an
 unauthorized center and delivers nothing, so declining leaves the watchdog
@@ -142,6 +209,38 @@ ammy://background   start, then drop to the Home Screen
 Worth wiring `ammy://music` to a Shortcuts automation on **Music is opened**.
 Nothing restarts Ammy after a reboot or a force quit, and that automation closes
 the gap.
+
+## Reading the feed yourself
+
+Discord doesn't have to be the only consumer. The same path serves both
+directions — the phone POSTs to `/now-playing`, and anything else can GET it:
+
+```
+curl -H "X-Relay-Key: your_key" https://your-pc.your-tailnet.ts.net/now-playing
+```
+
+```json
+{
+  "playing": true,
+  "stale": false,
+  "updated_ago": 4.2,
+  "title": "…", "artist": "…", "album": "…",
+  "duration": 214.0, "elapsed": 61.3,
+  "artwork": "https://…",
+  "links": { "song": "https://music.apple.com/…", "album": "https://music.apple.com/…" }
+}
+```
+
+It's a projection, not the raw push — the ~80KB of base64 artwork and the whole
+diagnostics block are deliberately left out, and a GET never triggers an
+outbound iTunes lookup, so nobody can use the endpoint to make your machine
+issue traffic. Artwork and links come from cache or are omitted.
+
+Set `PUBLIC_READ=1` in `.env` to serve this route without the key and with CORS,
+so a web page can fetch it directly. It's a separate switch on purpose: turning
+it on publishes what you're listening to at a URL anyone holding the link can
+poll. A key can't be the answer for a public page, because the page would have
+to embed it.
 
 ## Limits worth knowing
 

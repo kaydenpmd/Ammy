@@ -147,7 +147,13 @@ PORT = int(os.environ.get("RELAY_PORT", "8787"))
 #   1.7.0  "secret" is now "key" throughout. RELAY_KEY and the X-Relay-Key header
 #          are the current names; RELAY_SECRET and X-Relay-Secret still work, so
 #          nothing breaks whichever end is updated first.
-RELAY_VERSION = "1.7.0"
+#   1.8.0  rules on every gap rather than only measuring it. The phone counts
+#          consecutive failed pushes (push_fails, push_fails_total, offline_s)
+#          and the relay compares app_uptime_s across the silence, so "iOS killed
+#          it" and "it was alive and couldn't reach me" stop looking identical.
+#          An app relaunch also gets its own line; it used to slip by, because a
+#          relaunch resets every counter at once and only increases were logged.
+RELAY_VERSION = "1.8.0"
 
 # Which field shows on the one-line member-list view: name / state / details.
 STATUS_LINE = os.environ.get("STATUS_LINE", "state").strip().lower()
@@ -254,6 +260,12 @@ _phone_version = "unknown"
 _phone_diag: dict = {}
 _phone_diag_at = 0.0
 
+# The app uptime reported by the push *before* the current one. Kept because
+# note_checkin() runs after record_phone_diag() has already overwritten the
+# previous report, and comparing the two is what decides whether a silence was
+# a death or a network outage.
+_prev_app_uptime: object = None
+
 # Logged the moment they change, rather than only at a death.
 _DIAG_FLAGS = ("engine_running", "running", "low_power", "app_state", "route", "thermal")
 
@@ -288,17 +300,28 @@ def record_phone_diag(value: object) -> None:
     is what turns the log into a sequence: a route change stopping the engine, a
     resume failing, a self-heal putting it back. A death preceded by
     "config_changes +1" and no recovery says something a timestamp cannot."""
-    global _phone_diag, _phone_diag_at
+    global _phone_diag, _phone_diag_at, _prev_app_uptime
 
     if not isinstance(value, dict):
         return
 
     previous = _phone_diag
+    _prev_app_uptime = previous.get("app_uptime_s") if previous else None
     _phone_diag = value
     _phone_diag_at = time.time()
 
     if not previous:
         print(f"[keepalive] first report: {_diag_summary()}")
+        return
+
+    # A relaunch resets every counter at once, so the comparison below sees only
+    # decreases and prints nothing — the app restarting would be the one event
+    # the log stays silent about. Report it and stop: every other field here is
+    # being compared across two different processes and means nothing.
+    was_up, now_up = previous.get("app_uptime_s"), value.get("app_uptime_s")
+    if isinstance(was_up, int) and isinstance(now_up, int) and now_up < was_up:
+        print(f"[keepalive] app restarted: uptime {was_up}s -> {now_up}s, "
+              f"counters reset")
         return
 
     changes = []
@@ -346,7 +369,13 @@ def _diag_summary() -> str:
         f"thermal={d.get('thermal', '?')}",
         f"appup={d.get('app_uptime_s', '?')}s",
         f"devup={d.get('device_uptime_s', '?')}s",
+        f"pushfail={d.get('push_fails', '?')}/{d.get('push_fails_total', '?')}",
     ]
+    # Present only while the phone is failing to send, so seeing it at all is
+    # the signal. On a death line it is absent by definition — the last push to
+    # arrive is one that worked.
+    if d.get("offline_s") is not None:
+        parts.append(f"offline={d['offline_s']}s")
     if d.get("bg_secs_left") is not None:
         parts.append(f"bgleft={d['bg_secs_left']}s")
     if d.get("last_error"):
@@ -375,6 +404,47 @@ def _format_gap(seconds: float) -> str:
     return f"{total // 3600:02d}:{(total % 3600) // 60:02d}:{total % 60:02d}"
 
 
+def _gap_verdict(gap: float, relay_was_down: bool) -> str:
+    """Whether the app survived the silence that just ended, in its own words.
+
+    Silence has two causes — iOS killed the app, or the app was alive and could
+    not reach the relay — and they need different fixes. From here they look
+    identical, because a push that fails never arrives. The evidence therefore
+    has to survive the outage and be carried back by the first push that gets
+    through, which is what these two fields are for.
+
+    `app_uptime_s` resets when the process does. Uptime that advanced by roughly
+    the length of the gap means one process ran straight through it. Uptime that
+    went backwards, or forwards by far less than the gap, means a different
+    process is talking now — it died and something restarted it.
+
+    `push_fails` corroborates from the other direction: an app that spent the
+    silence failing to send knows it was alive, and says so. The two agree or
+    the verdict is worth distrusting."""
+    prev, now = _prev_app_uptime, _phone_diag.get("app_uptime_s")
+    if not isinstance(prev, int) or not isinstance(now, int):
+        return ""           # an app build predating this, or the first push
+
+    tried = ""
+    fails = _phone_diag.get("push_fails")
+    if isinstance(fails, int) and fails > 0:
+        tried = f", {fails} pushes failed"
+        offline = _phone_diag.get("offline_s")
+        if isinstance(offline, int):
+            tried += f" over {_format_gap(offline)}"
+
+    # 10% of slack absorbs integer truncation and ordinary clock drift. The
+    # backwards case is checked separately because it is unambiguous on its own.
+    if now < prev or (now - prev) < gap * 0.9:
+        return f", app restarted {prev}s -> {now}s — it died{tried}"
+    # When the relay was the thing that was down, that already explains the
+    # silence; repeating "the path failed" would be editorialising over a cause
+    # the same line has just stated.
+    if relay_was_down:
+        return f", app stayed up {prev}s -> {now}s{tried}"
+    return f", app stayed up {prev}s -> {now}s — the path failed, not the app{tried}"
+
+
 def note_checkin(previous: float) -> None:
     """Called on every push from the phone. If there was a meaningful silence
     beforehand, record it — and say whether the relay itself was down for it,
@@ -388,11 +458,14 @@ def note_checkin(previous: float) -> None:
         return
 
     relay_uptime = now - RELAY_STARTED_AT
-    if relay_uptime < gap:
+    relay_was_down = relay_uptime < gap
+    verdict = _gap_verdict(gap, relay_was_down)
+    if relay_was_down:
         _log_line(f"gap {_format_gap(gap)}  relay was down for "
-                  f"{_format_gap(gap - relay_uptime)} of it")
+                  f"{_format_gap(gap - relay_uptime)} of it{verdict}")
     else:
-        _log_line(f"gap {_format_gap(gap)}  phone silent, relay up throughout")
+        _log_line(f"gap {_format_gap(gap)}  phone silent, "
+                  f"relay up throughout{verdict}")
 
 
 def note_silence(last_seen: float) -> None:

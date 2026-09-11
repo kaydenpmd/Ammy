@@ -20,7 +20,7 @@ so there is never a cosmetic reason to.
 Apple Music on iPhone → Discord Rich Presence on a Windows desktop.
 
 ```
-iPhone ──https──▶ ammy.kaydenpmd.net (Cloudflare Tunnel) ──▶ relay.py ──IPC──▶ Discord desktop
+iPhone ──https──▶ <machine>.<tailnet>.ts.net (Tailscale Funnel) ──▶ relay.py ──IPC──▶ Discord desktop
 ```
 
 Working as of September 2026. Don't redesign it — the shape is deliberate.
@@ -73,7 +73,7 @@ comment above it. Readable three ways without the filename ever changing:
 
 ```
 [init] relay <version>      relay.log, every startup
-GET /version                e.g. https://ammy.kaydenpmd.net/version
+GET /version                e.g. https://kaydenspc.<tailnet>.ts.net/version
 python relay.py --version
 ```
 
@@ -82,6 +82,14 @@ stale within the hour, twice. Ask `/version` instead.
 
 `/health` still returns exactly `ok` and nothing else — Shortcuts test for that
 string, which is why the version got its own route.
+
+The other routes, so they are not rediscovered: `POST /now-playing` is the
+phone writing, `GET /now-playing` is anything else reading — same path,
+opposite directions. `GET` returns a projection, never the raw push, and never
+performs a lookup, so a public endpoint can't be used to make this machine
+issue outbound traffic. `/diag` is the phone's last self-report, `/status`
+answers `alive`/`stale` for Shortcuts, and `/art/<hash>.jpg` is open because
+Discord's CDN fetches it and cannot send our header.
 
 **iOS app** — the Status section shows a **Version** row, e.g. `1.0 (7)`. The
 build number is the CI run, and the artifact is named to match:
@@ -250,6 +258,48 @@ How to read it:
 shows the *sequence* leading to a death rather than only the state at the end of
 it. `GET /diag` returns the latest snapshot on demand, authenticated.
 
+### Was it killed, or just unreachable?
+
+Two different bugs with two different fixes, and until relay 1.8.0 the log could
+not tell them apart. A push that fails never arrives, so from the relay's side
+"iOS evicted the app" and "the app was alive and could not reach me" are the
+same observation: silence. The evidence has to survive the outage and come back
+with the first push that gets through.
+
+Two fields carry it, from opposite directions:
+
+- `app_uptime_s` resets when the process does. The relay keeps the value from
+  the push *before* the gap and compares. Advanced by roughly the length of the
+  gap → one process ran straight through it. Went backwards, or forwards by far
+  less than the gap → a different process is talking now.
+- `pushfail=consecutive/total`, with `offline=Ns`. An app that spent the silence
+  failing to send knows it was alive, and says so on its first push back.
+
+The verdict lands on the gap line:
+
+```
+gap 00:44:22  phone silent, relay up throughout, app stayed up 6554s -> 9216s —
+the path failed, not the app, 88 pushes failed over 00:44:10
+```
+
+**Both are needed.** Uptime alone cannot separate a relaunch that happened
+immediately from one that happened at the end of the gap. Push failures alone
+cannot prove the app did not die shortly after recording them. They agree, or
+the verdict is worth distrusting.
+
+A death line always shows `pushfail=0` and no `offline`, and that is not a bug —
+the last push to arrive is by definition one that worked. `offline` is omitted
+entirely while healthy, so seeing it at all is itself the signal.
+
+This matters more since the move to Tailscale Funnel than it did before. The PC
+has to be awake and the tunnel up for a push to land, so "unreachable" is now a
+routine event rather than a theoretical one, and two of the September stops
+recorded `state=active` — an app being evicted in the *foreground* fits nothing,
+and network loss fits it exactly.
+
+A relaunch also gets its own `[keepalive]` line. It used to slip by in silence:
+a relaunch resets every counter at once, and only increases were logged.
+
 Builds that predate `diag` are unaffected and simply record nothing.
 
 ## Artwork
@@ -369,9 +419,19 @@ is why a value can look set in one shell and be empty to the running process.
 - `DISCORD_CLIENT_ID` — the Discord application ID. Its **name** is the text
   after "Listening to", so the application stays named `Apple Music`, not Ammy:
   that string should describe the source, not the bridge.
-- `RELAY_SECRET` — shared secret; must match the app's Secret field.
-- `PUBLIC_BASE` — e.g. `https://ammy.kaydenpmd.net`. **Required** for uploaded
-  artwork: Discord's CDN fetches the image itself and can't reach 127.0.0.1.
+- `RELAY_KEY` — the shared key; must match the app's **Key** field.
+  `RELAY_SECRET` is the old name and is still read, so an existing `.env`
+  keeps working. Headers follow the same rule: `X-Relay-Key` is current,
+  `X-Relay-Secret` is still accepted, so an older build of the app keeps
+  working against an updated relay.
+- `PUBLIC_BASE` — e.g. `https://kaydenspc.<tailnet>.ts.net`. **Required** for
+  uploaded artwork: Discord's CDN fetches the image itself and can't reach
+  127.0.0.1.
+- `PUBLIC_READ` — `1` serves `GET /now-playing` with no key and with CORS, so
+  a web page can read the feed directly. Off by default, and a separate switch
+  on purpose: it publishes what you are listening to at a URL anyone holding
+  the link can poll. A key cannot be the answer there, because a public page
+  would have to embed it.
 - `STATUS_LINE` — `name` / `state` / `details`, the compact member-list line.
   Defaults to `state` (artist).
 - `SHOW_ALBUM` — `1` restores the album name. Default off; see above.
@@ -453,6 +513,32 @@ Verified end to end with `https://ammy.kaydenpmd.net/version`.
 
 **Done — the laptop connector is gone.** The tunnel now lists one connector,
 `KaydensPC`. Nothing to clean up.
+
+**Done — ingress moved to Tailscale Funnel (Sept 2026).** This removes the
+single worst onboarding requirement: a stranger no longer needs a domain or a
+Cloudflare account, only a free Tailscale login.
+
+```
+tailscale funnel --bg --https=443 localhost:8787
+```
+
+`--bg` is load-bearing — without it Funnel dies with the shell and does not
+resume after a reboot. Public listeners are restricted to 443, 8443 and 10000;
+the local target port is free, so 8787 stays as it was. The tailnet needs
+MagicDNS, HTTPS certificates, and the `funnel` node attribute in the policy
+file — the default policy grants that to every member, and the CLI links you
+to whichever is missing.
+
+**The URL is only as stable as the machine name.** `https://<machine>.<tailnet>
+.ts.net`, and the machine half is auto-generated from the OS hostname unless
+told otherwise — so renaming the PC silently moves the endpoint and the address
+saved in the app stops resolving. Turn off "Auto-generate from OS hostname" in
+the admin console. The tailnet half is fixed once certificates have been issued
+for it. Cloudflare quick tunnels were rejected for exactly this failure mode,
+except worse: a fresh hostname on every restart.
+
+`cloudflared` still works and the relay is indifferent to what fronts it, so
+this is a change of default, not a removal.
 
 **Done — playhead fixed (Sept 2 2026).** Cause was the arrival-time bug above,
 not staleness in `currentPlaybackTime` as long assumed. After the fix: zero
@@ -539,33 +625,31 @@ Moved here from `AMMY-HANDOFF.md` on 9 Sept 2026, which was then deleted.
 
 **1. Shippable to others**, in the order things actually block:
 
-- **The tunnel is the wall.** A stranger needs a domain and a Cloudflare account
-  before anything else works. Tailscale is the likely answer. Cloudflare quick
-  tunnels avoid the domain but hand out a new hostname each restart, which breaks
-  the endpoint saved in the app.
-- **The relay is a dead end on first run** — it exits with "Set RELAY_SECRET",
-  which a new user cannot act on. It should generate its own secret, write its
+- **The relay is a dead end on first run** — it exits with "Set RELAY_KEY",
+  which a new user cannot act on. It should generate its own key, write its
   own `.env`, and show it (a QR the app scans would remove the typing entirely).
 - **"Relay unreachable" means two different things** — a dead relay and a wrong
-  secret produce the same message. The app already knows the difference between a
+  key produce the same message. The app already knows the difference between a
   connection failure and a 401. Small fix; would otherwise be most of the support
-  load.
+  load. Partly addressed: `http://` now has its own message, because iOS blocks
+  plain HTTP at the network layer and that failure was indistinguishable from an
+  unreachable receiver.
 - **Autostart is Windows-only.**
 - **Each user needs their own Discord application**, which is a five-step detour
   of its own. Note the application's *name* is the "Listening to" text, so it
   stays `Apple Music` — that string describes the source, not the bridge. Fine
   for one person; think hard before it is on hundreds of profiles.
-- Counted end to end, a stranger currently needs four accounts and about ten
-  steps. The single biggest lever is packaging the relay as one self-provisioning
-  executable that registers its own autostart — that collapses Python, the relay,
-  the secret and autostart into one download.
+- Counted end to end, a stranger now needs three accounts — Discord, Tailscale,
+  Apple — and about eight steps. The single biggest lever left is packaging the
+  relay as one self-provisioning executable that registers its own autostart —
+  that collapses Python, the relay, the key and autostart into one download.
 
 **2. Shortcuts relaunch automations.** Built 9 Sept, then deleted to get a clean
 stability measurement. Worth rebuilding only if the app still dies. The recipe,
 so it is not re-derived:
 
 - One shortcut holds the logic and the secret: `GET /status` with an
-  `X-Relay-Secret` header → `If` contents **contains** `stale` → `If Is Locked`
+  `X-Relay-Key` header → `If` contents **contains** `stale` → `If Is Locked`
   (do nothing; an app cannot be launched from the lock screen) → `Otherwise`
   `Open App [Ammy]` then `Open App [Current App]`.
 - `Get Current App` must run **first**, before anything else — once Ammy is

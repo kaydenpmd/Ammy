@@ -6,11 +6,16 @@ import UIKit
 /// Everything the phone knows about its own condition at the moment of a push,
 /// bundled into the `diag` object the relay records.
 ///
-/// The relay cannot tell "iOS killed the app" from "the app was alive but could
-/// not reach the relay" — both look like silence. It also cannot see *why* a
-/// kill happened. These fields exist to answer both questions after the fact,
+/// The relay sees only silence, and silence has two causes: iOS killed the app,
+/// or the app was alive and could not reach the relay. It also cannot see *why*
+/// a kill happened. These fields exist to answer both questions after the fact,
 /// because by the time anyone notices the app is gone there is nothing left
 /// running to ask.
+///
+/// The push counters below are what separate those two causes, and they only
+/// pay out when the phone comes back: a push that fails never arrives, so the
+/// evidence has to survive the outage and be carried by the first push that
+/// gets through.
 ///
 /// The two that decide it, most of the time:
 ///
@@ -40,6 +45,18 @@ struct PushDiagnostics: Sendable {
     var thermalState: String
     var appUptime: TimeInterval
     var deviceUptime: TimeInterval
+    /// Pushes that have failed back to back, and the total this launch.
+    ///
+    /// A death line always shows zero, and that is not a bug: the last push to
+    /// arrive is by definition one that worked. These earn their keep on the
+    /// *recovering* push after a silence. If it reports forty minutes of
+    /// consecutive failures, the app was alive and trying for those forty
+    /// minutes — so the silence was the path, not a kill. Nothing else the
+    /// phone can send distinguishes those two.
+    var consecutivePushFailures: Int
+    var totalPushFailures: Int
+    /// Seconds since a push last got through, or 0 when the last one did.
+    var secondsOffline: Double
 
     var dictionary: [String: Any] {
         var d = keepAlive.dictionary
@@ -52,6 +69,13 @@ struct PushDiagnostics: Sendable {
         d["thermal"] = thermalState
         d["app_uptime_s"] = Int(appUptime)
         d["device_uptime_s"] = Int(deviceUptime)
+        d["push_fails"] = consecutivePushFailures
+        d["push_fails_total"] = totalPushFailures
+        // Omitted entirely while healthy, so its presence in a log is itself
+        // the signal rather than something to be read past.
+        if secondsOffline > 0 {
+            d["offline_s"] = Int(secondsOffline)
+        }
         if backgroundTimeRemaining >= 0 {
             d["bg_secs_left"] = Int(backgroundTimeRemaining)
         }
@@ -73,6 +97,31 @@ enum DeviceDiagnostics {
     private static var lowestAvailable = Double.greatestFiniteMagnitude
     private static var warningObserver: NSObjectProtocol?
 
+    /// Push outcomes, statics for the same reason as the warning count: they
+    /// reset when the process does, which is what makes them comparable with
+    /// `appUptime` on a death line.
+    private static var consecutivePushFailures = 0
+    private static var totalPushFailures = 0
+    private static var lastPushSuccessAt: Date?
+
+    /// Record what happened to a push. Called after every attempt, so the next
+    /// snapshot describes what has actually been happening rather than what the
+    /// app hopes is true.
+    ///
+    /// Deliberately not called for the goodbye push in `stop()`. Stopping on
+    /// purpose is not a failure, and counting it as one would put a phantom
+    /// outage in front of every clean shutdown.
+    @MainActor
+    static func recordPush(ok: Bool) {
+        if ok {
+            consecutivePushFailures = 0
+            lastPushSuccessAt = Date()
+        } else {
+            consecutivePushFailures += 1
+            totalPushFailures += 1
+        }
+    }
+
     @MainActor
     private static func observeMemoryWarningsIfNeeded() {
         guard warningObserver == nil else { return }
@@ -92,6 +141,13 @@ enum DeviceDiagnostics {
         if available >= 0 {
             lowestAvailable = min(lowestAvailable, available)
         }
+
+        // Measured from the last success, or from launch if there has never
+        // been one — an app that has never reached the relay is offline for its
+        // whole life, not for zero seconds.
+        let offline: TimeInterval = consecutivePushFailures > 0
+            ? Date().timeIntervalSince(lastPushSuccessAt ?? launchedAt)
+            : 0
 
         let app = UIApplication.shared
 
@@ -130,7 +186,10 @@ enum DeviceDiagnostics {
             lowPowerMode: ProcessInfo.processInfo.isLowPowerModeEnabled,
             thermalState: thermal,
             appUptime: Date().timeIntervalSince(launchedAt),
-            deviceUptime: ProcessInfo.processInfo.systemUptime
+            deviceUptime: ProcessInfo.processInfo.systemUptime,
+            consecutivePushFailures: consecutivePushFailures,
+            totalPushFailures: totalPushFailures,
+            secondsOffline: offline
         )
     }
 
