@@ -644,8 +644,8 @@ Moved here from `AMMY-HANDOFF.md` on 9 Sept 2026, which was then deleted.
 - **The relay is a dead end on first run** — it exits with "Set RELAY_KEY",
   which a new user cannot act on. It should generate its own key, write its
   own `.env`, and show it (a QR the app scans would remove the typing entirely).
-- **"Relay unreachable" means two different things** — a dead relay and a wrong
-  key produce the same message. The app already knows the difference between a
+- **"Endpoint Unreachable" means two different things** — a dead receiver and a
+  wrong key produce the same message. The app already knows the difference between a
   connection failure and a 401. Small fix; would otherwise be most of the support
   load. Partly addressed: `http://` now has its own message, because iOS blocks
   plain HTTP at the network layer and that failure was indistinguishable from an

@@ -131,7 +131,7 @@ final class PresenceController: ObservableObject {
                 let ok = await relay.push(track: nil, playing: false, diag: diag)
                 await MainActor.run {
                     DeviceDiagnostics.recordPush(ok: ok)
-                    self.linkStatus = ok ? "Running" : "Relay Unreachable"
+                    self.linkStatus = ok ? "Running" : "Endpoint Unreachable"
                     // The watchdog measures whether the app is alive, not
                     // whether music is playing — so a successful "nothing
                     // playing" push counts just as much.
@@ -150,7 +150,7 @@ final class PresenceController: ObservableObject {
             await MainActor.run {
                 DeviceDiagnostics.recordPush(ok: ok)
                 self.lastPushed = label
-                self.linkStatus = ok ? "Running" : "Relay Unreachable"
+                self.linkStatus = ok ? "Running" : "Endpoint Unreachable"
                 if ok { self.watchdog.postpone() }
             }
         }
