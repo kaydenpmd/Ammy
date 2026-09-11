@@ -114,7 +114,7 @@ struct ContentView: View {
             // scroll out of reach. The Form is what you set up once; this is
             // what you actually do.
             .safeAreaBar(edge: .bottom) {
-                Button {
+                Button(running ? "Stop" : "Start") {
                     if running {
                         Task {
                             await controller.stop()
@@ -133,17 +133,20 @@ struct ContentView: View {
                     } else {
                         Task { await start() }
                     }
-                } label: {
-                    // The frame belongs on the *label*, not on the Button. A
-                    // bordered style sizes its fill to the label and then sits
-                    // centred inside whatever frame you give the button — which
-                    // is why the first version rendered as a small pill floating
-                    // in the middle rather than a full-width button.
-                    Text(running ? "Stop" : "Start")
-                        .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.borderedProminent)
                 .controlSize(.large)
+                // iOS 26's own way to say "fill the width". The pre-26 move was
+                // .frame(maxWidth: .infinity) on the *label* — which worked only
+                // by accident of how bordered styles measure themselves, and
+                // required a trailing-closure label whose entire job was to hold
+                // that frame. This says the same thing on purpose.
+                //
+                // The shape is left undeclared deliberately. Capsule is the iOS
+                // 26 default for a text button, and it should keep tracking the
+                // platform; pinning .buttonBorderShape(.capsule) here would
+                // freeze it against a future OS that moves on.
+                .buttonSizing(.flexible)
                 .disabled(!canAutoStart)
                 // Matches the Form's card inset, so the button lines up with
                 // the sections above it rather than sitting to its own margin.
