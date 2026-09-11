@@ -134,23 +134,37 @@ struct ContentView: View {
                         Task { await start() }
                     }
                 }
-                // Build 43 exists to answer one question: does .glassProminent
-                // already carry the interactive layer — the scale, shimmer and
-                // touch-point glow that make the material answer a finger? The
-                // write-ups contradict each other and pressing it settles it in
-                // two seconds, which is cheaper than reasoning about it.
+                // Glass rather than an opaque fill: the bar underneath is
+                // already blurring whatever scrolls past it, and a solid platter
+                // on a translucent bar reads as two unrelated surfaces stacked.
                 //
-                // If it turns out dead under a thumb, the fallback is
+                // If this ever fails to compile with "cannot be resolved without
+                // a contextual type", spell it GlassProminentButtonStyle() — the
+                // leading-dot form has a known inference quirk.
+                //
+                // OPEN: whether .glassProminent already carries the interactive
+                // layer — the scale, shimmer and touch-point glow that make the
+                // material answer a finger. The write-ups contradict each other,
+                // and pressing it settles it faster than reasoning does. If it
+                // turns out dead under a thumb, the fallback is
                 //     .buttonStyle(.plain)
                 //     .glassEffect(.regular.tint(.accentColor).interactive(), in: .capsule)
-                // which states interactivity outright. That was tried first and
-                // reverted, because it costs the height, the width, the label
-                // styling and the disabled treatment — everything the two
-                // modifiers below supply for free — to buy one certainty that a
-                // single install provides anyway. Don't reach for it until this
-                // has actually been pressed.
+                // which states interactivity outright — at the cost of
+                // hand-laying the height, the width, the label styling and the
+                // disabled treatment that the modifiers below supply for free.
+                // That was tried once and reverted. Don't reach for it again
+                // without pressing this first.
                 .buttonStyle(.glassProminent)
+                // Capsule is left undeclared on purpose: it is the iOS 26
+                // default for a text button and should keep tracking the
+                // platform. Pinning .buttonBorderShape(.capsule) would freeze it
+                // against a future OS that moves on.
                 .controlSize(.large)
+                // iOS 26's own way to say "fill the width", and independent of
+                // the style above — any style with a platter stretches, glass
+                // included. The pre-26 move was .frame(maxWidth: .infinity) on
+                // the *label*, which worked only by accident of how these styles
+                // measure themselves.
                 .buttonSizing(.flexible)
                 .disabled(!canAutoStart)
                 // Matches the Form's card inset, so the button lines up with
