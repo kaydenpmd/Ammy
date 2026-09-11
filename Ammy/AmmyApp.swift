@@ -142,18 +142,18 @@ struct ContentView: View {
                 // a contextual type", spell it GlassProminentButtonStyle() — the
                 // leading-dot form has a known inference quirk.
                 //
-                // OPEN: whether .glassProminent already carries the interactive
-                // layer — the scale, shimmer and touch-point glow that make the
-                // material answer a finger. The write-ups contradict each other,
-                // and pressing it settles it faster than reasoning does. If it
-                // turns out dead under a thumb, the fallback is
-                //     .buttonStyle(.plain)
-                //     .glassEffect(.regular.tint(.accentColor).interactive(), in: .capsule)
-                // which states interactivity outright — at the cost of
-                // hand-laying the height, the width, the label styling and the
-                // disabled treatment that the modifiers below supply for free.
-                // That was tried once and reverted. Don't reach for it again
-                // without pressing this first.
+                // .glassProminent carries the interactive layer itself —
+                // verified on build 42, on device. Pressing it scales the glass,
+                // shimmers across the surface and lights up at the touch point.
+                // Nothing extra is needed, and in particular do NOT add
+                // .glassEffect(.regular.interactive()) on top: that stacks a
+                // second material on a style that already has one.
+                //
+                // Worth recording because the public write-ups flatly contradict
+                // each other on this, and an earlier attempt here rebuilt the
+                // button by hand out of .plain plus an explicit glassEffect to
+                // get a behaviour the style already had. One install answered
+                // what an afternoon of reading could not.
                 .buttonStyle(.glassProminent)
                 // Capsule is left undeclared on purpose: it is the iOS 26
                 // default for a text button and should keep tracking the

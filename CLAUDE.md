@@ -102,6 +102,20 @@ guess whether it was current. That hack is retired — use the version.
 
 ## Gotchas already paid for — don't rediscover these
 
+**Glass button styles are already interactive.** `.buttonStyle(.glassProminent)`
+scales, shimmers and lights up at the touch point on its own — verified on
+device, build 42. Do not add `.glassEffect(.regular.interactive())` on top; that
+stacks a second material on a style that already has one. The public write-ups
+contradict each other on this, and an afternoon went into reasoning about it
+before one install settled it in two seconds. **When a question is about how
+something feels on the device, build it and touch it** — that is the cheaper
+instrument, and this project has now paid for that lesson twice.
+
+Related, and separate: elements *melting into each other* is a different effect
+that does need a `GlassEffectContainer` and more than one glass element. A lone
+button has nothing to merge with. Conflating the two is what sent this the wrong
+way — they are unrelated limitations.
+
 **Silent failure is this project's recurring bug.** Three separate times, a
 function returned `None` on a failure path without logging, and the empty log
 read as "working" rather than "broken." Every artwork path now prints on
