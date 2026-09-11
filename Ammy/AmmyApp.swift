@@ -167,9 +167,20 @@ struct ContentView: View {
                 // measure themselves.
                 .buttonSizing(.flexible)
                 .disabled(!canAutoStart)
-                // Matches the Form's card inset, so the button lines up with
-                // the sections above it rather than sitting to its own margin.
-                .padding(.horizontal)
+                // Bare .padding() on purpose: no argument means the system
+                // default on every edge, which is the same value .padding(.horizontal)
+                // was already applying sideways. Naming a number here would have
+                // left one axis adaptive and the other hardcoded on the same view.
+                //
+                // The vertical half is not optional, and the reason is easy to
+                // miss. On a Face ID phone the home indicator already reserves
+                // ~34pt of bottom safe area, so a bar with no padding of its own
+                // still appears to float correctly. On a home-button phone that
+                // inset is zero and the button sits flush against the bezel — so
+                // this bug is invisible on exactly the devices most people test
+                // on. Sideways, the same value lines the button up with the
+                // Form's cards.
+                .padding()
             }
             .alert("Add https://?", isPresented: Binding(
                 get: { schemeToConfirm != nil },
