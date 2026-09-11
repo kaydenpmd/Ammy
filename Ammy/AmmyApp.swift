@@ -134,12 +134,20 @@ struct ContentView: View {
                         Task { await start() }
                     }
                 }
-                // Glass rather than an opaque fill: the bar underneath is
-                // already blurring whatever scrolls past it, and a solid platter
-                // on a translucent bar reads as two unrelated surfaces stacked.
+                // Two styles, not one. Start is the prominent blue; Stop is
+                // plain glass — the quiet half of the same pair, the way
+                // .bordered relates to .borderedProminent. Once the app is
+                // running its job is done, and the button stops being a call to
+                // action and becomes a way to undo one.
+                //
+                // Glass rather than an opaque fill either way: the bar underneath
+                // is already blurring whatever scrolls past it, and a solid
+                // platter on a translucent bar reads as two unrelated surfaces
+                // stacked.
                 //
                 // If this ever fails to compile with "cannot be resolved without
-                // a contextual type", spell it GlassProminentButtonStyle() — the
+                // a contextual type", spell the style out as
+                // GlassProminentButtonStyle() / GlassButtonStyle() — the
                 // leading-dot form has a known inference quirk.
                 //
                 // .glassProminent carries the interactive layer itself —
@@ -147,14 +155,16 @@ struct ContentView: View {
                 // shimmers across the surface and lights up at the touch point.
                 // Nothing extra is needed, and in particular do NOT add
                 // .glassEffect(.regular.interactive()) on top: that stacks a
-                // second material on a style that already has one.
+                // second material on a style that already has one. Whether
+                // .glass behaves identically is UNVERIFIED — it should, but only
+                // the prominent one has actually been pressed.
                 //
                 // Worth recording because the public write-ups flatly contradict
                 // each other on this, and an earlier attempt here rebuilt the
                 // button by hand out of .plain plus an explicit glassEffect to
                 // get a behaviour the style already had. One install answered
                 // what an afternoon of reading could not.
-                .buttonStyle(.glassProminent)
+                .glassButtonStyle(prominent: !running)
                 // Capsule is left undeclared on purpose: it is the iOS 26
                 // default for a text button and should keep tracking the
                 // platform. Pinning .buttonBorderShape(.capsule) would freeze it
@@ -167,30 +177,59 @@ struct ContentView: View {
                 // measure themselves.
                 .buttonSizing(.flexible)
                 .disabled(!canAutoStart)
-                // Bare .padding() on purpose: no argument means the system
-                // default on every edge, which is the same value .padding(.horizontal)
-                // was already applying sideways. Naming a number here would have
-                // left one axis adaptive and the other hardcoded on the same view.
+                // Vertical is the system default; horizontal is measured, and
+                // deliberately NOT the same value.
                 //
-                // The vertical half is not optional, and the reason is easy to
-                // miss. On a Face ID phone the home indicator already reserves
-                // ~34pt of bottom safe area, so a bar with no padding of its own
-                // still appears to float correctly. On a home-button phone that
-                // inset is zero and the button sits flush against the bezel — so
-                // this bug is invisible on exactly the devices most people test
-                // on. Sideways, the same value lines the button up with the
-                // Form's cards.
-                .padding()
+                // A floating element in iOS 26 does not sit on the content
+                // margin — it sits further in, so it reads as hovering rather
+                // than as part of the layout.
+                //
+                // 21pt is the documented frame inset, from two independent
+                // reverse-engineerings that agree: Learn UI Design's iOS 26
+                // pattern guide ("inset from the screen edges, 21pt on left,
+                // right and bottom") and ryanashcraft/FabBar, a faithful
+                // reimplementation of the iOS 26 tab bar ("apply 21pt padding on
+                // all sides"). The oddness of the value is part of why it is
+                // credible — nobody guesses 21.
+                //
+                // Measuring screenshots gave 24–28 instead, and that was not
+                // wrong so much as measuring the wrong thing: a pixel count
+                // finds where the glass's solid fill begins, while the frame
+                // sits 3–7pt further out under the material's soft edge and
+                // shadow — further in dark mode than light, which is exactly the
+                // spread that could not be narrowed. Don't re-derive this from a
+                // screenshot; a deliberately soft edge cannot yield it.
+                //
+                // There is no system constant exposed for this — bare .padding()
+                // gives the CONTENT margin, not the floating one — which is why
+                // this axis is a number and the vertical one is not.
+                //
+                // Vertical stays adaptive: on a Face ID phone the home indicator
+                // already reserves ~34pt, but on a home-button phone that inset
+                // is zero and the button would sit on the bezel — a bug that is
+                // invisible on the devices most people test on.
+                .padding(.vertical)
+                .padding(.horizontal, 21)
             }
-            .alert("Add https://?", isPresented: Binding(
+            .alert("Use HTTPS?", isPresented: Binding(
                 get: { schemeToConfirm != nil },
                 set: { if !$0 { schemeToConfirm = nil } }
             ), presenting: schemeToConfirm) { resolved in
-                Button("Use https://") {
+                Button("Use HTTPS") {
                     controller.endpoint = resolved
                     schemeToConfirm = nil
                     Task { await start() }
                 }
+                // Not dead code on a device with no keyboard. This is what marks
+                // the preferred action, and on iOS 26 the preferred action in an
+                // alert renders as a filled button rather than plain blue text.
+                // Without it the system emphasises the .cancel button instead,
+                // which is backwards here: declining the suggestion would be the
+                // one that looks like the thing to press.
+                //
+                // ButtonRole.confirm does NOT do this — it exists in iOS 26 but
+                // does not produce the filled treatment.
+                .keyboardShortcut(.defaultAction)
                 // "Ignore", not "Cancel": in iOS, Cancel usually means discard
                 // what you did, which here reads as though it might throw away
                 // the address just typed. This only declines the suggestion.
@@ -202,8 +241,11 @@ struct ContentView: View {
                 // alerts are strictly modal. That is sheets.)
                 Button("Ignore", role: .cancel) { schemeToConfirm = nil }
             } message: { resolved in
+                // HTTPS and HTTP are capitalised as prose; the scheme inside
+                // the URL stays lowercase, because that is part of the address
+                // rather than a word in a sentence.
                 Text("Ammy will send to \(resolved). Almost every endpoint needs "
-                     + "https, and iOS blocks plain http.")
+                     + "HTTPS, and iOS blocks plain HTTP.")
             }
         }
         .task {
@@ -232,5 +274,28 @@ struct ContentView: View {
         guard !didAutoStart, !running, canAutoStart else { return }
         didAutoStart = true
         await start()
+    }
+}
+
+
+private extension View {
+    /// Chooses between the two glass button styles.
+    ///
+    /// This cannot be a ternary. `buttonStyle(_:)` takes a concrete type, and
+    /// `.glass` and `.glassProminent` are different ones, so the two branches of
+    /// a `?:` have nothing to unify to. A `@ViewBuilder` is the idiomatic way to
+    /// pick a style at runtime.
+    ///
+    /// The cost is that the branches are separate view identities, so flipping
+    /// between them re-creates the button rather than animating one into the
+    /// other. For a start/stop toggle that is fine — but it is why the change
+    /// may read as a hard cut rather than a crossfade.
+    @ViewBuilder
+    func glassButtonStyle(prominent: Bool) -> some View {
+        if prominent {
+            buttonStyle(.glassProminent)
+        } else {
+            buttonStyle(.glass)
+        }
     }
 }

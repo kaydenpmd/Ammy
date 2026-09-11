@@ -102,6 +102,36 @@ guess whether it was current. That hack is retired — use the version.
 
 ## Gotchas already paid for — don't rediscover these
 
+**The large title jitters on collapse, and the code is not wrong.** Scrolling
+down far enough to collapse the navigation title renders one frame at the wrong
+scroll offset — measured at up to 29px in the wrong direction, then a crawl of
+1px per frame for about 13 frames. Scrolling *up* to expand is clean every time;
+the defect is direction-specific. It appeared in build 39, the commit that first
+put the Start button in a bottom safe-area bar, and it shows on a 60Hz
+home-button device.
+
+Everything involved is the sanctioned path. `safeAreaBar(edge: .bottom)` is what
+iOS 26 added for bottom content without a tab bar or toolbar; `.glassProminent`
+and `.buttonSizing(.flexible)` are stock; a large title on a `Form` is the
+default. No published report matches the combination.
+
+**Decided 11 Sept 2026: leave it, and let a future iOS fix it.** Working around
+an OS defect means carrying the workaround long after the defect is gone, and
+every alternative costs something real — dropping the large title, or taking the
+button out of the safe area and losing the scroll edge blur beneath it. The
+trade accepted here is a visible cosmetic glitch on older hardware.
+
+Ruled out, so none of it is worth re-testing: the bar itself does not move (zero
+pixel difference across a collapse); the content never reverses direction
+mid-gesture across 32 gestures; the title never animates while the content is
+still. Frame drops measured ~48fps effective during scrolling, but that is partly
+the screen recording itself and is not the cause.
+
+The untried experiment, if this is ever picked up again: enlarge the bottom inset
+*without moving the button* — `.padding(.top, 72)` on the bar's content — and
+re-measure. If the jump scales with the inset, the inset height is the trigger,
+and that is the finding worth putting in a Feedback report.
+
 **Glass button styles are already interactive.** `.buttonStyle(.glassProminent)`
 scales, shimmers and lights up at the touch point on its own — verified on
 device, build 42. Do not add `.glassEffect(.regular.interactive())` on top; that
