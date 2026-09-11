@@ -92,9 +92,9 @@ struct ContentView: View {
 
                 Section("Status") {
                     LabeledContent("Link", value: controller.linkStatus)
-                    LabeledContent("Now playing", value: controller.lastPushed)
-                    LabeledContent("Media access",
-                                   value: controller.monitor.authorized ? "Granted" : "Not granted")
+                    LabeledContent("Now Playing", value: controller.lastPushed)
+                    LabeledContent("Media Access",
+                                   value: controller.monitor.authorized ? "Granted" : "Not Granted")
                     LabeledContent("Version", value: Bundle.main.displayVersion)
                 }
 
