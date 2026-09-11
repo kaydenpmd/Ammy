@@ -98,7 +98,21 @@ struct ContentView: View {
                     LabeledContent("Version", value: Bundle.main.displayVersion)
                 }
 
-                Section {
+            }
+            .navigationTitle("Ammy")
+            // Pinned rather than overlaid. safeAreaInset grows the Form's
+            // scroll content inset by exactly this height, so the last row can
+            // still be scrolled clear of the button and the scroll indicator
+            // stops in the right place. An overlay looks identical and
+            // permanently buries whatever ends up underneath it.
+            //
+            // Start/Stop lives here because it is the only control on this
+            // screen anyone touches twice, and the only one that used to
+            // scroll out of reach. The Form is what you set up once; this is
+            // what you actually do.
+            .safeAreaInset(edge: .bottom, spacing: 0) {
+                VStack(spacing: 0) {
+                    Divider()
                     Button(running ? "Stop" : "Start") {
                         if running {
                             Task {
@@ -119,10 +133,18 @@ struct ContentView: View {
                             Task { await start() }
                         }
                     }
+                    .buttonStyle(.borderedProminent)
+                    .controlSize(.large)
+                    .frame(maxWidth: .infinity)
                     .disabled(!canAutoStart)
+                    .padding(.horizontal)
+                    .padding(.vertical, 12)
                 }
+                // ignoresSafeAreaEdges defaults to .all, so the material
+                // reaches the physical bottom edge while the button itself
+                // stays above the home indicator.
+                .background(.bar)
             }
-            .navigationTitle("Ammy")
             .alert("Add https://?", isPresented: Binding(
                 get: { schemeToConfirm != nil },
                 set: { if !$0 { schemeToConfirm = nil } }
