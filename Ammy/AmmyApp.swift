@@ -120,13 +120,16 @@ struct ContentView: View {
                         }
                     }
                     .disabled(!canAutoStart)
-                }
-
-                Section {
-                    Text("Your PC must be awake with the Discord desktop app running. "
-                         + "Presence clears automatically after 90 seconds of silence.")
-                        .font(.footnote)
-                        .foregroundStyle(.secondary)
+                // A footer, not a Section holding a Text. Text placed in a
+                // section becomes a row, and a row gets the grouped card's
+                // background and insets — which makes an aside look like a
+                // setting you failed to provide a control for. A footer sits
+                // outside the card in the gutter and takes the footnote size
+                // and secondary colour on its own, so none of that is set here.
+                } footer: {
+                    Text("Your PC must be awake with the Discord desktop app "
+                         + "running. Presence clears automatically after 90 "
+                         + "seconds of silence.")
                 }
             }
             .navigationTitle("Ammy")
