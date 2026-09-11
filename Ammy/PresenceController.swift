@@ -4,7 +4,11 @@ import Combine
 @MainActor
 final class PresenceController: ObservableObject {
     @Published var endpoint = UserDefaults.standard.string(forKey: "relay_endpoint") ?? ""
-    @Published var secret = UserDefaults.standard.string(forKey: "relay_secret") ?? ""
+    /// Reads the old `relay_secret` entry if the new one is absent, so a build
+    /// that predates the rename doesn't lose a key the owner already typed in.
+    @Published var key = UserDefaults.standard.string(forKey: "relay_key")
+        ?? UserDefaults.standard.string(forKey: "relay_secret")
+        ?? ""
     @Published private(set) var linkStatus = "Idle"
     @Published private(set) var lastPushed = "—"
 
@@ -31,12 +35,30 @@ final class PresenceController: ObservableObject {
     }
 
     func start() async {
-        guard let relay = PresenceRelay(endpoint: endpoint, secret: secret) else {
-            linkStatus = "Endpoint must be a valid https:// URL"
+        // Distinguish "you typed http" from "that isn't an address at all".
+        // iOS blocks plain HTTP at the network layer anyway, so without this the
+        // failure surfaces as an unreachable endpoint — which is the same
+        // message a dead receiver produces, and exactly the ambiguity worth
+        // avoiding.
+        let trimmed = endpoint.trimmingCharacters(in: .whitespacesAndNewlines)
+        if trimmed.lowercased().hasPrefix("http://") {
+            linkStatus = "Address must be https — iOS blocks plain http"
             return
         }
+
+        guard let resolved = PresenceRelay.normalised(trimmed),
+              let relay = PresenceRelay(endpoint: trimmed, key: key)
+        else {
+            linkStatus = "That address doesn't look right"
+            return
+        }
+
+        // Store and display what will actually be used, not what was typed. If a
+        // scheme was added, the field visibly changes to match — the person is
+        // never left believing Ammy is sending somewhere it isn't.
+        endpoint = resolved.absoluteString
         UserDefaults.standard.set(endpoint, forKey: "relay_endpoint")
-        UserDefaults.standard.set(secret, forKey: "relay_secret")
+        UserDefaults.standard.set(key, forKey: "relay_key")
 
         self.relay = relay
         keepAlive.start()

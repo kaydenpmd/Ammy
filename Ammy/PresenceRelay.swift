@@ -4,7 +4,7 @@ import Foundation
 /// client — the phone no longer talks to Discord at all.
 actor PresenceRelay {
     private let endpoint: URL
-    private let secret: String
+    private let key: String
     private let session: URLSession
 
     /// Track whose cover the relay has already been given. The JPEG is ~80 KB
@@ -13,10 +13,37 @@ actor PresenceRelay {
     /// disk under a hash of the track and reuses it, so once is enough.
     private var artworkSentFor: String?
 
-    init?(endpoint: String, secret: String) {
-        guard let url = URL(string: endpoint), url.scheme == "https" else { return nil }
+    /// The address Ammy will actually send to, or nil if the text can't be one.
+    ///
+    /// The scheme is the app's business, not the person's — there is exactly one
+    /// valid answer, so requiring them to type it only creates a way to get it
+    /// wrong. But *silently* rewriting what someone typed is its own problem, so
+    /// this is exposed rather than buried in the initialiser: the UI asks before
+    /// adding anything, and stores the result, so the change is visible once and
+    /// never repeated.
+    static func normalised(_ raw: String) -> URL? {
+        let trimmed = raw.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return nil }
+
+        let candidate = trimmed.contains("://") ? trimmed : "https://" + trimmed
+        guard let url = URL(string: candidate),
+              url.scheme == "https",
+              url.host?.isEmpty == false
+        else { return nil }
+
+        return url
+    }
+
+    /// True when `raw` would have a scheme added to it.
+    static func needsScheme(_ raw: String) -> Bool {
+        let trimmed = raw.trimmingCharacters(in: .whitespacesAndNewlines)
+        return !trimmed.isEmpty && !trimmed.contains("://")
+    }
+
+    init?(endpoint: String, key: String) {
+        guard let url = Self.normalised(endpoint) else { return nil }
         self.endpoint = url
-        self.secret = secret
+        self.key = key
 
         let config = URLSessionConfiguration.default
         config.timeoutIntervalForRequest = 10
@@ -69,7 +96,11 @@ actor PresenceRelay {
         var req = URLRequest(url: endpoint)
         req.httpMethod = "POST"
         req.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        req.setValue(secret, forHTTPHeaderField: "X-Relay-Secret")
+        // Absent rather than empty when unset: "no key configured" is a clearer
+        // signal to a receiver than a header with nothing after it.
+        if !key.isEmpty {
+            req.setValue(key, forHTTPHeaderField: "X-Relay-Key")
+        }
         req.httpBody = try? JSONSerialization.data(withJSONObject: body)
 
         guard let (_, response) = try? await session.data(for: req),

@@ -8,7 +8,7 @@ sanctioned Rich Presence channel, so no user token is involved anywhere.
 
     pip install pypresence
     set DISCORD_CLIENT_ID=your_application_id
-    set RELAY_SECRET=some_long_random_string
+    set RELAY_KEY=some_long_random_string
     python relay.py
 
 Then expose it:  cloudflared tunnel --url http://localhost:8787
@@ -86,7 +86,11 @@ def _load_env_file() -> None:
 _load_env_file()
 
 CLIENT_ID = os.environ.get("DISCORD_CLIENT_ID", "").strip()
-SECRET = os.environ.get("RELAY_SECRET", "").strip()
+# RELAY_SECRET is the old name, still read so an existing .env keeps working.
+# The app and the relay can be updated in either order without a window where
+# they disagree — which matters because the relay updates with a restart and the
+# app updates with a CI build and a sideload.
+KEY = (os.environ.get("RELAY_KEY") or os.environ.get("RELAY_SECRET") or "").strip()
 PORT = int(os.environ.get("RELAY_PORT", "8787"))
 
 # Bump on any behaviour change. The filename deliberately never changes — it's
@@ -140,7 +144,10 @@ PORT = int(os.environ.get("RELAY_PORT", "8787"))
 #          mark since launch) and its memory-warning count. Footprint alone
 #          cannot say whether a death was jetsam — a 19MB app dies just as
 #          readily as a large one when the pressure is elsewhere.
-RELAY_VERSION = "1.6.1"
+#   1.7.0  "secret" is now "key" throughout. RELAY_KEY and the X-Relay-Key header
+#          are the current names; RELAY_SECRET and X-Relay-Secret still work, so
+#          nothing breaks whichever end is updated first.
+RELAY_VERSION = "1.7.0"
 
 # Which field shows on the one-line member-list view: name / state / details.
 STATUS_LINE = os.environ.get("STATUS_LINE", "state").strip().lower()
@@ -1070,6 +1077,20 @@ class QuietHTTPServer(ThreadingHTTPServer):
 class Handler(BaseHTTPRequestHandler):
     protocol_version = "HTTP/1.1"
 
+    def _authorised(self) -> bool:
+        """Whether the request carries the right key.
+
+        `X-Relay-Key` is the current header; `X-Relay-Secret` is accepted too, so
+        a phone still running an older build keeps working after the relay is
+        updated. Absent and empty are both refused — a receiver with no key
+        configured should not be reachable, not reachable by anyone."""
+        if not KEY:
+            return False
+        supplied = (self.headers.get("X-Relay-Key")
+                    or self.headers.get("X-Relay-Secret")
+                    or "")
+        return supplied == KEY
+
     def _reply_json(self, code: int, payload: dict, cors: bool = False) -> None:
         data = json.dumps(payload).encode()
         self.send_response(code)
@@ -1096,7 +1117,7 @@ class Handler(BaseHTTPRequestHandler):
             return self._reply(404, "not found")
 
         # Constant-time-ish check; the tunnel already gives you TLS.
-        if not SECRET or self.headers.get("X-Relay-Secret", "") != SECRET:
+        if not self._authorised():
             return self._reply(401, "unauthorized")
 
         try:
@@ -1127,7 +1148,7 @@ class Handler(BaseHTTPRequestHandler):
         # without waiting for something to die. Authenticated, because it
         # describes the device rather than the relay.
         if path == "/diag":
-            if not SECRET or self.headers.get("X-Relay-Secret", "") != SECRET:
+            if not self._authorised():
                 return self._reply(401, "unauthorized")
             if not _phone_diag:
                 return self._reply(200, "no diagnostics yet")
@@ -1159,12 +1180,12 @@ class Handler(BaseHTTPRequestHandler):
         # isn't Discord consume the feed: a web page, an overlay, a bot.
         if path == "/now-playing":
             if not PUBLIC_READ:
-                if not SECRET or self.headers.get("X-Relay-Secret", "") != SECRET:
+                if not self._authorised():
                     return self._reply(401, "unauthorized")
             return self._reply_json(200, public_state(), cors=PUBLIC_READ)
 
         if path == "/status":
-            if not SECRET or self.headers.get("X-Relay-Secret", "") != SECRET:
+            if not self._authorised():
                 return self._reply(401, "unauthorized")
             _, updated_at = state.get()
             fresh = updated_at > 0 and (time.time() - updated_at) < IDLE_TIMEOUT
@@ -1203,8 +1224,8 @@ def main() -> None:
 
     if not CLIENT_ID:
         raise SystemExit("Set DISCORD_CLIENT_ID (from discord.com/developers).")
-    if not SECRET:
-        raise SystemExit("Set RELAY_SECRET to a long random string.")
+    if not KEY:
+        raise SystemExit("Set RELAY_KEY to a long random string.")
 
     print(f"[init] relay {RELAY_VERSION}")
 

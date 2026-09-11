@@ -45,22 +45,49 @@ struct ContentView: View {
     @State private var bounce: BounceTarget = .stay
     @State private var didAutoStart = false
 
+    /// Set to the address Ammy *would* use when the typed one has no scheme.
+    /// Non-nil puts the confirmation in front of the person rather than editing
+    /// their text behind their back.
+    @State private var schemeToConfirm: String?
+
+    /// A key is optional — Ammy will happily post to something that doesn't ask
+    /// for one — so only the address is required before starting.
     private var canAutoStart: Bool {
-        !controller.endpoint.isEmpty && !controller.secret.isEmpty
+        !controller.endpoint.isEmpty
     }
 
     var body: some View {
         NavigationStack {
             Form {
-                Section("Relay") {
-                    TextField("https://ammy.kaydenpmd.net/now-playing",
-                              text: $controller.endpoint)
-                        .textInputAutocapitalization(.never)
-                        .autocorrectionDisabled()
-                        .keyboardType(.URL)
-                    SecureField("Shared secret", text: $controller.secret)
-                        .textInputAutocapitalization(.never)
-                        .autocorrectionDisabled()
+                // "Endpoint", not "Relay": a relay forwards what it receives,
+                // and nothing here requires that. Ammy posts JSON to an address;
+                // whether that address passes it on, renders it, or files it
+                // away is none of the app's business. The same reasoning keeps
+                // the relay's /now-playing path out of the placeholder — that is
+                // one receiver's convention, not a rule of the app.
+                //
+                // Labels persist where placeholders vanish, so the row names
+                // live on the left and the value column carries only whether the
+                // field must be filled in.
+                Section {
+                    LabeledContent("URL") {
+                        TextField("Required", text: $controller.endpoint)
+                            .multilineTextAlignment(.trailing)
+                            .textInputAutocapitalization(.never)
+                            .autocorrectionDisabled()
+                            .keyboardType(.URL)
+                    }
+                    LabeledContent("Key") {
+                        SecureField("Optional", text: $controller.key)
+                            .multilineTextAlignment(.trailing)
+                            .textInputAutocapitalization(.never)
+                            .autocorrectionDisabled()
+                    }
+                } header: {
+                    Text("Endpoint")
+                } footer: {
+                    Text("Ammy sends your now-playing details to this address. "
+                         + "If you set a key, it's sent as a header.")
                 }
 
                 Section("Status") {
@@ -73,14 +100,23 @@ struct ContentView: View {
 
                 Section {
                     Button(running ? "Stop" : "Start") {
-                        Task {
-                            if running {
+                        if running {
+                            Task {
                                 await controller.stop()
                                 didAutoStart = true   // don't immediately restart
-                            } else {
-                                await controller.start()
+                                running = false
                             }
-                            running.toggle()
+                            return
+                        }
+
+                        // Only ever asked once per address: start() writes the
+                        // resolved URL back, so the stored value has a scheme
+                        // from then on and this never fires again for it.
+                        if PresenceRelay.needsScheme(controller.endpoint),
+                           let resolved = PresenceRelay.normalised(controller.endpoint) {
+                            schemeToConfirm = resolved.absoluteString
+                        } else {
+                            Task { await start() }
                         }
                     }
                     .disabled(!canAutoStart)
@@ -105,6 +141,29 @@ struct ContentView: View {
                 }
             }
             .navigationTitle("Ammy")
+            .alert("Add https://?", isPresented: Binding(
+                get: { schemeToConfirm != nil },
+                set: { if !$0 { schemeToConfirm = nil } }
+            ), presenting: schemeToConfirm) { resolved in
+                Button("Use https://") {
+                    controller.endpoint = resolved
+                    schemeToConfirm = nil
+                    Task { await start() }
+                }
+                // "Ignore", not "Cancel": in iOS, Cancel usually means discard
+                // what you did, which here reads as though it might throw away
+                // the address just typed. This only declines the suggestion.
+                //
+                // The .cancel *role* stays regardless of the label — it sets the
+                // button's placement and weight, answers the Escape key on a
+                // hardware keyboard, and marks this as the dismissive action for
+                // accessibility. (It does not add a swipe or tap-outside gesture:
+                // alerts are strictly modal. That is sheets.)
+                Button("Ignore", role: .cancel) { schemeToConfirm = nil }
+            } message: { resolved in
+                Text("Ammy will send to \(resolved). Almost every endpoint needs "
+                     + "https, and iOS blocks plain http.")
+            }
         }
         .task {
             await autoStartIfPossible()
@@ -124,12 +183,20 @@ struct ContentView: View {
     }
 
     @MainActor
-    private func autoStartIfPossible() async {
-        guard !didAutoStart, !running, canAutoStart else { return }
-        didAutoStart = true
+    private func start() async {
         await controller.start()
         running = true
         await performBounce(justStarted: true)
+    }
+
+    @MainActor
+    private func autoStartIfPossible() async {
+        // Deliberately does not prompt. An automation launching Ammy must not
+        // meet a modal it cannot answer, and by the time autostart matters the
+        // stored address has already been resolved by an interactive start.
+        guard !didAutoStart, !running, canAutoStart else { return }
+        didAutoStart = true
+        await start()
     }
 
     @MainActor
