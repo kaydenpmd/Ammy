@@ -32,6 +32,15 @@ struct ContentView: View {
     /// their text behind their back.
     @State private var schemeToConfirm: String?
 
+    /// Ties the glass surfaces together so they morph into one another rather
+    /// than fading. See the bar below for what the two IDs mean.
+    @Namespace private var glass
+
+    /// The fields have drifted from what is actually being sent. Only meaningful
+    /// while running — the controller tracks the drift, the view knows whether
+    /// there is a session for it to matter to.
+    private var isEdited: Bool { running && controller.configChanged }
+
     /// A key is optional — Ammy will happily post to something that doesn't ask
     /// for one — so only the address is required before starting.
     private var canAutoStart: Bool {
@@ -65,6 +74,9 @@ struct ContentView: View {
                 // The visible label is hidden from VoiceOver and applied to the
                 // field instead, so it is announced once as a labelled control
                 // rather than twice as loose text.
+                // GUESS: spacing 4 between a field's label and its value. No
+                // source; it was picked to look right when these rows were
+                // stacked and has never been checked against anything.
                 Section {
                     VStack(alignment: .leading, spacing: 4) {
                         Text("URL")
@@ -114,117 +126,95 @@ struct ContentView: View {
             // scroll out of reach. The Form is what you set up once; this is
             // what you actually do.
             .safeAreaBar(edge: .bottom) {
-                Button {
-                    if running {
-                        Task {
-                            await controller.stop()
-                            didAutoStart = true   // don't immediately restart
-                            running = false
+                // Three states, two slots.
+                //
+                //   idle              [ Start ]                 prominent
+                //   running           [ Stop ]                  glass
+                //   running + edited  [ Stop ][ Restart ]       glass + prominent
+                //
+                // IDs are assigned by ROLE, not by button, and that is the whole
+                // trick. glassEffectID is a separate identity from SwiftUI's
+                // own, so the material follows the slot even when the view
+                // inside it is torn down and rebuilt — which is exactly the
+                // limitation that made a plain style swap read as a hard cut.
+                //
+                // "primary" is Start and Restart: pressing Stop while split
+                // therefore grows Restart out to full width and relabels it,
+                // rather than replacing it. "secondary" is Stop alone, so it
+                // melts into the primary as that expands past it.
+                //
+                // The one transition this cannot also smooth is Start -> Stop,
+                // since those are different roles occupying the same space. They
+                // cross-fade in place, which is acceptable because the label is
+                // changing anyway. Trying to give Start the same ID as Stop
+                // would fix that one and break the split, which matters more.
+                // GUESS: 8 — the container's spacing is the *blend threshold*,
+                // how close two glass surfaces must be before they merge into
+                // one another. That governs behaviour mid-transition, so it
+                // cannot be measured from a screenshot. Matched to the layout
+                // gap below because the published examples set the two equal;
+                // that is convention, not evidence. Tune by watching the split.
+                GlassEffectContainer(spacing: 8) {
+                    // Measured: Apple leaves 8pt between the Music/News tab bar
+                    // and its detached search button — glass ends at x=566, next
+                    // glass begins at x=584 in a 2x screenshot.
+                    HStack(spacing: 8) {
+                        if running {
+                            Button {
+                                stopSession()
+                            } label: {
+                                Text("Stop")
+                                    .fontWeight(.medium)
+                            }
+                            .buttonStyle(.glass)
+                            .glassEffectID("secondary", in: glass)
+                            .controlSize(.large)
+                            .buttonSizing(.flexible)
                         }
-                        return
-                    }
 
-                    // Only ever asked once per address: start() writes the
-                    // resolved URL back, so the stored value has a scheme
-                    // from then on and this never fires again for it.
-                    if PresenceRelay.needsScheme(controller.endpoint),
-                       let resolved = PresenceRelay.normalised(controller.endpoint) {
-                        schemeToConfirm = resolved.absoluteString
-                    } else {
-                        Task { await start() }
+                        if !running || isEdited {
+                            Button {
+                                if running {
+                                    // Restart: drop the old session first so the
+                                    // new endpoint is what actually gets used.
+                                    Task {
+                                        await controller.stop()
+                                        running = false
+                                        beginOrConfirm()
+                                    }
+                                } else {
+                                    beginOrConfirm()
+                                }
+                            } label: {
+                                Text(running ? "Restart" : "Start")
+                                    .fontWeight(.medium)
+                                    // The glass morphs; the word does not. Label
+                                    // changes never interpolate, so this fades
+                                    // the text while the pill flows underneath.
+                                    .contentTransition(.opacity)
+                            }
+                            .buttonStyle(.glassProminent)
+                            .glassEffectID("primary", in: glass)
+                            .controlSize(.large)
+                            .buttonSizing(.flexible)
+                            .disabled(!canAutoStart)
+                        }
                     }
-                } label: {
-                    // The style does not supply enough weight on its own.
-                    // Measured at identical 26px cap height, in clean
-                    // screenshots: this label's stroke-to-cap ratio was 0.154
-                    // against 0.19 for Apple's own filled buttons in Health —
-                    // regular against semibold. A photo of Setup Assistant's
-                    // Continue button agrees but cannot prove it; at that
-                    // resolution the stroke quantises to 2px or 3px and nothing
-                    // between.
-                    //
-                    // Overriding a style's default is usually the wrong move
-                    // (see the shape note below), but weight is not a platform
-                    // default that should drift — a primary action reads as one
-                    // or it doesn't, and glass is *lower* contrast than an
-                    // opaque fill, so it wants more weight here, not less.
-                    Text(running ? "Stop" : "Start")
-                        .fontWeight(.semibold)
                 }
-                // Two styles, not one. Start is the prominent blue; Stop is
-                // plain glass — the quiet half of the same pair, the way
-                // .bordered relates to .borderedProminent. Once the app is
-                // running its job is done, and the button stops being a call to
-                // action and becomes a way to undo one.
-                //
-                // Glass rather than an opaque fill either way: the bar underneath
-                // is already blurring whatever scrolls past it, and a solid
-                // platter on a translucent bar reads as two unrelated surfaces
-                // stacked.
-                //
-                // If this ever fails to compile with "cannot be resolved without
-                // a contextual type", spell the style out as
-                // GlassProminentButtonStyle() / GlassButtonStyle() — the
-                // leading-dot form has a known inference quirk.
-                //
-                // .glassProminent carries the interactive layer itself —
-                // verified on build 42, on device. Pressing it scales the glass,
-                // shimmers across the surface and lights up at the touch point.
-                // Nothing extra is needed, and in particular do NOT add
-                // .glassEffect(.regular.interactive()) on top: that stacks a
-                // second material on a style that already has one. Whether
-                // .glass behaves identically is UNVERIFIED — it should, but only
-                // the prominent one has actually been pressed.
-                //
-                // Worth recording because the public write-ups flatly contradict
-                // each other on this, and an earlier attempt here rebuilt the
-                // button by hand out of .plain plus an explicit glassEffect to
-                // get a behaviour the style already had. One install answered
-                // what an afternoon of reading could not.
-                .glassButtonStyle(prominent: !running)
-                // Capsule is left undeclared on purpose: it is the iOS 26
-                // default for a text button and should keep tracking the
-                // platform. Pinning .buttonBorderShape(.capsule) would freeze it
-                // against a future OS that moves on.
-                .controlSize(.large)
-                // iOS 26's own way to say "fill the width", and independent of
-                // the style above — any style with a platter stretches, glass
-                // included. The pre-26 move was .frame(maxWidth: .infinity) on
-                // the *label*, which worked only by accident of how these styles
-                // measure themselves.
-                .buttonSizing(.flexible)
-                .disabled(!canAutoStart)
-                // Vertical is the system default; horizontal is measured, and
-                // deliberately NOT the same value.
-                //
-                // A floating element in iOS 26 does not sit on the content
-                // margin — it sits further in, so it reads as hovering rather
-                // than as part of the layout.
-                //
-                // 21pt is the documented frame inset, from two independent
-                // reverse-engineerings that agree: Learn UI Design's iOS 26
-                // pattern guide ("inset from the screen edges, 21pt on left,
-                // right and bottom") and ryanashcraft/FabBar, a faithful
-                // reimplementation of the iOS 26 tab bar ("apply 21pt padding on
-                // all sides"). The oddness of the value is part of why it is
-                // credible — nobody guesses 21.
-                //
-                // Measuring screenshots gave 24–28 instead, and that was not
-                // wrong so much as measuring the wrong thing: a pixel count
-                // finds where the glass's solid fill begins, while the frame
-                // sits 3–7pt further out under the material's soft edge and
-                // shadow — further in dark mode than light, which is exactly the
-                // spread that could not be narrowed. Don't re-derive this from a
-                // screenshot; a deliberately soft edge cannot yield it.
-                //
-                // There is no system constant exposed for this — bare .padding()
-                // gives the CONTENT margin, not the floating one — which is why
-                // this axis is a number and the vertical one is not.
-                //
-                // Vertical stays adaptive: on a Face ID phone the home indicator
-                // already reserves ~34pt, but on a home-button phone that inset
-                // is zero and the button would sit on the bezel — a bug that is
-                // invisible on the devices most people test on.
+                // .animation(value:) rather than withAnimation, because one of
+                // the triggers is a TextField binding writing straight to the
+                // controller — there is no call site here to wrap.
+                // 0.4s measured off Music's tab bar collapsing into its search
+                // field — 24 frames at 60fps. That transition is far larger than
+                // this one (five elements to two, with the widths changing
+                // completely), so treat it as an upper bound rather than a
+                // target; if this reads slow, shorten it.
+                // Duration measured; bounce is not.
+                // GUESS: bounce 0.15 — the reference settles too smoothly to read
+                // overshoot off three-frame samples, so this is picked to be
+                // slightly springy without wobbling. Raise it for more rubber.
+                .animation(.spring(duration: 0.4, bounce: 0.15), value: running)
+                .animation(.spring(duration: 0.4, bounce: 0.15), value: isEdited)
                 .padding(.vertical)
                 .padding(.horizontal, 21)
             }
@@ -276,6 +266,27 @@ struct ContentView: View {
         running = true
     }
 
+    /// The scheme check, then start. Shared by Start and Restart so a bare host
+    /// typed during a restart gets the same confirmation it would on first run.
+    @MainActor
+    private func beginOrConfirm() {
+        if PresenceRelay.needsScheme(controller.endpoint),
+           let resolved = PresenceRelay.normalised(controller.endpoint) {
+            schemeToConfirm = resolved.absoluteString
+        } else {
+            Task { await start() }
+        }
+    }
+
+    @MainActor
+    private func stopSession() {
+        Task {
+            await controller.stop()
+            didAutoStart = true   // don't immediately restart
+            running = false
+        }
+    }
+
     /// Ammy begins reporting as soon as it is launched, by any means — the
     /// icon, the app switcher, or a Shortcuts `Open App` action. That is the
     /// entire relaunch mechanism, and it is deliberately the whole of it: there
@@ -291,28 +302,5 @@ struct ContentView: View {
         guard !didAutoStart, !running, canAutoStart else { return }
         didAutoStart = true
         await start()
-    }
-}
-
-
-private extension View {
-    /// Chooses between the two glass button styles.
-    ///
-    /// This cannot be a ternary. `buttonStyle(_:)` takes a concrete type, and
-    /// `.glass` and `.glassProminent` are different ones, so the two branches of
-    /// a `?:` have nothing to unify to. A `@ViewBuilder` is the idiomatic way to
-    /// pick a style at runtime.
-    ///
-    /// The cost is that the branches are separate view identities, so flipping
-    /// between them re-creates the button rather than animating one into the
-    /// other. For a start/stop toggle that is fine — but it is why the change
-    /// may read as a hard cut rather than a crossfade.
-    @ViewBuilder
-    func glassButtonStyle(prominent: Bool) -> some View {
-        if prominent {
-            buttonStyle(.glassProminent)
-        } else {
-            buttonStyle(.glass)
-        }
     }
 }

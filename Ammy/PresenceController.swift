@@ -12,6 +12,26 @@ final class PresenceController: ObservableObject {
     @Published private(set) var linkStatus = "Idle"
     @Published private(set) var lastPushed = "—"
 
+    /// What the *running* session is actually sending to, as opposed to what is
+    /// currently typed into the fields. Empty while stopped.
+    ///
+    /// The difference between these and `endpoint`/`key` is the whole definition
+    /// of "you edited this while it was running". Comparing against the live
+    /// config rather than setting a flag on edit matters: type a character and
+    /// delete it again and there is nothing left over, because the strings match
+    /// once more.
+    @Published private(set) var activeEndpoint = ""
+    @Published private(set) var activeKey = ""
+
+    /// Whether the fields have drifted from what is being sent.
+    ///
+    /// Deliberately says nothing about whether anything is running — the view
+    /// owns that, and combining the two here would mean two sources of truth for
+    /// the same fact.
+    var configChanged: Bool {
+        endpoint != activeEndpoint || key != activeKey
+    }
+
     let monitor = NowPlayingMonitor()
 
     private let keepAlive = KeepAlive()
@@ -60,6 +80,12 @@ final class PresenceController: ObservableObject {
         UserDefaults.standard.set(endpoint, forKey: "relay_endpoint")
         UserDefaults.standard.set(key, forKey: "relay_key")
 
+        // Snapshot what this session is actually using. Taken after the scheme
+        // has been resolved, so an endpoint typed without https compares equal
+        // to itself afterwards rather than reading as an edit.
+        activeEndpoint = endpoint
+        activeKey = key
+
         self.relay = relay
         keepAlive.start()
 
@@ -96,6 +122,8 @@ final class PresenceController: ObservableObject {
         watchdog.cancel()   // stopping on purpose isn't a failure
         linkStatus = "Idle"
         lastPushed = "—"
+        activeEndpoint = ""
+        activeKey = ""
     }
 
     /// Push immediately, then again shortly after. currentPlaybackTime is
