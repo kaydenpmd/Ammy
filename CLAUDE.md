@@ -514,6 +514,22 @@ Verified end to end with `https://ammy.kaydenpmd.net/version`.
 **Done — the laptop connector is gone.** The tunnel now lists one connector,
 `KaydensPC`. Nothing to clean up.
 
+**Done — the `ammy://` URL scheme is gone (11 Sept 2026).** `ammy://music` and
+`ammy://background` are removed, along with `BounceTarget`, `onOpenURL`,
+`performBounce`, the private `suspend` selector, `CFBundleURLTypes`,
+`LSApplicationQueriesSchemes`, and the settings section that advertised them.
+
+The scheme existed to tell Ammy what to do *after* launching. Nothing needed
+telling: the app already starts reporting on launch, and the relaunch recipe had
+already settled on `Open App [Ammy]` because the deep link made Ammy navigate
+away itself and race the return. Its only remaining effect was to offer a worse
+path beside the good one, in a section that read like instructions.
+
+Two things went with it that were load-bearing elsewhere. `suspend` is no longer
+called, so the App Review argument rests on the keepalive alone — still
+decisive, see Distribution below. And `LSApplicationQueriesSchemes: music` is
+gone; it was only ever there so the app could reopen Apple Music itself.
+
 **Done — ingress moved to Tailscale Funnel (Sept 2026).** This removes the
 single worst onboarding requirement: a stranger no longer needs a domain or a
 Cloudflare account, only a free Tailscale login.
@@ -654,9 +670,9 @@ so it is not re-derived:
   `Open App [Ammy]` then `Open App [Current App]`.
 - `Get Current App` must run **first**, before anything else — once Ammy is
   foregrounded, "current app" is Ammy.
-- Use `Open App`, not `Open URLs ammy://...`. The URL scheme makes Ammy navigate
-  to the Home Screen itself, which races the return. Launching the app directly
-  needs no delay at all.
+- Use `Open App`. There is no alternative any more — the `ammy://` scheme was
+  removed on 11 Sept 2026, partly because it made Ammy navigate away itself and
+  race the return. Launching the app directly needs no delay at all.
 - Triggers are per-device and **cannot be shared** — Apple: "Personal automation
   is specific to a device." Only the shortcut can be handed over, as an iCloud
   link. A tutorial has to list the triggers for people to recreate.
@@ -681,11 +697,13 @@ a deliberate choice, not a fallback.
 
 What was considered and why it lost:
 
-- **App Store: structurally impossible.** The silent-audio keepalive and the
-  private `suspend` selector are both straight rejections, and no legitimate
-  background mode delivers 30-second updates — `audio` demands real audio,
-  `fetch` and `processing` are opportunistic and measured in hours. There is no
-  version of this app, as designed, that passes review.
+- **App Store: structurally impossible.** The silent-audio keepalive is a
+  straight rejection on its own, and no legitimate background mode delivers
+  30-second updates — `audio` demands real audio, `fetch` and `processing` are
+  opportunistic and measured in hours. There is no version of this app, as
+  designed, that passes review. The private `suspend` selector was a second
+  rejection until it was removed with the URL scheme; the conclusion never
+  needed two legs.
 - **AltStore PAL: wrong audience, and Apple stays in the loop.** A developer can
   distribute from anywhere, but users must be in the EU, Japan or Brazil, which
   excludes the owner and most people near them. It also requires notarization of

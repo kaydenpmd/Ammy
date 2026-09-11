@@ -1,5 +1,4 @@
 import SwiftUI
-import UIKit
 
 extension Bundle {
     /// e.g. "1.0 (47)". The build number is the CI run that produced the IPA,
@@ -9,22 +8,6 @@ extension Bundle {
         let short = infoDictionary?["CFBundleShortVersionString"] as? String ?? "?"
         let build = infoDictionary?["CFBundleVersion"] as? String ?? "?"
         return "\(short) (\(build))"
-    }
-}
-
-/// What the app should do once it has started, based on how it was launched.
-enum BounceTarget {
-    case stay        // opened by tapping the icon — the person wants the UI
-    case music       // reopen Apple Music
-    case home        // drop to the Home Screen
-
-    init(url: URL) {
-        // ammy://music  → host is "music"
-        switch url.host?.lowercased() {
-        case "music": self = .music
-        case "background", "home": self = .home
-        default: self = .stay
-        }
     }
 }
 
@@ -42,7 +25,6 @@ struct AmmyApp: App {
 struct ContentView: View {
     @EnvironmentObject private var controller: PresenceController
     @State private var running = false
-    @State private var bounce: BounceTarget = .stay
     @State private var didAutoStart = false
 
     /// Set to the address Ammy *would* use when the typed one has no scheme.
@@ -140,17 +122,6 @@ struct ContentView: View {
                     .disabled(!canAutoStart)
                 }
 
-                Section("Shortcuts") {
-                    Text("ammy://music")
-                        .font(.system(.footnote, design: .monospaced))
-                    Text("Starts, then reopens Apple Music.")
-                        .font(.footnote).foregroundStyle(.secondary)
-                    Text("ammy://background")
-                        .font(.system(.footnote, design: .monospaced))
-                    Text("Starts, then returns to the Home Screen.")
-                        .font(.footnote).foregroundStyle(.secondary)
-                }
-
                 Section {
                     Text("Your PC must be awake with the Discord desktop app running. "
                          + "Presence clears automatically after 90 seconds of silence.")
@@ -186,66 +157,28 @@ struct ContentView: View {
         .task {
             await autoStartIfPossible()
         }
-        .onOpenURL { url in
-            bounce = BounceTarget(url: url)
-            Task {
-                // The URL can arrive either before or after .task runs, so
-                // handle both orderings.
-                if running {
-                    await performBounce(justStarted: false)
-                } else {
-                    await autoStartIfPossible()
-                }
-            }
-        }
     }
 
     @MainActor
     private func start() async {
         await controller.start()
         running = true
-        await performBounce(justStarted: true)
     }
 
+    /// Ammy begins reporting as soon as it is launched, by any means — the
+    /// icon, the app switcher, or a Shortcuts `Open App` action. That is the
+    /// entire relaunch mechanism, and it is deliberately the whole of it: there
+    /// is nothing to tell the app on the way in, so there is no deep link to
+    /// get wrong, no scheme to register, and no second code path that only runs
+    /// when an automation fires.
+    ///
+    /// Deliberately does not prompt. Something launching Ammy unattended must
+    /// not meet a modal it cannot answer, and by the time autostart matters the
+    /// stored address has already been resolved by an interactive start.
     @MainActor
     private func autoStartIfPossible() async {
-        // Deliberately does not prompt. An automation launching Ammy must not
-        // meet a modal it cannot answer, and by the time autostart matters the
-        // stored address has already been resolved by an interactive start.
         guard !didAutoStart, !running, canAutoStart else { return }
         didAutoStart = true
         await start()
     }
-
-    @MainActor
-    private func performBounce(justStarted: Bool) async {
-        guard case let target = bounce, target != .stay else { return }
-
-        // Only wait when we've just started: the audio session needs a moment
-        // to establish, and leaving too early can get the app suspended before
-        // KeepAlive holds it. If it was already running there's nothing to wait
-        // for, so bounce immediately and keep the interruption as short as
-        // possible — this is the common case for a scheduled automation.
-        if justStarted {
-            try? await Task.sleep(nanoseconds: 1_500_000_000)
-        }
-
-        switch target {
-        case .music:
-            if let url = URL(string: "music://") {
-                await UIApplication.shared.open(url)
-            }
-        case .home:
-            // Private API — equivalent to pressing Home. Fine for a sideloaded
-            // build, may stop working on a future iOS. Failure is harmless:
-            // the app simply stays in the foreground.
-            UIApplication.shared.perform(Selector(("suspend")))
-        case .stay:
-            break
-        }
-
-        bounce = .stay
-    }
 }
-
-extension BounceTarget: Equatable {}

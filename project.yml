@@ -30,15 +30,6 @@ targets:
         # Required for the silent-audio keepalive in KeepAlive.swift.
         UIBackgroundModes:
           - audio
-        # Lets Shortcuts launch the app and say what it should do afterwards:
-        #   ammy://music       → start, then reopen Apple Music
-        #   ammy://background  → start, then drop to the Home Screen
-        CFBundleURLTypes:
-          - CFBundleURLName: net.kaydenpmd.ammy
-            CFBundleURLSchemes:
-              - ammy
-        LSApplicationQueriesSchemes:
-          - music
 
     settings:
       base:

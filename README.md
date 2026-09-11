@@ -199,16 +199,16 @@ The **Version** row on that screen shows something like `1.0 (24)` — the build
 number matches the artifact name, so you can always tell which build is on the
 phone.
 
-### Shortcuts
+### Restarting it automatically
 
-```
-ammy://music        start, then reopen Apple Music
-ammy://background   start, then drop to the Home Screen
-```
+Ammy starts reporting the moment it is launched, however it is launched. So a
+Shortcuts automation needs only **Open App → Ammy** — no deep link, no URL
+scheme, nothing to configure in the app. Wire that to **Music is opened** and
+the gap left by a reboot or a force quit mostly closes itself.
 
-Worth wiring `ammy://music` to a Shortcuts automation on **Music is opened**.
-Nothing restarts Ammy after a reboot or a force quit, and that automation closes
-the gap.
+If you want the automation to hand you back to whatever you were doing, put
+**Get Current App** first, before anything else in the shortcut. Once Ammy is in
+the foreground, "current app" is Ammy.
 
 ## Reading the feed yourself
 
@@ -250,9 +250,11 @@ to embed it.
 - **Apple Music only.** `MPMusicPlayerController.systemMusicPlayer` sees the
   built-in Music app and nothing else. System-wide now-playing lives behind the
   private MediaRemote framework, which is entitlement-gated.
-- **Sideloading is permanent.** The silent-audio keepalive and the private
-  `suspend` selector are both App Review violations. This can never ship on the
-  App Store, and that's a deliberate trade, not an oversight.
+- **Sideloading is permanent.** The silent-audio keepalive is an App Review
+  violation on its own — the `audio` background mode is for apps that actually
+  play something — and no legitimate background mode delivers 30-second updates.
+  This can never ship on the App Store, and that's a deliberate trade, not an
+  oversight.
 - **Background survival is best-effort.** The silent audio holds the app alive
   only while its audio session is active, and four separate things stop it: an
   interruption, a media services reset, a configuration change when the audio
