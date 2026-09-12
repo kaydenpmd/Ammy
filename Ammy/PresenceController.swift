@@ -12,6 +12,17 @@ final class PresenceController: ObservableObject {
     @Published private(set) var linkStatus = "Idle"
     @Published private(set) var lastPushed = "—"
 
+    /// True from starting until the first push comes back — the window where
+    /// the link's real state isn't known yet.
+    ///
+    /// Worth a flag of its own rather than another `linkStatus` string.
+    /// "Running" used to be set the moment start() finished, before anything
+    /// had been sent, which made a session whose first push never returned
+    /// indistinguishable from a healthy one. linkStatus now only ever says
+    /// what has been confirmed; this says whether confirming is still in
+    /// flight.
+    @Published private(set) var resolving = false
+
     /// What the *running* session is actually sending to, as opposed to what is
     /// currently typed into the fields. Empty while stopped.
     ///
@@ -109,7 +120,8 @@ final class PresenceController: ObservableObject {
             }
         }
 
-        linkStatus = "Running"
+        linkStatus = "Connecting"
+        resolving = true
         handleChange()
     }
 
@@ -131,6 +143,7 @@ final class PresenceController: ObservableObject {
         keepAlive.stop()
         watchdog.cancel()   // stopping on purpose isn't a failure
         linkStatus = "Idle"
+        resolving = false
         lastPushed = "—"
         activeEndpoint = ""
         activeKey = ""
@@ -170,6 +183,7 @@ final class PresenceController: ObservableObject {
                 await MainActor.run {
                     DeviceDiagnostics.recordPush(ok: ok)
                     self.linkStatus = ok ? "Running" : "Endpoint Unreachable"
+                    self.resolving = false
                     // The watchdog measures whether the app is alive, not
                     // whether music is playing — so a successful "nothing
                     // playing" push counts just as much.
@@ -194,6 +208,7 @@ final class PresenceController: ObservableObject {
             await MainActor.run {
                 DeviceDiagnostics.recordPush(ok: ok)
                 self.linkStatus = ok ? "Running" : "Endpoint Unreachable"
+                self.resolving = false
                 if ok { self.watchdog.postpone() }
             }
         }

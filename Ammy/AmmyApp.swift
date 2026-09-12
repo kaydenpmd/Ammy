@@ -103,7 +103,17 @@ struct ContentView: View {
                 }
 
                 Section("Status") {
-                    LabeledContent("Link", value: controller.linkStatus)
+                    // A spinner rather than a word until the first push comes
+                    // back, because until then there is no answer to show —
+                    // only the wait for one.
+                    LabeledContent("Link") {
+                        if controller.resolving {
+                            ProgressView()
+                        } else {
+                            Text(controller.linkStatus)
+                        }
+                    }
+                    .animation(.default, value: controller.resolving)
                     LabeledContent("Now Playing", value: controller.lastPushed)
                     LabeledContent("Media Access",
                                    value: controller.monitor.authorized ? "Granted" : "Not Granted")
