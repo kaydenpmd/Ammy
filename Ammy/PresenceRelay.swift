@@ -47,7 +47,22 @@ actor PresenceRelay {
 
         let config = URLSessionConfiguration.default
         config.timeoutIntervalForRequest = 10
-        config.waitsForConnectivity = true
+
+        // Waiting for connectivity is the wrong trade for a heartbeat. While a
+        // request waits, timeoutIntervalForRequest does not apply to it and the
+        // only ceiling is timeoutIntervalForResource, which defaults to seven
+        // days — so a push aimed at a sleeping relay simply never returns, and
+        // everything that awaits one stops with it. Failing is the better
+        // outcome here: "Endpoint Unreachable" is a state this app is built to
+        // show, and the next heartbeat is thirty seconds away regardless.
+        config.waitsForConnectivity = false
+
+        // A ceiling on the whole request, whatever the reason it is slow.
+        // GUESS: 20 — chosen to sit under the 30s heartbeat so requests can't
+        // pile up on each other, while leaving room for the ~107 KB an artwork
+        // push carries. Not from documentation.
+        config.timeoutIntervalForResource = 20
+
         self.session = URLSession(configuration: config)
     }
 

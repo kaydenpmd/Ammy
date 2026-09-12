@@ -116,7 +116,17 @@ final class PresenceController: ObservableObject {
     func stop() async {
         heartbeat?.cancel(); heartbeat = nil
         correction?.cancel(); correction = nil
-        await relay?.push(track: nil, playing: false)
+
+        // Clear the presence on the way out, but don't make stopping wait for
+        // it. Stopping is a local decision and should take effect the moment
+        // it's asked for; awaiting this meant that whenever the relay was
+        // unreachable — the one time you most want to stop — both buttons sat
+        // dead for as long as the request took. A relay that can't be reached
+        // has nothing to clear anyway.
+        if let relay {
+            Task { await relay.push(track: nil, playing: false) }
+        }
+
         relay = nil
         keepAlive.stop()
         watchdog.cancel()   // stopping on purpose isn't a failure
@@ -173,11 +183,16 @@ final class PresenceController: ObservableObject {
         track.elapsed = monitor.liveElapsed
         let label = "\(track.title) — \(track.artist)"
 
+        // Report what was read, not what was delivered — the same moment the
+        // Nothing Playing branch above reports. What Ammy can see and whether
+        // the relay is reachable are two separate facts, and making the first
+        // wait on the second is what made a detected track read as undetected.
+        lastPushed = label
+
         Task {
             let ok = await relay.push(track: track, playing: true, diag: diag)
             await MainActor.run {
                 DeviceDiagnostics.recordPush(ok: ok)
-                self.lastPushed = label
                 self.linkStatus = ok ? "Running" : "Endpoint Unreachable"
                 if ok { self.watchdog.postpone() }
             }
