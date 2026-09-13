@@ -1164,9 +1164,17 @@ class Handler(BaseHTTPRequestHandler):
                     or "")
         return supplied == KEY
 
+    # Stamped on every response so the phone can tell an answer from the relay
+    # apart from an answer from something in front of it. Status codes alone
+    # cannot: Tailscale Funnel returns its own 404 when the hostname resolves
+    # but nothing is served on that port, which is the same 404 the relay sends
+    # for a wrong path. Ammy reads this to say which one happened.
+    RELAY_HEADER = "X-Ammy-Relay"
+
     def _reply_json(self, code: int, payload: dict, cors: bool = False) -> None:
         data = json.dumps(payload).encode()
         self.send_response(code)
+        self.send_header(self.RELAY_HEADER, RELAY_VERSION)
         self.send_header("Content-Type", "application/json")
         self.send_header("Content-Length", str(len(data)))
         if cors:
@@ -1180,6 +1188,7 @@ class Handler(BaseHTTPRequestHandler):
     def _reply(self, code: int, body: str = "") -> None:
         data = body.encode()
         self.send_response(code)
+        self.send_header(self.RELAY_HEADER, RELAY_VERSION)
         self.send_header("Content-Type", "text/plain")
         self.send_header("Content-Length", str(len(data)))
         self.end_headers()

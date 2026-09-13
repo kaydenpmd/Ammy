@@ -788,6 +788,90 @@ senders, one live and one effortless.
 Unknown: whether the silent-audio keepalive survives tvOS backgrounding. Cheap
 to test with a stub target before committing to it.
 
+**6. Pushes can reach the relay out of order.** Each push is an independent
+`Task` with no ordering guarantee against the others, so the farewell `stop()`
+sends (`playing: false`) can land *before* a push that was already in flight
+saying `playing: true` — leaving Discord showing a track after Ammy stopped
+broadcasting it. Found 12 Sept 2026 while fixing the same staleness on the app's
+own side, where a session counter now makes an orphaned push keep quiet
+(`PresenceController.session`). That counter cannot help here: the relay has no
+way to know which session a request belonged to. The fix is a monotonic sequence
+number in the push body, which `relay.py` compares against the highest it has
+seen and drops anything older. It touches both sides, which is why it was kept
+out of that commit.
+
+**7. Issun has to survive Ammy's half-open sessions.** Decided 12 Sept 2026,
+alongside making a failed push tear the app's session down. Ammy can now end a
+session without telling the relay: a failed push gets the teardown *without* the
+farewell, because there is nothing reachable to send one to. So Issun will
+routinely be holding a session whose phone has already moved on — and then that
+same phone starts a fresh one. Sessions must be keyed and superseded, or expired
+on silence, never stacked. The material for this already exists: the relay
+records `app_uptime_s` and the push-failure counters, and `_gap_verdict()` in
+`relay.py` already uses them to tell a relaunch from a reconnect.
+
+**8. Errors are one bit wide, and nothing surfaces them.** Design settled
+12 Sept 2026: a popup when an error occurs, and an `Error History  >` row in
+its own **unlabeled** Section at the foot of the page. Earlier ideas — an
+inline note under the status row, a static list of error types — were dropped
+in favour of this.
+
+*The catch worth designing around first.* An alert can only appear while Ammy
+is in the foreground, and push failures overwhelmingly happen while it is not —
+that is the entire point of KeepAlive. A popup fired at the moment of failure
+would therefore miss most errors, and since 12 Sept a failed push also ends the
+session, so the app now goes quiet in your pocket with nothing to show for it.
+The better shape is probably: history is the real surface and always records;
+the popup fires on next foreground to explain why the session ended, rather
+than at the instant it did. The history needs somewhere to live — a bounded
+ring buffer on `DeviceDiagnostics` fits beside the push counters. Whether it
+survives relaunch is open, and matters more than it sounds, because the
+interesting failures are the ones that happened while you were not looking.
+
+*The precondition is done* (12 Sept 2026). `PresenceRelay.push()` returns
+`PushOutcome` rather than a `Bool`, and `PushOutcome.summary` turns every case
+below into a phrase the status row and the failure notification both use — so
+the banner and the screen cannot disagree. This also closes the half of item 1
+that complained a dead relay and a wrong key read identically; they now read
+"Connection Failed" and "Key Rejected".
+
+Relay side: `relay.py` stamps `X-Ammy-Relay: <version>` on every response, in
+`_reply()` and `_reply_json()`. It exists because status codes alone cannot
+separate the relay's own 404 (wrong path) from Tailscale Funnel's 404
+(hostname resolves, nothing served on that port). Presence of the header is
+what `PushOutcome.refused(fromRelay:)` carries.
+
+*The inventory, so it is not re-derived.* Handled before any request: `http://`
+typed, an address that will not parse into an https URL with a host, and denied
+media access (Media Access reads Not Granted). What `PushOutcome` now names:
+
+- Transport (`URLError`, swallowed by `try?`): `.notConnectedToInternet`,
+  `.dataNotAllowed` (cellular off for Ammy specifically), `.cannotFindHost` and
+  `.dnsLookupFailed` (the Tailscale name does not resolve), `.cannotConnectToHost`
+  (resolves but refuses — relay not running, or port closed), `.timedOut`
+  (bounded by the 10s request / 20s resource caps), `.networkConnectionLost`
+  (dropped mid-request; the wi-fi to LTE handover), `.secureConnectionFailed`
+  and the certificate errors, `.cancelled`.
+- HTTP from `relay.py`'s `POST /now-playing`: **401** key missing or wrong —
+  the big one, today indistinguishable from a dead relay; **404** path is not
+  `/now-playing`, which is what pointing at the host root gives you; **400**
+  body was not valid JSON. Success is 204.
+- HTTP from Tailscale Funnel, in between and not the relay at all: 502/503 when
+  the funnel is up but the node is not, and Funnel's own 404 when the hostname
+  resolves but nothing is served on that port.
+
+ATS is *not* reachable: `http://` is rejected before any request and
+`normalised()` requires an https scheme, so `.appTransportSecurityRequires-
+SecureConnection` cannot fire.
+
+*Still open:* when should "Connection Failed" decay back to "Disconnected"?
+The question changed on 12 Sept — a failed push now ends the session, so
+nothing retries and nothing will clear the message on its own. From the moment
+it appears that row reports history, not state. Either it expires after some
+interval, or it stands until the next Start and is read as a record of the last
+attempt. If teardown ever moves to a failure *threshold* instead of the first
+failure, there is a retry window again and this becomes a different question.
+
 ## Working with the owner
 
 Limited coding experience — comfortable running commands and reading output,

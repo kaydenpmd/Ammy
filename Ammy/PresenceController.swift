@@ -9,19 +9,34 @@ final class PresenceController: ObservableObject {
     @Published var key = UserDefaults.standard.string(forKey: "relay_key")
         ?? UserDefaults.standard.string(forKey: "relay_secret")
         ?? ""
-    @Published private(set) var linkStatus = "Idle"
-    @Published private(set) var lastPushed = "—"
+    @Published private(set) var linkStatus = "Disconnected"
 
     /// True from starting until the first push comes back — the window where
     /// the link's real state isn't known yet.
     ///
     /// Worth a flag of its own rather than another `linkStatus` string.
-    /// "Running" used to be set the moment start() finished, before anything
+    /// "Connected" used to be set the moment start() finished, before anything
     /// had been sent, which made a session whose first push never returned
     /// indistinguishable from a healthy one. linkStatus now only ever says
     /// what has been confirmed; this says whether confirming is still in
     /// flight.
     @Published private(set) var resolving = false
+
+    /// Whether a session exists right now. The view reads this rather than
+    /// keeping its own copy, because the session can now end without the view
+    /// asking — a failed push tears it down, and a button holding its own
+    /// belief would go on offering to stop something already gone.
+    @Published private(set) var isRunning = false
+
+    /// Which session a push belongs to. start() and stop() both bump it, so a
+    /// request still in the air when a session ends can tell that it has been
+    /// orphaned and keep its hands off the UI.
+    ///
+    /// Cancelling the task wouldn't be enough on its own: by the time stop()
+    /// runs it is already past its last cancellation point, suspended on the
+    /// network. This is checked at the moment of writing instead, which is the
+    /// only moment that matters.
+    private var session = 0
 
     /// What the *running* session is actually sending to, as opposed to what is
     /// currently typed into the fields. Empty while stopped.
@@ -33,6 +48,24 @@ final class PresenceController: ObservableObject {
     /// once more.
     @Published private(set) var activeEndpoint = ""
     @Published private(set) var activeKey = ""
+
+    /// Called whenever the app comes to the front, to retract any notification
+    /// that has already fired. Opening the app answers what they were asking.
+    func appDidBecomeActive() {
+        watchdog.clearDelivered()
+    }
+
+    /// What Ammy can see playing right now, whether or not a session is running.
+    ///
+    /// Read from the device rather than from the last push, on purpose. What is
+    /// playing and whether the relay can be reached are separate facts, and the
+    /// row that answers the first has no business going blank because of the
+    /// second — which is exactly what it used to do.
+    var nowPlaying: String {
+        guard monitor.authorized else { return "—" }
+        guard let track = monitor.track, monitor.isPlaying else { return "Nothing Playing" }
+        return "\(track.title) — \(track.artist)"
+    }
 
     /// Whether the fields have drifted from what is being sent.
     ///
@@ -53,6 +86,15 @@ final class PresenceController: ObservableObject {
     private var correction: Task<Void, Never>?
 
     init() {
+        // Nested ObservableObjects don't bubble. Without this, a view watching
+        // the controller never hears that the monitor changed, and the rows
+        // reading it refresh only by luck, when something else on the
+        // controller happens to publish. That luck ran out the moment Now
+        // Playing stopped depending on a push.
+        monitor.objectWillChange
+            .sink { [weak self] in self?.objectWillChange.send() }
+            .store(in: &bag)
+
         monitor.$track
             .combineLatest(monitor.$isPlaying)
             .removeDuplicates { $0.0?.key == $1.0?.key && $0.1 == $1.1 }
@@ -65,6 +107,11 @@ final class PresenceController: ObservableObject {
             .store(in: &bag)
     }
 
+    /// Starts a session. Whether one began is readable from `isRunning`,
+    /// which also covers the session ending later without being asked to.
+    ///
+    /// Every failure below leaves something on screen that explains itself: a
+    /// message in the status row, or Media Access reading Not Granted.
     func start() async {
         // Distinguish "you typed http" from "that isn't an address at all".
         // iOS blocks plain HTTP at the network layer anyway, so without this the
@@ -108,7 +155,10 @@ final class PresenceController: ObservableObject {
         await monitor.start()
 
         guard monitor.authorized else {
-            linkStatus = "Media library access denied"
+            // Deliberately silent. Media Access already reads Not Granted one
+            // row down, and that row is the one the fact belongs to — saying it
+            // again under Endpoint only put the news where nobody would look
+            // for it.
             return
         }
 
@@ -122,13 +172,12 @@ final class PresenceController: ObservableObject {
 
         linkStatus = "Connecting"
         resolving = true
+        isRunning = true
+        session += 1
         handleChange()
     }
 
     func stop() async {
-        heartbeat?.cancel(); heartbeat = nil
-        correction?.cancel(); correction = nil
-
         // Clear the presence on the way out, but don't make stopping wait for
         // it. Stopping is a local decision and should take effect the moment
         // it's asked for; awaiting this meant that whenever the relay was
@@ -139,12 +188,37 @@ final class PresenceController: ObservableObject {
             Task { await relay.push(track: nil, playing: false) }
         }
 
+        teardown(status: "Disconnected")
+    }
+
+    /// End the session, leaving `status` behind on the row.
+    ///
+    /// `stop()` is this plus a farewell to the relay. A failed push gets the
+    /// teardown without the farewell: there is nothing on the other end to
+    /// tell, and trying would only start another doomed request.
+    ///
+    /// Bumping `session` here is what silences anything else still in the air.
+    /// Cancelling the watchdog is right either way — it exists to notice an
+    /// app that died while it was supposed to be reporting, and after this
+    /// nothing is supposed to be reporting.
+    private func teardown(status: String, notify: Bool = false) {
+        heartbeat?.cancel(); heartbeat = nil
+        correction?.cancel(); correction = nil
         relay = nil
         keepAlive.stop()
-        watchdog.cancel()   // stopping on purpose isn't a failure
-        linkStatus = "Idle"
+        watchdog.cancel()
+
+        // Ordered after cancel() on purpose: cancel() clears the watchdog's
+        // note, and this leaves a better one in its place. Without it a session
+        // that dies in the background is completely silent — the teardown
+        // clears the dead-man's switch that used to be the only thing that
+        // would eventually speak up.
+        if notify { watchdog.reportFailure(status) }
+
+        session += 1
+        isRunning = false
+        linkStatus = status
         resolving = false
-        lastPushed = "—"
         activeEndpoint = ""
         activeKey = ""
     }
@@ -166,6 +240,7 @@ final class PresenceController: ObservableObject {
 
     private func sendNow() {
         guard let relay else { return }
+        let gen = session
 
         // Confirm the silence is actually still playing before reporting on it,
         // so the snapshot below describes a checked state rather than a
@@ -177,17 +252,20 @@ final class PresenceController: ObservableObject {
 
         monitor.refresh()
         guard var track = monitor.track, monitor.isPlaying else {
-            lastPushed = "Nothing Playing"
             Task {
-                let ok = await relay.push(track: nil, playing: false, diag: diag)
+                let outcome = await relay.push(track: nil, playing: false, diag: diag)
                 await MainActor.run {
-                    DeviceDiagnostics.recordPush(ok: ok)
-                    self.linkStatus = ok ? "Running" : "Endpoint Unreachable"
+                    guard self.session == gen else { return }
+                    DeviceDiagnostics.recordPush(ok: outcome.delivered)
+                    guard outcome.delivered else {
+                        return self.teardown(status: outcome.summary, notify: true)
+                    }
+                    self.linkStatus = "Connected"
                     self.resolving = false
                     // The watchdog measures whether the app is alive, not
                     // whether music is playing — so a successful "nothing
                     // playing" push counts just as much.
-                    if ok { self.watchdog.postpone() }
+                    self.watchdog.postpone()
                 }
             }
             return
@@ -195,21 +273,17 @@ final class PresenceController: ObservableObject {
 
         // Freshest possible position, taken at the moment of sending.
         track.elapsed = monitor.liveElapsed
-        let label = "\(track.title) — \(track.artist)"
-
-        // Report what was read, not what was delivered — the same moment the
-        // Nothing Playing branch above reports. What Ammy can see and whether
-        // the relay is reachable are two separate facts, and making the first
-        // wait on the second is what made a detected track read as undetected.
-        lastPushed = label
-
         Task {
-            let ok = await relay.push(track: track, playing: true, diag: diag)
+            let outcome = await relay.push(track: track, playing: true, diag: diag)
             await MainActor.run {
-                DeviceDiagnostics.recordPush(ok: ok)
-                self.linkStatus = ok ? "Running" : "Endpoint Unreachable"
+                guard self.session == gen else { return }
+                DeviceDiagnostics.recordPush(ok: outcome.delivered)
+                guard outcome.delivered else {
+                    return self.teardown(status: outcome.summary, notify: true)
+                }
+                self.linkStatus = "Connected"
                 self.resolving = false
-                if ok { self.watchdog.postpone() }
+                self.watchdog.postpone()
             }
         }
     }

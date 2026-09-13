@@ -1,8 +1,78 @@
 import Foundation
 
+/// What became of a push.
+///
+/// Replaces a bare `Bool`, which flattened a rejected key, a wrong path, a
+/// sleeping PC and a dropped wi-fi handover into one bit and left the app
+/// unable to say anything more useful than that it hadn't worked.
+enum PushOutcome {
+    case delivered
+
+    /// The far end answered and refused. `fromRelay` distinguishes an answer
+    /// from the relay itself from one produced by something in front of it:
+    /// Tailscale Funnel returns its own 404 when the hostname resolves but
+    /// nothing is served on that port, which is the same status the relay
+    /// sends for a wrong path. The relay stamps every response with
+    /// `X-Ammy-Relay`; nothing else does.
+    case refused(status: Int, fromRelay: Bool)
+
+    /// No answer at all.
+    case unreachable(URLError.Code)
+
+    var delivered: Bool {
+        if case .delivered = self { return true }
+        return false
+    }
+
+    /// Short enough for the status row, specific enough to act on. Title case
+    /// to match the other values that row can hold.
+    var summary: String {
+        switch self {
+        case .delivered:
+            return "Connected"
+
+        case .refused(status: 401, fromRelay: _), .refused(status: 403, fromRelay: _):
+            return "Key Rejected"
+        case .refused(status: 404, fromRelay: true):
+            return "Wrong Path"
+        case .refused(status: 404, fromRelay: false):
+            return "Nothing at That Address"
+        case .refused(status: let status, fromRelay: _) where (500..<600).contains(status):
+            return "Relay Error \(status)"
+        case .refused(status: let status, fromRelay: _):
+            return "Refused (\(status))"
+
+        case .unreachable(.notConnectedToInternet):
+            return "No Internet"
+        case .unreachable(.dataNotAllowed):
+            return "Cellular Data Off"
+        case .unreachable(.timedOut):
+            return "Timed Out"
+        case .unreachable(.cannotFindHost), .unreachable(.dnsLookupFailed):
+            return "Address Not Found"
+        case .unreachable(.cannotConnectToHost):
+            return "Connection Refused"
+        case .unreachable(.networkConnectionLost):
+            return "Connection Lost"
+        case .unreachable(.secureConnectionFailed),
+             .unreachable(.serverCertificateUntrusted),
+             .unreachable(.serverCertificateHasBadDate),
+             .unreachable(.serverCertificateNotYetValid),
+             .unreachable(.serverCertificateHasUnknownRoot):
+            return "Secure Connection Failed"
+        case .unreachable:
+            return "Connection Failed"
+        }
+    }
+}
+
 /// Ships now-playing state to the desktop relay. Replaces the old Gateway
 /// client — the phone no longer talks to Discord at all.
 actor PresenceRelay {
+
+    /// Set by the relay on every response. Its presence is the only reliable
+    /// way to tell the relay's own reply from one made on its behalf.
+    private static let relayHeader = "X-Ammy-Relay"
     private let endpoint: URL
     private let key: String
     private let session: URLSession
@@ -53,7 +123,7 @@ actor PresenceRelay {
         // only ceiling is timeoutIntervalForResource, which defaults to seven
         // days — so a push aimed at a sleeping relay simply never returns, and
         // everything that awaits one stops with it. Failing is the better
-        // outcome here: "Endpoint Unreachable" is a state this app is built to
+        // outcome here: "Connection Failed" is a state this app is built to
         // show, and the next heartbeat is thirty seconds away regardless.
         config.waitsForConnectivity = false
 
@@ -67,7 +137,7 @@ actor PresenceRelay {
     }
 
     @discardableResult
-    func push(track: Track?, playing: Bool, diag: PushDiagnostics? = nil) async -> Bool {
+    func push(track: Track?, playing: Bool, diag: PushDiagnostics? = nil) async -> PushOutcome {
         // The relay stamps this onto every uptime entry. Whether the app
         // survives backgrounding is decided by code in *this* build, so the
         // build number is the axis worth attributing gaps to — without it the
@@ -118,14 +188,29 @@ actor PresenceRelay {
         }
         req.httpBody = try? JSONSerialization.data(withJSONObject: body)
 
-        guard let (_, response) = try? await session.data(for: req),
-              let http = response as? HTTPURLResponse
-        else { return false }
+        let response: URLResponse
+        do {
+            (_, response) = try await session.data(for: req)
+        } catch let error as URLError {
+            return .unreachable(error.code)
+        } catch {
+            return .unreachable(.unknown)
+        }
 
-        let ok = (200..<300).contains(http.statusCode)
-        if ok, let delivered = artworkAttachedFor {
+        guard let http = response as? HTTPURLResponse else {
+            return .unreachable(.badServerResponse)
+        }
+
+        guard (200..<300).contains(http.statusCode) else {
+            return .refused(
+                status: http.statusCode,
+                fromRelay: http.value(forHTTPHeaderField: Self.relayHeader) != nil
+            )
+        }
+
+        if let delivered = artworkAttachedFor {
             artworkSentFor = delivered
         }
-        return ok
+        return .delivered
     }
 }

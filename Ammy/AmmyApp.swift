@@ -24,7 +24,7 @@ struct AmmyApp: App {
 
 struct ContentView: View {
     @EnvironmentObject private var controller: PresenceController
-    @State private var running = false
+    @Environment(\.scenePhase) private var scenePhase
     @State private var didAutoStart = false
 
     /// Set to the address Ammy *would* use when the typed one has no scheme.
@@ -36,10 +36,10 @@ struct ContentView: View {
     /// than fading. See the bar below for what the two IDs mean.
     @Namespace private var glass
 
-    /// The fields have drifted from what is actually being sent. Only meaningful
-    /// while running — the controller tracks the drift, the view knows whether
-    /// there is a session for it to matter to.
-    private var isEdited: Bool { running && controller.configChanged }
+    /// The fields have drifted from what is actually being sent, and there is a
+    /// session for that to matter to. Both halves are the controller's to know
+    /// now; the view only decides that the bar cares about the pair.
+    private var isEdited: Bool { controller.isRunning && controller.configChanged }
 
     /// A key is optional — Ammy will happily post to something that doesn't ask
     /// for one — so only the address is required before starting.
@@ -106,7 +106,7 @@ struct ContentView: View {
                     // A spinner rather than a word until the first push comes
                     // back, because until then there is no answer to show —
                     // only the wait for one.
-                    LabeledContent("Link") {
+                    LabeledContent("Endpoint") {
                         if controller.resolving {
                             ProgressView()
                         } else {
@@ -114,7 +114,7 @@ struct ContentView: View {
                         }
                     }
                     .animation(.default, value: controller.resolving)
-                    LabeledContent("Now Playing", value: controller.lastPushed)
+                    LabeledContent("Now Playing", value: controller.nowPlaying)
                     LabeledContent("Media Access",
                                    value: controller.monitor.authorized ? "Granted" : "Not Granted")
                     LabeledContent("Version", value: Bundle.main.displayVersion)
@@ -169,7 +169,7 @@ struct ContentView: View {
                     // and its detached search button — glass ends at x=566, next
                     // glass begins at x=584 in a 2x screenshot.
                     HStack(spacing: 8) {
-                        if running {
+                        if controller.isRunning {
                             Button {
                                 stopSession()
                             } label: {
@@ -182,21 +182,20 @@ struct ContentView: View {
                             .buttonSizing(.flexible)
                         }
 
-                        if !running || isEdited {
+                        if !controller.isRunning || isEdited {
                             Button {
-                                if running {
+                                if controller.isRunning {
                                     // Restart: drop the old session first so the
                                     // new endpoint is what actually gets used.
                                     Task {
                                         await controller.stop()
-                                        running = false
                                         beginOrConfirm()
                                     }
                                 } else {
                                     beginOrConfirm()
                                 }
                             } label: {
-                                Text(running ? "Restart" : "Start")
+                                Text(controller.isRunning ? "Restart" : "Start")
                                     .fontWeight(.medium)
                                     // The glass morphs; the word does not. Label
                                     // changes never interpolate, so this fades
@@ -223,7 +222,7 @@ struct ContentView: View {
                 // GUESS: bounce 0.15 — the reference settles too smoothly to read
                 // overshoot off three-frame samples, so this is picked to be
                 // slightly springy without wobbling. Raise it for more rubber.
-                .animation(.spring(duration: 0.4, bounce: 0.15), value: running)
+                .animation(.spring(duration: 0.4, bounce: 0.15), value: controller.isRunning)
                 .animation(.spring(duration: 0.4, bounce: 0.15), value: isEdited)
                 .padding(.vertical)
                 .padding(.horizontal, 21)
@@ -266,14 +265,25 @@ struct ContentView: View {
             }
         }
         .task {
+            // The monitor reads the device, not the relay, so it runs whether
+            // or not a session does. That is what lets Now Playing and Media
+            // Access say something true before anything has been started.
+            controller.appDidBecomeActive()
+            await controller.monitor.start()
             await autoStartIfPossible()
+        }
+        // .task covers a cold launch; this covers coming back from the
+        // background, which is the more common way of arriving at a notice
+        // that has already fired. onChange never sees the initial value, so
+        // both are needed.
+        .onChange(of: scenePhase) { _, phase in
+            if phase == .active { controller.appDidBecomeActive() }
         }
     }
 
     @MainActor
     private func start() async {
         await controller.start()
-        running = true
     }
 
     /// The scheme check, then start. Shared by Start and Restart so a bare host
@@ -293,7 +303,6 @@ struct ContentView: View {
         Task {
             await controller.stop()
             didAutoStart = true   // don't immediately restart
-            running = false
         }
     }
 
@@ -309,7 +318,7 @@ struct ContentView: View {
     /// stored address has already been resolved by an interactive start.
     @MainActor
     private func autoStartIfPossible() async {
-        guard !didAutoStart, !running, canAutoStart else { return }
+        guard !didAutoStart, !controller.isRunning, canAutoStart else { return }
         didAutoStart = true
         await start()
     }

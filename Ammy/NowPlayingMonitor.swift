@@ -31,19 +31,28 @@ final class NowPlayingMonitor: ObservableObject {
 
     private let player = MPMusicPlayerController.systemMusicPlayer
     private var pollTimer: Timer?
+    private var running = false
 
     // refresh() runs on every playback notification and every 5s poll.
     // Re-encoding a JPEG that often is pure waste, so keep the last one.
     private var artworkKey: String?
     private var artworkData: Data?
 
+    /// Idempotent. The view starts the monitor when it appears, and
+    /// PresenceController.start() asks again for every session — including
+    /// every Restart. Without this guard each of those added another pair of
+    /// notification observers and another 5s timer on top of the last.
     func start() async {
+        guard !running else { return }
+        running = true
+
         let status: MPMediaLibraryAuthorizationStatus = await withCheckedContinuation { cont in
             MPMediaLibrary.requestAuthorization { cont.resume(returning: $0) }
         }
         authorized = (status == .authorized)
-        guard authorized else { return }
+        guard authorized else { running = false; return }
 
+        pollTimer?.invalidate()
         player.beginGeneratingPlaybackNotifications()
         let nc = NotificationCenter.default
         nc.addObserver(self, selector: #selector(refresh),
