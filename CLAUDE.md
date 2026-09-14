@@ -714,9 +714,17 @@ so it is not re-derived:
   `Open App [Ammy]` then `Open App [Current App]`.
 - `Get Current App` must run **first**, before anything else — once Ammy is
   foregrounded, "current app" is Ammy.
-- Use `Open App`. There is no alternative any more — the `ammy://` scheme was
-  removed on 11 Sept 2026, partly because it made Ammy navigate away itself and
-  race the return. Launching the app directly needs no delay at all.
+- Use `Open App` to launch. The old `ammy://` scheme was removed on 11 Sept
+  2026 because it made Ammy navigate away itself and race the return; that
+  behaviour now lives in the shortcut, and it stays there.
+- A scheme was reinstated on 14 Sept 2026 for an unrelated job, and the two
+  should not be confused. `ammy://notify` opens the app exactly as `Open App`
+  does and changes one thing: a connection failure arrives as a notification
+  rather than a popup. Use it from any shortcut that switches away from Ammy
+  immediately, because being frontmost at the instant of failure is not the
+  same as being looked at, and no amount of inferring from scene phase can tell
+  those apart — the launch has to say so. One-shot; it describes the connection
+  attempt it was opened for and nothing after.
 - Triggers are per-device and **cannot be shared** — Apple: "Personal automation
   is specific to a device." Only the shortcut can be handed over, as an iCloud
   link. A tutorial has to list the triggers for people to recreate.
@@ -810,11 +818,23 @@ on silence, never stacked. The material for this already exists: the relay
 records `app_uptime_s` and the push-failure counters, and `_gap_verdict()` in
 `relay.py` already uses them to tell a relaunch from a reconnect.
 
-**8. Errors are one bit wide, and nothing surfaces them.** Design settled
-12 Sept 2026: a popup when an error occurs, and an `Error History  >` row in
-its own **unlabeled** Section at the foot of the page. Earlier ideas — an
-inline note under the status row, a static list of error types — were dropped
-in favour of this.
+**8. Errors: named and recorded; the popup is what's left.** Design settled
+12 Sept 2026. Earlier ideas — an inline note under the status row, a static
+list of error types — were dropped in favour of a popup plus a history screen.
+
+*Built 14 Sept 2026:* `ErrorLog` and `ErrorHistoryView`, reached by an
+`Error History  >` row in its own unlabeled Section at the foot of the page.
+The log persists to UserDefaults, bounded at 50, newest first. Every failure
+that reaches the status row also reaches it — the session-ending kind through
+`teardown()`, the two pre-flight refusals through `PresenceController.fail()`,
+which exists so nothing can appear on the row without being recorded. The row,
+the notification and the history all show the same phrase.
+
+*Not built:* the popup. The argument against is that a modal fired while
+someone is already looking at the row that just changed is noise, and the
+notification already covers the case where they are not looking. Left undone
+rather than decided — if it is wanted, it should probably fire on next
+foreground to explain a session that ended, not at the instant of failure.
 
 *The catch worth designing around first.* An alert can only appear while Ammy
 is in the foreground, and push failures overwhelmingly happen while it is not —

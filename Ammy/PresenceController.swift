@@ -1,5 +1,6 @@
 import Foundation
 import Combine
+import UIKit
 
 @MainActor
 final class PresenceController: ObservableObject {
@@ -28,6 +29,13 @@ final class PresenceController: ObservableObject {
     /// belief would go on offering to stop something already gone.
     @Published private(set) var isRunning = false
 
+    /// A terminal failure waiting to be shown as a popup, or nil.
+    ///
+    /// Only set while someone is actually looking. If the app leaves the
+    /// screen with one still here it becomes a notification instead — see
+    /// appDidEnterBackground().
+    @Published var pendingFailure: String?
+
     /// Which session a push belongs to. start() and stop() both bump it, so a
     /// request still in the air when a session ends can tell that it has been
     /// orphaned and keep its hands off the UI.
@@ -48,6 +56,132 @@ final class PresenceController: ObservableObject {
     /// once more.
     @Published private(set) var activeEndpoint = ""
     @Published private(set) var activeKey = ""
+
+    /// How long to wait before the next push.
+    ///
+    /// Thirty seconds while healthy; much sooner while reconnecting, because a
+    /// handover resolves in seconds and waiting out a full heartbeat to notice
+    /// would make a two-second blip look like half a minute of downtime.
+    private func nextDelay() -> TimeInterval {
+        guard failureRun > 0 else { return 30 }
+        // 2, 5, 10, 20, then 30 forever — quick enough to catch a handover,
+        // slow enough that a genuinely dead relay isn't hammered for the whole
+        // retry window.
+        let ladder: [TimeInterval] = [2, 5, 10, 20]
+        return failureRun <= ladder.count ? ladder[failureRun - 1] : 30
+    }
+
+    /// How long an established session keeps trying before it gives up.
+    ///
+    /// GUESS: 20 minutes. Chosen from ammy-uptime.log rather than invented —
+    /// every interruption that healed on its own was back inside 15m30s, and
+    /// this clears the longest of them with margin. Nothing documents it.
+    private static let retryWindow: TimeInterval = 20 * 60
+
+    /// What to do about a push that failed.
+    ///
+    /// Never connected: the address or the key is wrong, so say so now. Was
+    /// connected: hold the session open, keep trying, and stay quiet — the
+    /// person does not need telling about a wi-fi handover. Only when the
+    /// window runs out does it become news.
+    private func handleFailure(_ outcome: PushOutcome) {
+        failureRun += 1
+
+        guard everConnected else {
+            return teardown(status: outcome.summary, notify: true)
+        }
+
+        if retryUntil == nil {
+            retryUntil = Date().addingTimeInterval(Self.retryWindow)
+            events.record(.interrupted, summary: outcome.summary)
+        }
+
+        guard let deadline = retryUntil, Date() < deadline else {
+            return teardown(status: outcome.summary, notify: true)
+        }
+
+        linkStatus = "Reconnecting"
+
+        // The app is alive and working, which is the only thing the watchdog
+        // claims to measure — its notice says "Ammy isn't running", and firing
+        // that mid-reconnect would be simply untrue. Postponing on liveness
+        // rather than on success also stops it colliding with the give-up
+        // notice at the end of the window.
+        watchdog.postpone()
+    }
+
+    /// A push landed.
+    private func handleSuccess() {
+        if failureRun > 0, everConnected {
+            events.record(.recovered, summary: "Reconnected")
+        }
+        failureRun = 0
+        retryUntil = nil
+        everConnected = true
+        notifyRegardless = false
+        linkStatus = "Connected"
+        resolving = false
+        watchdog.postpone()
+    }
+
+    /// Show a failure and record it, so nothing can appear on the row without
+    /// also reaching the history.
+    private func fail(_ status: String) {
+        linkStatus = status
+        events.record(.failed, summary: status)
+        announce(status)
+    }
+
+    /// Put a terminal failure in front of the person.
+    ///
+    /// A first push that never landed and a reconnect that ran out of road are
+    /// the same news — the link is down and will not come back by itself — so
+    /// they get the same treatment. The only thing that varies is where it can
+    /// be seen: a popup if anyone is looking, a notification if not.
+    ///
+    /// Interruptions deliberately do not come through here. Those are expected
+    /// and self-healing, and announcing every wi-fi handover would teach
+    /// people to ignore the ones that matter.
+    private func announce(_ status: String) {
+        let canBeSeen = UIApplication.shared.applicationState == .active
+        if canBeSeen && !notifyRegardless {
+            pendingFailure = status
+        } else {
+            watchdog.reportFailure(status)
+        }
+        notifyRegardless = false
+    }
+
+    /// Whether this connection attempt should skip the popup entirely.
+    ///
+    /// Set by opening `ammy://notify`, which is what a Shortcut uses when it
+    /// is going to switch away from Ammy immediately. Being frontmost at the
+    /// instant of failure is then not the same as being *looked at*, and no
+    /// amount of guessing from scene phase can tell the difference — so the
+    /// launch says so outright instead. One-shot: it describes the attempt it
+    /// was opened for, and nothing after.
+    private var notifyRegardless = false
+
+    func suppressNextPopup() {
+        notifyRegardless = true
+    }
+
+    func dismissFailure() {
+        pendingFailure = nil
+    }
+
+    /// A popup nobody saw is not a notification.
+    ///
+    /// If the app leaves the screen with one still up, convert it. This is the
+    /// case where Ammy is launched by a Shortcut, fails while technically
+    /// frontmost, and is switched away from a frame later — the alert would
+    /// have been drawn to an empty room and then thrown away with the
+    /// screenful it was on.
+    func appDidEnterBackground() {
+        guard let pending = pendingFailure else { return }
+        pendingFailure = nil
+        watchdog.reportFailure(pending)
+    }
 
     /// Called whenever the app comes to the front, to retract any notification
     /// that has already fired. Opening the app answers what they were asking.
@@ -78,11 +212,31 @@ final class PresenceController: ObservableObject {
 
     let monitor = NowPlayingMonitor()
 
+    /// Every failure that reached the status row, kept for the history screen.
+    let events = EventLog()
+
     private let keepAlive = KeepAlive()
     private let watchdog = SilenceWatchdog()
     private var relay: PresenceRelay?
     private var bag = Set<AnyCancellable>()
     private var heartbeat: Task<Void, Never>?
+
+    /// Whether this session has ever had a push land.
+    ///
+    /// The whole distinction the retry logic turns on. A first push that fails
+    /// means the configuration is wrong — a bad key, a bad address, nothing
+    /// listening — and retrying a wrong answer just produces it again, so that
+    /// fails loudly and at once. A push that fails *after* one succeeded means
+    /// the configuration is known good and something transient happened to the
+    /// path, which is worth waiting out rather than announcing.
+    private var everConnected = false
+
+    /// How many pushes have failed in a row. Drives the retry spacing.
+    private var failureRun = 0
+
+    /// When to give up on an interrupted session. Set on the first failure
+    /// after a good push, cleared whenever one lands.
+    private var retryUntil: Date?
     private var correction: Task<Void, Never>?
 
     init() {
@@ -92,6 +246,10 @@ final class PresenceController: ObservableObject {
         // controller happens to publish. That luck ran out the moment Now
         // Playing stopped depending on a push.
         monitor.objectWillChange
+            .sink { [weak self] in self?.objectWillChange.send() }
+            .store(in: &bag)
+
+        events.objectWillChange
             .sink { [weak self] in self?.objectWillChange.send() }
             .store(in: &bag)
 
@@ -120,14 +278,14 @@ final class PresenceController: ObservableObject {
         // avoiding.
         let trimmed = endpoint.trimmingCharacters(in: .whitespacesAndNewlines)
         if trimmed.lowercased().hasPrefix("http://") {
-            linkStatus = "Address must be https — iOS blocks plain http"
+            fail("Address must be https — iOS blocks plain http")
             return
         }
 
         guard let resolved = PresenceRelay.normalised(trimmed),
               let relay = PresenceRelay(endpoint: trimmed, key: key)
         else {
-            linkStatus = "That address doesn't look right"
+            fail("That address doesn't look right")
             return
         }
 
@@ -164,8 +322,10 @@ final class PresenceController: ObservableObject {
 
         heartbeat = Task { [weak self] in
             while !Task.isCancelled {
-                try? await Task.sleep(nanoseconds: 30_000_000_000)
                 guard let self else { return }
+                let delay = await MainActor.run { self.nextDelay() }
+                try? await Task.sleep(nanoseconds: UInt64(delay * 1_000_000_000))
+                guard !Task.isCancelled else { return }
                 await MainActor.run { self.sendNow() }
             }
         }
@@ -213,9 +373,15 @@ final class PresenceController: ObservableObject {
         // that dies in the background is completely silent — the teardown
         // clears the dead-man's switch that used to be the only thing that
         // would eventually speak up.
-        if notify { watchdog.reportFailure(status) }
+        if notify {
+            events.record(.failed, summary: status)
+            announce(status)
+        }
 
         session += 1
+        everConnected = false
+        failureRun = 0
+        retryUntil = nil
         isRunning = false
         linkStatus = status
         resolving = false
@@ -257,15 +423,11 @@ final class PresenceController: ObservableObject {
                 await MainActor.run {
                     guard self.session == gen else { return }
                     DeviceDiagnostics.recordPush(ok: outcome.delivered)
-                    guard outcome.delivered else {
-                        return self.teardown(status: outcome.summary, notify: true)
-                    }
-                    self.linkStatus = "Connected"
-                    self.resolving = false
-                    // The watchdog measures whether the app is alive, not
-                    // whether music is playing — so a successful "nothing
-                    // playing" push counts just as much.
-                    self.watchdog.postpone()
+                    // A "nothing playing" push counts as much as any other:
+                    // what is being measured is whether the link works, not
+                    // whether music is on.
+                    outcome.delivered ? self.handleSuccess()
+                                      : self.handleFailure(outcome)
                 }
             }
             return
@@ -278,12 +440,8 @@ final class PresenceController: ObservableObject {
             await MainActor.run {
                 guard self.session == gen else { return }
                 DeviceDiagnostics.recordPush(ok: outcome.delivered)
-                guard outcome.delivered else {
-                    return self.teardown(status: outcome.summary, notify: true)
-                }
-                self.linkStatus = "Connected"
-                self.resolving = false
-                self.watchdog.postpone()
+                outcome.delivered ? self.handleSuccess()
+                                  : self.handleFailure(outcome)
             }
         }
     }

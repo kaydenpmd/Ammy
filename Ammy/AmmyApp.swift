@@ -120,6 +120,15 @@ struct ContentView: View {
                     LabeledContent("Version", value: Bundle.main.displayVersion)
                 }
 
+                // Unlabeled on purpose: it is a way out of this screen rather
+                // than another fact about the current one, so a header would
+                // group it with things it has nothing to do with.
+                Section {
+                    NavigationLink("History") {
+                        LinkHistoryView()
+                    }
+                }
+
             }
             .navigationTitle("Ammy")
             // safeAreaBar, not safeAreaInset. Both reserve the space — which
@@ -277,7 +286,32 @@ struct ContentView: View {
         // that has already fired. onChange never sees the initial value, so
         // both are needed.
         .onChange(of: scenePhase) { _, phase in
-            if phase == .active { controller.appDidBecomeActive() }
+            if phase == .active {
+                controller.appDidBecomeActive()
+            } else if phase == .background {
+                // .background, not .inactive. Inactive also fires for Control
+                // Centre, a pulled-down notification shade and an incoming
+                // call banner — none of which means the alert has been
+                // abandoned, and converting on those would snatch it away
+                // while the person was still going to read it.
+                controller.appDidEnterBackground()
+            }
+        }
+        // Opening ammy://notify says this launch is about to be switched away
+        // from, so any failure should arrive as a notification. Nothing else:
+        // the app opens exactly as it would have otherwise.
+        .onOpenURL { url in
+            if url.host()?.lowercased() == "notify" || url.path().lowercased() == "/notify" {
+                controller.suppressNextPopup()
+            }
+        }
+        .alert("Ammy Stopped", isPresented: Binding(
+            get: { controller.pendingFailure != nil },
+            set: { if !$0 { controller.dismissFailure() } }
+        )) {
+            Button("OK") { controller.dismissFailure() }
+        } message: {
+            Text(controller.pendingFailure ?? "")
         }
     }
 
