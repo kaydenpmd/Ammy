@@ -1,4 +1,4 @@
-name: Build unsigned IPA
+name: Build unsigned IPA and simulator app
 
 on:
   push:
@@ -43,7 +43,7 @@ jobs:
       - name: Generate Xcode project
         run: xcodegen generate
 
-      - name: Build
+      - name: Build for device
         run: |
           xcodebuild \
             -project Ammy.xcodeproj \
@@ -72,5 +72,49 @@ jobs:
         with:
           name: ${{ steps.ver.outputs.name }}
           path: ${{ steps.ver.outputs.name }}.ipa
+          archive: false
+          if-no-files-found: error
+
+      # Appetize only takes iOS Simulator builds — a .app, never an .ipa, and
+      # it says so outright: "AppStore distribution device builds (.ipa) are
+      # not currently supported." So this is a second build of the same source,
+      # not a repackaging of the first, and it lands in its own derived data
+      # directory so it cannot clobber the device products above.
+      #
+      # Worth remembering what it is good for. The Simulator has no Music app
+      # and no media library, so systemMusicPlayer reads nothing and the whole
+      # of NowPlayingMonitor is inert there; KeepAlive has no real eviction
+      # pressure to survive either. What it *can* answer is layout on hardware
+      # nobody here owns — an iPad, or a large foldable screen.
+      - name: Build for simulator
+        run: |
+          xcodebuild \
+            -project Ammy.xcodeproj \
+            -scheme Ammy \
+            -configuration Release \
+            -sdk iphonesimulator \
+            -derivedDataPath build-sim \
+            MARKETING_VERSION=${{ steps.ver.outputs.marketing }} \
+            CURRENT_PROJECT_VERSION=${{ github.run_number }} \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO \
+            ONLY_ACTIVE_ARCH=NO
+
+      # The .app has to sit at the root of the archive — no Payload/ wrapper,
+      # which is the .ipa convention and not this one. -y keeps symlinks as
+      # symlinks so a bundle with embedded frameworks survives the round trip.
+      - name: Package for Appetize
+        run: |
+          cd build-sim/Build/Products/Release-iphonesimulator
+          zip -qry "$GITHUB_WORKSPACE/${{ steps.ver.outputs.name }}-simulator.zip" Ammy.app
+
+      # archive: false for the same reason as the .ipa above — the file is
+      # already a zip, and Appetize wants that zip rather than one wrapped in
+      # another.
+      - uses: actions/upload-artifact@v7
+        with:
+          name: ${{ steps.ver.outputs.name }}-simulator
+          path: ${{ steps.ver.outputs.name }}-simulator.zip
           archive: false
           if-no-files-found: error
