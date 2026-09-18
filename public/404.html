@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Not found — Ammy</title>
+<meta name="robots" content="noindex">
+<!--
+  This file exists for its status code more than its contents.
+
+  Without a 404.html, Cloudflare Pages answers an unmatched path with
+  index.html and a 200. That is the right behaviour for a single-page app and
+  the wrong one here: on 18 Sept 2026 a request for /source.json was read as
+  "the source is deploying the landing page instead of the JSON", when in fact
+  the file was live and the response was a cached fallback from before it
+  existed. The control test — comparing against a nonsense path — could not
+  tell the two apart, because a nonsense path returned the same 200 and the
+  same 10798 bytes either way.
+
+  A real 404 makes that mistake impossible to make: a missing file now says it
+  is missing. It also matters for the sideloaders, which would otherwise be
+  handed HTML where they asked for JSON and report a parse error rather than a
+  wrong address.
+
+  Deleting this file silently restores the trap.
+
+  Styling is copied from index.html rather than shared, because a stylesheet
+  would be a second request on the one page most likely to be reached by
+  something already having a bad time.
+-->
+<style>
+  :root {
+    --bg: #0e1116; --card: #161b22; --line: #262d38;
+    --text: #e6edf3; --dim: #9aa7b6;
+    --accent: #5865f2; --accent-ink: #fff; --radius: 14px;
+  }
+  @media (prefers-color-scheme: light) {
+    :root { --bg:#f6f8fa; --card:#fff; --line:#d8dee4; --text:#1f2328; --dim:#636c76; }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 40px 20px 80px;
+    background: var(--bg); color: var(--text);
+    font: 16px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 640px; margin: 0 auto; }
+  h1 { font-size: 27px; margin: 0 0 6px; letter-spacing: -.02em; }
+  .sub { color: var(--dim); margin: 0 0 24px; font-size: 15px; }
+  .panel { background: var(--card); border: 1px solid var(--line);
+           border-radius: var(--radius); padding: 16px 18px; }
+  h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .07em;
+       color: var(--dim); margin: 26px 0 10px; font-weight: 600; }
+  code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+         font-size: 13.5px; word-break: break-all; }
+  .path { display: block; padding: 12px 14px; background: var(--card);
+          border: 1px solid var(--line); border-radius: var(--radius);
+          margin-bottom: 4px; }
+  ul.steps { margin: 0; padding-left: 20px; color: var(--dim); font-size: 14.5px; }
+  ul.steps li { margin-bottom: 6px; }
+  .steps strong { color: var(--text); font-weight: 600; }
+  a.btn {
+    display: flex; align-items: center; justify-content: center;
+    padding: 14px 18px; border-radius: var(--radius); margin-top: 26px;
+    font-size: 16px; font-weight: 600; text-decoration: none;
+    background: var(--accent); border: 1px solid var(--accent); color: var(--accent-ink);
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <h1>Not found</h1>
+  <p class="sub">Nothing is published at this address.</p>
+
+  <code class="path" id="path"></code>
+
+  <h2>If you were adding the source</h2>
+  <div class="panel">
+    <ul class="steps">
+      <li>The address is <code>https://apps.kaydenpmd.net/source.json</code> — one file, at the root, spelled exactly like that.</li>
+      <li>Paste it into <strong>SideStore</strong> or <strong>AltStore</strong> under <strong>Browse</strong> → <strong>Sources</strong> → <strong>+</strong>.</li>
+      <li>The page below has buttons that do it for you.</li>
+    </ul>
+  </div>
+
+  <a class="btn" href="/">Go to the Ammy page</a>
+
+</div>
+<script>
+  // textContent, not innerHTML: the path is whatever was typed.
+  document.getElementById('path').textContent = location.pathname + location.search;
+</script>
+</body>
+</html>
