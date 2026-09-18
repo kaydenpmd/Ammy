@@ -146,17 +146,24 @@ URLs.
 **Publish job fails immediately on the version check** — `project.yml` and your
 tag disagree. Nothing was published; fix one and retag.
 
-**`download-artifact` fails to find the artifact** — paid for on 18 Sept 2026.
-With `archive: false`, upload-artifact names the artifact after the *file*, not
-after the `name:` it was given, so `name: Ammy-1.0-b60-abc1234` produces an
-artifact called `Ammy-1.0-b60-abc1234.ipa`. The download step asks for the name
-with `.ipa` for that reason, and the `.ipa` is then located with `find` rather
-than by rebuilding the path a second time — getting that string wrong publishes
-a `downloadURL` that 404s, which is worse than failing.
+**The .ipa is uploaded twice, on purpose.** Paid for on 18 Sept 2026 across two
+failed releases. `build-ipa.yml` uploads the plain artifact with
+`archive: false`, which is what makes a browser download the `.ipa` itself
+instead of a zip around it — worth keeping, that's the one a human grabs. But
+`archive: false` uploads a bare file, so `download-artifact` treats the artifact
+as an archive and unpacks it. An `.ipa` *is* a zip, so what arrives is
+`Payload/Ammy.app/…` and no `.ipa` anywhere. Nothing had ever downloaded that
+artifact from another job before, so the flag had never been tested in that
+direction.
 
-**`download-artifact` returns a zip containing a zip** — the download version
-must match the `upload-artifact@v7` in `build-ipa.yml`. That's what `archive:
-false` depends on.
+The `-release` copy uses default archiving — upload wraps, download unwraps, the
+file arrives intact — and is only uploaded on a tag. `publish-source.yml`
+downloads that one. Don't "deduplicate" these back into a single upload.
+
+Two earlier symptoms from the same tangle, in case they resurface: the artifact
+produced by `archive: false` is named after the *file*, extension included, not
+after the `name:` given to it; and the download version must match the
+`upload-artifact@v7` over in `build-ipa.yml`.
 
 **The build number is a commit count, not `github.run_number`** — also 18 Sept
 2026. In a reusable workflow the `github` context belongs to the caller, so

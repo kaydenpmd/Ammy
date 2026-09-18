@@ -126,6 +126,27 @@ jobs:
           archive: false
           if-no-files-found: error
 
+      # The same file again, with GitHub's normal archiving, and only on a tag.
+      # publish-source.yml downloads THIS one.
+      #
+      # archive: false above is what makes a browser download the .ipa itself
+      # rather than a zip containing it — worth keeping, that is the artifact a
+      # human grabs. But it has a consequence that only shows up when another
+      # *job* downloads it: the upload is a bare file, so download-artifact
+      # treats the artifact as an archive and unpacks it — and an .ipa is a zip,
+      # so it extracts Payload/ and the .ipa ceases to exist. Paid for on
+      # 18 Sept 2026, two failed releases deep.
+      #
+      # With default archiving the round trip is symmetric: upload wraps, download
+      # unwraps, and the .ipa arrives intact. Costs ~4MB of artifact storage per
+      # release, which is the cheapest available answer.
+      - uses: actions/upload-artifact@v7
+        if: github.ref_type == 'tag'
+        with:
+          name: ${{ steps.ver.outputs.name }}-release
+          path: ${{ steps.ver.outputs.name }}.ipa
+          if-no-files-found: error
+
       # Appetize only takes iOS Simulator builds — a .app, never an .ipa, and
       # it says so outright: "AppStore distribution device builds (.ipa) are
       # not currently supported." So this is a second build of the same source,
