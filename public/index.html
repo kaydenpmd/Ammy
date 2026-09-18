@@ -127,8 +127,8 @@
     <h2>Before you install</h2>
     <div class="panel">
       <ul class="steps">
-        <li><strong>Ammy needs a relay running on a Windows PC.</strong> The app reads your now-playing track and sends it to a small Python program on your desktop, which is what talks to Discord — Discord has no Rich Presence SDK on iOS, so there is no version of this that works from the phone alone. Presence only appears while that PC is awake with Discord open.</li>
-        <li>Setup is genuinely involved: a Discord application of your own, Tailscale for the tunnel, and the relay installed as a startup task. Read the README before installing the app, or it will do nothing.</li>
+        <li><strong>Ammy is a sender, not a destination.</strong> It reads your now-playing track and POSTs it as JSON to an HTTPS endpoint you set — so you need something running at the other end to receive it. It is built to pair with <strong>Issun</strong>, and is not limited to it: anything that accepts an HTTPS POST works.</li>
+        <li>Setup on the phone is an address and an optional key, and nothing else. Standing something up to receive it is the part that takes a moment — read the repo before installing, or the app will sit there doing nothing.</li>
         <li>You need <strong>SideStore</strong> (or AltStore) already set up with your own Apple ID.</li>
         <li>On a free Apple ID, sideloaded apps <strong>stop working after 7 days</strong> until refreshed, and count against a <strong>3-app limit</strong>. That's an Apple restriction, not something this app can opt out of.</li>
         <li id="minosLi" hidden></li>

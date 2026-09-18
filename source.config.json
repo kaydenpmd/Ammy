@@ -11,8 +11,8 @@
     "name": "Ammy",
     "bundleIdentifier": "com.local.ammy",
     "developerName": "Kayden Yerington",
-    "subtitle": "Beta · Apple Music now playing, on Discord",
-    "localizedDescription": "Ammy shows what you're listening to in Apple Music as your Discord Rich Presence — title, artist, cover art and a live progress bar, with the title and cover clickable through to Apple Music.\n\nREQUIRES A RELAY ON A WINDOWS PC. Discord has no Rich Presence SDK on iOS, and setting presence from a phone directly would mean a user token, which gets accounts terminated. So the phone never talks to Discord: it sends now-playing data to a small Python relay on your desktop, and the relay uses Discord's supported local IPC path. Presence appears only while that PC is awake with the Discord desktop app open.\n\nSetting it up takes a Discord application of your own, Tailscale for the tunnel, and the relay registered as a startup task. Read the repo README first — the app on its own does nothing.\n\nRequires iOS 26 or later.",
+    "subtitle": "Beta · Apple Music now playing, over HTTPS",
+    "localizedDescription": "Ammy reads what you're playing in Apple Music — title, artist, album, cover art and the live playback position — and POSTs it as JSON to an HTTPS endpoint you choose. It keeps reporting while the screen is off and while other apps are in front: an update on every track change, and a heartbeat every 30 seconds.\n\nBUILT TO PAIR WITH ISSUN, and not limited to it. Ammy has no opinion about what receives the data — anything that accepts an HTTPS POST works.\n\nAMMY IS A SENDER, NOT A DESTINATION. On its own it does nothing: you need something running at the other end to point it at. Setup on the phone is an address and an optional key, and nothing else. Read the repo first.\n\nRequires iOS 26 or later, and permission to read your media library.",
     "iconURL": "https://apps.kaydenpmd.net/ammy-icon.png",
     "tintColor": "#5865f2",
     "category": "entertainment",
@@ -21,7 +21,7 @@
     "appPermissions": {
       "entitlements": [],
       "privacy": {
-        "NSAppleMusicUsageDescription": "Reads what you're currently playing so it can be shown on Discord."
+        "NSAppleMusicUsageDescription": "Reads what you're currently playing so it can be sent to the endpoint you choose."
       }
     }
   }

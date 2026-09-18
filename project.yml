@@ -49,8 +49,12 @@ targets:
           - UIInterfaceOrientationPortraitUpsideDown
           - UIInterfaceOrientationLandscapeLeft
           - UIInterfaceOrientationLandscapeRight
+        # Deliberately says nothing about what the endpoint does with it. This
+        # string is the iOS permission prompt and also appears in the source
+        # listing's appPermissions, so it has to hold for any receiver.
         NSAppleMusicUsageDescription: >-
-          Reads what you're currently playing so it can be shown on Discord.
+          Reads what you're currently playing so it can be sent to the endpoint
+          you choose.
         # Required for the silent-audio keepalive in KeepAlive.swift.
         UIBackgroundModes:
           - audio
