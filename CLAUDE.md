@@ -1000,13 +1000,26 @@ the window reserves rather than what the bar reserved — and the bar pads
 `max(0, barGap - bottomSafeArea)` at the bottom with `barGap` at the top.
 `onGeometryChange` over a key-window read because iPad rotates and resizes, and
 over a `GeometryReader` because that would take over the layout beneath it.
-**Nobody has looked at it on a screen yet**, and the thing to check is exactly
-the assumption the approach rests on: whether that proxy reports 34 rather than
-0 on a Face ID phone. If it reports 0, the button lands where it does today —
-the `max` is there so a bad reading degrades to the old bug instead of a button
-flush against the edge. Check the SE too, where the answer should not move.
-This item stays open until both have been seen, and the iPad screenshots below
-still need capturing after that.
+
+**18 Sept 2026: seen on a Face ID phone, and the assumption from 17 Sept was
+wrong in a different place than expected.** `bottomSafeArea` does read 34 on a
+real device — the question that paragraph left open is answered, and it's not
+the misread it worried about. The button still read as too high anyway.
+Pixel-measured against Shortcuts' own floating tab bar (Library/Automation/
+Gallery) on the same iPhone 16 Pro Max screenshot: Ammy's button sat 34.3pt
+above the true screen edge, Shortcuts' tab bar sat 21.3pt. System bars don't
+stop at the top of the reserved home-indicator zone the way `max(0, barGap -
+bottomSafeArea)` assumed — they intrude about 13pt into it.
+
+`edgeGap = 21` replaces that formula: `.padding(.bottom, edgeGap -
+bottomSafeArea)`, no clamp, because `bottomSafeArea + (edgeGap -
+bottomSafeArea)` is `edgeGap` regardless of what `bottomSafeArea` reads. **Not
+yet touched on a real device** — this is a screenshot pixel measurement, not a
+finger on the glass, and the project's own rule for exactly this class of
+question (see Gotchas, glass button styles) is to build it and touch it before
+trusting a number like this. Check both a Face ID phone and the SE. This item
+stays open until both have been seen, and the iPad screenshots below still
+need capturing after that.
 
 **This got more urgent when the source went public.** It was cosmetic while it
 was one SE; almost no subscriber is on a home-button phone, so the one device

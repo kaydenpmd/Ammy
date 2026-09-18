@@ -46,6 +46,24 @@ struct ContentView: View {
     /// from it rather than simply applying it.
     private static let barGap: CGFloat = 16
 
+    /// Total distance from the button's bottom edge to the true screen edge on
+    /// a Face ID phone — not the full 34pt home-indicator inset. The 17 Sept
+    /// fix (`max(0, barGap - bottomSafeArea)`) correctly stops adding *extra*
+    /// padding on top of the inset, but that still leaves the button sitting
+    /// at the full 34pt, and on-screen that reads as too high. Measured
+    /// pixel-for-pixel against Shortcuts' own floating tab bar (Library/
+    /// Automation/Gallery) on an iPhone 16 Pro Max screenshot 18 Sept: its
+    /// pill sits 21.3pt above the true edge, not 34pt — system bars intrude
+    /// into part of the reserved zone rather than stopping at its top. This
+    /// constant pins the button there regardless of `bottomSafeArea`, since
+    /// `bottomSafeArea + (edgeGap - bottomSafeArea) == edgeGap` always — no
+    /// clamp needed, unlike the old formula.
+    ///
+    /// **Not yet touched on a real device** — screenshot measurement only.
+    /// Check this on both a Face ID phone and the SE before trusting it; it
+    /// may need tuning either direction once someone actually looks at it.
+    private static let edgeGap: CGFloat = 21
+
     /// The fields have drifted from what is actually being sent, and there is a
     /// session for that to matter to. Both halves are the controller's to know
     /// now; the view only decides that the bar cares about the pair.
@@ -243,20 +261,17 @@ struct ContentView: View {
                 // slightly springy without wobbling. Raise it for more rubber.
                 .animation(.spring(duration: 0.4, bounce: 0.15), value: controller.isRunning)
                 .animation(.spring(duration: 0.4, bounce: 0.15), value: isEdited)
-                // The gap above the button is a constant; the gap below it is
-                // only whatever the home indicator has not already provided.
-                // A Face ID phone reserves 34pt for the indicator and a system
-                // bar adds nothing on top of that, so a flat 16 here left the
-                // button 50pt off the edge — while a home-button phone reserves
-                // nothing at all, which is why the padding was added to begin
-                // with. Padding the *shortfall* gives 16 on the SE and 0 on
-                // anything with an indicator, and needs no device check.
-                //
-                // Note the failure mode, which is why it is written as a max:
-                // an inset that reads as 0 when it should not gives back the old
-                // behaviour, not a button jammed against the bottom of the glass.
+                // The gap above the button is a constant. The gap below it
+                // targets `edgeGap` from the true screen edge regardless of
+                // device — see the doc comment on `edgeGap` for why 34pt (the
+                // raw home-indicator inset, and what the first fix here
+                // produced) still read as too high. This subtracts whatever
+                // `bottomSafeArea` already provides, going negative on a Face
+                // ID phone to pull the button into part of the reserved zone;
+                // no clamp needed, since the two `bottomSafeArea` terms cancel
+                // and the total is pinned at `edgeGap` no matter what it reads.
                 .padding(.top, Self.barGap)
-                .padding(.bottom, max(0, Self.barGap - bottomSafeArea))
+                .padding(.bottom, Self.edgeGap - bottomSafeArea)
                 .padding(.horizontal, 21)
             }
             .alert("Use HTTPS?", isPresented: Binding(
