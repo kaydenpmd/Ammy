@@ -3,7 +3,7 @@
     {
       "name": "Ammy",
       "bundleIdentifier": "com.local.ammy",
-      "developerName": "Kayden Yerington",
+      "developerName": "kaydenpmd",
       "localizedDescription": "Ammy reads what you're playing in Apple Music — title, artist, album, cover art and the live playback position — and POSTs it as JSON to an HTTPS endpoint you choose. It keeps reporting while the screen is off and while other apps are in front: an update on every track change, and a heartbeat every 30 seconds.\n\nBUILT TO PAIR WITH ISSUN, and not limited to it. Ammy has no opinion about what receives the data — anything that accepts an HTTPS POST works.\n\nAMMY IS A SENDER, NOT A DESTINATION. On its own it does nothing: you need something running at the other end to point it at. Setup on the phone is an address and an optional key, and nothing else. Read the repo first.\n\nRequires iOS 26 or later, and permission to read your media library.",
       "iconURL": "https://apps.kaydenpmd.net/ammy-icon.png",
       "versions": [
