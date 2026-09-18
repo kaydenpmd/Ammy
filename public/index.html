@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ammy</title>
+<meta name="description" content="Add this source to AltStore or SideStore to install Ammy.">
+<style>
+  :root {
+    --bg: #0e1116; --card: #161b22; --line: #262d38;
+    --text: #e6edf3; --dim: #9aa7b6;
+    --accent: #5865f2; --accent-ink: #fff; --radius: 14px;
+  }
+  @media (prefers-color-scheme: light) {
+    :root { --bg:#f6f8fa; --card:#fff; --line:#d8dee4; --text:#1f2328; --dim:#636c76; }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 40px 20px 80px;
+    background: var(--bg); color: var(--text);
+    font: 16px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 640px; margin: 0 auto; }
+  .hero { display: flex; gap: 18px; align-items: center; margin-bottom: 28px; }
+  .icon {
+    width: 88px; height: 88px; border-radius: 20px; flex: 0 0 auto;
+    background: var(--line); object-fit: cover;
+    box-shadow: 0 2px 10px rgba(0,0,0,.25);
+  }
+  h1 { font-size: 27px; margin: 0 0 4px; letter-spacing: -.02em; }
+  .sub { color: var(--dim); margin: 0; font-size: 15px; }
+  .meta { color: var(--dim); font-size: 13.5px; margin-top: 6px; }
+  .btns { display: grid; gap: 10px; margin: 26px 0 8px; }
+  a.btn, button.btn {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    padding: 14px 18px; border-radius: var(--radius);
+    font-size: 16px; font-weight: 600; text-decoration: none;
+    border: 1px solid var(--line); background: var(--card); color: var(--text);
+    cursor: pointer; font-family: inherit; width: 100%;
+    transition: transform .08s ease;
+  }
+  a.btn:active, button.btn:active { transform: scale(.985); }
+  a.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+  .urlbox { display: flex; gap: 8px; align-items: stretch; }
+  .urlbox code {
+    flex: 1; min-width: 0; padding: 12px 14px;
+    background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
+    font-size: 13.5px; overflow-x: auto; white-space: nowrap;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    display: flex; align-items: center;
+  }
+  .urlbox button { width: auto; flex: 0 0 auto; padding: 12px 16px; font-size: 14px; }
+  section { margin-top: 34px; }
+  h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .07em;
+       color: var(--dim); margin: 0 0 10px; font-weight: 600; }
+  .panel { background: var(--card); border: 1px solid var(--line);
+           border-radius: var(--radius); padding: 16px 18px; }
+  .desc, .changelog { white-space: pre-wrap; margin: 0; }
+  .desc { font-size: 15px; }
+  .changelog { font-size: 14.5px; color: var(--dim); }
+  ol.steps, ul.steps { margin: 0; padding-left: 20px; color: var(--dim); font-size: 14.5px; }
+  ol.steps li, ul.steps li { margin-bottom: 6px; }
+  .steps strong { color: var(--text); font-weight: 600; }
+  .steps code { font-size: 12.5px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+  .shots { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 6px; }
+  .shots img { height: 380px; border-radius: 12px; border: 1px solid var(--line); flex: 0 0 auto; }
+  footer { margin-top: 44px; color: var(--dim); font-size: 13px; text-align: center; }
+  .err { color: #f0816a; }
+  [hidden] { display: none !important; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="hero">
+    <img id="icon" class="icon" alt="" hidden>
+    <div>
+      <h1 id="name">Loading…</h1>
+      <p class="sub" id="subtitle"></p>
+      <p class="meta" id="meta"></p>
+    </div>
+  </div>
+
+  <!-- SideStore first, deliberately. AltStore's AltServer wants iTunes and
+       iCloud direct from Apple, which the Microsoft Store versions can't
+       satisfy; SideStore refreshes on-device and doesn't hit that wall. The
+       AltStore button is here because the source format is shared, not as a
+       recommendation. -->
+  <div class="btns">
+    <a class="btn primary" id="side" href="#">Add to SideStore</a>
+    <a class="btn" id="alt" href="#">Add to AltStore</a>
+  </div>
+
+  <div class="urlbox">
+    <code id="url">…</code>
+    <button class="btn" id="copy">Copy</button>
+  </div>
+
+  <section id="descWrap" hidden>
+    <h2>About</h2>
+    <div class="panel"><p class="desc" id="desc"></p></div>
+  </section>
+
+  <section id="shotsWrap" hidden>
+    <h2>Screenshots</h2>
+    <div class="shots" id="shots"></div>
+  </section>
+
+  <section id="logWrap" hidden>
+    <h2>What's new</h2>
+    <div class="panel"><p class="changelog" id="log"></p></div>
+  </section>
+
+  <section>
+    <h2>If the buttons do nothing</h2>
+    <div class="panel">
+      <ol class="steps">
+        <li>They use the <code>sidestore://</code> and <code>altstore://</code> URL schemes. If you don't have that app installed, iOS has nothing to hand the link to and shows an error.</li>
+        <li>Copy the URL above instead.</li>
+        <li>In SideStore or AltStore: <strong>Browse</strong> → <strong>Sources</strong> (top right) → <strong>+</strong> → paste.</li>
+      </ol>
+    </div>
+  </section>
+
+  <section>
+    <h2>Before you install</h2>
+    <div class="panel">
+      <ul class="steps">
+        <li><strong>Ammy needs a relay running on a Windows PC.</strong> The app reads your now-playing track and sends it to a small Python program on your desktop, which is what talks to Discord — Discord has no Rich Presence SDK on iOS, so there is no version of this that works from the phone alone. Presence only appears while that PC is awake with Discord open.</li>
+        <li>Setup is genuinely involved: a Discord application of your own, Tailscale for the tunnel, and the relay installed as a startup task. Read the README before installing the app, or it will do nothing.</li>
+        <li>You need <strong>SideStore</strong> (or AltStore) already set up with your own Apple ID.</li>
+        <li>On a free Apple ID, sideloaded apps <strong>stop working after 7 days</strong> until refreshed, and count against a <strong>3-app limit</strong>. That's an Apple restriction, not something this app can opt out of.</li>
+        <li id="minosLi" hidden></li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="dlWrap" hidden>
+    <h2>Manual install</h2>
+    <div class="panel">
+      <ul class="steps">
+        <li>Download the <a id="ipa" href="#">.ipa</a> and add it through your sideloader's <strong>+</strong> button under My Apps.</li>
+        <li id="hashLi" hidden>SHA-256: <code id="hash" style="word-break:break-all"></code></li>
+      </ul>
+    </div>
+  </section>
+
+  <footer id="foot"></footer>
+
+</div>
+
+<script>
+(function () {
+  // source.json is served next to this page. Change if you move it.
+  var SOURCE_URL = new URL('source.json', location.href).href;
+  var $ = function (id) { return document.getElementById(id); };
+
+  $('url').textContent = SOURCE_URL;
+  $('alt').href  = 'altstore://source?url='  + SOURCE_URL;
+  $('side').href = 'sidestore://source?url=' + SOURCE_URL;
+
+  $('copy').addEventListener('click', function () {
+    var done = function () {
+      var b = $('copy'), old = b.textContent;
+      b.textContent = 'Copied';
+      setTimeout(function () { b.textContent = old; }, 1400);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(SOURCE_URL).then(done, done);
+    } else {
+      var t = document.createElement('textarea');
+      t.value = SOURCE_URL;
+      document.body.appendChild(t); t.select();
+      try { document.execCommand('copy'); } catch (e) {}
+      document.body.removeChild(t); done();
+    }
+  });
+
+  function megabytes(n) {
+    if (!n) return '';
+    var mb = n / 1048576;
+    return (mb >= 10 ? mb.toFixed(0) : mb.toFixed(1)) + ' MB';
+  }
+
+  fetch(SOURCE_URL, { cache: 'no-cache' })
+    .then(function (r) {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.json();
+    })
+    .then(function (src) {
+      var app = (src.apps || [])[0];
+      if (!app) throw new Error('no apps listed in source.json');
+
+      document.title = app.name + (src.name ? ' — ' + src.name : '');
+      $('name').textContent = app.name;
+      if (app.subtitle) $('subtitle').textContent = app.subtitle;
+      if (app.iconURL) { $('icon').src = app.iconURL; $('icon').hidden = false; }
+      if (app.tintColor) {
+        document.documentElement.style.setProperty(
+          '--accent', '#' + String(app.tintColor).replace('#', '')
+        );
+      }
+      if (src.name) $('foot').textContent = src.name;
+
+      var v = (app.versions || [])[0];
+      if (v) {
+        var bits = ['Version ' + v.version];
+        if (v.buildVersion) bits[0] += ' (build ' + v.buildVersion + ')';
+        if (v.date) {
+          bits.push(new Date(v.date).toLocaleDateString(undefined, {
+            year: 'numeric', month: 'short', day: 'numeric'
+          }));
+        }
+        if (v.size) bits.push(megabytes(v.size));
+        $('meta').textContent = bits.join(' · ');
+
+        if (v.minOSVersion) {
+          $('minosLi').innerHTML = 'Requires <strong>iOS ' + v.minOSVersion + ' or later</strong>.';
+          $('minosLi').hidden = false;
+        }
+        if (v.localizedDescription) {
+          $('log').textContent = v.localizedDescription;
+          $('logWrap').hidden = false;
+        }
+        if (v.downloadURL) {
+          $('ipa').href = v.downloadURL;
+          $('dlWrap').hidden = false;
+          if (v.sha256) { $('hash').textContent = v.sha256; $('hashLi').hidden = false; }
+        }
+      }
+
+      if (app.localizedDescription) {
+        $('desc').textContent = app.localizedDescription;
+        $('descWrap').hidden = false;
+      }
+
+      var shots = (app.screenshots || [])
+        .map(function (s) { return typeof s === 'string' ? s : (s && s.imageURL); })
+        .filter(Boolean);
+      if (shots.length) {
+        shots.forEach(function (u) {
+          var img = document.createElement('img');
+          img.src = u; img.alt = ''; img.loading = 'lazy';
+          $('shots').appendChild(img);
+        });
+        $('shotsWrap').hidden = false;
+      }
+    })
+    .catch(function (e) {
+      $('name').textContent = 'Source unavailable';
+      $('subtitle').textContent = 'Could not load source.json (' + e.message + ')';
+      $('subtitle').className = 'sub err';
+    });
+})();
+</script>
+</body>
+</html>

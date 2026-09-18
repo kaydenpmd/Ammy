@@ -1,0 +1,14 @@
+# Cloudflare Pages header rules.
+#
+# source.json has to arrive as application/json. Served as text/plain or
+# application/octet-stream, browsers offer it as a download and some sideloaders
+# refuse to parse it.
+
+/source.json
+  Content-Type: application/json; charset=utf-8
+  Access-Control-Allow-Origin: *
+  Cache-Control: public, max-age=300
+
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin

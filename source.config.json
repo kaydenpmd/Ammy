@@ -1,0 +1,28 @@
+{
+  "_comment": "Static metadata for the AltStore source. publish-source.yml merges per-release facts (version, build, size, hash, download URL, changelog) into public/source.json on top of this. Everything here is re-applied on every release, so a typo fixed here goes live with the next tag. sourceIdentifier and app.bundleIdentifier are the two exceptions — see PUBLISHING.md before changing either.",
+
+  "sourceName": "Kayden's Source",
+  "sourceIdentifier": "net.kaydenpmd.source",
+  "sourceURL": "https://apps.kaydenpmd.net/source.json",
+  "website": "https://apps.kaydenpmd.net",
+  "tintColor": "#5865f2",
+
+  "app": {
+    "name": "Ammy",
+    "bundleIdentifier": "com.local.ammy",
+    "developerName": "Kayden Yerington",
+    "subtitle": "Apple Music now playing, on Discord",
+    "localizedDescription": "Ammy shows what you're listening to in Apple Music as your Discord Rich Presence — title, artist, cover art and a live progress bar, with the title and cover clickable through to Apple Music.\n\nREQUIRES A RELAY ON A WINDOWS PC. Discord has no Rich Presence SDK on iOS, and setting presence from a phone directly would mean a user token, which gets accounts terminated. So the phone never talks to Discord: it sends now-playing data to a small Python relay on your desktop, and the relay uses Discord's supported local IPC path. Presence appears only while that PC is awake with the Discord desktop app open.\n\nSetting it up takes a Discord application of your own, Tailscale for the tunnel, and the relay registered as a startup task. Read the repo README first — the app on its own does nothing.\n\nRequires iOS 26 or later.",
+    "iconURL": "https://apps.kaydenpmd.net/ammy-icon.png",
+    "tintColor": "#5865f2",
+    "category": "entertainment",
+    "minOSVersion": "26.0",
+    "screenshots": [],
+    "appPermissions": {
+      "entitlements": [],
+      "privacy": {
+        "NSAppleMusicUsageDescription": "Reads what you're currently playing so it can be shown on Discord."
+      }
+    }
+  }
+}

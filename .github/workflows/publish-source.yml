@@ -1,0 +1,125 @@
+name: Publish to AltStore source
+
+# Cutting a release:
+#
+#   1. Bump MARKETING_VERSION in project.yml and commit it.
+#   2. git tag -a v1.1 -m "1.1" -m "- What changed
+#      - The next thing that changed"
+#   3. git push && git push origin v1.1
+#
+# The tag's message body becomes the changelog AltStore shows under What's New.
+# The tag number and MARKETING_VERSION have to agree — the job below refuses to
+# publish if they don't, because the source, the Info.plist and the tag are three
+# copies of one number and AltStore decides whether an update exists by comparing
+# its copy to the installed app's CFBundleShortVersionString. Let them drift and
+# either nobody is offered the update or everybody is offered it forever.
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  # Same build as a push to main — build-ipa.yml is called rather than copied, so
+  # the xcodebuild flags can't drift between a test build and a released one.
+  build:
+    uses: ./.github/workflows/build-ipa.yml
+
+  publish:
+    needs: build
+    # No Xcode needed past this point, and Linux minutes bill at 1x against
+    # macOS's 10x. The whole job is Python and git.
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # so the tag's message is readable below
+
+      - name: Check the tag agrees with project.yml
+        run: |
+          set -euo pipefail
+          TAG_VERSION="${GITHUB_REF_NAME#v}"
+          MARKETING="${{ needs.build.outputs.marketing }}"
+          if [ "$TAG_VERSION" != "$MARKETING" ]; then
+            echo "::error::Tag ${GITHUB_REF_NAME} means version ${TAG_VERSION}, but project.yml has MARKETING_VERSION ${MARKETING}."
+            echo "::error::Fix one of them and retag. Nothing has been published."
+            exit 1
+          fi
+          echo "Tag and project.yml agree on ${MARKETING}."
+
+      # Version must match the upload-artifact version in build-ipa.yml, or the
+      # archive: false artifact comes back wrapped in a zip.
+      - name: Download the .ipa built above
+        uses: actions/download-artifact@v7
+        with:
+          name: ${{ needs.build.outputs.name }}
+          path: dist
+
+      - name: Read the changelog out of the tag
+        run: |
+          set -euo pipefail
+          git tag -l --format='%(contents:body)' "$GITHUB_REF_NAME" > changelog.txt
+          if [ ! -s changelog.txt ]; then
+            git tag -l --format='%(contents:subject)' "$GITHUB_REF_NAME" > changelog.txt
+          fi
+          if [ ! -s changelog.txt ]; then
+            echo "Version ${GITHUB_REF_NAME#v}" > changelog.txt
+          fi
+          echo "--- changelog ---"
+          cat changelog.txt
+
+      # The Release is what actually hosts the .ipa. source.json only points at it,
+      # so this has to succeed before the source is updated — a source entry whose
+      # downloadURL 404s is worse than no entry at all.
+      - name: Create the GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: ${{ needs.build.outputs.marketing }}
+          body_path: changelog.txt
+          files: dist/${{ needs.build.outputs.name }}.ipa
+          fail_on_unmatched_files: true
+
+      # A tag build is a detached HEAD, and public/source.json lives on main where
+      # it accumulates one entry per release. It has to be edited against main's
+      # copy: writing to the tagged commit's copy would silently drop every
+      # version published since that commit was made. changelog.txt and dist/
+      # are untracked, so switching branches leaves them alone.
+      - name: Switch to main before touching source.json
+        run: |
+          set -euo pipefail
+          git fetch origin main
+          git checkout -B main origin/main
+
+      - name: Update source.json
+        run: |
+          set -euo pipefail
+          DOWNLOAD_URL="https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/${{ needs.build.outputs.name }}.ipa"
+
+          python3 scripts/build_source.py \
+            --config source.config.json \
+            --source public/source.json \
+            --ipa "dist/${{ needs.build.outputs.name }}.ipa" \
+            --version "${{ needs.build.outputs.marketing }}" \
+            --build-version "${{ needs.build.outputs.build }}" \
+            --download-url "$DOWNLOAD_URL" \
+            --changelog-file changelog.txt
+
+      # Committing to main is what deploys: Cloudflare Pages watches this branch
+      # and redeploys public/ on every push.
+      - name: Commit and push
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/source.json
+          if git diff --quiet --cached; then
+            echo "source.json unchanged — nothing to push."
+          else
+            git commit -m "source: publish ${{ needs.build.outputs.marketing }} (build ${{ needs.build.outputs.build }})"
+            git push origin main
+            echo "Pushed. Cloudflare Pages redeploys in a minute or two."
+          fi

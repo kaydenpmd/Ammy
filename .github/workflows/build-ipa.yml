@@ -12,12 +12,39 @@ on:
     paths-ignore:
       - '**.md'
       - 'bridge/**'
+      # Source-publishing machinery, for the same reason. public/source.json
+      # matters twice: the publish job commits it back to main, so without this
+      # every release would trigger a second build that exists only to record
+      # the first one — and advance the build number past the artifact it just
+      # published.
+      - 'public/**'
+      - 'scripts/**'
+      - 'source.config.json'
   # Kept so a build can still be forced by hand when paths-ignore skips one.
   workflow_dispatch:
+  # publish-source.yml calls this on a tag rather than defining its own build,
+  # so there is exactly one place the xcodebuild flags live. A tag release and
+  # a main build are then the same build by construction, not by coincidence.
+  workflow_call:
+    outputs:
+      name:
+        description: "Artifact name, which is also the .ipa filename minus the extension."
+        value: ${{ jobs.build.outputs.name }}
+      marketing:
+        description: "MARKETING_VERSION as read out of project.yml."
+        value: ${{ jobs.build.outputs.marketing }}
+      build:
+        description: "CURRENT_PROJECT_VERSION, i.e. the run number."
+        value: ${{ jobs.build.outputs.build }}
 
 jobs:
   build:
     runs-on: macos-26
+
+    outputs:
+      name: ${{ steps.ver.outputs.name }}
+      marketing: ${{ steps.ver.outputs.marketing }}
+      build: ${{ github.run_number }}
 
     steps:
       - uses: actions/checkout@v4
