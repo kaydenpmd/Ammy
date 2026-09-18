@@ -145,6 +145,19 @@ actor PresenceRelay {
         var body: [String: Any] = [
             "playing": playing && track != nil,
             "app_version": Bundle.main.displayVersion,
+
+            // Lets the relay tell a late-arriving push from a newer one. Each
+            // push is its own independent Task with no ordering guarantee
+            // against the others, so the farewell from stop() (playing:
+            // false) can land after an in-flight now-playing push that was
+            // already sent, and relay.py used to just apply whatever arrived
+            // last. Milliseconds since epoch rather than an incrementing
+            // counter: a counter resets to 0 on every relaunch, and the relay
+            // would then reject every push from the new process as "older"
+            // than whatever high number the last one reached. A wall clock
+            // only needs the device clock not to run backwards, which a
+            // counter can't promise across a cold start.
+            "seq": Int(Date().timeIntervalSince1970 * 1000),
         ]
 
         // The app cannot report its own death, so every push carries a snapshot

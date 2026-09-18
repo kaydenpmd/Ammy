@@ -884,17 +884,24 @@ senders, one live and one effortless.
 Unknown: whether the silent-audio keepalive survives tvOS backgrounding. Cheap
 to test with a stub target before committing to it.
 
-**6. Pushes can reach the relay out of order.** Each push is an independent
-`Task` with no ordering guarantee against the others, so the farewell `stop()`
-sends (`playing: false`) can land *before* a push that was already in flight
-saying `playing: true` — leaving Discord showing a track after Ammy stopped
-broadcasting it. Found 12 Sept 2026 while fixing the same staleness on the app's
-own side, where a session counter now makes an orphaned push keep quiet
-(`PresenceController.session`). That counter cannot help here: the relay has no
-way to know which session a request belonged to. The fix is a monotonic sequence
-number in the push body, which `relay.py` compares against the highest it has
-seen and drops anything older. It touches both sides, which is why it was kept
-out of that commit.
+**6. Pushes can reach the relay out of order — done, 18 Sept 2026.** Each push
+is an independent `Task` with no ordering guarantee against the others, so the
+farewell `stop()` sends (`playing: false`) could land *before* a push that was
+already in flight saying `playing: true` — leaving Discord showing a track
+after Ammy stopped broadcasting it. Found 12 Sept 2026 while fixing the same
+staleness on the app's own side, where a session counter now makes an orphaned
+push keep quiet (`PresenceController.session`). That counter couldn't help
+here: the relay has no way to know which session a request belonged to.
+
+`PresenceRelay.push()` now stamps every push with `seq` — milliseconds since
+epoch, not an incrementing counter, because a counter resets to 0 on relaunch
+and the relay would then reject every push from the new process as "older"
+than whatever high number the last one reached. `State.set()` in `relay.py`
+(1.9.0) drops a push whose `seq` isn't newer than the last one it accepted,
+logging it rather than failing silently — see the Gotchas note on that. A
+build that doesn't send `seq` is unaffected; always applied, the same rule as
+`RELAY_SECRET`/`RELAY_KEY`. Both `bridge/relay.py` and the running copy were
+updated together.
 
 **7. Issun has to survive Ammy's half-open sessions.** Decided 12 Sept 2026,
 alongside making a failed push tear the app's session down. Ammy can now end a

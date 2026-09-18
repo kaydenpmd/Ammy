@@ -153,7 +153,13 @@ PORT = int(os.environ.get("RELAY_PORT", "8787"))
 #          it" and "it was alive and couldn't reach me" stop looking identical.
 #          An app relaunch also gets its own line; it used to slip by, because a
 #          relaunch resets every counter at once and only increases were logged.
-RELAY_VERSION = "1.8.0"
+#   1.9.0  POST /now-playing carries `seq` (ms since epoch) and a push whose seq
+#          is not newer than the last one accepted is dropped instead of applied
+#          -- each push is its own independent request on the phone with no
+#          ordering guarantee against the others, so a farewell could otherwise
+#          land before an in-flight now-playing push and get overwritten by it.
+#          A build that doesn't send seq is unaffected; always applied.
+RELAY_VERSION = "1.9.0"
 
 # Which field shows on the one-line member-list view: name / state / details.
 STATUS_LINE = os.environ.get("STATUS_LINE", "state").strip().lower()
@@ -221,11 +227,31 @@ class State:
         self.lock = threading.Lock()
         self.track: dict | None = None
         self.updated_at = 0.0
+        # Highest push `seq` accepted so far. Each push is its own independent
+        # request on the phone with no ordering guarantee against the others,
+        # so the farewell from stop() (playing: false) can land after an
+        # in-flight now-playing push was already sent but arrives late --
+        # applying it in arrival order would leave Discord showing a track
+        # Ammy already stopped broadcasting. None until the first push
+        # carrying a seq arrives, so a build that predates this (or the first
+        # push of a fresh relay process) is never compared against anything.
+        self.last_seq: int | None = None
 
-    def set(self, track: dict | None) -> None:
+    def set(self, track: dict | None, seq: int | None) -> bool:
+        """Apply an update, unless a newer one has already been seen.
+
+        Returns whether it was applied. `seq` absent always applies -- an app
+        build that predates this talking to a relay that has it, same rule as
+        RELAY_SECRET/RELAY_KEY."""
         with self.lock:
+            if seq is not None and self.last_seq is not None and seq <= self.last_seq:
+                print(f"[state] dropped out-of-order push (seq={seq}, last={self.last_seq})")
+                return False
             self.track = track
             self.updated_at = time.time()
+            if seq is not None:
+                self.last_seq = seq
+            return True
 
     def get(self) -> tuple[dict | None, float]:
         with self.lock:
@@ -1211,7 +1237,9 @@ class Handler(BaseHTTPRequestHandler):
         _, previous = state.get()
         record_phone_version(body.get("app_version"))
         record_phone_diag(body.get("diag"))
-        state.set(body if body.get("playing") else None)
+        seq = body.get("seq")
+        state.set(body if body.get("playing") else None,
+                   seq if isinstance(seq, int) and not isinstance(seq, bool) else None)
         note_checkin(previous)
         self._reply(204)
 
