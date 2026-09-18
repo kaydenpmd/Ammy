@@ -36,6 +36,16 @@ struct ContentView: View {
     /// than fading. See the bar below for what the two IDs mean.
     @Namespace private var glass
 
+    /// What the window already reserves at the bottom edge — 34pt for a home
+    /// indicator, 0 on a home-button phone. Measured from outside the bottom
+    /// bar, because the bar extends the safe area it sits in and so cannot
+    /// measure it from within itself. See the padding at the foot of the bar.
+    @State private var bottomSafeArea: CGFloat = 0
+
+    /// SwiftUI's own `.padding()` amount, spelled out because the bar subtracts
+    /// from it rather than simply applying it.
+    private static let barGap: CGFloat = 16
+
     /// The fields have drifted from what is actually being sent, and there is a
     /// session for that to matter to. Both halves are the controller's to know
     /// now; the view only decides that the bar cares about the pair.
@@ -233,7 +243,20 @@ struct ContentView: View {
                 // slightly springy without wobbling. Raise it for more rubber.
                 .animation(.spring(duration: 0.4, bounce: 0.15), value: controller.isRunning)
                 .animation(.spring(duration: 0.4, bounce: 0.15), value: isEdited)
-                .padding(.vertical)
+                // The gap above the button is a constant; the gap below it is
+                // only whatever the home indicator has not already provided.
+                // A Face ID phone reserves 34pt for the indicator and a system
+                // bar adds nothing on top of that, so a flat 16 here left the
+                // button 50pt off the edge — while a home-button phone reserves
+                // nothing at all, which is why the padding was added to begin
+                // with. Padding the *shortfall* gives 16 on the SE and 0 on
+                // anything with an indicator, and needs no device check.
+                //
+                // Note the failure mode, which is why it is written as a max:
+                // an inset that reads as 0 when it should not gives back the old
+                // behaviour, not a button jammed against the bottom of the glass.
+                .padding(.top, Self.barGap)
+                .padding(.bottom, max(0, Self.barGap - bottomSafeArea))
                 .padding(.horizontal, 21)
             }
             .alert("Use HTTPS?", isPresented: Binding(
@@ -273,6 +296,17 @@ struct ContentView: View {
                      + "HTTPS, and iOS blocks plain HTTP.")
             }
         }
+        // Attached to the NavigationStack, deliberately outside the bottom bar:
+        // `safeAreaBar` extends the safe area of whatever it modifies, so a
+        // reading taken inside the bar's own content is measuring the bar. The
+        // stack sits outside that and reports what the window reserves.
+        //
+        // onGeometryChange rather than a one-shot read of the key window, since
+        // iPad rotates and Split View resizes; and rather than a GeometryReader,
+        // which would take over the layout of everything inside it.
+        .onGeometryChange(for: CGFloat.self) { proxy in
+            proxy.safeAreaInsets.bottom
+        } action: { bottomSafeArea = $0 }
         .task {
             // The monitor reads the device, not the relay, so it runs whether
             // or not a session does. That is what lets Now Playing and Media

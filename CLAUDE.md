@@ -965,6 +965,20 @@ no device checks. One wrinkle: reading the safe area *inside* a `safeAreaBar` is
 circular, since the bar is itself modifying it, so it wants reading from the
 window or a `GeometryReader` outside the bar.
 
+**Written 17 Sept 2026, not yet seen.** `bottomSafeArea` is fed by an
+`onGeometryChange` on the `NavigationStack` — outside the bar, so it reports what
+the window reserves rather than what the bar reserved — and the bar pads
+`max(0, barGap - bottomSafeArea)` at the bottom with `barGap` at the top.
+`onGeometryChange` over a key-window read because iPad rotates and resizes, and
+over a `GeometryReader` because that would take over the layout beneath it.
+**Nobody has looked at it on a screen yet**, and the thing to check is exactly
+the assumption the approach rests on: whether that proxy reports 34 rather than
+0 on a Face ID phone. If it reports 0, the button lands where it does today —
+the `max` is there so a bad reading degrades to the old bug instead of a button
+flush against the edge. Check the SE too, where the answer should not move.
+This item stays open until both have been seen, and the iPad screenshots below
+still need capturing after that.
+
 **This got more urgent when the source went public.** It was cosmetic while it
 was one SE; almost no subscriber is on a home-button phone, so the one device
 class the bar is wrong on is now the default first impression. It also gates the
