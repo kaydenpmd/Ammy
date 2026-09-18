@@ -767,9 +767,14 @@ Moved here from `AMMY-HANDOFF.md` on 9 Sept 2026, which was then deleted.
 
 **1. Shippable to others**, in the order things actually block:
 
-- **The relay is a dead end on first run** — it exits with "Set RELAY_KEY",
-  which a new user cannot act on. It should generate its own key, write its
-  own `.env`, and show it (a QR the app scans would remove the typing entirely).
+- ~~The relay is a dead end on first run — it exits with "Set RELAY_KEY", which
+  a new user cannot act on. It should generate its own key, write its own
+  `.env`, and show it (a QR the app scans would remove the typing entirely).~~
+  **Discarded 18 Sept 2026: Issun's job, not relay.py's.** Fixing `relay.py`'s
+  first-run experience would be throwaway work — key generation belongs in
+  whatever the user actually runs, and that's meant to be Issun, not a raw
+  Python script started by a Scheduled Task. See the self-provisioning-
+  executable bullet below, which is a description of Issun.
 - **"Endpoint Unreachable" means two different things** — a dead receiver and a
   wrong key produce the same message. The app already knows the difference between a
   connection failure and a 401. Small fix; would otherwise be most of the support
@@ -785,6 +790,7 @@ Moved here from `AMMY-HANDOFF.md` on 9 Sept 2026, which was then deleted.
   Apple — and about eight steps. The single biggest lever left is packaging the
   relay as one self-provisioning executable that registers its own autostart —
   that collapses Python, the relay, the key and autostart into one download.
+  **This is Issun**, once it exists — not a second thing to build.
 
 **2. Shortcuts relaunch automations.** Built 9 Sept, then deleted to get a clean
 stability measurement. Worth rebuilding only if the app still dies. The recipe,
