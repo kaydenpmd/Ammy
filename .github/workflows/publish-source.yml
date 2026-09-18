@@ -91,13 +91,38 @@ jobs:
       - name: Locate the .ipa
         id: ipa
         run: |
-          set -euo pipefail
-          FOUND=$(find dist -name '*.ipa' -type f | head -n1)
+          # Deliberately not `set -e` here. The first version of this step was
+          # `find dist -name '*.ipa' | head -n1` under `set -euo pipefail`, which
+          # fails two ways: `head` closing the pipe early hands `find` a SIGPIPE,
+          # so pipefail reports failure even when the file WAS found; and if
+          # dist/ is missing, `find` exits non-zero and -e kills the step before
+          # the diagnostic below ever prints. It failed silently for one of those
+          # two reasons and there was no way to tell which.
+          set -u
+
+          echo "--- everything under dist/ ---"
+          ls -laR dist 2>/dev/null || echo "(no dist directory at all)"
+          echo "--- workspace root ---"
+          ls -la
+
+          # -print -quit rather than a pipe: no second process, no SIGPIPE.
+          FOUND=$(find dist -type f -name '*.ipa' -print -quit 2>/dev/null)
+
+          # The artifact is a single file, so if the extension didn't survive the
+          # round trip, the only regular file under dist/ is still the right one.
           if [ -z "$FOUND" ]; then
-            echo "::error::No .ipa under dist/ after download. Contents:"
-            find dist -type f -print || true
+            COUNT=$(find dist -type f 2>/dev/null | wc -l)
+            if [ "$COUNT" = "1" ]; then
+              FOUND=$(find dist -type f -print -quit 2>/dev/null)
+              echo "No .ipa extension, but dist/ holds exactly one file. Using it."
+            fi
+          fi
+
+          if [ -z "$FOUND" ]; then
+            echo "::error::No .ipa under dist/ after download — see the listing above."
             exit 1
           fi
+
           echo "path=$FOUND" >> "$GITHUB_OUTPUT"
           echo "Using $FOUND ($(stat -c%s "$FOUND") bytes)"
 
