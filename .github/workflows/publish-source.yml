@@ -69,13 +69,37 @@ jobs:
             echo "Tag and project.yml agree on ${MARKETING}."
           fi
 
-      # Version must match the upload-artifact version in build-ipa.yml, or the
-      # archive: false artifact comes back wrapped in a zip.
+      # Two things about this that cost a failed run on 18 Sept 2026.
+      #
+      # The artifact is named "<name>.ipa", not "<name>". build-ipa.yml passes
+      # `name: <name>` to upload-artifact, but with `archive: false` the upload
+      # is the bare file and GitHub names the artifact after the file, extension
+      # and all. Asking for the name without .ipa finds nothing.
+      #
+      # The version must also match the upload-artifact version over there, or
+      # the archive: false artifact comes back wrapped in a zip.
       - name: Download the .ipa built above
         uses: actions/download-artifact@v7
         with:
-          name: ${{ needs.build.outputs.name }}
+          name: ${{ needs.build.outputs.name }}.ipa
           path: dist
+
+      # Resolved by search rather than reconstructed from the name, so a future
+      # change to either the artifact naming or download-artifact's unpacking
+      # can't silently point the Release and the source at a file that isn't
+      # there. A wrong path here would publish a downloadURL that 404s.
+      - name: Locate the .ipa
+        id: ipa
+        run: |
+          set -euo pipefail
+          FOUND=$(find dist -name '*.ipa' -type f | head -n1)
+          if [ -z "$FOUND" ]; then
+            echo "::error::No .ipa under dist/ after download. Contents:"
+            find dist -type f -print || true
+            exit 1
+          fi
+          echo "path=$FOUND" >> "$GITHUB_OUTPUT"
+          echo "Using $FOUND ($(stat -c%s "$FOUND") bytes)"
 
       - name: Read the changelog out of the tag
         run: |
@@ -99,7 +123,7 @@ jobs:
           tag_name: ${{ github.ref_name }}
           name: ${{ github.ref_name }}
           body_path: changelog.txt
-          files: dist/${{ needs.build.outputs.name }}.ipa
+          files: ${{ steps.ipa.outputs.path }}
           fail_on_unmatched_files: true
           prerelease: ${{ steps.tagcheck.outputs.prerelease }}
 
@@ -122,7 +146,7 @@ jobs:
           python3 scripts/build_source.py \
             --config source.config.json \
             --source public/source.json \
-            --ipa "dist/${{ needs.build.outputs.name }}.ipa" \
+            --ipa "${{ steps.ipa.outputs.path }}" \
             --version "${{ needs.build.outputs.marketing }}" \
             --build-version "${{ needs.build.outputs.build }}" \
             --download-url "$DOWNLOAD_URL" \

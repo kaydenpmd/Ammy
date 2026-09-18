@@ -146,9 +146,24 @@ URLs.
 **Publish job fails immediately on the version check** — `project.yml` and your
 tag disagree. Nothing was published; fix one and retag.
 
+**`download-artifact` fails to find the artifact** — paid for on 18 Sept 2026.
+With `archive: false`, upload-artifact names the artifact after the *file*, not
+after the `name:` it was given, so `name: Ammy-1.0-b60-abc1234` produces an
+artifact called `Ammy-1.0-b60-abc1234.ipa`. The download step asks for the name
+with `.ipa` for that reason, and the `.ipa` is then located with `find` rather
+than by rebuilding the path a second time — getting that string wrong publishes
+a `downloadURL` that 404s, which is worse than failing.
+
 **`download-artifact` returns a zip containing a zip** — the download version
 must match the `upload-artifact@v7` in `build-ipa.yml`. That's what `archive:
 false` depends on.
+
+**The build number is a commit count, not `github.run_number`** — also 18 Sept
+2026. In a reusable workflow the `github` context belongs to the caller, so
+`run_number` inside `build-ipa.yml` became publish-source.yml's counter and the
+first tag release built as `b1`. `git rev-list --count HEAD` doesn't care which
+workflow is running. It needs `fetch-depth: 0`; against the default shallow
+checkout it returns 1.
 
 **Source won't add in AltStore** — open `https://apps.kaydenpmd.net/source.json` in a
 browser. If it downloads rather than displaying, `public/_headers` isn't being

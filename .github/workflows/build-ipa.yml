@@ -44,23 +44,47 @@ jobs:
     outputs:
       name: ${{ steps.ver.outputs.name }}
       marketing: ${{ steps.ver.outputs.marketing }}
-      build: ${{ github.run_number }}
+      build: ${{ steps.ver.outputs.build }}
 
     steps:
+      # fetch-depth: 0 is load-bearing. The default checkout is shallow, and the
+      # build number below is a commit count — against a shallow clone that
+      # counts 1, and every build would claim to be build 1.
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       # Build identity comes from CI, not from anyone remembering to bump a
-      # number: github.run_number increases on every run, and the short SHA ties
-      # an installed build back to a commit. MARKETING_VERSION stays the single
-      # human-set value in project.yml and is read back out here so the two
-      # can't drift.
+      # number: the count of commits reachable from HEAD climbs on its own, and
+      # the short SHA ties an installed build back to a commit. MARKETING_VERSION
+      # stays the single human-set value in project.yml and is read back out here
+      # so the two can't drift.
+      #
+      # This was github.run_number until 18 Sept 2026, and that broke the moment
+      # publish-source.yml started calling this workflow. In a reusable workflow
+      # the github context belongs to the *caller*, so run_number became the
+      # publish workflow's own counter — which starts at 1. The first tag
+      # release built as Ammy-1.0-b1, a number that had already been used and
+      # that sits 54 below the build actually on the phone.
+      #
+      # A commit count doesn't care which workflow is running, which is the
+      # property that was missing. The sequence jumps 55 -> 60 once, here, and
+      # is continuous after that.
       - name: Work out the version
         id: ver
         run: |
+          set -euo pipefail
           MARKETING=$(sed -nE 's/.*MARKETING_VERSION: *"?([^"]+)"?.*/\1/p' project.yml | head -1)
           SHA=$(git rev-parse --short HEAD)
-          NAME="Ammy-${MARKETING}-b${{ github.run_number }}-${SHA}"
+          BUILD=$(git rev-list --count HEAD)
+          if [ "$BUILD" -lt 56 ]; then
+            echo "::error::Build number ${BUILD} is at or below the last run_number-based build (55)."
+            echo "::error::Publishing it would move the build number backwards. Is this a shallow clone?"
+            exit 1
+          fi
+          NAME="Ammy-${MARKETING}-b${BUILD}-${SHA}"
           echo "marketing=${MARKETING}" >> "$GITHUB_OUTPUT"
+          echo "build=${BUILD}" >> "$GITHUB_OUTPUT"
           echo "name=${NAME}" >> "$GITHUB_OUTPUT"
           echo "Building ${NAME}"
 
@@ -79,7 +103,7 @@ jobs:
             -sdk iphoneos \
             -derivedDataPath build \
             MARKETING_VERSION=${{ steps.ver.outputs.marketing }} \
-            CURRENT_PROJECT_VERSION=${{ github.run_number }} \
+            CURRENT_PROJECT_VERSION=${{ steps.ver.outputs.build }} \
             CODE_SIGN_IDENTITY="" \
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGNING_ALLOWED=NO \
@@ -122,7 +146,7 @@ jobs:
             -sdk iphonesimulator \
             -derivedDataPath build-sim \
             MARKETING_VERSION=${{ steps.ver.outputs.marketing }} \
-            CURRENT_PROJECT_VERSION=${{ github.run_number }} \
+            CURRENT_PROJECT_VERSION=${{ steps.ver.outputs.build }} \
             CODE_SIGN_IDENTITY="" \
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGNING_ALLOWED=NO \
