@@ -128,13 +128,30 @@ jobs:
       - name: Read the changelog out of the tag
         run: |
           set -euo pipefail
-          git tag -l --format='%(contents:body)' "$GITHUB_REF_NAME" > changelog.txt
-          if [ ! -s changelog.txt ]; then
-            git tag -l --format='%(contents:subject)' "$GITHUB_REF_NAME" > changelog.txt
+          TAG="$GITHUB_REF_NAME"
+
+          # actions/checkout leaves the tag as a lightweight ref, so
+          # %(contents:body) returns the *commit* message rather than the tag's
+          # annotation — and for a one-line commit that's a bare newline. Fetch
+          # the real tag object back before reading it.
+          #
+          # Paid for on 18 Sept 2026: the first release that got all the way
+          # through shipped with "Version 1.0" as its notes, because of this and
+          # the blank-check below together.
+          git fetch --force origin "refs/tags/${TAG}:refs/tags/${TAG}" 2>/dev/null || true
+
+          blank() { [ -z "$(printf '%s' "$1" | tr -d '[:space:]')" ]; }
+
+          MSG=$(git tag -l --format='%(contents:body)' "$TAG")
+          if blank "$MSG"; then
+            MSG=$(git tag -l --format='%(contents:subject)' "$TAG")
           fi
-          if [ ! -s changelog.txt ]; then
-            echo "Version ${GITHUB_REF_NAME#v}" > changelog.txt
+          if blank "$MSG"; then
+            MSG="Version ${TAG#v}"
+            echo "::warning::Tag ${TAG} carries no annotation. Release notes will be a generated line."
           fi
+
+          printf '%s\n' "$MSG" > changelog.txt
           echo "--- changelog ---"
           cat changelog.txt
 
