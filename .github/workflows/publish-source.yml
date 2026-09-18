@@ -1,29 +1,50 @@
 name: Publish to AltStore source
 
-# Cutting a release:
+# Every push to main that can change the app is a release: this builds an
+# IPA, publishes it as a real GitHub Release, and updates public/source.json
+# (and so what SideStore/AltStore offer) to match — automatically, no tagging
+# step. This replaced a manual "bump MARKETING_VERSION, git tag -a v1.1 -m ...,
+# push the tag" flow on 18 Sept 2026, because the whole point was to get a
+# build onto the phone by pushing, not by remembering a second step.
 #
-#   1. Bump MARKETING_VERSION in project.yml and commit it.
-#   2. git tag -a v1.1 -m "1.1" -m "- What changed
-#      - The next thing that changed"
-#   3. git push && git push origin v1.1
+# MARKETING_VERSION in project.yml is still the only version number a human
+# sets. Bump it there and push, and that push publishes under the new number;
+# leave it alone and every push publishes another build of the same version,
+# distinguished by build number — a commit count — alone. build_source.py
+# already replaces the previous entry for a given version rather than piling
+# up one per build, so source.json only ever offers the newest build of "1.0";
+# the GitHub Release for every build before it still exists, just not linked
+# from there.
 #
-# The tag's message body becomes the changelog AltStore shows under What's New.
-# The tag number and MARKETING_VERSION have to agree — the job below refuses to
-# publish if they don't, because the source, the Info.plist and the tag are three
-# copies of one number and AltStore decides whether an update exists by comparing
-# its copy to the installed app's CFBundleShortVersionString. Let them drift and
-# either nobody is offered the update or everybody is offered it forever.
+# The release's own tag (v<marketing>-b<build>) exists purely so GitHub has
+# somewhere to hang the asset. Nothing reads it back — the version numbers
+# that matter come from project.yml and the build job's commit count, not
+# from parsing this string.
 
 on:
   push:
-    tags: ['v*']
+    branches: [main]
+    # Only build (and release) when something that can change the app
+    # changes. Moved here from build-ipa.yml on 18 Sept 2026 along with the
+    # trigger itself — see that file for why a build number has to mean
+    # something. public/** matters doubly now: without this, the "Commit and
+    # push" step below, which touches only public/source.json, would trigger
+    # another run of this very workflow.
+    paths-ignore:
+      - '**.md'
+      - 'bridge/**'
+      - 'public/**'
+      - 'scripts/**'
+      - 'source.config.json'
+  # Kept so a release can still be forced by hand — e.g. to republish after
+  # editing source.config.json, which paths-ignore deliberately excludes from
+  # triggering one on its own.
+  workflow_dispatch:
 
 permissions:
   contents: write
 
 jobs:
-  # Same build as a push to main — build-ipa.yml is called rather than copied, so
-  # the xcodebuild flags can't drift between a test build and a released one.
   build:
     uses: ./.github/workflows/build-ipa.yml
 
@@ -36,38 +57,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0   # so the tag's message is readable below
+          fetch-depth: 0   # so the commit message below is readable
 
-      - name: Check the tag agrees with project.yml
-        id: tagcheck
+      # GitHub Releases need a tag, but there's no human-authored one anymore
+      # — synthesize a unique one from numbers the build job already computed.
+      - name: Work out the release tag
+        id: tag
         run: |
-          set -euo pipefail
-          RAW="${GITHUB_REF_NAME#v}"
-
-          # A trailing -suffix marks a pre-release without changing the version
-          # being published: v1.0-beta and v1.0 both carry version 1.0. That
-          # keeps MARKETING_VERSION the single numeric value a human sets, and
-          # keeps CFBundleShortVersionString from ever holding something
-          # non-numeric — which is also why the suffix can't live in the
-          # version itself.
-          TAG_VERSION="${RAW%%-*}"
-          SUFFIX="${RAW#"$TAG_VERSION"}"
-          MARKETING="${{ needs.build.outputs.marketing }}"
-
-          if [ "$TAG_VERSION" != "$MARKETING" ]; then
-            echo "::error::Tag ${GITHUB_REF_NAME} means version ${TAG_VERSION}, but project.yml has MARKETING_VERSION ${MARKETING}."
-            echo "::error::Fix one of them and retag. Nothing has been published."
-            exit 1
-          fi
-
-          if [ -n "$SUFFIX" ]; then
-            echo "prerelease=true" >> "$GITHUB_OUTPUT"
-            echo "Tag and project.yml agree on ${MARKETING}. Suffix ${SUFFIX} -> GitHub Release marked pre-release."
-            echo "Note: SideStore ignores that flag. The source offers this build to every subscriber regardless."
-          else
-            echo "prerelease=false" >> "$GITHUB_OUTPUT"
-            echo "Tag and project.yml agree on ${MARKETING}."
-          fi
+          echo "tag=v${{ needs.build.outputs.marketing }}-b${{ needs.build.outputs.build }}" >> "$GITHUB_OUTPUT"
 
       # The "-release" artifact, not the plain one. build-ipa.yml uploads the
       # .ipa twice: the plain artifact uses archive: false so that a browser
@@ -75,8 +72,6 @@ jobs:
       # unpack it here — an .ipa is a zip, so what lands is Payload/ and no .ipa
       # at all. The -release copy uses default archiving and survives the trip.
       # See the comment beside both uploads in build-ipa.yml.
-      #
-      # The version must also match the upload-artifact version over there.
       - name: Download the .ipa built above
         uses: actions/download-artifact@v7
         with:
@@ -125,33 +120,22 @@ jobs:
           echo "path=$FOUND" >> "$GITHUB_OUTPUT"
           echo "Using $FOUND ($(stat -c%s "$FOUND") bytes)"
 
-      - name: Read the changelog out of the tag
+      # No tag to read an annotation from anymore — the commit that triggered
+      # this build already says what changed, so use that. HEAD is already the
+      # pushed commit; fetch-depth: 0 up top isn't needed for this specifically
+      # but is cheap and was already there for the version-number history.
+      - name: Write the changelog from the commit
         run: |
           set -euo pipefail
-          TAG="$GITHUB_REF_NAME"
-
-          # actions/checkout leaves the tag as a lightweight ref, so
-          # %(contents:body) returns the *commit* message rather than the tag's
-          # annotation — and for a one-line commit that's a bare newline. Fetch
-          # the real tag object back before reading it.
-          #
-          # Paid for on 18 Sept 2026: the first release that got all the way
-          # through shipped with "Version 1.0" as its notes, because of this and
-          # the blank-check below together.
-          git fetch --force origin "refs/tags/${TAG}:refs/tags/${TAG}" 2>/dev/null || true
-
-          blank() { [ -z "$(printf '%s' "$1" | tr -d '[:space:]')" ]; }
-
-          MSG=$(git tag -l --format='%(contents:body)' "$TAG")
-          if blank "$MSG"; then
-            MSG=$(git tag -l --format='%(contents:subject)' "$TAG")
+          # Trailers are for git, not for a subscriber reading What's New. A
+          # trailing blank line where they used to be is harmless and not
+          # worth a fragile sed pass to remove.
+          git log -1 --format='%B' HEAD \
+            | grep -vE '^(Co-Authored-By|Claude-Session|Signed-off-by): ' \
+            > changelog.txt || true
+          if [ ! -s changelog.txt ]; then
+            echo "Version ${{ needs.build.outputs.marketing }} (build ${{ needs.build.outputs.build }})" > changelog.txt
           fi
-          if blank "$MSG"; then
-            MSG="Version ${TAG#v}"
-            echo "::warning::Tag ${TAG} carries no annotation. Release notes will be a generated line."
-          fi
-
-          printf '%s\n' "$MSG" > changelog.txt
           echo "--- changelog ---"
           cat changelog.txt
 
@@ -161,19 +145,19 @@ jobs:
       - name: Create the GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ github.ref_name }}
-          name: ${{ github.ref_name }}
+          tag_name: ${{ steps.tag.outputs.tag }}
+          name: ${{ steps.tag.outputs.tag }}
           body_path: changelog.txt
           files: ${{ steps.ipa.outputs.path }}
           fail_on_unmatched_files: true
-          prerelease: ${{ steps.tagcheck.outputs.prerelease }}
 
-      # A tag build is a detached HEAD, and public/source.json lives on main where
-      # it accumulates one entry per release. It has to be edited against main's
-      # copy: writing to the tagged commit's copy would silently drop every
-      # version published since that commit was made. changelog.txt and dist/
-      # are untracked, so switching branches leaves them alone.
-      - name: Switch to main before touching source.json
+      # public/source.json lives on main where it accumulates one entry per
+      # version. It has to be edited against main's current tip, not whatever
+      # commit was checked out when this job started: the build above takes a
+      # minute or two, and another push landing in that window would mean
+      # writing this update on top of a copy that's already stale, silently
+      # dropping whatever that other push published.
+      - name: Fetch the latest main before touching source.json
         run: |
           set -euo pipefail
           git fetch origin main
@@ -182,7 +166,7 @@ jobs:
       - name: Update source.json
         run: |
           set -euo pipefail
-          DOWNLOAD_URL="https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/${{ needs.build.outputs.name }}.ipa"
+          DOWNLOAD_URL="https://github.com/${{ github.repository }}/releases/download/${{ steps.tag.outputs.tag }}/${{ needs.build.outputs.name }}.ipa"
 
           python3 scripts/build_source.py \
             --config source.config.json \
@@ -194,7 +178,8 @@ jobs:
             --changelog-file changelog.txt
 
       # Committing to main is what deploys: Cloudflare Pages watches this branch
-      # and redeploys public/ on every push.
+      # and redeploys public/ on every push. public/** is in this workflow's own
+      # paths-ignore, so this doesn't trigger another run of itself.
       - name: Commit and push
         run: |
           set -euo pipefail

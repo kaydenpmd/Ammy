@@ -1,30 +1,16 @@
 name: Build unsigned IPA and simulator app
 
 on:
-  push:
-    branches: [main]
-    # Only build when something that can change the app changes. Relay and
-    # documentation commits used to trigger a build each, which burned macOS
-    # minutes and — worse — advanced the build number without a line of Swift
-    # moving. The whole versioning scheme rests on the Version row matching the
-    # artifact name, so a build number that climbs for reasons unrelated to the
-    # app quietly erodes the one check that tells you what the phone is running.
-    paths-ignore:
-      - '**.md'
-      - 'bridge/**'
-      # Source-publishing machinery, for the same reason. public/source.json
-      # matters twice: the publish job commits it back to main, so without this
-      # every release would trigger a second build that exists only to record
-      # the first one — and advance the build number past the artifact it just
-      # published.
-      - 'public/**'
-      - 'scripts/**'
-      - 'source.config.json'
-  # Kept so a build can still be forced by hand when paths-ignore skips one.
+  # No direct push trigger here — publish-source.yml is the only thing that
+  # calls this now, on every qualifying push to main, so there is exactly one
+  # build (and one release) per push rather than this firing a second time on
+  # top of it. See that file's own trigger and paths-ignore for what "every
+  # build" actually means.
+  #
+  # Kept so a build can still be forced by hand independent of a release.
   workflow_dispatch:
-  # publish-source.yml calls this on a tag rather than defining its own build,
-  # so there is exactly one place the xcodebuild flags live. A tag release and
-  # a main build are then the same build by construction, not by coincidence.
+  # The one place the xcodebuild flags live, called rather than duplicated so
+  # a manually-forced build and a released one can't drift apart.
   workflow_call:
     outputs:
       name:
@@ -126,8 +112,9 @@ jobs:
           archive: false
           if-no-files-found: error
 
-      # The same file again, with GitHub's normal archiving, and only on a tag.
-      # publish-source.yml downloads THIS one.
+      # The same file again, with GitHub's normal archiving. publish-source.yml
+      # downloads THIS one, unconditionally now — every call to this workflow
+      # is for a release.
       #
       # archive: false above is what makes a browser download the .ipa itself
       # rather than a zip containing it — worth keeping, that is the artifact a
@@ -141,7 +128,6 @@ jobs:
       # unwraps, and the .ipa arrives intact. Costs ~4MB of artifact storage per
       # release, which is the cheapest available answer.
       - uses: actions/upload-artifact@v7
-        if: github.ref_type == 'tag'
         with:
           name: ${{ steps.ver.outputs.name }}-release
           path: ${{ steps.ver.outputs.name }}.ipa
