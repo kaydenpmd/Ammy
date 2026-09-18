@@ -88,7 +88,7 @@ final class PresenceController: ObservableObject {
         failureRun += 1
 
         guard everConnected else {
-            return teardown(status: outcome.summary, notify: true)
+            return teardown(reason: outcome.summary)
         }
 
         if retryUntil == nil {
@@ -97,10 +97,15 @@ final class PresenceController: ObservableObject {
         }
 
         guard let deadline = retryUntil, Date() < deadline else {
-            return teardown(status: outcome.summary, notify: true)
+            return teardown(reason: outcome.summary)
         }
 
+        // Same treatment as the first connect: a wait in progress is a
+        // spinner, not a word. The string is still set — if the spinner ever
+        // stopped covering it, the row should fall back to something true
+        // rather than to whatever it happened to be showing beforehand.
         linkStatus = "Reconnecting"
+        resolving = true
 
         // The app is alive and working, which is the only thing the watchdog
         // claims to measure — its notice says "Ammy isn't running", and firing
@@ -124,12 +129,19 @@ final class PresenceController: ObservableObject {
         watchdog.postpone()
     }
 
-    /// Show a failure and record it, so nothing can appear on the row without
-    /// also reaching the history.
-    private func fail(_ status: String) {
-        linkStatus = status
-        events.record(.failed, summary: status)
-        announce(status)
+    /// Record a failure and put it in front of someone, without putting it on
+    /// the row.
+    ///
+    /// The row reports *state* — Disconnected, Connecting, Connected,
+    /// Reconnecting — and nothing else. A reason is not a state: it describes
+    /// one moment in the past, while the row describes now, and parking one in
+    /// the other leaves the screen asserting something that stopped being true
+    /// the instant it appeared. Reasons live in the alert, the notification
+    /// and the history, all three of which are timestamped or dismissible.
+    private func fail(_ reason: String) {
+        linkStatus = "Disconnected"
+        events.record(.failed, summary: reason)
+        announce(reason)
     }
 
     /// Put a terminal failure in front of the person.
@@ -348,7 +360,7 @@ final class PresenceController: ObservableObject {
             Task { await relay.push(track: nil, playing: false) }
         }
 
-        teardown(status: "Disconnected")
+        teardown()
     }
 
     /// End the session, leaving `status` behind on the row.
@@ -361,7 +373,7 @@ final class PresenceController: ObservableObject {
     /// Cancelling the watchdog is right either way — it exists to notice an
     /// app that died while it was supposed to be reporting, and after this
     /// nothing is supposed to be reporting.
-    private func teardown(status: String, notify: Bool = false) {
+    private func teardown(reason: String? = nil) {
         heartbeat?.cancel(); heartbeat = nil
         correction?.cancel(); correction = nil
         relay = nil
@@ -373,9 +385,12 @@ final class PresenceController: ObservableObject {
         // that dies in the background is completely silent — the teardown
         // clears the dead-man's switch that used to be the only thing that
         // would eventually speak up.
-        if notify {
-            events.record(.failed, summary: status)
-            announce(status)
+        // A reason present at all is what makes this a failure rather than a
+        // deliberate stop — which is why it replaced the separate flag that
+        // used to say so.
+        if let reason {
+            events.record(.failed, summary: reason)
+            announce(reason)
         }
 
         session += 1
@@ -383,7 +398,7 @@ final class PresenceController: ObservableObject {
         failureRun = 0
         retryUntil = nil
         isRunning = false
-        linkStatus = status
+        linkStatus = "Disconnected"
         resolving = false
         activeEndpoint = ""
         activeKey = ""

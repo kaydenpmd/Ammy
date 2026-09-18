@@ -884,13 +884,18 @@ ATS is *not* reachable: `http://` is rejected before any request and
 `normalised()` requires an https scheme, so `.appTransportSecurityRequires-
 SecureConnection` cannot fire.
 
-*Still open:* when should "Connection Failed" decay back to "Disconnected"?
-The question changed on 12 Sept — a failed push now ends the session, so
-nothing retries and nothing will clear the message on its own. From the moment
-it appears that row reports history, not state. Either it expires after some
-interval, or it stands until the next Start and is read as a record of the last
-attempt. If teardown ever moves to a failure *threshold* instead of the first
-failure, there is a retry window again and this becomes a different question.
+*Settled 14 Sept 2026 — and it dissolved the decay question rather than
+answering it.* Reasons do not go on the status row at all. The row reports
+state — Disconnected, Connecting, Connected, Reconnecting — and nothing else.
+A reason describes one moment in the past while the row describes now, so
+parking one there left the screen asserting something that had stopped being
+true the instant it appeared. Reasons go to the alert, the notification and the
+history, all of which are either dismissible or timestamped. Nothing is left to
+decay: after a failure the row reads Disconnected, which is simply true.
+
+`teardown(reason:)` now carries an optional reason in place of a separate
+notify flag — a reason being present at all is what distinguishes a failure
+from a deliberate stop.
 
 ## Working with the owner
 
