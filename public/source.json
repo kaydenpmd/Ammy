@@ -9,12 +9,12 @@
       "versions": [
         {
           "version": "1.0",
-          "date": "2026-09-18T19:16:39+00:00",
-          "localizedDescription": "- Adjusted the Start button's position on Face ID phones — it was sitting noticeably above the edge\n- Fixed presence occasionally showing a track after playback had already stopped, when pushes arrived at the relay out of order\n- The media access permission prompt and app listing no longer mention Discord by name",
-          "downloadURL": "https://github.com/kaydenpmd/Ammy/releases/download/v1.0-beta2/Ammy-1.0-b80-3b7875c.ipa",
-          "size": 4375124,
-          "sha256": "5b2e98e017e68baca7c5e4ba6ee4638fc7e6496339ca15f29d693ecff06d2773",
-          "buildVersion": "80",
+          "date": "2026-09-18T19:45:01+00:00",
+          "localizedDescription": "Make every app-affecting push a release, not just a tagged one\n\nThe manual \"bump MARKETING_VERSION, git tag -a, push the tag\" flow was\nfriction for its own sake once the actual goal became \"get the latest\nbuild onto my phone through SideStore\" -- that only needs a push.\n\npublish-source.yml now triggers on push to main (with build-ipa.yml's old\npaths-ignore moved over, so a docs or relay-only commit still doesn't burn\na macOS build) instead of on a version tag, builds via workflow_call as\nbefore, and creates a real GitHub Release with a synthesized tag\n(v<marketing>-b<build>) rather than a human-authored one. The changelog is\nread from the triggering commit's message instead of a tag annotation,\nwith git trailers filtered out since a subscriber reading What's New\ndoesn't need Co-Authored-By/Claude-Session lines.\n\nbuild-ipa.yml drops its own push trigger -- publish-source.yml is now the\nonly thing that calls it, so a qualifying push builds once, not twice --\nand always uploads the archived release artifact instead of only doing so\nunder github.ref_type == 'tag', which would otherwise silently break the\ndownload step on every future run.\n\nMARKETING_VERSION in project.yml is unchanged (still \"1.0\"); every build\nfrom here just republishes under it, which build_source.py already\nhandles by replacing the previous entry for that version rather than\npiling one up per build.",
+          "downloadURL": "https://github.com/kaydenpmd/Ammy/releases/download/v1.0-b83/Ammy-1.0-b83-d0fc459.ipa",
+          "size": 4374617,
+          "sha256": "5a394740d5152d336c9b205f1f90c0ad1781227efbdbf0eb989dec82de03ed87",
+          "buildVersion": "83",
           "minOSVersion": "26.0"
         }
       ],
