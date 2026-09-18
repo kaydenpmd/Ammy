@@ -9,18 +9,18 @@
       "versions": [
         {
           "version": "1.0",
-          "date": "2026-09-18T04:00:27+00:00",
-          "localizedDescription": "First public beta release.",
-          "downloadURL": "https://github.com/kaydenpmd/Ammy/releases/download/v1.0-beta/Ammy-1.0-b65-76eea06.ipa",
-          "size": 4372623,
-          "sha256": "9055bdfdc2f8cea3b57d64870355fdcf7e360e7a3e6f0f1ec26f19da828544a5",
-          "buildVersion": "65",
+          "date": "2026-09-18T19:16:39+00:00",
+          "localizedDescription": "- Adjusted the Start button's position on Face ID phones — it was sitting noticeably above the edge\n- Fixed presence occasionally showing a track after playback had already stopped, when pushes arrived at the relay out of order\n- The media access permission prompt and app listing no longer mention Discord by name",
+          "downloadURL": "https://github.com/kaydenpmd/Ammy/releases/download/v1.0-beta2/Ammy-1.0-b80-3b7875c.ipa",
+          "size": 4375124,
+          "sha256": "5b2e98e017e68baca7c5e4ba6ee4638fc7e6496339ca15f29d693ecff06d2773",
+          "buildVersion": "80",
           "minOSVersion": "26.0"
         }
       ],
       "subtitle": "Beta · Apple Music now playing, over HTTPS",
       "category": "entertainment",
-      "tintColor": "FA2D48",
+      "tintColor": "fa2d48",
       "appPermissions": {
         "entitlements": [],
         "privacy": {
@@ -34,5 +34,5 @@
   "identifier": "net.kaydenpmd.source",
   "sourceURL": "https://apps.kaydenpmd.net/source.json",
   "website": "https://apps.kaydenpmd.net",
-  "tintColor": "FA2D48"
+  "tintColor": "fa2d48"
 }
