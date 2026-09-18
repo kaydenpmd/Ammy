@@ -165,6 +165,14 @@ produced by `archive: false` is named after the *file*, extension included, not
 after the `name:` given to it; and the download version must match the
 `upload-artifact@v7` over in `build-ipa.yml`.
 
+**Release notes come out as "Version 1.0"** — the tag annotation wasn't read.
+`actions/checkout` leaves the tag as a *lightweight* ref, so
+`%(contents:body)` returns the **commit** message instead of the tag's, which
+for a one-line commit is a bare newline. The step re-fetches the tag object
+first for that reason. The blank check also matters: `[ -s file ]` passes for a
+file holding only a newline, which is how the first successful release shipped
+with generated notes despite two fallbacks being in place.
+
 **The build number is a commit count, not `github.run_number`** — also 18 Sept
 2026. In a reusable workflow the `github` context belongs to the caller, so
 `run_number` inside `build-ipa.yml` became publish-source.yml's counter and the
