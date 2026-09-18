@@ -39,16 +39,35 @@ jobs:
           fetch-depth: 0   # so the tag's message is readable below
 
       - name: Check the tag agrees with project.yml
+        id: tagcheck
         run: |
           set -euo pipefail
-          TAG_VERSION="${GITHUB_REF_NAME#v}"
+          RAW="${GITHUB_REF_NAME#v}"
+
+          # A trailing -suffix marks a pre-release without changing the version
+          # being published: v1.0-beta and v1.0 both carry version 1.0. That
+          # keeps MARKETING_VERSION the single numeric value a human sets, and
+          # keeps CFBundleShortVersionString from ever holding something
+          # non-numeric — which is also why the suffix can't live in the
+          # version itself.
+          TAG_VERSION="${RAW%%-*}"
+          SUFFIX="${RAW#"$TAG_VERSION"}"
           MARKETING="${{ needs.build.outputs.marketing }}"
+
           if [ "$TAG_VERSION" != "$MARKETING" ]; then
             echo "::error::Tag ${GITHUB_REF_NAME} means version ${TAG_VERSION}, but project.yml has MARKETING_VERSION ${MARKETING}."
             echo "::error::Fix one of them and retag. Nothing has been published."
             exit 1
           fi
-          echo "Tag and project.yml agree on ${MARKETING}."
+
+          if [ -n "$SUFFIX" ]; then
+            echo "prerelease=true" >> "$GITHUB_OUTPUT"
+            echo "Tag and project.yml agree on ${MARKETING}. Suffix ${SUFFIX} -> GitHub Release marked pre-release."
+            echo "Note: SideStore ignores that flag. The source offers this build to every subscriber regardless."
+          else
+            echo "prerelease=false" >> "$GITHUB_OUTPUT"
+            echo "Tag and project.yml agree on ${MARKETING}."
+          fi
 
       # Version must match the upload-artifact version in build-ipa.yml, or the
       # archive: false artifact comes back wrapped in a zip.
@@ -78,10 +97,11 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ github.ref_name }}
-          name: ${{ needs.build.outputs.marketing }}
+          name: ${{ github.ref_name }}
           body_path: changelog.txt
           files: dist/${{ needs.build.outputs.name }}.ipa
           fail_on_unmatched_files: true
+          prerelease: ${{ steps.tagcheck.outputs.prerelease }}
 
       # A tag build is a detached HEAD, and public/source.json lives on main where
       # it accumulates one entry per release. It has to be edited against main's

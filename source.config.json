@@ -11,7 +11,7 @@
     "name": "Ammy",
     "bundleIdentifier": "com.local.ammy",
     "developerName": "Kayden Yerington",
-    "subtitle": "Apple Music now playing, on Discord",
+    "subtitle": "Beta · Apple Music now playing, on Discord",
     "localizedDescription": "Ammy shows what you're listening to in Apple Music as your Discord Rich Presence — title, artist, cover art and a live progress bar, with the title and cover clickable through to Apple Music.\n\nREQUIRES A RELAY ON A WINDOWS PC. Discord has no Rich Presence SDK on iOS, and setting presence from a phone directly would mean a user token, which gets accounts terminated. So the phone never talks to Discord: it sends now-playing data to a small Python relay on your desktop, and the relay uses Discord's supported local IPC path. Presence appears only while that PC is awake with the Discord desktop app open.\n\nSetting it up takes a Discord application of your own, Tailscale for the tunnel, and the relay registered as a startup task. Read the repo README first — the app on its own does nothing.\n\nRequires iOS 26 or later.",
     "iconURL": "https://apps.kaydenpmd.net/ammy-icon.png",
     "tintColor": "#5865f2",
