@@ -127,6 +127,25 @@ mid-gesture across 32 gestures; the title never animates while the content is
 still. Frame drops measured ~48fps effective during scrolling, but that is partly
 the screen recording itself and is not the cause.
 
+**16 Sept 2026: iOS 27 removed the tint behind the bar, and Ammy followed for
+free.** `safeAreaBar` does not draw a background — it applies the system's scroll
+edge effect, which is all Ammy ever asked for. Apple changed what that effect
+looks like and Ammy changed with it, in step with Music, without a line moving.
+Had the early objection to the hard background been answered by painting one by
+hand, Ammy would now be the only app on the phone still wearing the iOS 26 look.
+**Do not "fix" the absence of a background by adding one.**
+
+**Measured against Music on a 375pt screen, same day.** Both of Music's bars —
+the tab bar and the mini-player — start at x=40 in a 2x screenshot, so **20pt**.
+Ammy's button starts at x=43, **21.5pt**. Music draws a bright specular rim at
+its boundary (237 falling to ~120 over two pixels) and `.buttonStyle(.glass)`
+draws none, so aligning *fills* rather than outer boundaries puts them half a
+point apart instead of one and a half. Somewhere between 0.5 and 1.5pt out;
+not worth changing on that evidence. Note the tempting fix does not work:
+`.padding(.horizontal)` with no argument resolves to SwiftUI's 16pt default,
+visibly narrower than either. **The system does not expose the tab bar's inset
+anywhere reachable**, which is why this is a measured number with a flag on it.
+
 The untried experiment, if this is ever picked up again: enlarge the bottom inset
 *without moving the button* — `.padding(.top, 72)` on the bar's content — and
 re-measure. If the jump scales with the inset, the inset height is the trigger,
@@ -291,6 +310,13 @@ How to read it:
 - `appup` is seconds since the app launched, so on a death line it *is* that
   instance's lifetime. `devup` dates the last reboot, which turned a remembered
   claim about a phone restart into a checkable one.
+- **`appup` can legitimately exceed `devup`, and it is not corruption.** They are
+  different clocks: `appup` is `Date().timeIntervalSince(launchedAt)`, wall time,
+  while `devup` is `ProcessInfo.systemUptime`, which on Darwin *stops while the
+  device sleeps*. An app that lives through a few nights accrues more wall time
+  than the phone accrues awake time. Observed 101525s against 80445s on
+  16 Sept — six hours of the phone asleep, nothing wrong. Worth knowing before
+  distrusting a log, because every death verdict rests on `appup`.
 - `mem` is `phys_footprint`, the number jetsam actually measures — not
   `resident_size`, which reads high and matches nothing. Observed 16–25MB.
 - `thermal` was added on spec with no theory behind it and immediately became
@@ -345,6 +371,33 @@ A relaunch also gets its own `[keepalive]` line. It used to slip by in silence:
 a relaunch resets every counter at once, and only increases were logged.
 
 Builds that predate `diag` are unaffected and simply record nothing.
+
+**The worked example, from 18 Sept 2026.** Three gaps in the whole log record how
+many pushes failed first, and they fall either side of one commit:
+
+```
+build 45   4 pushes failed over 00:02:36  ->  gap 2m 37s
+build 51   1 pushes failed over 03:32:44  ->  gap 3h 32m
+build 51   1 pushes failed over 01:30:15  ->  gap 1h 30m
+```
+
+One failed push, then hours of nothing, with `app stayed up` and uptime climbing
+straight through both (10169→22933, 78568→83984). Not eviction, not memory, not
+the watchdog — the app was alive and had stopped trying. That is
+teardown-on-first-failure, introduced in `ac2cf68` and fixed by the retry window
+in `6746c8c`. Build 45 hit a blip four times over two and a half minutes and
+recovered by itself; build 51 hit one and gave up permanently. **This is the
+reason the established/never-connected distinction exists** — and the log is what
+found it, which is the whole argument for keeping `pushfail` on every push.
+
+**A relay bug, still open.** The 14:59 gap on 14 Sept is logged *twice*,
+identically, and reads `app restarted 3358s -> 3359s — it died`. Uptime went
+*up* by a second, which is not a restart. `_gap_verdict()` compared against a
+`_prev_app_uptime` that a near-simultaneous second push — the `handleChange()`
+correction, most likely — had already advanced, so the delta was tiny against a
+38-minute gap and the second branch fired. One of the fourteen death verdicts in
+the log is therefore both double-counted and wrong. Small, but it quietly
+corrupts the only record there is.
 
 ## Artwork
 
@@ -896,6 +949,32 @@ decay: after a failure the row reads Disconnected, which is simply true.
 `teardown(reason:)` now carries an optional reason in place of a separate
 notify flag — a reason being present at all is what distinguishes a failure
 from a deliberate stop.
+
+**9. The bottom bar sits too high on Face ID phones.** Found 16 Sept 2026 in
+Appetize, which is what that simulator build is for. `AmmyApp.swift` applies an
+unconditional `.padding(.vertical)` — SwiftUI's 16pt — added by `afa09ee` because
+a home-button phone has a bottom safe area of **zero** and the button sat flush
+against the edge. Face ID phones already reserve 34pt for the home indicator, so
+they get 34 + 16 = **50pt** where a system bar adds nothing on top of the
+indicator. Measured on the SE for comparison: Music's tab bar ends 19pt from the
+edge, Ammy's button 16pt.
+
+The fix is to pad the *shortfall* rather than a constant — `max(0, 16 - bottom
+safe area)`, which gives 16 on a home-button phone and 0 on a Face ID one, with
+no device checks. One wrinkle: reading the safe area *inside* a `safeAreaBar` is
+circular, since the bar is itself modifying it, so it wants reading from the
+window or a `GeometryReader` outside the bar.
+
+**This got more urgent when the source went public.** It was cosmetic while it
+was one SE; almost no subscriber is on a home-button phone, so the one device
+class the bar is wrong on is now the default first impression. It also gates the
+iPad screenshots for `source.config.json` — capture those after the fix, or the
+listing ships pictures of the wrong bar.
+
+**Note the shape of the mistake**, because it is the exact inverse of the
+`safeAreaBar` win recorded in Layout. The tint tracked an OS change for free
+because nothing was drawn by hand; this failed to track a *device class* because
+a constant was.
 
 ## Working with the owner
 
