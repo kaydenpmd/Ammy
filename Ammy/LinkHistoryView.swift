@@ -26,12 +26,17 @@ struct LinkHistoryView: View {
                 )
             } else {
                 List {
+                    // Clear background so the segmented control isn't sitting
+                    // in a second card of its own, but the default row insets
+                    // stay — stripping them to zero ran the picker's own
+                    // rectangular frame flush into the section's rounded top
+                    // corner, flattening it. The corner is the section's to
+                    // round; a row's content shouldn't be touching it.
                     Picker("Show", selection: $failuresOnly) {
                         Text("All").tag(false)
                         Text("Failures").tag(true)
                     }
                     .pickerStyle(.segmented)
-                    .listRowInsets(EdgeInsets())
                     .listRowBackground(Color.clear)
 
                     ForEach(entries) { entry in
