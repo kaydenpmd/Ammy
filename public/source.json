@@ -9,12 +9,12 @@
       "versions": [
         {
           "version": "1.0",
-          "date": "2026-09-18T03:53:34+00:00",
-          "localizedDescription": "Version 1.0",
-          "downloadURL": "https://github.com/kaydenpmd/Ammy/releases/download/v1.0-beta/Ammy-1.0-b63-f813a12.ipa",
-          "size": 4372624,
-          "sha256": "10fd54c3cd4ed89aa50dcbaa35211032839061f5f534332c2fc0e839b37d56be",
-          "buildVersion": "63",
+          "date": "2026-09-18T04:00:27+00:00",
+          "localizedDescription": "First public beta release.",
+          "downloadURL": "https://github.com/kaydenpmd/Ammy/releases/download/v1.0-beta/Ammy-1.0-b65-76eea06.ipa",
+          "size": 4372623,
+          "sha256": "9055bdfdc2f8cea3b57d64870355fdcf7e360e7a3e6f0f1ec26f19da828544a5",
+          "buildVersion": "65",
           "minOSVersion": "26.0"
         }
       ],
