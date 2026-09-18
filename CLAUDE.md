@@ -39,6 +39,35 @@ path. **Any change that moves Discord communication onto the phone is wrong.**
 Cost of this design: presence requires the PC awake with Discord desktop open.
 That's accepted, not a bug to fix.
 
+## What Ammy is, in anything a user reads
+
+The architecture above is what the *relay* does. It is not what Ammy is, and
+the difference is load-bearing in every string a subscriber sees. **Ammy is a
+sender**: it reads Apple Music's now-playing state and POSTs it as JSON to an
+HTTPS endpoint the user chooses. It is built to pair with **Issun** — a planned
+desktop application of the owner's that will complete the bridge to Discord —
+and it works with anything else that accepts an HTTPS POST.
+
+So the subtitle and description in `source.config.json`, the landing page in
+`public/index.html`, `NSAppleMusicUsageDescription` in `project.yml`, and the
+app's own UI all stay receiver-agnostic. Naming Discord in those places states a
+requirement that does not exist, and it has already had to be undone once —
+18 Sept 2026, after the first listing pitched Discord Rich Presence, a Windows
+relay and a Discord application of your own, which is one receiver's setup
+rather than a description of this app. The UI has always had this right on
+purpose: the field is called **Endpoint**, not Relay, because whether the
+address forwards, renders or files what it receives is none of the app's
+business.
+
+`README.md`, `bridge/` and this file are the other half of the rule. They
+document the Discord receiver, which is genuinely what they are about, and they
+go on saying so — the fix is never to strip accurate Discord information, only
+to move it from "what Ammy is" to "what the included relay does".
+
+**The trap that isn't text:** the listing's accent colour was `#5865f2`, which
+is Discord's blurple, so the old framing outlived the words that carried it.
+Changed to Apple Music red the same day. Check the non-prose surfaces too.
+
 ## Layout
 
 ```
