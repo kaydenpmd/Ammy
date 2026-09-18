@@ -775,12 +775,12 @@ Moved here from `AMMY-HANDOFF.md` on 9 Sept 2026, which was then deleted.
   whatever the user actually runs, and that's meant to be Issun, not a raw
   Python script started by a Scheduled Task. See the self-provisioning-
   executable bullet below, which is a description of Issun.
-- **"Endpoint Unreachable" means two different things** — a dead receiver and a
-  wrong key produce the same message. The app already knows the difference between a
-  connection failure and a 401. Small fix; would otherwise be most of the support
-  load. Partly addressed: `http://` now has its own message, because iOS blocks
-  plain HTTP at the network layer and that failure was indistinguishable from an
-  unreachable receiver.
+- ~~"Endpoint Unreachable" means two different things — a dead receiver and a
+  wrong key produce the same message.~~ **Done — closed by `PushOutcome` (item
+  8).** A dead relay, a wrong key, a wrong path and a Funnel-level failure all
+  read as distinct phrases now — "Connection Failed", "Key Rejected", "Wrong
+  Path", "Nothing at That Address" — verified against `PresenceRelay.swift`'s
+  `PushOutcome.summary` on 18 Sept 2026.
 - **Autostart is Windows-only.**
 - **Each user needs their own Discord application**, which is a five-step detour
   of its own. Note the application's *name* is the "Listening to" text, so it
@@ -906,35 +906,40 @@ on silence, never stacked. The material for this already exists: the relay
 records `app_uptime_s` and the push-failure counters, and `_gap_verdict()` in
 `relay.py` already uses them to tell a relaunch from a reconnect.
 
-**8. Errors: named and recorded; the popup is what's left.** Design settled
+**8. Errors: named, recorded and announced — done.** Design settled
 12 Sept 2026. Earlier ideas — an inline note under the status row, a static
-list of error types — were dropped in favour of a popup plus a history screen.
+list of error types — were dropped in favour of a popup plus a history screen,
+and both were built the same day the "not built" wording below was written,
+which is why this item stayed open on paper for four days after it closed in
+practice.
 
-*Built 14 Sept 2026:* `ErrorLog` and `ErrorHistoryView`, reached by an
-`Error History  >` row in its own unlabeled Section at the foot of the page.
-The log persists to UserDefaults, bounded at 50, newest first. Every failure
-that reaches the status row also reaches it — the session-ending kind through
-`teardown()`, the two pre-flight refusals through `PresenceController.fail()`,
-which exists so nothing can appear on the row without being recorded. The row,
-the notification and the history all show the same phrase.
+*The history.* `EventLog`/`LinkEvent`/`LinkHistoryView` replaced the
+originally-planned `ErrorLog`/`ErrorHistoryView` in `6746c8c` (14 Sept 2026) —
+"`EventLog` and `LinkHistoryView` replace `ErrorLog` and `ErrorHistoryView`,"
+per that commit's own message — and this item never caught up, so grepping
+the app for `ErrorLog` today finds nothing. The log holds all three things
+that can happen to a link, not only failures — `.failed`, `.interrupted`,
+`.recovered` — behind an All/Failures filter, newest first, persisted to
+UserDefaults and bounded at 100 (not the 50 first planned), reached from a
+`History` row (not `Error History`) at the foot of the page. Every failure
+that reaches the status row also reaches it, through the same `fail()` /
+`announce()` path the popup uses, so nothing can appear on the row without
+being recorded.
 
-*Not built:* the popup. The argument against is that a modal fired while
-someone is already looking at the row that just changed is noise, and the
-notification already covers the case where they are not looking. Left undone
-rather than decided — if it is wanted, it should probably fire on next
-foreground to explain a session that ended, not at the instant of failure.
-
-*The catch worth designing around first.* An alert can only appear while Ammy
-is in the foreground, and push failures overwhelmingly happen while it is not —
-that is the entire point of KeepAlive. A popup fired at the moment of failure
-would therefore miss most errors, and since 12 Sept a failed push also ends the
-session, so the app now goes quiet in your pocket with nothing to show for it.
-The better shape is probably: history is the real surface and always records;
-the popup fires on next foreground to explain why the session ended, rather
-than at the instant it did. The history needs somewhere to live — a bounded
-ring buffer on `DeviceDiagnostics` fits beside the push counters. Whether it
-survives relaunch is open, and matters more than it sounds, because the
-interesting failures are the ones that happened while you were not looking.
+*The popup.* Also `6746c8c`, same commit. `announce(_:)` in
+`PresenceController` is the single point every terminal failure passes
+through: a popup (`pendingFailure`, shown by the `"Ammy Stopped"` alert in
+`AmmyApp.swift`) if `UIApplication.shared.applicationState == .active`, a
+notification via the watchdog otherwise. That resolves the catch this item
+used to worry about — an alert fired at the instant of failure would miss
+most errors, since push failures overwhelmingly happen while Ammy is
+backgrounded — not by deferring to next-foreground as first proposed, but by
+checking liveness at the moment of failure and converting on the way out:
+`appDidEnterBackground()` catches a popup that was shown to an empty room
+(Ammy launched by a Shortcut, fails while technically frontmost, then
+switched away from a frame later) and turns it into a notification instead.
+`suppressNextPopup()`, driven by `ammy://notify`, skips the popup outright for
+a Shortcut that is about to background Ammy on purpose.
 
 *The precondition is done* (12 Sept 2026). `PresenceRelay.push()` returns
 `PushOutcome` rather than a `Bool`, and `PushOutcome.summary` turns every case
