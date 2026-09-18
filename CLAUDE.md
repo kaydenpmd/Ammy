@@ -988,19 +988,28 @@ The repo is cloned at `C:\Users\links\Repos\Ammy` (renamed from
 hand over whole files for web upload, which is what this document said from
 before the clone existed.
 
-**Git commands are the owner's to run, and this is not a preference.** Under
-local Cowork the shell is a separate Linux VM whose mount of host folders does
-not permit unlink — `git rm`, `git reset --hard`, even `git status` fail partway
-and leave a stale `.git/index.lock` blocking the owner's next command. Under
-cloud Cowork there is no shell on the machine at all; files are reached through
-the desktop app, and `.github/workflows/` is refused outright as a protected
-path. Either way: edit with the file tools, hand over the git lines.
+**Git commands are yours to run.** A Claude Code session has a real shell on the
+owner's Windows machine, so `git status`, `git add`, `git commit`, `git log` and
+`git push` all work against the clone directly — run them yourself instead of
+handing lines over to be pasted, and report what they printed. The same goes for
+`.github/workflows/`: it is an ordinary file here.
 
-Most "what state is this in?" questions can be answered without running
-anything. `.git/logs/HEAD` is the reflog, `.git/logs/refs/remotes/origin/main`
-records pushes, and `.git/config` holds the remote URL. Reading those three
-settled "is the rename committed?" in one call on 8 Sept, against a handoff note
-that claimed otherwise.
+**The hand-it-over rule was Cowork-only, and the reasoning still holds there.**
+Under local Cowork the shell is a separate Linux VM whose mount of host folders
+does not permit unlink — `git rm`, `git reset --hard`, even `git status` fail
+partway and leave a stale `.git/index.lock` blocking the owner's next command.
+Under cloud Cowork there is no shell on the machine at all; files are reached
+through the desktop app, and `.github/workflows/` is refused outright as a
+protected path. In *those* environments: edit with the file tools and hand over
+the git lines. Not in a Claude Code session.
+
+Also Cowork-only, and worth keeping for when it applies: "what state is this in?"
+can be answered without running anything, because `.git/logs/HEAD` is the reflog,
+`.git/logs/refs/remotes/origin/main` records pushes, and `.git/config` holds the
+remote URL. Reading those three settled "is the rename committed?" in one call on
+8 Sept, against a handoff note that claimed otherwise — but that was a workaround
+for having no shell. With one, `git log` is the direct answer and those files are
+the fallback.
 
 **Verify, don't assert.** This project has burned several rounds on confident
 wrong answers — that Discord couldn't hyperlink activity text (it can:
