@@ -9,12 +9,12 @@
       "versions": [
         {
           "version": "1.0",
-          "date": "2026-09-23T07:39:07+00:00",
-          "localizedDescription": "Stop live stations from crashing Ammy\n\nA station such as Apple Music 1 has no length and no fixed position, and MediaPlayer reports both as NaN. JSONSerialization can't write NaN and raises an Objective-C exception that try? can't catch, so playing a station killed the app. Times from MediaPlayer are now made finite where they enter the app (NaN becomes 0, which receivers already read as no progress bar), and the JSON call checks isValidJSONObject first so a bad body fails the push instead of the process.",
-          "downloadURL": "https://github.com/kaydenpmd/Ammy/releases/download/v1.0-b86/Ammy-1.0-b86-27ec43e.ipa",
-          "size": 4374890,
-          "sha256": "1afe3e70b0082626a7a507dda2c45ae5bdcbccd3ae6b19649e6bc8b34a7c47a9",
-          "buildVersion": "86",
+          "date": "2026-09-23T07:44:22+00:00",
+          "localizedDescription": "Send no progress bar for live stations\n\nA station such as Apple Music 1 reports the playing song's real length but no position (currentPlaybackTime is NaN). With the position stuck at 0, every push said the song had just started, and the receiver's bar snapped back to 0:00 on each heartbeat. A missing position now means live: the length goes out as 0, which receivers already read as no progress bar, and the body carries live: true.",
+          "downloadURL": "https://github.com/kaydenpmd/Ammy/releases/download/v1.0-b88/Ammy-1.0-b88-d1e0e62.ipa",
+          "size": 4375152,
+          "sha256": "c730c4474001a40be7bb42639dd795f3278121927cb7db492f330f01a9b10d94",
+          "buildVersion": "88",
           "minOSVersion": "26.0"
         }
       ],
