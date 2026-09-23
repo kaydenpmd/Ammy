@@ -9,12 +9,12 @@
       "versions": [
         {
           "version": "1.0",
-          "date": "2026-09-23T07:55:01+00:00",
-          "localizedDescription": "Call every failure notice Connection Failed\n\nThe popup and the notification were titled Ammy Stopped for what is always the connection failing, which read like the app had died (a separate event with its own notice). Both now say Connection Failed, with the specific reason underneath when there is one. A 5xx from something in front of the receiver (Funnel's 502 when nothing is listening) also says Connection Failed instead of blaming the receiver, and the receiver's own 5xx says Receiver Error, not Relay Error, keeping user-facing text receiver-agnostic.",
-          "downloadURL": "https://github.com/kaydenpmd/Ammy/releases/download/v1.0-b93/Ammy-1.0-b93-2901530.ipa",
-          "size": 4375547,
-          "sha256": "8e982d640eb537a19587b5a013bf46a91e97aaf91c184971b9134baabad5583e",
-          "buildVersion": "93",
+          "date": "2026-09-23T08:37:45+00:00",
+          "localizedDescription": "Put what's playing at the top, as an Apple Account-style row\n\nArtwork, the title in bold and the artist beneath, as the first section of the list, in the shape iOS uses for the head of a grouped list (the Apple Account row in Settings). It replaces the Status section's Now Playing text row and keeps its wording and rule. The monitor keeps the cover as an image alongside the JPEG it sends, so the row doesn't decode it again every refresh. Sizes and the artwork corner are marked GUESS: Apple documents none of them.",
+          "downloadURL": "https://github.com/kaydenpmd/Ammy/releases/download/v1.0-b95/Ammy-1.0-b95-6436667.ipa",
+          "size": 4388042,
+          "sha256": "6b4bb02fd14db959ee1c56eba62e742b3603587382f8f0eaf47a1cd15d22e003",
+          "buildVersion": "95",
           "minOSVersion": "26.0"
         }
       ],
