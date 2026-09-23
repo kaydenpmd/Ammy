@@ -10,6 +10,14 @@ extension Bundle {
         let build = infoDictionary?["CFBundleVersion"] as? String ?? "?"
         return "\(short) (\(build))"
     }
+
+    /// The app's name as the Home Screen shows it: "Ammy". Sent with every push
+    /// beside `displayVersion`, so a receiver can say who is sending.
+    var displayName: String {
+        infoDictionary?["CFBundleDisplayName"] as? String
+            ?? infoDictionary?["CFBundleName"] as? String
+            ?? "Ammy"
+    }
 }
 
 @main

@@ -165,6 +165,10 @@ actor PresenceRelay {
         var body: [String: Any] = [
             "playing": playing && track != nil,
             "app_version": Bundle.main.displayVersion,
+            // Who is sending, beside which build: a receiver can then show
+            // "Ammy 1.0 (97)" rather than a bare number. A fact about this app,
+            // not about any receiver, so it keeps Ammy receiver-agnostic.
+            "app_name": Bundle.main.displayName,
 
             // Lets the relay tell a late-arriving push from a newer one. Each
             // push is its own independent Task with no ordering guarantee
