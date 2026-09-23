@@ -239,6 +239,23 @@ elapsed at send time (not from the Combine-captured snapshot) and fires a
 correction push 2.5s after every change. Removing that correction reintroduces
 wrong progress bars on skip.
 
+**Live stations have no position, and it used to crash the app.** On Apple
+Music 1, `nowPlayingItem` is the song the station is playing, with its real
+title, artist, store ID and length, but `currentPlaybackTime` is NaN.
+`JSONSerialization` can't write NaN, and it raises an Objective-C exception
+instead of throwing, so the `try?` around it never got a chance and Ammy died
+whenever a station played. Fixed 23 Sept 2026 in builds 86 and 88:
+- `NowPlayingMonitor` treats a non-finite position as live: it sends
+  `duration: 0` (receivers already read that as "no progress bar") and
+  `live: true`.
+- `PresenceRelay` checks `isValidJSONObject` before encoding.
+
+Sending the real length with the position stuck at 0 was tried in between, and
+it's worse: every heartbeat says "0 seconds in", and the bar snaps back to the
+start every 30 s. On Discord a station now shows the song and cover with a
+small "♫ 0:42"-style counter. That counter is Discord's own, drawn for
+activities with no timestamps, and nothing sent over RPC removes it.
+
 **The playhead anchor is paired with the push's arrival time, never with
 `time.time()`.** This is the single most expensive bug the project has had, and
 it is invisible on inspection because every individual calculation looks right.
