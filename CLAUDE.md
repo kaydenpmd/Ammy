@@ -512,6 +512,16 @@ and refreshes on-device, so it doesn't hit that wall. Don't suggest AltStore.
 
 ## Autostart
 
+**Superseded on 22 Sept 2026: the receiver on the main PC is now Issun**
+(github.com/kaydenpmd/Issun, build 23). It is installed at
+`%LOCALAPPDATA%\Programs\Issun\Issun.exe` and starts in the tray from the HKCU
+Run key. It took over the same port, key and Funnel, so Ammy needed no changes. The
+`Ammy Relay` task below is **disabled, not deleted**, so it can serve as the
+fallback. Rolling back means quitting Issun from the tray, then running
+`Enable-ScheduledTask` from an elevated shell (disabling needed elevation too),
+then `Start-ScheduledTask`. Issun's own CLAUDE.md records the handover and its
+live test. The rest of this section describes the relay as it ran until then.
+
 Installed on the main PC as the logon Scheduled Task **`Ammy Relay`**, via
 `install-task.ps1` beside the running `relay.py`: `pythonw.exe relay.py`, 30s
 delay, `-LogonType Interactive`, `-RunLevel Limited`.
