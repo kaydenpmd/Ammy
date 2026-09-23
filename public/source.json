@@ -9,12 +9,12 @@
       "versions": [
         {
           "version": "1.0",
-          "date": "2026-09-23T07:44:22+00:00",
-          "localizedDescription": "Send no progress bar for live stations\n\nA station such as Apple Music 1 reports the playing song's real length but no position (currentPlaybackTime is NaN). With the position stuck at 0, every push said the song had just started, and the receiver's bar snapped back to 0:00 on each heartbeat. A missing position now means live: the length goes out as 0, which receivers already read as no progress bar, and the body carries live: true.",
-          "downloadURL": "https://github.com/kaydenpmd/Ammy/releases/download/v1.0-b88/Ammy-1.0-b88-d1e0e62.ipa",
-          "size": 4375152,
-          "sha256": "c730c4474001a40be7bb42639dd795f3278121927cb7db492f330f01a9b10d94",
-          "buildVersion": "88",
+          "date": "2026-09-23T07:53:11+00:00",
+          "localizedDescription": "Reopening Ammy restarts a session that failed\n\nAutostart ran only on a cold launch, but a failed session leaves the process suspended, not killed, so bringing Ammy back (the icon, the switcher, a Shortcut's Open App) silently did nothing until someone tapped Start. Coming to the front now starts a session whenever none is running, unless the person pressed Stop. start() refuses to run twice at once, since launch and coming to the front can now both call it. Also: denied media access no longer leaves the keepalive playing forever, and the ammy://notify flag ends when the app leaves the screen instead of lingering into a later failure.",
+          "downloadURL": "https://github.com/kaydenpmd/Ammy/releases/download/v1.0-b91/Ammy-1.0-b91-7a5cdf7.ipa",
+          "size": 4375450,
+          "sha256": "1f64691ee95df978ed9db57c3c48a01579cb6e86db4225334b45648be9ea57e1",
+          "buildVersion": "91",
           "minOSVersion": "26.0"
         }
       ],
