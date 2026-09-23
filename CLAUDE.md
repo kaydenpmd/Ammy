@@ -832,6 +832,12 @@ so it is not re-derived:
 - Use `Open App` to launch. The old `ammy://` scheme was removed on 11 Sept
   2026 because it made Ammy navigate away itself and race the return; that
   behaviour now lives in the shortcut, and it stays there.
+- `Open App` only worked on a *killed* Ammy until 23 Sept 2026 (build 89 or
+  later). A session that failed, for example after the PC slept past the 20-minute retry
+  window, leaves the process suspended rather than dead, and autostart ran
+  only on a cold launch. Opening it therefore did nothing, and `/status`
+  stayed `stale`. Now coming to the front restarts any session that didn't end
+  by the person pressing Stop.
 - A scheme was reinstated on 14 Sept 2026 for an unrelated job, and the two
   should not be confused. `ammy://notify` opens the app exactly as `Open App`
   does and changes one thing: a connection failure arrives as a notification

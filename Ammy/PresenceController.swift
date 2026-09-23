@@ -174,6 +174,9 @@ final class PresenceController: ObservableObject {
     /// was opened for, and nothing after.
     private var notifyRegardless = false
 
+    /// A start() is in progress; see the guard at its top.
+    private var starting = false
+
     func suppressNextPopup() {
         notifyRegardless = true
     }
@@ -190,6 +193,13 @@ final class PresenceController: ObservableObject {
     /// have been drawn to an empty room and then thrown away with the
     /// screenful it was on.
     func appDidEnterBackground() {
+        // The notify flag's job ends here: from now on nobody can see a popup,
+        // so announce() sends a notification anyway. Left set, it outlived the
+        // launch it was for — when no connection attempt followed the open —
+        // and turned a later failure the person was watching into a
+        // notification instead of the popup.
+        notifyRegardless = false
+
         guard let pending = pendingFailure else { return }
         pendingFailure = nil
         watchdog.reportFailure(pending)
@@ -283,6 +293,14 @@ final class PresenceController: ObservableObject {
     /// Every failure below leaves something on screen that explains itself: a
     /// message in the status row, or Media Access reading Not Granted.
     func start() async {
+        // One at a time. start() awaits twice before it sets isRunning, and
+        // coming to the front now autostarts as well as launching does — so
+        // without this, a launch could start two sessions at once, each with
+        // its own heartbeat loop pushing forever.
+        guard !starting, !isRunning else { return }
+        starting = true
+        defer { starting = false }
+
         // Distinguish "you typed http" from "that isn't an address at all".
         // iOS blocks plain HTTP at the network layer anyway, so without this the
         // failure surfaces as an unreachable endpoint — which is the same
@@ -329,6 +347,12 @@ final class PresenceController: ObservableObject {
             // row down, and that row is the one the fact belongs to — saying it
             // again under Endpoint only put the news where nobody would look
             // for it.
+            //
+            // But the keepalive started above has to stop: with no session
+            // there is nothing to tear it down later, and it went on playing
+            // silence — keeping the app alive in the background — forever.
+            keepAlive.stop()
+            self.relay = nil
             return
         }
 

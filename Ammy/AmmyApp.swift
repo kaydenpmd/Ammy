@@ -25,7 +25,10 @@ struct AmmyApp: App {
 struct ContentView: View {
     @EnvironmentObject private var controller: PresenceController
     @Environment(\.scenePhase) private var scenePhase
-    @State private var didAutoStart = false
+    /// The person pressed Stop, so coming back to the app must not undo that.
+    /// Cleared by the next Start. Nothing else sets it — a session that ended
+    /// by failure is exactly the one reopening the app should restart.
+    @State private var stoppedByUser = false
 
     /// Set to the address Ammy *would* use when the typed one has no scheme.
     /// Non-nil puts the confirmation in front of the person rather than editing
@@ -337,6 +340,11 @@ struct ContentView: View {
         .onChange(of: scenePhase) { _, phase in
             if phase == .active {
                 controller.appDidBecomeActive()
+                // A session that failed leaves the process alive but idle —
+                // iOS suspends it rather than killing it — so a cold-launch-only
+                // autostart never ran again, and opening Ammy after (say) the PC
+                // slept for half an hour silently did nothing.
+                Task { await autoStartIfPossible() }
             } else if phase == .background {
                 // .background, not .inactive. Inactive also fires for Control
                 // Centre, a pulled-down notification shade and an incoming
@@ -366,6 +374,7 @@ struct ContentView: View {
 
     @MainActor
     private func start() async {
+        stoppedByUser = false
         await controller.start()
     }
 
@@ -385,24 +394,25 @@ struct ContentView: View {
     private func stopSession() {
         Task {
             await controller.stop()
-            didAutoStart = true   // don't immediately restart
+            stoppedByUser = true   // coming back to the app must not restart it
         }
     }
 
-    /// Ammy begins reporting as soon as it is launched, by any means — the
-    /// icon, the app switcher, or a Shortcuts `Open App` action. That is the
-    /// entire relaunch mechanism, and it is deliberately the whole of it: there
-    /// is nothing to tell the app on the way in, so there is no deep link to
-    /// get wrong, no scheme to register, and no second code path that only runs
-    /// when an automation fires.
+    /// Ammy begins reporting whenever it comes to the front without a session
+    /// running — launched cold, or brought back after one ended in failure —
+    /// by any means: the icon, the app switcher, or a Shortcuts `Open App`
+    /// action. That is the entire relaunch mechanism, and it is deliberately
+    /// the whole of it: there is nothing to tell the app on the way in, so
+    /// there is no deep link to get wrong, no scheme to register, and no second
+    /// code path that only runs when an automation fires. The one exception is
+    /// a session the person stopped themselves.
     ///
     /// Deliberately does not prompt. Something launching Ammy unattended must
     /// not meet a modal it cannot answer, and by the time autostart matters the
     /// stored address has already been resolved by an interactive start.
     @MainActor
     private func autoStartIfPossible() async {
-        guard !didAutoStart, !controller.isRunning, canAutoStart else { return }
-        didAutoStart = true
-        await start()
+        guard !stoppedByUser, !controller.isRunning, canAutoStart else { return }
+        await controller.start()
     }
 }
