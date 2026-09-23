@@ -477,6 +477,26 @@ become a signal about the iOS side rather than about Apple's search index.
 `ART_MIN_SCORE` defaults to **0.35**, not the 0.55 an earlier version of this
 document claimed.
 
+## The explicit badge
+
+Added 23 Sept 2026. The Now Playing row puts Music's "E" (`e.square.fill`,
+inline in the title's `Text`) after an explicit track, and the push carries
+`explicit: true`. **Only ever `true`**: `MPMediaItem.isExplicitItem` is a plain
+Bool, and its `false` covers an unrated track as well as a clean one, so the
+phone can't honestly claim "clean". Receivers treat an absent flag as "don't
+know"; Issun then asks the exact store-ID lookup's `trackExplicitness`, never
+fuzzy search. `PresenceController` compares `explicit` beside `Track.key` so a
+switch between a song's clean and explicit editions, which share title, artist
+and album, pushes at once rather than at the next heartbeat.
+
+**Not yet seen on a device.** Whether `isExplicitItem` is populated for catalog
+tracks streamed through `systemMusicPlayer`, rather than only for library items,
+is undocumented. If the phone never shows the E on a song Music marks explicit,
+that is the answer — and Issun's window would still show it, from the lookup.
+
+Discord's activity object has no field for explicitness, so the relay and
+Issun leave the card as it was. `relay.py` ignores the field.
+
 ## Clickable presence
 
 Discord supports hyperlinking activity text and artwork, and pypresence 4.6.2

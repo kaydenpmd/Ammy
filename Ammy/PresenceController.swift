@@ -265,7 +265,13 @@ final class PresenceController: ObservableObject {
 
         monitor.$track
             .combineLatest(monitor.$isPlaying)
-            .removeDuplicates { $0.0?.key == $1.0?.key && $0.1 == $1.1 }
+            // `explicit` beside the key, not in it: the clean and explicit
+            // editions of a song share a title, artist and album, so moving
+            // from one to the other would otherwise wait for the next
+            // heartbeat to say so. The key stays what the cover is cached by.
+            .removeDuplicates {
+                $0.0?.key == $1.0?.key && $0.0?.explicit == $1.0?.explicit && $0.1 == $1.1
+            }
             .debounce(for: .milliseconds(600), scheduler: RunLoop.main)
             .sink { [weak self] _, _ in
                 // Deliberately ignore the captured values and re-read current

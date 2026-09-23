@@ -207,6 +207,13 @@ actor PresenceRelay {
             if track.live {
                 body["live"] = true
             }
+            // Only present when the device says so, the same way. A false from
+            // MediaPlayer can mean "no rating" as easily as "clean", so sending
+            // it would be a claim the phone can't make; left out, a receiver
+            // that can look the track up is free to find out for itself.
+            if track.explicit {
+                body["explicit"] = true
+            }
 
             // "0" is what local files report; the relay ignores it anyway, but
             // there's no point sending a value that can't resolve.

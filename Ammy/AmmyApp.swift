@@ -74,21 +74,23 @@ private struct NowPlayingRow: View {
             // Control Center centres it where the song and artist would be, and
             // the row keeps its height when music starts or stops.
             ZStack(alignment: .leading) {
-                lines(title: "Title", subtitle: "Artist")
+                lines(title: "Title", subtitle: "Artist", explicit: false)
                     .hidden()
                     .accessibilityHidden(true)
-                lines(title: title, subtitle: subtitle)
+                lines(title: title, subtitle: subtitle, explicit: explicit)
             }
         }
         .padding(.vertical, 4)
         .accessibilityElement(children: .combine)
     }
 
-    private func lines(title: String, subtitle: String?) -> some View {
+    private func lines(title: String, subtitle: String?, explicit: Bool) -> some View {
         VStack(alignment: .leading, spacing: 2) {
-            Text(title)
+            titleText(title, explicit: explicit)
                 .font(.headline)
                 .lineLimit(2)
+                // The badge would otherwise be read out as its symbol's name.
+                .accessibilityLabel(explicit ? "\(title), Explicit" : title)
             if let subtitle {
                 Text(subtitle)
                     .font(.subheadline)
@@ -96,6 +98,19 @@ private struct NowPlayingRow: View {
                     .lineLimit(1)
             }
         }
+    }
+
+    /// The title, with Music's explicit mark after it when the track has one.
+    ///
+    /// Part of the text rather than a view beside it, so the badge follows the
+    /// last word onto a second line the way Music's does, and scales with the
+    /// font under Dynamic Type. The one cost: a title long enough to be cut off
+    /// at two lines loses the badge with the rest of its tail.
+    private func titleText(_ title: String, explicit: Bool) -> Text {
+        guard explicit else { return Text(verbatim: title) }
+        let badge = Text(Image(systemName: "e.square.fill"))
+            .foregroundStyle(.secondary)
+        return Text("\(title) \(badge)")
     }
 
     @ViewBuilder private var artwork: some View {
@@ -128,6 +143,10 @@ private struct NowPlayingRow: View {
 
     private var subtitle: String? {
         playing ? monitor.track?.artist : nil
+    }
+
+    private var explicit: Bool {
+        playing && monitor.track?.explicit == true
     }
 }
 

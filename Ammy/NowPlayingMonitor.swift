@@ -22,6 +22,11 @@ struct Track: Equatable {
     /// Playing from a live station, where there is no position to report.
     var live: Bool = false
 
+    /// Marked explicit, the "E" Music shows beside the title. MediaPlayer's
+    /// answer is a plain Bool, so false covers both a clean track and one it
+    /// has no rating for — which is why PresenceRelay sends only a true.
+    var explicit: Bool = false
+
     /// Identity for change detection — elapsed is excluded on purpose.
     var key: String { "\(title)|\(artist)|\(album)" }
 }
@@ -112,7 +117,8 @@ final class NowPlayingMonitor: ObservableObject {
             elapsed: Self.seconds(position),
             storeID: item.playbackStoreID,
             artworkJPEG: jpeg,
-            live: live
+            live: live,
+            explicit: item.isExplicitItem
         )
     }
 
