@@ -9,12 +9,12 @@
       "versions": [
         {
           "version": "1.0",
-          "date": "2026-09-23T08:37:45+00:00",
-          "localizedDescription": "Put what's playing at the top, as an Apple Account-style row\n\nArtwork, the title in bold and the artist beneath, as the first section of the list, in the shape iOS uses for the head of a grouped list (the Apple Account row in Settings). It replaces the Status section's Now Playing text row and keeps its wording and rule. The monitor keeps the cover as an image alongside the JPEG it sends, so the row doesn't decode it again every refresh. Sizes and the artwork corner are marked GUESS: Apple documents none of them.",
-          "downloadURL": "https://github.com/kaydenpmd/Ammy/releases/download/v1.0-b95/Ammy-1.0-b95-6436667.ipa",
-          "size": 4388042,
-          "sha256": "6b4bb02fd14db959ee1c56eba62e742b3603587382f8f0eaf47a1cd15d22e003",
-          "buildVersion": "95",
+          "date": "2026-09-23T08:41:17+00:00",
+          "localizedDescription": "Say Not Playing, centred where the song would be, like Control Center\n\nControl Center's wording for the same moment, and its layout: the text always has the room of a title and an artist line, so a lone Not Playing sits centred in it and the row keeps its height when music starts or stops.",
+          "downloadURL": "https://github.com/kaydenpmd/Ammy/releases/download/v1.0-b97/Ammy-1.0-b97-50d24ee.ipa",
+          "size": 4389568,
+          "sha256": "19c8160cb0282781c44ef0ee5d7901d3272243e9b661049528d8aeccf0f51fc2",
+          "buildVersion": "97",
           "minOSVersion": "26.0"
         }
       ],
