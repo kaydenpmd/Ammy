@@ -211,18 +211,6 @@ final class PresenceController: ObservableObject {
         watchdog.clearDelivered()
     }
 
-    /// What Ammy can see playing right now, whether or not a session is running.
-    ///
-    /// Read from the device rather than from the last push, on purpose. What is
-    /// playing and whether the relay can be reached are separate facts, and the
-    /// row that answers the first has no business going blank because of the
-    /// second — which is exactly what it used to do.
-    var nowPlaying: String {
-        guard monitor.authorized else { return "—" }
-        guard let track = monitor.track, monitor.isPlaying else { return "Nothing Playing" }
-        return "\(track.title) — \(track.artist)"
-    }
-
     /// Whether the fields have drifted from what is being sent.
     ///
     /// Deliberately says nothing about whether anything is running — the view

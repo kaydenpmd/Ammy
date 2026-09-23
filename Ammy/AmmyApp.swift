@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 extension Bundle {
     /// e.g. "1.0 (47)". The build number is the CI run that produced the IPA,
@@ -19,6 +20,91 @@ struct AmmyApp: App {
         WindowGroup {
             ContentView().environmentObject(controller)
         }
+    }
+}
+
+/// What's playing, as the first thing on the screen.
+///
+/// Shaped like the Apple Account row at the top of Settings — artwork, a bold
+/// line, a secondary line — because that is the pattern iOS already uses for
+/// the one thing a grouped list is about. A bigger card with a progress bar
+/// was considered and passed over on 23 Sept 2026: inside a settings-style
+/// list it reads like another app's UI, and Ammy sends playback rather than
+/// controlling it. It replaced the Status section's "Now Playing" row and
+/// keeps that row's rule: what the device says is playing right now, whether
+/// or not a session is running, and "Nothing Playing" whenever Ammy would send
+/// nothing.
+private struct NowPlayingRow: View {
+    @ObservedObject var monitor: NowPlayingMonitor
+    @Environment(\.displayScale) private var displayScale
+
+    // GUESS: 60 pt artwork, an 8 pt continuous corner and 14 pt beside it.
+    // Apple documents none of these for a list row. 60 is the size of the
+    // Apple Account row's picture in Settings; the corner is what Music's
+    // rows look like at about this size, judged by eye rather than measured.
+    private static let side: CGFloat = 60
+    private static let corner: CGFloat = 8
+
+    var body: some View {
+        HStack(spacing: 14) {
+            artwork
+                .frame(width: Self.side, height: Self.side)
+                .clipShape(RoundedRectangle(cornerRadius: Self.corner, style: .continuous))
+                // One physical pixel in the system separator colour, so a cover
+                // the colour of the row still has an edge. GUESS: Apple doesn't
+                // document the stroke Music draws on artwork; this is iOS's
+                // documented hairline, the one between list rows, applied to it.
+                .overlay {
+                    RoundedRectangle(cornerRadius: Self.corner, style: .continuous)
+                        .strokeBorder(Color(uiColor: .separator), lineWidth: 1 / displayScale)
+                }
+                .accessibilityHidden(true)
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text(title)
+                    .font(.headline)
+                    .lineLimit(2)
+                if let subtitle {
+                    Text(subtitle)
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                        .lineLimit(1)
+                }
+            }
+        }
+        .padding(.vertical, 4)
+        .accessibilityElement(children: .combine)
+    }
+
+    @ViewBuilder private var artwork: some View {
+        if playing, let image = monitor.artworkImage {
+            Image(uiImage: image)
+                .resizable()
+                .scaledToFill()
+        } else {
+            ZStack {
+                Color(uiColor: .tertiarySystemFill)
+                Image(systemName: "music.note")
+                    .font(.title2)
+                    .foregroundStyle(.secondary)
+            }
+        }
+    }
+
+    /// Something Ammy would send right now.
+    private var playing: Bool {
+        monitor.authorized && monitor.isPlaying && monitor.track != nil
+    }
+
+    private var title: String {
+        // Media Access, in Status, says why; this row only says what it sees.
+        guard monitor.authorized else { return "Not Available" }
+        guard playing, let track = monitor.track else { return "Nothing Playing" }
+        return track.title
+    }
+
+    private var subtitle: String? {
+        playing ? monitor.track?.artist : nil
     }
 }
 
@@ -81,6 +167,10 @@ struct ContentView: View {
     var body: some View {
         NavigationStack {
             Form {
+                Section {
+                    NowPlayingRow(monitor: controller.monitor)
+                }
+
                 // "Endpoint", not "Relay": a relay forwards what it receives,
                 // and nothing here requires that. Ammy posts JSON to an address;
                 // whether that address passes it on, renders it, or files it
@@ -145,7 +235,6 @@ struct ContentView: View {
                         }
                     }
                     .animation(.default, value: controller.resolving)
-                    LabeledContent("Now Playing", value: controller.nowPlaying)
                     LabeledContent("Media Access",
                                    value: controller.monitor.authorized ? "Granted" : "Not Granted")
                     LabeledContent("Version", value: Bundle.main.displayVersion)

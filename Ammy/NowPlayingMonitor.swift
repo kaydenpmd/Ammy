@@ -32,6 +32,12 @@ final class NowPlayingMonitor: ObservableObject {
     @Published private(set) var isPlaying = false
     @Published private(set) var authorized = false
 
+    /// The current track's cover as an image, for the Now Playing row — the
+    /// same picture that was JPEG-encoded for the push, kept rather than
+    /// decoded back out of the JPEG on every 5s refresh. Nil with no track or
+    /// no cover.
+    @Published private(set) var artworkImage: UIImage?
+
     private let player = MPMusicPlayerController.systemMusicPlayer
     private var pollTimer: Timer?
     private var running = false
@@ -40,6 +46,7 @@ final class NowPlayingMonitor: ObservableObject {
     // Re-encoding a JPEG that often is pure waste, so keep the last one.
     private var artworkKey: String?
     private var artworkData: Data?
+    private var artworkSource: UIImage?
 
     /// Idempotent. The view starts the monitor when it appears, and
     /// PresenceController.start() asks again for every session — including
@@ -76,6 +83,7 @@ final class NowPlayingMonitor: ObservableObject {
 
         guard let item = player.nowPlayingItem else {
             track = nil
+            artworkImage = nil
             return
         }
 
@@ -93,6 +101,9 @@ final class NowPlayingMonitor: ObservableObject {
         let position = player.currentPlaybackTime
         let live = !position.isFinite
 
+        let jpeg = artwork(for: item, key: "\(title)|\(artist)|\(album)")
+        artworkImage = jpeg == nil ? nil : artworkSource
+
         track = Track(
             title: title,
             artist: artist,
@@ -100,7 +111,7 @@ final class NowPlayingMonitor: ObservableObject {
             duration: live ? 0 : Self.seconds(item.playbackDuration),
             elapsed: Self.seconds(position),
             storeID: item.playbackStoreID,
-            artworkJPEG: artwork(for: item, key: "\(title)|\(artist)|\(album)"),
+            artworkJPEG: jpeg,
             live: live
         )
     }
@@ -119,6 +130,7 @@ final class NowPlayingMonitor: ObservableObject {
 
         artworkKey = key
         artworkData = jpeg
+        artworkSource = image
         return jpeg
     }
 
