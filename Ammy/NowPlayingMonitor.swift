@@ -84,8 +84,8 @@ final class NowPlayingMonitor: ObservableObject {
             title: title,
             artist: artist,
             album: album,
-            duration: item.playbackDuration,
-            elapsed: player.currentPlaybackTime,
+            duration: Self.seconds(item.playbackDuration),
+            elapsed: Self.seconds(player.currentPlaybackTime),
             storeID: item.playbackStoreID,
             artworkJPEG: artwork(for: item, key: "\(title)|\(artist)|\(album)")
         )
@@ -112,7 +112,20 @@ final class NowPlayingMonitor: ObservableObject {
     /// track change this can still report the previous song's position, which
     /// is why PresenceController re-sends a correction a few seconds later.
     var liveElapsed: TimeInterval {
-        player.currentPlaybackTime
+        Self.seconds(player.currentPlaybackTime)
+    }
+
+    /// A time from MediaPlayer that is safe to keep: non-finite becomes 0.
+    ///
+    /// A live station such as Apple Music 1 has no length and no fixed
+    /// position, and MediaPlayer reports both as NaN. Passed through, that
+    /// crashed the app: JSONSerialization can't write NaN and raises an
+    /// Objective-C exception rather than throwing, so the `try?` around it in
+    /// PresenceRelay never gets a chance. NaN also never equals itself, so a
+    /// station's Track would never have compared equal to its own last reading.
+    /// 0 is what every receiver already reads as "no progress bar".
+    private static func seconds(_ value: TimeInterval) -> TimeInterval {
+        value.isFinite ? value : 0
     }
 
     deinit {

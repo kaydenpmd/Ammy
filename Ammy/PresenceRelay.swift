@@ -199,7 +199,17 @@ actor PresenceRelay {
         if !key.isEmpty {
             req.setValue(key, forHTTPHeaderField: "X-Relay-Key")
         }
-        req.httpBody = try? JSONSerialization.data(withJSONObject: body)
+        // isValidJSONObject first, because data(withJSONObject:) doesn't throw
+        // on a NaN or infinite number: it raises an Objective-C exception that
+        // `try?` can't catch, and the app dies. Live stations used to reach it
+        // that way (see NowPlayingMonitor.seconds). A body that can't be encoded
+        // fails the push like any other, instead of ending the process.
+        guard JSONSerialization.isValidJSONObject(body),
+              let json = try? JSONSerialization.data(withJSONObject: body)
+        else {
+            return .unreachable(.cannotDecodeRawData)
+        }
+        req.httpBody = json
 
         let response: URLResponse
         do {
