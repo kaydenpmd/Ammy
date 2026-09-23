@@ -32,7 +32,8 @@ struct AmmyApp: App {
 /// list it reads like another app's UI, and Ammy sends playback rather than
 /// controlling it. It replaced the Status section's "Now Playing" row and
 /// keeps that row's rule: what the device says is playing right now, whether
-/// or not a session is running, and "Nothing Playing" whenever Ammy would send
+/// or not a session is running, and "Not Playing" (Control Center's wording,
+/// which replaced "Nothing Playing" on 23 Sept 2026) whenever Ammy would send
 /// nothing.
 private struct NowPlayingRow: View {
     @ObservedObject var monitor: NowPlayingMonitor
@@ -60,20 +61,33 @@ private struct NowPlayingRow: View {
                 }
                 .accessibilityHidden(true)
 
-            VStack(alignment: .leading, spacing: 2) {
-                Text(title)
-                    .font(.headline)
-                    .lineLimit(2)
-                if let subtitle {
-                    Text(subtitle)
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                        .lineLimit(1)
-                }
+            // The text always has the room of a title line and an artist line.
+            // A lone "Not Playing" is centred vertically in that room, the way
+            // Control Center centres it where the song and artist would be, and
+            // the row keeps its height when music starts or stops.
+            ZStack(alignment: .leading) {
+                lines(title: "Title", subtitle: "Artist")
+                    .hidden()
+                    .accessibilityHidden(true)
+                lines(title: title, subtitle: subtitle)
             }
         }
         .padding(.vertical, 4)
         .accessibilityElement(children: .combine)
+    }
+
+    private func lines(title: String, subtitle: String?) -> some View {
+        VStack(alignment: .leading, spacing: 2) {
+            Text(title)
+                .font(.headline)
+                .lineLimit(2)
+            if let subtitle {
+                Text(subtitle)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+            }
+        }
     }
 
     @ViewBuilder private var artwork: some View {
@@ -99,7 +113,8 @@ private struct NowPlayingRow: View {
     private var title: String {
         // Media Access, in Status, says why; this row only says what it sees.
         guard monitor.authorized else { return "Not Available" }
-        guard playing, let track = monitor.track else { return "Nothing Playing" }
+        // Control Center's words for the same moment.
+        guard playing, let track = monitor.track else { return "Not Playing" }
         return track.title
     }
 
