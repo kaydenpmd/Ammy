@@ -9,12 +9,12 @@
       "versions": [
         {
           "version": "1.0",
-          "date": "2026-09-23T08:41:17+00:00",
-          "localizedDescription": "Say Not Playing, centred where the song would be, like Control Center\n\nControl Center's wording for the same moment, and its layout: the text always has the room of a title and an artist line, so a lone Not Playing sits centred in it and the row keeps its height when music starts or stops.",
-          "downloadURL": "https://github.com/kaydenpmd/Ammy/releases/download/v1.0-b97/Ammy-1.0-b97-50d24ee.ipa",
-          "size": 4389568,
-          "sha256": "19c8160cb0282781c44ef0ee5d7901d3272243e9b661049528d8aeccf0f51fc2",
-          "buildVersion": "97",
+          "date": "2026-09-23T15:20:06+00:00",
+          "localizedDescription": "Send the app's name with every push\n\napp_name beside app_version, so a receiver can say who is sending (Issun shows Source: Ammy 1.0 (97)). A fact about this app, not about any receiver.",
+          "downloadURL": "https://github.com/kaydenpmd/Ammy/releases/download/v1.0-b99/Ammy-1.0-b99-4e0dfc2.ipa",
+          "size": 4390290,
+          "sha256": "388ffb2e962705c27486f1c65e31139ae6b6687ad37c9b7292300c1686e25171",
+          "buildVersion": "99",
           "minOSVersion": "26.0"
         }
       ],
