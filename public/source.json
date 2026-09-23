@@ -9,12 +9,12 @@
       "versions": [
         {
           "version": "1.0",
-          "date": "2026-09-23T15:20:06+00:00",
-          "localizedDescription": "Send the app's name with every push\n\napp_name beside app_version, so a receiver can say who is sending (Issun shows Source: Ammy 1.0 (97)). A fact about this app, not about any receiver.",
-          "downloadURL": "https://github.com/kaydenpmd/Ammy/releases/download/v1.0-b99/Ammy-1.0-b99-4e0dfc2.ipa",
-          "size": 4390290,
-          "sha256": "388ffb2e962705c27486f1c65e31139ae6b6687ad37c9b7292300c1686e25171",
-          "buildVersion": "99",
+          "date": "2026-09-23T16:40:44+00:00",
+          "localizedDescription": "Show the E beside explicit songs\n\nThe Now Playing row puts Music's E after an explicit track's title, and every push for that track carries explicit: true. Only ever true: iOS can't tell a clean song from an unrated one, so an endpoint that wants to know more can look the track up by its store ID. Switching between a song's clean and explicit editions now sends at once instead of at the next heartbeat.",
+          "downloadURL": "https://github.com/kaydenpmd/Ammy/releases/download/v1.0-b101/Ammy-1.0-b101-f0b9323.ipa",
+          "size": 4391236,
+          "sha256": "5f1af14c8f44be6a9e410fe3ede98f6a5447886e4b3b4aa6b7650b14fdb02a62",
+          "buildVersion": "101",
           "minOSVersion": "26.0"
         }
       ],
