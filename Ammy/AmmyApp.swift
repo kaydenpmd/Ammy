@@ -362,13 +362,13 @@ struct ContentView: View {
                 controller.suppressNextPopup()
             }
         }
-        .alert("Ammy Stopped", isPresented: Binding(
+        .alert(PushOutcome.failureTitle, isPresented: Binding(
             get: { controller.pendingFailure != nil },
             set: { if !$0 { controller.dismissFailure() } }
         )) {
             Button("OK") { controller.dismissFailure() }
         } message: {
-            Text(controller.pendingFailure ?? "")
+            Text(controller.pendingFailure.flatMap(PushOutcome.failureDetail) ?? "")
         }
     }
 

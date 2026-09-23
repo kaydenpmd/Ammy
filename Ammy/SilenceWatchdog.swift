@@ -80,8 +80,8 @@ final class SilenceWatchdog {
         guard authorized else { return }
 
         let content = UNMutableNotificationContent()
-        content.title = "Ammy stopped"
-        content.body = "\(reason). Tap to open."
+        content.title = PushOutcome.failureTitle
+        content.body = PushOutcome.failureDetail(reason).map { "\($0). Tap to open." } ?? "Tap to open."
         content.sound = .default
 
         center.add(

@@ -968,8 +968,10 @@ being recorded.
 
 *The popup.* Also `6746c8c`, same commit. `announce(_:)` in
 `PresenceController` is the single point every terminal failure passes
-through: a popup (`pendingFailure`, shown by the `"Ammy Stopped"` alert in
-`AmmyApp.swift`) if `UIApplication.shared.applicationState == .active`, a
+through: a popup (`pendingFailure`, shown by the alert in `AmmyApp.swift`,
+titled "Connection Failed" since 23 Sept 2026, when it was "Ammy Stopped"; the
+notification shares the title through `PushOutcome.failureTitle`) if
+`UIApplication.shared.applicationState == .active`, a
 notification via the watchdog otherwise. That resolves the catch this item
 used to worry about — an alert fired at the instant of failure would miss
 most errors, since push failures overwhelmingly happen while Ammy is

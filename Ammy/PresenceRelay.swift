@@ -24,6 +24,19 @@ enum PushOutcome {
         return false
     }
 
+    /// Title of every failure the person is told about, popup and
+    /// notification alike. It used to be "Ammy Stopped", which named the same
+    /// event less precisely: every one of these is the connection failing, and
+    /// "stopped" read like the app itself had died — which is a different
+    /// event, with its own notice ("Ammy isn't running").
+    static let failureTitle = "Connection Failed"
+
+    /// What to say under that title: the specific reason, or nothing when the
+    /// reason is only the title again.
+    static func failureDetail(_ reason: String) -> String? {
+        reason == failureTitle ? nil : reason
+    }
+
     /// Short enough for the status row, specific enough to act on. Title case
     /// to match the other values that row can hold.
     var summary: String {
@@ -37,8 +50,15 @@ enum PushOutcome {
             return "Wrong Path"
         case .refused(status: 404, fromRelay: false):
             return "Nothing at That Address"
-        case .refused(status: let status, fromRelay: _) where (500..<600).contains(status):
-            return "Relay Error \(status)"
+        // Only the receiver's own 5xx says anything about the receiver. One from
+        // whatever is in front of it — Funnel answers 502 when the PC is up but
+        // nothing is listening — can't say what failed, so it doesn't guess.
+        // "Receiver", not "Relay": the text a person reads stays
+        // receiver-agnostic (CLAUDE.md, "What Ammy is").
+        case .refused(status: let status, fromRelay: true) where (500..<600).contains(status):
+            return "Receiver Error \(status)"
+        case .refused(status: let status, fromRelay: false) where (500..<600).contains(status):
+            return "Connection Failed"
         case .refused(status: let status, fromRelay: _):
             return "Refused (\(status))"
 
