@@ -9,12 +9,12 @@
       "versions": [
         {
           "version": "1.0",
-          "date": "2026-09-23T07:53:11+00:00",
-          "localizedDescription": "Reopening Ammy restarts a session that failed\n\nAutostart ran only on a cold launch, but a failed session leaves the process suspended, not killed, so bringing Ammy back (the icon, the switcher, a Shortcut's Open App) silently did nothing until someone tapped Start. Coming to the front now starts a session whenever none is running, unless the person pressed Stop. start() refuses to run twice at once, since launch and coming to the front can now both call it. Also: denied media access no longer leaves the keepalive playing forever, and the ammy://notify flag ends when the app leaves the screen instead of lingering into a later failure.",
-          "downloadURL": "https://github.com/kaydenpmd/Ammy/releases/download/v1.0-b91/Ammy-1.0-b91-7a5cdf7.ipa",
-          "size": 4375450,
-          "sha256": "1f64691ee95df978ed9db57c3c48a01579cb6e86db4225334b45648be9ea57e1",
-          "buildVersion": "91",
+          "date": "2026-09-23T07:55:01+00:00",
+          "localizedDescription": "Call every failure notice Connection Failed\n\nThe popup and the notification were titled Ammy Stopped for what is always the connection failing, which read like the app had died (a separate event with its own notice). Both now say Connection Failed, with the specific reason underneath when there is one. A 5xx from something in front of the receiver (Funnel's 502 when nothing is listening) also says Connection Failed instead of blaming the receiver, and the receiver's own 5xx says Receiver Error, not Relay Error, keeping user-facing text receiver-agnostic.",
+          "downloadURL": "https://github.com/kaydenpmd/Ammy/releases/download/v1.0-b93/Ammy-1.0-b93-2901530.ipa",
+          "size": 4375547,
+          "sha256": "8e982d640eb537a19587b5a013bf46a91e97aaf91c184971b9134baabad5583e",
+          "buildVersion": "93",
           "minOSVersion": "26.0"
         }
       ],
