@@ -19,6 +19,9 @@ struct Track: Equatable {
     /// smaller/independent releases are routinely missing from it.
     var artworkJPEG: Data?
 
+    /// Playing from a live station, where there is no position to report.
+    var live: Bool = false
+
     /// Identity for change detection — elapsed is excluded on purpose.
     var key: String { "\(title)|\(artist)|\(album)" }
 }
@@ -80,14 +83,25 @@ final class NowPlayingMonitor: ObservableObject {
         let artist = item.artist ?? item.albumArtist ?? "Unknown Artist"
         let album = item.albumTitle ?? ""
 
+        // A live station such as Apple Music 1 reports the song it is playing,
+        // with that song's real length, but no position: currentPlaybackTime is
+        // NaN (seen 23 Sept 2026 on Apple Music 1, "the cure", length 297 s).
+        // Sent as a length with the position stuck at 0, every push says "0
+        // seconds in", and the receiver's progress bar snaps back to the start
+        // on each heartbeat. So a station reports no length at all, which every
+        // receiver already reads as "no progress bar", and says it is live.
+        let position = player.currentPlaybackTime
+        let live = !position.isFinite
+
         track = Track(
             title: title,
             artist: artist,
             album: album,
-            duration: Self.seconds(item.playbackDuration),
-            elapsed: Self.seconds(player.currentPlaybackTime),
+            duration: live ? 0 : Self.seconds(item.playbackDuration),
+            elapsed: Self.seconds(position),
             storeID: item.playbackStoreID,
-            artworkJPEG: artwork(for: item, key: "\(title)|\(artist)|\(album)")
+            artworkJPEG: artwork(for: item, key: "\(title)|\(artist)|\(album)"),
+            live: live
         )
     }
 

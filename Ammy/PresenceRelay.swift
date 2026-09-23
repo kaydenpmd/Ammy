@@ -178,6 +178,11 @@ actor PresenceRelay {
             body["album"] = track.album
             body["duration"] = track.duration
             body["elapsed"] = track.elapsed
+            // Only present for a live station, whose duration is sent as 0:
+            // lets a receiver tell "live" from "length unknown" if it cares.
+            if track.live {
+                body["live"] = true
+            }
 
             // "0" is what local files report; the relay ignores it anyway, but
             // there's no point sending a value that can't resolve.
