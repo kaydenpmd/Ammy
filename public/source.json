@@ -9,12 +9,12 @@
       "versions": [
         {
           "version": "1.0",
-          "date": "2026-09-24T18:36:55+00:00",
-          "localizedDescription": "Fit non-square covers, and show an empty square when nothing's playing\n\nA cover that isn't square now shows all of itself, centred in the artwork's square with its own rounded corners, the way the Lock Screen draws it, instead of being cropped. When nothing is playing, the artwork is a plain grey square with no symbol, like Control Center's.",
-          "downloadURL": "https://github.com/kaydenpmd/Ammy/releases/download/v1.0-b107/Ammy-1.0-b107-663070a.ipa",
-          "size": 4426217,
-          "sha256": "25a087c441aa301128068f8207b9e4f359a4ede804d46d772a3e0e3a6440e80a",
-          "buildVersion": "107",
+          "date": "2026-09-24T18:55:18+00:00",
+          "localizedDescription": "Put History's filter above the list instead of inside it\n\nThe All / Failures switch sat in the list as an invisible first row, so the list's card began one row down, with square top corners and a stray line along its top, under an empty gap. It's now the list's header: the card rounds its own corners and the switch sits just above it.",
+          "downloadURL": "https://github.com/kaydenpmd/Ammy/releases/download/v1.0-b109/Ammy-1.0-b109-bcd4ea1.ipa",
+          "size": 4427039,
+          "sha256": "d5433f97cdcf04b18b73f0a0296ce7c316a7bf6c976b7d4e9b172e6e612a7dd2",
+          "buildVersion": "109",
           "minOSVersion": "26.0"
         }
       ],
