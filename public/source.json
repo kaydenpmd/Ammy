@@ -9,12 +9,12 @@
       "versions": [
         {
           "version": "1.0",
-          "date": "2026-09-23T16:40:44+00:00",
-          "localizedDescription": "Show the E beside explicit songs\n\nThe Now Playing row puts Music's E after an explicit track's title, and every push for that track carries explicit: true. Only ever true: iOS can't tell a clean song from an unrated one, so an endpoint that wants to know more can look the track up by its store ID. Switching between a song's clean and explicit editions now sends at once instead of at the next heartbeat.",
-          "downloadURL": "https://github.com/kaydenpmd/Ammy/releases/download/v1.0-b101/Ammy-1.0-b101-f0b9323.ipa",
-          "size": 4391236,
-          "sha256": "5f1af14c8f44be6a9e410fe3ede98f6a5447886e4b3b4aa6b7650b14fdb02a62",
-          "buildVersion": "101",
+          "date": "2026-09-24T08:27:33+00:00",
+          "localizedDescription": "Say what went wrong when a connection fails, and what to do\n\nThe popup and the notification now explain the likely cause and what to check, instead of only naming the network error. \"Secure Connection Failed\" becomes \"The connection was cut off before it could be secured. That usually means the receiver can't be reached right now.\" A refused key, an address that won't look up, cellular data switched off for Ammy, and an error from the receiver each get their own advice. Each notice ends with how to try again. History keeps the short labels.",
+          "downloadURL": "https://github.com/kaydenpmd/Ammy/releases/download/v1.0-b103/Ammy-1.0-b103-8ed31e5.ipa",
+          "size": 4394173,
+          "sha256": "a92ada29d6d8fc172412bb06aa4e75d46cf313139deb45cbbec3b97a83697318",
+          "buildVersion": "103",
           "minOSVersion": "26.0"
         }
       ],
