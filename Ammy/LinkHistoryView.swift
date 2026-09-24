@@ -26,21 +26,30 @@ struct LinkHistoryView: View {
                 )
             } else {
                 List {
-                    // Clear background so the segmented control isn't sitting
-                    // in a second card of its own, but the default row insets
-                    // stay — stripping them to zero ran the picker's own
-                    // rectangular frame flush into the section's rounded top
-                    // corner, flattening it. The corner is the section's to
-                    // round; a row's content shouldn't be touching it.
-                    Picker("Show", selection: $failuresOnly) {
-                        Text("All").tag(false)
-                        Text("Failures").tag(true)
-                    }
-                    .pickerStyle(.segmented)
-                    .listRowBackground(Color.clear)
-
-                    ForEach(entries) { entry in
-                        LinkEventRow(entry: entry)
+                    Section {
+                        ForEach(entries) { entry in
+                            LinkEventRow(entry: entry)
+                        }
+                    } header: {
+                        // The filter is the section's header, not its first row.
+                        // As a row with a clear background it owned the section's
+                        // rounded top: the visible card then began at the second
+                        // row, with square corners and a separator line along its
+                        // top, under a gap the invisible row took up. The owner
+                        // called it weird on 24 Sept 2026. A header sits above
+                        // the card, so the card rounds its own corners, and the
+                        // cell's corner mask, which flattened the picker when it
+                        // was a zero-inset row, doesn't reach a header.
+                        //
+                        // Zero insets ask for the card's full width. The HIG's
+                        // segmented-control page gives no placement for iOS.
+                        Picker("Show", selection: $failuresOnly) {
+                            Text("All").tag(false)
+                            Text("Failures").tag(true)
+                        }
+                        .pickerStyle(.segmented)
+                        .labelsHidden()
+                        .listRowInsets(EdgeInsets())
                     }
                 }
             }
