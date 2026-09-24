@@ -481,7 +481,23 @@ document claimed.
 
 Added 23 Sept 2026. The Now Playing row puts Music's "E" (`e.square.fill`,
 inline in the title's `Text`) after an explicit track, and the push carries
-`explicit: true`. **Only ever `true`**: `MPMediaItem.isExplicitItem` is a plain
+`explicit: true`. **It's just the symbol after a space, in the title's own
+colour**, by the owner's choice on 24 Sept 2026. It matches the Lock Screen and
+Control Center player, where the E is opaque, not the Music app, where it's
+translucent. The first version dimmed it with `.secondary` and added a
+VoiceOver label override; the owner asked for anything more complicated than
+the plain symbol to be rolled back, and it was. Issun does the same with a
+typed U+1F174.
+
+**At small symbol scale.** On the owner's Lock Screen and Control Center
+screenshots, Apple's E is exactly cap height, top on the cap line and bottom on
+the baseline. Build 101's, at the default medium scale, was 1.29× cap height
+and overhung both. The HIG's SF Symbols page defines the three scales "relative
+to the cap height", and its figure shows small touching both lines. Whether
+`.imageScale` reaches a symbol embedded in `Text` is undocumented, so check it
+on a device.
+
+**Only ever `true`**: `MPMediaItem.isExplicitItem` is a plain
 Bool, and its `false` covers an unrated track as well as a clean one, so the
 phone can't honestly claim "clean". Receivers treat an absent flag as "don't
 know"; Issun then asks the exact store-ID lookup's `trackExplicitness`, never
@@ -496,6 +512,36 @@ that is the answer — and Issun's window would still show it, from the lookup.
 
 Discord's activity object has no field for explicitness, so the relay and
 Issun leave the card as it was. `relay.py` ignores the field.
+
+## The Now Playing row's proportions
+
+Matched to the Lock Screen's Now Playing card on 24 Sept 2026, from the owner's
+SE screenshots and Apple's documentation. The code comments say which is which.
+The short version:
+
+- **Artwork 57 pt**: measured on the Lock Screen (56.8). No documentation;
+  Apple's iOS 26 UI kit has Control Center's player (52 pt art) but no Lock
+  Screen one.
+- **Title and artist the same size**, one line each, scrolling when too long:
+  Headline and Body, both 17 pt per the HIG's type table. The Lock Screen
+  measures 17/17, and the UI kit gives Control Center 14/14.
+- **Equal padding**: the vertical row insets are set to the leading inset the
+  system chose, which is measured at run time (16 pt on an SE, 20 on a Pro Max;
+  no API reports it). Uses iOS 26's `listRowInsets(_:_:)`.
+- **Concentric corner**: section radius (26 pt, measured on two phones; no API)
+  minus that inset: 10 pt on an SE, 6 on a Pro Max, never below 6. A List cell
+  doesn't give ConcentricRectangle a container shape (developer forums thread
+  798726), so it's done by hand. A measured inset outside 8–40 pt is ignored.
+- **Other iPhones**: the inset, the corner and the pixel size of the artwork
+  follow the device. The 57 pt artwork and the 26 pt section radius are
+  believed constant: the radius is confirmed on an SE and a Pro Max, the
+  artwork only on the SE.
+- **Soft artwork**: downsampled with ImageIO to the exact pixels drawn, WWDC18
+  session 219's documented method, instead of Core Animation shrinking a 512 px
+  cover on the fly. What filter the Lock Screen itself uses is not documented.
+- **Scrolling**: 2 s rest, 30 pt/s, 50 pt gap, 10 pt fade. These are
+  LNPopupController's (an open-source replica of Music's player); Apple
+  publishes none. Paused in the background, off under Reduce Motion.
 
 ## Clickable presence
 
@@ -1020,7 +1066,8 @@ what `PushOutcome.refused(fromRelay:)` carries.
 
 *The inventory, so it is not re-derived.* Handled before any request: `http://`
 typed, an address that will not parse into an https URL with a host, and denied
-media access (Media Access reads Not Granted). What `PushOutcome` now names:
+media access (the access prompt at the top of the screen, which replaced the
+Media Access row on 24 Sept 2026). What `PushOutcome` now names:
 
 - Transport (`URLError`, swallowed by `try?`): `.notConnectedToInternet`
   (which is also what cellular data switched off for Ammy alone produces, per

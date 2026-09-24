@@ -1,3 +1,5 @@
+import ImageIO
+import os
 import SwiftUI
 import UIKit
 
@@ -31,6 +33,101 @@ struct AmmyApp: App {
     }
 }
 
+/// One line of text that scrolls sideways when it doesn't fit, the way the
+/// Lock Screen's player shows a long title, rather than wrapping or cutting
+/// it off.
+///
+/// It rests at the start, scrolls left until a second copy has taken the
+/// first one's place, and rests again, so the loop has no seam. The trailing
+/// edge fades while the text overflows, and the leading edge fades only while
+/// it moves, so a line at rest starts crisp. Text that fits never moves, and
+/// with Reduce Motion on nothing moves: it truncates, as Apple's players do.
+///
+/// Position comes from the clock rather than from an animation, so a change
+/// of `id` starts the line from rest, and nothing keeps running after it.
+private struct MarqueeLine: View {
+    let text: Text
+    /// Restarts the loop from rest when it changes. The Now Playing row passes
+    /// the song, so its title and artist lines restart together.
+    let id: String
+
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.scenePhase) private var scenePhase
+    @State private var textWidth: CGFloat = 0
+    @State private var boxWidth: CGFloat = 0
+    @State private var restingSince = Date()
+
+    // GUESS: Apple publishes none of these. They're LNPopupController's, a
+    // long-running open-source replica of Music's player (marqueeScrollDelay
+    // 2 s, marqueeScrollRate 30 pt/s, fade length 10, trailing buffer 50),
+    // researched 24 Sept 2026 — the closest thing to Music's own numbers
+    // short of stepping through a screen recording frame by frame.
+    private static let rest: TimeInterval = 2
+    private static let pointsPerSecond: CGFloat = 30
+    private static let gap: CGFloat = 50
+    private static let fade: CGFloat = 10
+
+    private var scrolls: Bool { !reduceMotion && textWidth > boxWidth + 0.5 }
+
+    var body: some View {
+        // The resting copy sizes the line: its full width, one line tall. It
+        // is what shows when the text fits, and what truncates under Reduce
+        // Motion.
+        text
+            .lineLimit(1)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .opacity(scrolls ? 0 : 1)
+            .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { boxWidth = $0 }
+            .background(alignment: .leading) {
+                text
+                    .fixedSize()
+                    .hidden()
+                    .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { textWidth = $0 }
+            }
+            .overlay(alignment: .leading) {
+                if scrolls {
+                    // Paused in the background: the keepalive keeps this
+                    // process running there, and nobody can see the line.
+                    TimelineView(.animation(paused: scenePhase == .background)) { timeline in
+                        let travel = textWidth + Self.gap
+                        let x = offset(at: timeline.date, travel: travel)
+                        HStack(spacing: Self.gap) {
+                            text
+                            text
+                        }
+                        .accessibilityHidden(true)
+                        .fixedSize()
+                        .offset(x: -x)
+                        .frame(width: boxWidth, alignment: .leading)
+                        .mask { edges(leading: min(1, min(x, travel - x) / Self.fade)) }
+                    }
+                }
+            }
+            .onChange(of: id) { restingSince = Date() }
+            // Read once, as the text, however many copies are on screen.
+            .accessibilityElement(children: .ignore)
+            .accessibilityLabel(text)
+    }
+
+    private func offset(at date: Date, travel: CGFloat) -> CGFloat {
+        let moving = Double(travel / Self.pointsPerSecond)
+        let t = date.timeIntervalSince(restingSince).truncatingRemainder(dividingBy: Self.rest + moving)
+        return t < Self.rest ? 0 : CGFloat(t - Self.rest) * Self.pointsPerSecond
+    }
+
+    /// Opaque in the middle, fading at each end. `leading` is 0 at rest, so
+    /// the first letter isn't faded until it starts to move.
+    private func edges(leading: CGFloat) -> some View {
+        HStack(spacing: 0) {
+            LinearGradient(colors: [.black.opacity(1 - leading), .black], startPoint: .leading, endPoint: .trailing)
+                .frame(width: Self.fade)
+            Rectangle()
+            LinearGradient(colors: [.black, .clear], startPoint: .leading, endPoint: .trailing)
+                .frame(width: Self.fade)
+        }
+    }
+}
+
 /// What's playing, as the first thing on the screen.
 ///
 /// Shaped like the Apple Account row at the top of Settings — artwork, a bold
@@ -43,28 +140,75 @@ struct AmmyApp: App {
 /// or not a session is running, and "Not Playing" (Control Center's wording,
 /// which replaced "Nothing Playing" on 23 Sept 2026) whenever Ammy would send
 /// nothing.
+///
+/// On 24 Sept 2026 the owner had its proportions matched to the Lock Screen's
+/// Now Playing card: 57 pt artwork, title and artist on one line each and the
+/// same size, scrolling when too long, the artwork as far from the section's
+/// top and bottom as from its leading edge, with a corner concentric with the
+/// section's. Each number below says where it came from: the owner's
+/// screenshots, Apple's documentation, or both.
 private struct NowPlayingRow: View {
     @ObservedObject var monitor: NowPlayingMonitor
     @Environment(\.displayScale) private var displayScale
 
-    // GUESS: 60 pt artwork, an 8 pt continuous corner and 14 pt beside it.
-    // Apple documents none of these for a list row. 60 is the size of the
-    // Apple Account row's picture in Settings; the corner is what Music's
-    // rows look like at about this size, judged by eye rather than measured.
-    private static let side: CGFloat = 60
-    private static let corner: CGFloat = 8
+    /// The Lock Screen's Now Playing artwork, measured on the owner's iPhone SE
+    /// screenshot on 24 Sept 2026 at 56.8 pt; the same method reads this row's
+    /// old 60 pt artwork as 59.9. No documentation gives it: Apple's iOS 26 UI
+    /// kit has no Lock Screen player (it has Control Center's, whose artwork
+    /// is 52 pt).
+    private static let side: CGFloat = 57
+
+    /// An iOS 26 grouped section's corner radius. Measured, not documented:
+    /// 26.35 pt on the owner's SE, and 26.3 and 26.4 pt on two sections of a
+    /// 16 Pro Max, each by fitting Apple's continuous-corner curve. No API
+    /// reports it, and a List cell doesn't offer its shape to
+    /// ConcentricRectangle (Apple Developer Forums thread 798726), so it's
+    /// written down here.
+    private static let sectionCorner: CGFloat = 26
+
+    /// The row's leading inset as the system laid it out, 16 pt on an SE and
+    /// 20 on a Pro Max. No API reports it either, so it's measured: where the
+    /// row's content starts, less where its cell starts. The top and bottom
+    /// insets are set to match, so the artwork sits as far from the section's
+    /// top and bottom as from its leading edge.
+    @State private var inset: CGFloat = 16
+    @State private var contentLeading: CGFloat?
+    @State private var cellLeading: CGFloat?
+
+    /// Concentric with the section: its radius less the distance between
+    /// them, which is Apple's own definition ("the container shape's corner
+    /// radius minus the distance between corners", ConcentricRectangle's
+    /// Edge.Corner.Style docs). 10 pt on an SE, 6 on a Pro Max.
+    ///
+    /// Never below `minimumCorner`, the same guard Apple's
+    /// `.concentric(minimum:)` offers, so a device with an unusually large
+    /// inset gets a softer corner rather than a square one. GUESS: 6, the
+    /// smallest value any iPhone measured so far produces, so no iPhone is
+    /// affected by it.
+    private var corner: CGFloat { max(Self.minimumCorner, Self.sectionCorner - inset) }
+    private static let minimumCorner: CGFloat = 6
+
+    /// The range a measured inset has to fall in to be believed. Anything
+    /// outside it means the measurement went wrong, and the last good value
+    /// (16 at first) stays. GUESS: iPhones measure 16 and 20; this leaves room
+    /// for iPad and Display Zoom without letting a broken read through.
+    private static let plausibleInset: ClosedRange<CGFloat> = 8...40
+
+    /// The cover shrunk to exactly the pixels it's drawn at, and which cover
+    /// it was made from, so a new track never shows the last one's.
+    @State private var thumbnail: (source: ObjectIdentifier, image: UIImage)?
 
     var body: some View {
         HStack(spacing: 14) {
             artwork
                 .frame(width: Self.side, height: Self.side)
-                .clipShape(RoundedRectangle(cornerRadius: Self.corner, style: .continuous))
+                .clipShape(RoundedRectangle(cornerRadius: corner, style: .continuous))
                 // One physical pixel in the system separator colour, so a cover
                 // the colour of the row still has an edge. GUESS: Apple doesn't
                 // document the stroke Music draws on artwork; this is iOS's
                 // documented hairline, the one between list rows, applied to it.
                 .overlay {
-                    RoundedRectangle(cornerRadius: Self.corner, style: .continuous)
+                    RoundedRectangle(cornerRadius: corner, style: .continuous)
                         .strokeBorder(Color(uiColor: .separator), lineWidth: 1 / displayScale)
                 }
                 .accessibilityHidden(true)
@@ -74,48 +218,135 @@ private struct NowPlayingRow: View {
             // Control Center centres it where the song and artist would be, and
             // the row keeps its height when music starts or stops.
             ZStack(alignment: .leading) {
-                lines(title: "Title", subtitle: "Artist", explicit: false)
+                lines(title: "Title", subtitle: "Artist", explicit: false, song: "")
                     .hidden()
                     .accessibilityHidden(true)
-                lines(title: title, subtitle: subtitle, explicit: explicit)
+                lines(title: title, subtitle: subtitle, explicit: explicit, song: song)
             }
         }
-        .padding(.vertical, 4)
         .accessibilityElement(children: .combine)
-    }
-
-    private func lines(title: String, subtitle: String?, explicit: Bool) -> some View {
-        VStack(alignment: .leading, spacing: 2) {
-            titleText(title, explicit: explicit)
-                .font(.headline)
-                .lineLimit(2)
-                // The badge would otherwise be read out as its symbol's name.
-                .accessibilityLabel(explicit ? "\(title), Explicit" : title)
-            if let subtitle {
-                Text(subtitle)
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-                    .lineLimit(1)
-            }
+        // listRowInsets(_:_:) with edges is iOS 26: only the vertical insets
+        // change, and the leading one stays the system's, lined up with the
+        // section header and every other row.
+        .listRowInsets(.vertical, inset)
+        .onGeometryChange(for: CGFloat.self) { $0.frame(in: .global).minX } action: {
+            contentLeading = $0
+            measureInset()
+        }
+        // The system's own cell colour, supplied here only so the cell's edge
+        // can be measured; this row isn't tappable, so there's no pressed
+        // state to lose.
+        .listRowBackground(
+            Color(uiColor: .secondarySystemGroupedBackground)
+                .onGeometryChange(for: CGFloat.self) { $0.frame(in: .global).minX } action: {
+                    cellLeading = $0
+                    measureInset()
+                }
+        )
+        .task(id: ArtworkKey(source: monitor.artworkImage.map(ObjectIdentifier.init), scale: displayScale)) {
+            makeThumbnail()
         }
     }
 
-    /// The title, with Music's explicit mark after it when the track has one.
-    ///
-    /// Part of the text rather than a view beside it, so the badge follows the
-    /// last word onto a second line the way Music's does, and scales with the
-    /// font under Dynamic Type. The one cost: a title long enough to be cut off
-    /// at two lines loses the badge with the rest of its tail.
-    private func titleText(_ title: String, explicit: Bool) -> Text {
-        guard explicit else { return Text(verbatim: title) }
-        let badge = Text(Image(systemName: "e.square.fill"))
-            .foregroundStyle(.secondary)
-        return Text("\(title) \(badge)")
+    private func measureInset() {
+        guard let contentLeading, let cellLeading else { return }
+        let measured = contentLeading - cellLeading
+        if Self.plausibleInset.contains(measured), abs(measured - inset) > 0.25 {
+            inset = measured
+        }
+    }
+
+    private struct ArtworkKey: Hashable {
+        let source: ObjectIdentifier?
+        let scale: CGFloat
+    }
+
+    private static let log = Logger(subsystem: "com.local.ammy", category: "artwork")
+
+    private func makeThumbnail() {
+        guard let source = monitor.artworkImage, let jpeg = monitor.track?.artworkJPEG else {
+            thumbnail = nil
+            return
+        }
+        if let image = Self.downsample(jpeg, toPixels: Self.side * displayScale, scale: displayScale) {
+            thumbnail = (ObjectIdentifier(source), image)
+        } else {
+            thumbnail = nil
+            Self.log.error("couldn't downsample the cover; drawing the full-size one instead")
+        }
+    }
+
+    /// Apple's documented way to shrink an image for display, from WWDC 2018
+    /// session 219, "Image and Graphics Best Practices": decode it straight to
+    /// the pixel size it's drawn at with ImageIO, rather than handing a large
+    /// image to a view to shrink as it draws. The options are the session's
+    /// own. Asked of this row's old path, Core Animation shrinks a 512 px cover
+    /// to 114 px on an SE with its default linear filter, which samples a few
+    /// source pixels per output pixel — the grainy look. Whether the Lock
+    /// Screen does it this way is not documented; it's what Apple tells apps
+    /// to do.
+    private static func downsample(_ data: Data, toPixels pixels: CGFloat, scale: CGFloat) -> UIImage? {
+        let sourceOptions = [kCGImageSourceShouldCache: false] as CFDictionary
+        guard let source = CGImageSourceCreateWithData(data as CFData, sourceOptions) else { return nil }
+        let options: [CFString: Any] = [
+            kCGImageSourceCreateThumbnailFromImageAlways: true,
+            kCGImageSourceShouldCacheImmediately: true,
+            kCGImageSourceCreateThumbnailWithTransform: true,
+            kCGImageSourceThumbnailMaxPixelSize: pixels,
+        ]
+        guard let image = CGImageSourceCreateThumbnailAtIndex(source, 0, options as CFDictionary) else { return nil }
+        return UIImage(cgImage: image, scale: scale, orientation: .up)
+    }
+
+    /// `song` restarts both lines' scrolling together, so a new track by the
+    /// same artist doesn't leave the artist line mid-scroll beside a title
+    /// that has started again from rest.
+    private func lines(title: String, subtitle: String?, explicit: Bool, song: String) -> some View {
+        VStack(alignment: .leading, spacing: 2) {
+            // An explicit track gets Music's E after a space, in the title's
+            // own colour, the way the Lock Screen's player shows it. Small
+            // symbol scale is what makes it sit like theirs.
+            //   Measured, the owner's Lock Screen and Control Center
+            //   screenshots, 24 Sept 2026: their E is exactly cap height, top
+            //   on the cap line and bottom on the baseline. Build 101's, at
+            //   the default medium scale, was 1.29x cap height and overhung
+            //   both.
+            //   Documented, HIG "SF Symbols": "Each symbol is also available
+            //   in three scales: small, medium (the default), and large. The
+            //   scales are defined relative to the cap height of the San
+            //   Francisco system font." Its figure shows the small scale
+            //   touching both the cap line and the baseline, and medium
+            //   extending slightly past each.
+            //   Not documented: whether imageScale reaches a symbol embedded
+            //   in Text. Its doc says only "images within the view". If the
+            //   E still overhangs on a device, that's the answer.
+            MarqueeLine(
+                text: (explicit ? Text("\(title) \(Image(systemName: "e.square.fill"))") : Text(title))
+                    .font(.headline),
+                id: song)
+                .imageScale(.small)
+            // The same size as the title, lighter and secondary. Measured: the
+            // Lock Screen draws both lines at 17 pt (cap height 12 pt on each)
+            // and Control Center both at about 14, the hierarchy carried by
+            // weight and colour rather than size. Documented, HIG
+            // "Typography": Headline is 17 pt Semibold and Body 17 pt Regular
+            // at the default Dynamic Type size, the same pair.
+            if let subtitle {
+                MarqueeLine(
+                    text: Text(subtitle)
+                        .font(.body)
+                        .foregroundStyle(.secondary),
+                    id: song)
+            }
+        }
     }
 
     @ViewBuilder private var artwork: some View {
         if playing, let image = monitor.artworkImage {
-            Image(uiImage: image)
+            // The downsampled copy when it belongs to this cover, drawn at its
+            // own size; the full one only until that's ready, or if it failed.
+            let current = thumbnail.flatMap { $0.source == ObjectIdentifier(image) ? $0.image : nil }
+            Image(uiImage: current ?? image)
                 .resizable()
                 .scaledToFill()
         } else {
@@ -134,7 +365,7 @@ private struct NowPlayingRow: View {
     }
 
     private var title: String {
-        // Media Access, in Status, says why; this row only says what it sees.
+        // The access prompt at the top says why; this row only says what it sees.
         guard monitor.authorized else { return "Not Available" }
         // Control Center's words for the same moment.
         guard playing, let track = monitor.track else { return "Not Playing" }
@@ -145,8 +376,67 @@ private struct NowPlayingRow: View {
         playing ? monitor.track?.artist : nil
     }
 
+    /// Which track the lines are showing, so both restart together on a new one.
+    private var song: String {
+        playing ? monitor.track?.key ?? "" : ""
+    }
+
     private var explicit: Bool {
         playing && monitor.track?.explicit == true
+    }
+}
+
+/// Asks for Media & Apple Music access, at the top of the screen, for as long
+/// as Ammy doesn't have it. It replaced the Status section's "Media Access"
+/// row on 24 Sept 2026: a row reading "Not Granted" stated the problem one
+/// section down, and offered no way to fix it. With access granted this isn't
+/// shown at all.
+///
+/// "Media & Apple Music" is the permission's name in Settings, so the words
+/// match what the person will look for there.
+private struct MediaAccessPrompt: View {
+    @ObservedObject var monitor: NowPlayingMonitor
+    @Environment(\.openURL) private var openURL
+
+    var body: some View {
+        Section {
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Allow Access to Media & Apple Music")
+                    .font(.headline)
+                Text(detail)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            }
+            .padding(.vertical, 2)
+
+            switch monitor.access {
+            // Never asked: the system's own question is the right one to show.
+            case .notDetermined:
+                Button("Allow Access") {
+                    Task { await monitor.start() }
+                }
+            // Refused: iOS won't ask twice, so the only way is Settings.
+            case .denied:
+                Button("Open Settings") {
+                    if let url = URL(string: UIApplication.openSettingsURLString) {
+                        openURL(url)
+                    }
+                }
+            // Restricted (Screen Time or a profile) has nothing to offer here,
+            // and neither does a status added after this was written.
+            default:
+                EmptyView()
+            }
+        }
+    }
+
+    private var detail: String {
+        switch monitor.access {
+        case .restricted:
+            return "Access is restricted on this device, so Ammy can't see what's playing."
+        default:
+            return "Ammy needs it to see what's playing."
+        }
     }
 }
 
@@ -209,7 +499,11 @@ struct ContentView: View {
     var body: some View {
         NavigationStack {
             Form {
-                Section {
+                if !controller.monitor.authorized {
+                    MediaAccessPrompt(monitor: controller.monitor)
+                }
+
+                Section("Now Playing") {
                     NowPlayingRow(monitor: controller.monitor)
                 }
 
@@ -277,8 +571,6 @@ struct ContentView: View {
                         }
                     }
                     .animation(.default, value: controller.resolving)
-                    LabeledContent("Media Access",
-                                   value: controller.monitor.authorized ? "Granted" : "Not Granted")
                     LabeledContent("Version", value: Bundle.main.displayVersion)
                 }
 
@@ -458,8 +750,8 @@ struct ContentView: View {
         } action: { bottomSafeArea = $0 }
         .task {
             // The monitor reads the device, not the relay, so it runs whether
-            // or not a session does. That is what lets Now Playing and Media
-            // Access say something true before anything has been started.
+            // or not a session does. That is what lets Now Playing and the
+            // access prompt say something true before anything has started.
             controller.appDidBecomeActive()
             await controller.monitor.start()
             await autoStartIfPossible()
@@ -471,6 +763,12 @@ struct ContentView: View {
         .onChange(of: scenePhase) { _, phase in
             if phase == .active {
                 controller.appDidBecomeActive()
+                // Coming back from Settings with access newly granted: the
+                // monitor only asks again while it isn't running, so this
+                // costs nothing once access is in hand. The autostart below
+                // may ask at the same moment; it waits for this answer rather
+                // than seeing none.
+                Task { await controller.monitor.start() }
                 // A session that failed leaves the process alive but idle —
                 // iOS suspends it rather than killing it — so a cold-launch-only
                 // autostart never ran again, and opening Ammy after (say) the PC

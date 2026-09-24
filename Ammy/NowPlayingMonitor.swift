@@ -35,7 +35,17 @@ struct Track: Equatable {
 final class NowPlayingMonitor: ObservableObject {
     @Published private(set) var track: Track?
     @Published private(set) var isPlaying = false
-    @Published private(set) var authorized = false
+    /// Starts as whatever iOS already has on record, read synchronously, so a
+    /// launch with access granted never draws a frame that says otherwise.
+    /// Starting at false made the access prompt at the top of the screen
+    /// appear and vanish on every launch.
+    @Published private(set) var authorized = MPMediaLibrary.authorizationStatus() == .authorized
+
+    /// Where Media & Apple Music access stands, which decides what the access
+    /// prompt at the top of the screen offers: the system's own question while
+    /// it hasn't been asked, Settings once it has been refused, and nothing it
+    /// can offer when Screen Time restricts it.
+    @Published private(set) var access = MPMediaLibrary.authorizationStatus()
 
     /// The current track's cover as an image, for the Now Playing row — the
     /// same picture that was JPEG-encoded for the push, kept rather than
@@ -53,17 +63,39 @@ final class NowPlayingMonitor: ObservableObject {
     private var artworkData: Data?
     private var artworkSource: UIImage?
 
-    /// Idempotent. The view starts the monitor when it appears, and
+    /// A start that is waiting on the permission answer, which a second caller
+    /// joins rather than skips.
+    private var starting: Task<Void, Never>?
+
+    /// Idempotent. The view starts the monitor when it appears and again on
+    /// coming to the front, the access prompt starts it, and
     /// PresenceController.start() asks again for every session — including
-    /// every Restart. Without this guard each of those added another pair of
+    /// every Restart. Without the guard each of those added another pair of
     /// notification observers and another 5s timer on top of the last.
+    ///
+    /// A caller that arrives while another is still waiting for the permission
+    /// answer waits for that same answer. It used to return at once, with
+    /// `authorized` not yet set, and PresenceController took that as no access
+    /// and quietly dropped the session it was starting.
     func start() async {
+        if let starting {
+            await starting.value
+            return
+        }
         guard !running else { return }
+        let begin = Task { await self.begin() }
+        starting = begin
+        await begin.value
+        starting = nil
+    }
+
+    private func begin() async {
         running = true
 
         let status: MPMediaLibraryAuthorizationStatus = await withCheckedContinuation { cont in
             MPMediaLibrary.requestAuthorization { cont.resume(returning: $0) }
         }
+        access = status
         authorized = (status == .authorized)
         guard authorized else { running = false; return }
 

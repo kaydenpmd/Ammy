@@ -285,7 +285,7 @@ final class PresenceController: ObservableObject {
     /// which also covers the session ending later without being asked to.
     ///
     /// Every failure below leaves something on screen that explains itself: a
-    /// message in the status row, or Media Access reading Not Granted.
+    /// failure notice, or the access prompt at the top of the screen.
     func start() async {
         // One at a time. start() awaits twice before it sets isRunning, and
         // coming to the front now autostarts as well as launching does — so
@@ -341,10 +341,9 @@ final class PresenceController: ObservableObject {
         await monitor.start()
 
         guard monitor.authorized else {
-            // Deliberately silent. Media Access already reads Not Granted one
-            // row down, and that row is the one the fact belongs to — saying it
-            // again under Endpoint only put the news where nobody would look
-            // for it.
+            // Deliberately silent. The access prompt at the top of the screen
+            // already says so and offers the fix; a failure notice on top of
+            // it would say the same thing twice.
             //
             // But the keepalive started above has to stop: with no session
             // there is nothing to tear it down later, and it went on playing
