@@ -465,6 +465,18 @@ releases — got no cover at all, and others got confidently wrong ones (a Wiz
 Khalifa single matched to *Rolling Papers 2* at 0.48). Fixed September 2026 by
 sending both fields from `NowPlayingMonitor`.
 
+**iOS doesn't always have the cover, even for a catalog song.** For songs
+streamed from Apple Music, `MPMediaItemArtwork.image(at:)` can return nil though
+the artwork object exists, "especially when loading an artwork for the first
+time" (Apple Developer Forums thread 743898, no Apple reply). Seen 24 Sept 2026
+on "Handle (feat. Don Toliver)": an empty square in Ammy, a cover on the Lock
+Screen (which gets it another way), and covers for the rest of the album.
+`NowPlayingMonitor` now tries the artwork's own `bounds` size, then asks
+**iTunes Lookup by store ID** from the phone, the same exact lookup the relay and
+Issun make, with the device region as `country`. It runs once per track, backs
+off 60 s after a failure, and drops the answer if the song changed meanwhile.
+It's the only request Ammy makes to anything but the user's endpoint.
+
 **The phone sends the JPEG once per track, not per heartbeat** — it's ~80 KB
 and the heartbeat is every 30s. `existing_uploaded_artwork()` reuses the file
 already on disk, without which the cover would appear on the first push and

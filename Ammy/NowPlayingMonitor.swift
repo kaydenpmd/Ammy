@@ -1,5 +1,6 @@
 import Foundation
 import MediaPlayer
+import os
 import UIKit
 
 struct Track: Equatable {
@@ -13,10 +14,11 @@ struct Track: Equatable {
     /// with no fuzzy matching. Local files report "0".
     var storeID: String
 
-    /// The cover as it exists on the phone, already JPEG-encoded. This is the
-    /// only artwork source that always works: the iTunes Store search index the
-    /// relay falls back to does not contain every track on Apple Music, and
-    /// smaller/independent releases are routinely missing from it.
+    /// The cover, already JPEG-encoded: iOS's own artwork when it provides
+    /// one, otherwise the catalog's, fetched by store ID (see
+    /// NowPlayingMonitor.fetchFromCatalog), and nil while neither has one. It
+    /// goes to the receiver too, so a receiver doesn't depend on the iTunes
+    /// search index, which misses many smaller and independent releases.
     var artworkJPEG: Data?
 
     /// Playing from a live station, where there is no position to report.
@@ -162,14 +164,156 @@ final class NowPlayingMonitor: ObservableObject {
     private func artwork(for item: MPMediaItem, key: String) -> Data? {
         if artworkKey == key, let cached = artworkData { return cached }
 
-        guard let image = item.artwork?.image(at: CGSize(width: 512, height: 512)),
-              let jpeg = image.jpegData(compressionQuality: 0.8)
-        else { return nil }
+        // iOS's own copy first: the size wanted, then whatever size the
+        // artwork says it has, in case nothing it holds is as large as 512.
+        if let art = item.artwork,
+           let image = art.image(at: CGSize(width: 512, height: 512)) ?? art.image(at: art.bounds.size),
+           let jpeg = image.jpegData(compressionQuality: 0.8) {
+            remember(key: key, jpeg: jpeg, image: image)
+            return jpeg
+        }
 
+        fetchFromCatalog(storeID: item.playbackStoreID, key: key)
+        return nil
+    }
+
+    private func remember(key: String, jpeg: Data, image: UIImage) {
         artworkKey = key
         artworkData = jpeg
         artworkSource = image
-        return jpeg
+    }
+
+    // MARK: - The catalog, when iOS has no cover
+
+    private static let log = Logger(subsystem: "com.local.ammy", category: "artwork")
+
+    /// The track whose cover is being fetched from the catalog.
+    private var catalogFetching: String?
+    /// The last track the catalog couldn't cover. A final answer (not in the
+    /// catalog, or no cover there) isn't asked again for that track; a failed
+    /// request is, after `catalogRetry`.
+    private var catalogFailed: (key: String, at: Date, final: Bool)?
+    private static let catalogRetry: TimeInterval = 60
+
+    /// Asks Apple's public catalog for the cover, by the song's store ID.
+    ///
+    /// iOS sometimes has no cover to give for a song streamed from Apple
+    /// Music: the artwork object exists, but `image(at:)` returns nil,
+    /// "especially when loading an artwork for the first time" (Apple
+    /// Developer Forums thread 743898, several developers, no Apple reply or
+    /// fix). Seen on 24 Sept 2026: "Handle (feat. Don Toliver)" showed an
+    /// empty square in Ammy while the Lock Screen, which gets its cover
+    /// another way, showed it, and other songs from the same album were fine.
+    ///
+    /// iTunes Lookup by store ID, as relay.py and Issun ask it for Discord's
+    /// cover: an exact lookup, never a search by name, so it can't pick the
+    /// wrong cover. No entitlement is needed. Local files have no store ID and
+    /// nothing to look up.
+    private func fetchFromCatalog(storeID: String, key: String) {
+        let id = storeID.trimmingCharacters(in: .whitespaces)
+        guard !id.isEmpty, id != "0", id != "-1", catalogFetching != key else { return }
+        if let failed = catalogFailed, failed.key == key,
+           failed.final || Date().timeIntervalSince(failed.at) < Self.catalogRetry {
+            return
+        }
+
+        catalogFetching = key
+        Self.log.notice("iOS has no cover for store id \(id, privacy: .public); asking the catalog")
+        Task {
+            let result = await Self.catalogCover(storeID: id)
+            if catalogFetching == key { catalogFetching = nil }
+            if case .failure(let failure) = result {
+                Self.log.error("catalog cover for store id \(id, privacy: .public) failed: \(failure.description, privacy: .public)")
+            }
+            // A skip while this was in flight: the answer belongs to the song
+            // before, so it goes nowhere, and it leaves the current song's
+            // bookkeeping alone.
+            guard track?.key == key else { return }
+            switch result {
+            case .success(let cover):
+                catalogFailed = nil
+                remember(key: key, jpeg: cover.jpeg, image: cover.image)
+                refresh()
+            case .failure(let failure):
+                catalogFailed = (key, Date(), failure.final)
+            }
+        }
+    }
+
+    private struct CatalogFailure: Error, CustomStringConvertible {
+        let description: String
+        /// The catalog answered and the answer was no, so asking again for the
+        /// same song won't change it.
+        let final: Bool
+    }
+
+    private static func catalogCover(storeID: String) async -> Result<(jpeg: Data, image: UIImage), CatalogFailure> {
+        // The device's region first, since an ID from one country's catalog
+        // may not resolve in the lookup's default, the US. Then without a
+        // country, the form relay.py and Issun use: the region is only a
+        // stand-in for the Apple Music storefront, and the API refuses some
+        // region codes outright (400 for "zz", checked 24 Sept 2026).
+        var countries: [String?] = [nil]
+        if let region = Locale.current.region?.identifier.lowercased() {
+            countries.insert(region, at: 0)
+        }
+        var failure = CatalogFailure(description: "no lookup was made", final: false)
+        for country in countries {
+            switch await coverURL(storeID: storeID, country: country) {
+            case .success(let url):
+                return await download(url)
+            case .failure(let why):
+                failure = why
+            }
+        }
+        return .failure(failure)
+    }
+
+    private static func coverURL(storeID: String, country: String?) async -> Result<URL, CatalogFailure> {
+        var lookup = URLComponents(string: "https://itunes.apple.com/lookup")!
+        lookup.queryItems = [
+            URLQueryItem(name: "id", value: storeID),
+            URLQueryItem(name: "entity", value: "song"),
+        ]
+        if let country {
+            lookup.queryItems?.append(URLQueryItem(name: "country", value: country))
+        }
+        guard let url = lookup.url else {
+            return .failure(.init(description: "couldn't build the lookup URL", final: true))
+        }
+        do {
+            let (data, response) = try await URLSession.shared.data(for: URLRequest(url: url, timeoutInterval: 10))
+            let status = (response as? HTTPURLResponse)?.statusCode ?? 0
+            guard status == 200 else {
+                return .failure(.init(description: "lookup answered \(status)", final: (400..<500).contains(status)))
+            }
+            guard let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
+                  let first = (json["results"] as? [[String: Any]])?.first
+            else { return .failure(.init(description: "not in the catalog", final: true)) }
+            // Apple serves any size from the same path, as Issun relies on too.
+            guard let small = first["artworkUrl100"] as? String, !small.isEmpty,
+                  let cover = URL(string: small.replacingOccurrences(of: "100x100bb", with: "512x512bb"))
+            else { return .failure(.init(description: "in the catalog, with no cover", final: true)) }
+            return .success(cover)
+        } catch {
+            return .failure(.init(description: error.localizedDescription, final: false))
+        }
+    }
+
+    private static func download(_ url: URL) async -> Result<(jpeg: Data, image: UIImage), CatalogFailure> {
+        do {
+            let (data, response) = try await URLSession.shared.data(for: URLRequest(url: url, timeoutInterval: 10))
+            let status = (response as? HTTPURLResponse)?.statusCode ?? 0
+            guard status == 200 else {
+                return .failure(.init(description: "the cover answered \(status)", final: (400..<500).contains(status)))
+            }
+            guard let image = UIImage(data: data), let jpeg = image.jpegData(compressionQuality: 0.8) else {
+                return .failure(.init(description: "the cover wasn't an image", final: true))
+            }
+            return .success((jpeg, image))
+        } catch {
+            return .failure(.init(description: error.localizedDescription, final: false))
+        }
     }
 
     /// Live read, not the snapshot stored on `track`. Immediately after a
