@@ -28,10 +28,11 @@ enum LinkEventKind: String, Codable {
 
 /// One entry.
 ///
-/// `summary` is the same phrase the status row showed — `PushOutcome.summary`,
+/// `summary` is the short label of a `FailureNotice` — `PushOutcome.summary`,
 /// or one of the refusals caught before a request is made. Storing the phrase
-/// rather than a code means the history, the row and the notification can
-/// never describe the same event three different ways.
+/// rather than a code keeps an old entry reading as it did when it happened.
+/// The popup and the notification show the same notice's `explanation`
+/// instead, so the three still describe one event, at two lengths.
 struct LinkEvent: Codable, Identifiable {
     let id: UUID
     let at: Date

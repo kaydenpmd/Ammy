@@ -1006,7 +1006,9 @@ a Shortcut that is about to background Ammy on purpose.
 *The precondition is done* (12 Sept 2026). `PresenceRelay.push()` returns
 `PushOutcome` rather than a `Bool`, and `PushOutcome.summary` turns every case
 below into a phrase the status row and the failure notification both use — so
-the banner and the screen cannot disagree. This also closes the half of item 1
+the banner and the screen cannot disagree. (Superseded 24 Sept 2026: the
+notification and the popup now show `PushOutcome.explanation`, and only History
+keeps the short phrase. See the note after this item's inventory.) This also closes the half of item 1
 that complained a dead relay and a wrong key read identically; they now read
 "Connection Failed" and "Key Rejected".
 
@@ -1020,8 +1022,11 @@ what `PushOutcome.refused(fromRelay:)` carries.
 typed, an address that will not parse into an https URL with a host, and denied
 media access (Media Access reads Not Granted). What `PushOutcome` now names:
 
-- Transport (`URLError`, swallowed by `try?`): `.notConnectedToInternet`,
-  `.dataNotAllowed` (cellular off for Ammy specifically), `.cannotFindHost` and
+- Transport (`URLError`, swallowed by `try?`): `.notConnectedToInternet`
+  (which is also what cellular data switched off for Ammy alone produces, per
+  Apple DTS), `.dataNotAllowed` (roaming, or cellular off for the whole device;
+  this line used to say it meant "cellular off for Ammy specifically", which is
+  the case above), `.cannotFindHost` and
   `.dnsLookupFailed` (the Tailscale name does not resolve), `.cannotConnectToHost`
   (resolves but refuses — relay not running, or port closed), `.timedOut`
   (bounded by the 10s request / 20s resource caps), `.networkConnectionLost`
@@ -1033,7 +1038,11 @@ media access (Media Access reads Not Granted). What `PushOutcome` now names:
   body was not valid JSON. Success is 204.
 - HTTP from Tailscale Funnel, in between and not the relay at all: 502/503 when
   the funnel is up but the node is not, and Funnel's own 404 when the hostname
-  resolves but nothing is served on that port.
+  resolves but nothing is served on that port. *Unverified, and contradicted
+  once:* on 24 Sept 2026, with the node unreachable through Funnel, Funnel's
+  edge sent no HTTP status at all. It dropped the TLS handshake, which iOS
+  reports as `secureConnectionFailed`. The code treats 502 as "PC up, nothing
+  listening".
 
 ATS is *not* reachable: `http://` is rejected before any request and
 `normalised()` requires an https scheme, so `.appTransportSecurityRequires-
@@ -1051,6 +1060,39 @@ decay: after a failure the row reads Disconnected, which is simply true.
 `teardown(reason:)` now carries an optional reason in place of a separate
 notify flag — a reason being present at all is what distinguishes a failure
 from a deliberate stop.
+
+*24 Sept 2026: a label is not an explanation.* After a PC restart left Tailscale
+Funnel broken, all the owner saw was "Secure Connection Failed" — "i don't
+think ammy is very good at communicating errors still." The label was accurate
+and useless: it reads like a certificate fault, and here it meant the PC
+couldn't be reached. So a failure is now a `FailureNotice`: `summary`, the
+short label History lists, and `explanation`, the likely cause and what to
+check, which the popup and the notification show. Each adds its own way to
+retry: "Press Start to try again." in the popup, where the session is over and
+the app is already on screen, and "Open Ammy to try again." in the
+notification, because coming to the front restarts it. The popup's title stays
+"Connection Failed", and where each notice appears is unchanged. When adding a
+failure case, write both halves, and keep the explanation about "the receiver"
+and "the address", never a product.
+
+**Why `secureConnectionFailed` means "unreachable" here.** Measured 24 Sept
+2026 with check-host.net from Los Angeles, Dallas, Atlanta, Miami and New York:
+with Funnel's route to the PC broken, Funnel's public edge accepts the TCP
+connection and drops it mid-handshake ("Broken pipe"), and iOS reports that as
+`secureConnectionFailed`. That day matched Tailscale bug
+[#21114](https://github.com/tailscale/tailscale/issues/21114) on 1.102.3 on
+every symptom: after a control-plane reconnect, Funnel stops serving public
+traffic while `tailscale funnel status` still says "Funnel on" and the PC
+reaches its own address fine. A symptom match, not a proven cause. Restarting
+the Tailscale service didn't clear it. Updating to 1.102.4, which rebooted the
+PC, did. **Don't test Funnel from the PC itself.** Its lookups of its own
+ts.net name are answered by Tailscale with the tailnet address, even when
+another DNS server is named, and a request forced through Funnel's public
+addresses from the PC is not a trustworthy stand-in either. Test from outside.
+check-host.net is the instrument that agreed with the phone. Claude's own web
+fetcher got through three times that night while the phone, Safari and all
+five check-host cities could not, so don't rely on it alone. For the public
+DNS records, use DNS-over-HTTPS.
 
 **9. The bottom bar sits too high on Face ID phones.** Found 16 Sept 2026 in
 Appetize, which is what that simulator build is for. `AmmyApp.swift` applies an

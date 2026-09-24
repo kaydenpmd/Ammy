@@ -499,7 +499,14 @@ struct ContentView: View {
         )) {
             Button("OK") { controller.dismissFailure() }
         } message: {
-            Text(controller.pendingFailure.flatMap(PushOutcome.failureDetail) ?? "")
+            // The alert appears with the session already ended, so the way back
+            // is usually the Start button beneath it. Usually: a trip through
+            // Control Center or a call banner comes back through .active, which
+            // autostarts while the alert is still up. It says whichever is true
+            // when it is read.
+            Text(controller.pendingFailure.map {
+                $0.explanation + (controller.isRunning ? " Ammy is trying again." : " Press Start to try again.")
+            } ?? "")
         }
     }
 

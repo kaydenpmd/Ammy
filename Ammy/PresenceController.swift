@@ -34,7 +34,7 @@ final class PresenceController: ObservableObject {
     /// Only set while someone is actually looking. If the app leaves the
     /// screen with one still here it becomes a notification instead — see
     /// appDidEnterBackground().
-    @Published var pendingFailure: String?
+    @Published var pendingFailure: FailureNotice?
 
     /// Which session a push belongs to. start() and stop() both bump it, so a
     /// request still in the air when a session ends can tell that it has been
@@ -88,7 +88,7 @@ final class PresenceController: ObservableObject {
         failureRun += 1
 
         guard everConnected else {
-            return teardown(reason: outcome.summary)
+            return teardown(reason: outcome.notice)
         }
 
         if retryUntil == nil {
@@ -97,7 +97,7 @@ final class PresenceController: ObservableObject {
         }
 
         guard let deadline = retryUntil, Date() < deadline else {
-            return teardown(reason: outcome.summary)
+            return teardown(reason: outcome.notice)
         }
 
         // Same treatment as the first connect: a wait in progress is a
@@ -138,9 +138,9 @@ final class PresenceController: ObservableObject {
     /// the other leaves the screen asserting something that stopped being true
     /// the instant it appeared. Reasons live in the alert, the notification
     /// and the history, all three of which are timestamped or dismissible.
-    private func fail(_ reason: String) {
+    private func fail(_ reason: FailureNotice) {
         linkStatus = "Disconnected"
-        events.record(.failed, summary: reason)
+        events.record(.failed, summary: reason.summary)
         announce(reason)
     }
 
@@ -154,12 +154,12 @@ final class PresenceController: ObservableObject {
     /// Interruptions deliberately do not come through here. Those are expected
     /// and self-healing, and announcing every wi-fi handover would teach
     /// people to ignore the ones that matter.
-    private func announce(_ status: String) {
+    private func announce(_ notice: FailureNotice) {
         let canBeSeen = UIApplication.shared.applicationState == .active
         if canBeSeen && !notifyRegardless {
-            pendingFailure = status
+            pendingFailure = notice
         } else {
-            watchdog.reportFailure(status)
+            watchdog.reportFailure(notice)
         }
         notifyRegardless = false
     }
@@ -302,14 +302,18 @@ final class PresenceController: ObservableObject {
         // avoiding.
         let trimmed = endpoint.trimmingCharacters(in: .whitespacesAndNewlines)
         if trimmed.lowercased().hasPrefix("http://") {
-            fail("Address must be https — iOS blocks plain http")
+            fail(FailureNotice(
+                summary: "HTTPS Required",
+                explanation: "Ammy only sends over HTTPS, because iOS blocks plain HTTP. Change the start of the URL to https://."))
             return
         }
 
         guard let resolved = PresenceRelay.normalised(trimmed),
               let relay = PresenceRelay(endpoint: trimmed, key: key)
         else {
-            fail("That address doesn't look right")
+            fail(FailureNotice(
+                summary: "Invalid Address",
+                explanation: "That URL can't be used. Check that it's a complete web address."))
             return
         }
 
@@ -391,7 +395,7 @@ final class PresenceController: ObservableObject {
     /// Cancelling the watchdog is right either way — it exists to notice an
     /// app that died while it was supposed to be reporting, and after this
     /// nothing is supposed to be reporting.
-    private func teardown(reason: String? = nil) {
+    private func teardown(reason: FailureNotice? = nil) {
         heartbeat?.cancel(); heartbeat = nil
         correction?.cancel(); correction = nil
         relay = nil
@@ -407,7 +411,7 @@ final class PresenceController: ObservableObject {
         // deliberate stop — which is why it replaced the separate flag that
         // used to say so.
         if let reason {
-            events.record(.failed, summary: reason)
+            events.record(.failed, summary: reason.summary)
             announce(reason)
         }
 

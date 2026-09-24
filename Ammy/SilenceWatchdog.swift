@@ -73,15 +73,16 @@ final class SilenceWatchdog {
     /// failure itself, while the app is still running, so it can deliver
     /// immediately with a nil trigger.
     ///
-    /// `reason` is the same string the status row is showing — it comes from
-    /// PushOutcome.summary, so the banner and the screen can never tell two
-    /// different stories about the same failure.
-    func reportFailure(_ reason: String) {
+    /// The same explanation the popup would have shown, so the banner and the
+    /// screen can never tell two different stories about the same failure.
+    /// Only the last sentence differs: opening Ammy is what retries from
+    /// here, because coming to the front restarts a session that failed.
+    func reportFailure(_ notice: FailureNotice) {
         guard authorized else { return }
 
         let content = UNMutableNotificationContent()
         content.title = PushOutcome.failureTitle
-        content.body = PushOutcome.failureDetail(reason).map { "\($0). Tap to open." } ?? "Tap to open."
+        content.body = notice.explanation + " Open Ammy to try again."
         content.sound = .default
 
         center.add(

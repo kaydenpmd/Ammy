@@ -1,5 +1,18 @@
 import Foundation
 
+/// A failure as the person meets it.
+///
+/// `summary` is the short label History lists it under. `explanation` is what
+/// the popup and the notification say: what probably went wrong, and what to
+/// check. Both used to be the one short label, and on 24 Sept 2026 the owner
+/// pointed out what that costs — "all i see is 'secure connection failed.'"
+/// That was accurate, and no help to someone whose receiver had become
+/// unreachable behind a tunnel whose public edge still took the connection.
+struct FailureNotice: Equatable {
+    let summary: String
+    let explanation: String
+}
+
 /// What became of a push.
 ///
 /// Replaces a bare `Bool`, which flattened a rejected key, a wrong path, a
@@ -31,14 +44,12 @@ enum PushOutcome {
     /// event, with its own notice ("Ammy isn't running").
     static let failureTitle = "Connection Failed"
 
-    /// What to say under that title: the specific reason, or nothing when the
-    /// reason is only the title again.
-    static func failureDetail(_ reason: String) -> String? {
-        reason == failureTitle ? nil : reason
+    var notice: FailureNotice {
+        FailureNotice(summary: summary, explanation: explanation)
     }
 
-    /// Short enough for the status row, specific enough to act on. Title case
-    /// to match the other values that row can hold.
+    /// Short enough for a History row, specific enough to tell failures
+    /// apart. Title case, like the rest of that list.
     var summary: String {
         switch self {
         case .delivered:
@@ -50,15 +61,17 @@ enum PushOutcome {
             return "Wrong Path"
         case .refused(status: 404, fromRelay: false):
             return "Nothing at That Address"
-        // Only the receiver's own 5xx says anything about the receiver. One from
-        // whatever is in front of it — Funnel answers 502 when the PC is up but
-        // nothing is listening — can't say what failed, so it doesn't guess.
+        // Only a 5xx carrying X-Ammy-Relay is known to be the receiver's own.
+        // Without it, the answer could come from something in front — Funnel
+        // answers 502 when the PC is up but nothing is listening — or from a
+        // receiver that simply doesn't send the header, which is any receiver
+        // but relay.py and Issun. It can't say which, so it doesn't guess.
         // "Receiver", not "Relay": the text a person reads stays
         // receiver-agnostic (CLAUDE.md, "What Ammy is").
         case .refused(status: let status, fromRelay: true) where (500..<600).contains(status):
             return "Receiver Error \(status)"
         case .refused(status: let status, fromRelay: false) where (500..<600).contains(status):
-            return "Connection Failed"
+            return "Server Error \(status)"
         case .refused(status: let status, fromRelay: _):
             return "Refused (\(status))"
 
@@ -74,14 +87,88 @@ enum PushOutcome {
             return "Connection Refused"
         case .unreachable(.networkConnectionLost):
             return "Connection Lost"
-        case .unreachable(.secureConnectionFailed),
-             .unreachable(.serverCertificateUntrusted),
+        // Was "Secure Connection Failed", which read like a certificate fault.
+        // It almost never is one: see the explanation below.
+        case .unreachable(.secureConnectionFailed):
+            return "Connection Cut Off"
+        case .unreachable(.serverCertificateUntrusted),
              .unreachable(.serverCertificateHasBadDate),
              .unreachable(.serverCertificateNotYetValid),
              .unreachable(.serverCertificateHasUnknownRoot):
-            return "Secure Connection Failed"
+            return "Certificate Not Trusted"
+        case .unreachable(.cannotDecodeRawData):
+            return "Couldn't Send"
         case .unreachable:
             return "Connection Failed"
+        }
+    }
+
+    /// What went wrong in words someone can act on: the likely cause, then
+    /// what to check. Shown under the popup's title and in the notification,
+    /// each of which adds how to try again, since that differs between them.
+    ///
+    /// "The receiver" throughout, never a product: Ammy posts to an address
+    /// and doesn't know what answers it (CLAUDE.md, "What Ammy is").
+    var explanation: String {
+        switch self {
+        case .delivered:
+            return "Connected."
+
+        // A 401 is also what a receiver with no key of its own set answers
+        // (Issun refuses everything then), and an empty Key sends no header at
+        // all — so this names all three rather than blaming Ammy's copy.
+        case .refused(status: 401, fromRelay: _), .refused(status: 403, fromRelay: _):
+            return "The receiver refused Ammy's key, or wanted one and didn't get it. Check that the Key here matches the one set on the receiver."
+        case .refused(status: 404, fromRelay: true):
+            return "The receiver is running, but not at that path. Check the end of the URL."
+        // Tailscale Funnel's own 404 when nothing is served behind the name,
+        // or a receiver that doesn't identify itself saying the path is wrong.
+        // The words fit both, since Ammy can't tell them apart.
+        case .refused(status: 404, fromRelay: false):
+            return "The address answered, but nothing there took the update. Check the URL, including the end of it, and that the receiver is running."
+        case .refused(status: let status, fromRelay: true) where (500..<600).contains(status):
+            return "The receiver ran into a problem of its own (error \(status)). Its log should say what."
+        case .refused(status: let status, fromRelay: false) where (500..<600).contains(status):
+            return "The address answered with an error (\(status)). If a tunnel or proxy forwards to the receiver, the receiver may have stopped or the device it runs on may be asleep. Otherwise the receiver's log should say why."
+        case .refused(status: let status, fromRelay: _):
+            return "The receiver refused the update (error \(status))."
+
+        // iOS reports cellular data switched off for Ammy alone under this
+        // code too, not under dataNotAllowed (Apple DTS, developer forums
+        // threads 685814 and 81350), so both causes are named.
+        case .unreachable(.notConnectedToInternet):
+            return "This device isn't online, or Ammy isn't allowed to use cellular data. Join Wi-Fi, or turn on cellular data for Ammy in Settings › Cellular."
+        // Roaming, or cellular data off for the whole device.
+        case .unreachable(.dataNotAllowed):
+            return "Cellular data isn't available right now, for example because Data Roaming is off. Join Wi-Fi, or check Settings › Cellular."
+        case .unreachable(.timedOut):
+            return "The receiver didn't answer in time. The device it runs on may be off, asleep or offline."
+        // Also the last word after twenty minutes of retrying an address that
+        // was working, where a typo can't be the reason.
+        case .unreachable(.cannotFindHost), .unreachable(.dnsLookupFailed):
+            return "Ammy couldn't look up that address. If it has never worked, check the URL for typos. If it was working, the address may no longer be published, or this network may be having trouble."
+        case .unreachable(.cannotConnectToHost):
+            return "The device at that address turned the connection away. The receiver may not be running."
+        case .unreachable(.networkConnectionLost):
+            return "The connection dropped partway through, which often happens when switching between Wi-Fi and cellular."
+        // Measured 24 Sept 2026: with Funnel's route to the PC broken, Funnel's
+        // public edge accepted the connection and dropped it mid-handshake —
+        // five US cities saw exactly this — and iOS files that under
+        // secureConnectionFailed. So the likely story is an unreachable
+        // receiver, not a certificate.
+        case .unreachable(.secureConnectionFailed):
+            return "The connection was cut off before it could be secured. That usually means the receiver can't be reached right now: the device it runs on may be offline, or whatever forwards to it may be down."
+        case .unreachable(.serverCertificateUntrusted),
+             .unreachable(.serverCertificateHasBadDate),
+             .unreachable(.serverCertificateNotYetValid),
+             .unreachable(.serverCertificateHasUnknownRoot):
+            return "The address's security certificate isn't valid, so Ammy won't send to it. Check the URL, and that this device's date and time are right."
+        // PresenceRelay.push() returns this when the body won't encode, which
+        // is Ammy's fault and not the network's.
+        case .unreachable(.cannotDecodeRawData):
+            return "Ammy couldn't turn this song's details into a message, which is a bug in Ammy. Playing a different song should get past it."
+        case .unreachable(let code):
+            return "Ammy couldn't reach the receiver (error \(code.rawValue))."
         }
     }
 }
