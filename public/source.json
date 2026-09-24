@@ -9,12 +9,12 @@
       "versions": [
         {
           "version": "1.0",
-          "date": "2026-09-24T19:02:35+00:00",
-          "localizedDescription": "Give History's filter the usual gap above the list\n\nThe All / Failures switch sat right on the list's top edge. It now keeps the system's normal spacing between a header and its list, and still spans the list's full width.",
-          "downloadURL": "https://github.com/kaydenpmd/Ammy/releases/download/v1.0-b111/Ammy-1.0-b111-c274099.ipa",
-          "size": 4426719,
-          "sha256": "d6149ecc0651c5efb8fce8cd087813543e1e5635597a11b9d10a309f5f53fddf",
-          "buildVersion": "111",
+          "date": "2026-09-24T19:35:34+00:00",
+          "localizedDescription": "Get the cover from Apple's catalog when iOS doesn't have it\n\niOS sometimes hands back no cover for a song streamed from Apple Music, even when the Lock Screen shows one, and Ammy showed an empty square. It now asks Apple's catalog for that song's cover by its catalog ID, once per song, and only while it's still the song playing.",
+          "downloadURL": "https://github.com/kaydenpmd/Ammy/releases/download/v1.0-b114/Ammy-1.0-b114-15bf47b.ipa",
+          "size": 4437958,
+          "sha256": "f32fb6014f1b9c41370072b681f975e9c1a18b2c12cf76874f436278f130be01",
+          "buildVersion": "114",
           "minOSVersion": "26.0"
         }
       ],
