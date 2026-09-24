@@ -9,12 +9,12 @@
       "versions": [
         {
           "version": "1.0",
-          "date": "2026-09-24T18:55:18+00:00",
-          "localizedDescription": "Put History's filter above the list instead of inside it\n\nThe All / Failures switch sat in the list as an invisible first row, so the list's card began one row down, with square top corners and a stray line along its top, under an empty gap. It's now the list's header: the card rounds its own corners and the switch sits just above it.",
-          "downloadURL": "https://github.com/kaydenpmd/Ammy/releases/download/v1.0-b109/Ammy-1.0-b109-bcd4ea1.ipa",
-          "size": 4427039,
-          "sha256": "d5433f97cdcf04b18b73f0a0296ce7c316a7bf6c976b7d4e9b172e6e612a7dd2",
-          "buildVersion": "109",
+          "date": "2026-09-24T19:02:35+00:00",
+          "localizedDescription": "Give History's filter the usual gap above the list\n\nThe All / Failures switch sat right on the list's top edge. It now keeps the system's normal spacing between a header and its list, and still spans the list's full width.",
+          "downloadURL": "https://github.com/kaydenpmd/Ammy/releases/download/v1.0-b111/Ammy-1.0-b111-c274099.ipa",
+          "size": 4426719,
+          "sha256": "d6149ecc0651c5efb8fce8cd087813543e1e5635597a11b9d10a309f5f53fddf",
+          "buildVersion": "111",
           "minOSVersion": "26.0"
         }
       ],
