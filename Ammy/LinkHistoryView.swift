@@ -41,15 +41,20 @@ struct LinkHistoryView: View {
                         // cell's corner mask, which flattened the picker when it
                         // was a zero-inset row, doesn't reach a header.
                         //
-                        // Zero insets ask for the card's full width. The HIG's
-                        // segmented-control page gives no placement for iOS.
+                        // Zero horizontal insets give it the card's full width.
+                        // Only the horizontal ones: zeroing all four (build 109)
+                        // also removed the system's gap between a header and its
+                        // card, and the switch sat on the card's top edge. The
+                        // per-edge form, iOS 26, leaves the system's own vertical
+                        // spacing in place. The HIG's segmented-control page
+                        // gives no placement for iOS.
                         Picker("Show", selection: $failuresOnly) {
                             Text("All").tag(false)
                             Text("Failures").tag(true)
                         }
                         .pickerStyle(.segmented)
                         .labelsHidden()
-                        .listRowInsets(EdgeInsets())
+                        .listRowInsets(.horizontal, 0)
                     }
                 }
             }
