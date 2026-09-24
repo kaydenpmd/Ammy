@@ -539,6 +539,13 @@ The short version:
 - **Soft artwork**: downsampled with ImageIO to the exact pixels drawn, WWDC18
   session 219's documented method, instead of Core Animation shrinking a 512 px
   cover on the fly. What filter the Lock Screen itself uses is not documented.
+- **Non-square covers are fitted, not cropped**, centred in the 57 pt square
+  and rounded at their own corners, as the Lock Screen draws them (a portrait
+  cover measured 49 × 57 pt there).
+- **Nothing playing**: a plain `tertiarySystemFill` square, no symbol, no
+  hairline. Control Center's is an empty translucent square (Apple's iPhone
+  User Guide screenshot); Apple names no colour, and tertiarySystemFill is the
+  documented fill "for large shapes".
 - **Scrolling**: 2 s rest, 30 pt/s, 50 pt gap, 10 pt fade. These are
   LNPopupController's (an open-source replica of Music's player); Apple
   publishes none. Paused in the background, off under Reduce Motion.

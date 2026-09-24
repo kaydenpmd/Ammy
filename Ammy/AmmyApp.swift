@@ -200,17 +200,12 @@ private struct NowPlayingRow: View {
 
     var body: some View {
         HStack(spacing: 14) {
+            // The artwork, or the empty square, rounded and edged at its own
+            // size, then centred in the square it's given, so a cover that
+            // isn't square keeps its whole picture and its own rounded
+            // corners.
             artwork
                 .frame(width: Self.side, height: Self.side)
-                .clipShape(RoundedRectangle(cornerRadius: corner, style: .continuous))
-                // One physical pixel in the system separator colour, so a cover
-                // the colour of the row still has an edge. GUESS: Apple doesn't
-                // document the stroke Music draws on artwork; this is iOS's
-                // documented hairline, the one between list rows, applied to it.
-                .overlay {
-                    RoundedRectangle(cornerRadius: corner, style: .continuous)
-                        .strokeBorder(Color(uiColor: .separator), lineWidth: 1 / displayScale)
-                }
                 .accessibilityHidden(true)
 
             // The text always has the room of a title line and an artist line.
@@ -346,18 +341,43 @@ private struct NowPlayingRow: View {
             // The downsampled copy when it belongs to this cover, drawn at its
             // own size; the full one only until that's ready, or if it failed.
             let current = thumbnail.flatMap { $0.source == ObjectIdentifier(image) ? $0.image : nil }
+            // Fitted, not cropped: a cover that isn't square shows all of
+            // itself, centred in the square. Measured on the owner's Lock
+            // Screen, 24 Sept 2026: a portrait cover drawn 49 x 57 pt, full
+            // height, centred, rounded at its own corners, nothing behind it.
             Image(uiImage: current ?? image)
                 .resizable()
-                .scaledToFill()
+                .scaledToFit()
+                .clipShape(RoundedRectangle(cornerRadius: corner, style: .continuous))
+                // One physical pixel in the system separator colour, so a cover
+                // the colour of the row still has an edge. GUESS: Apple doesn't
+                // document the stroke Music draws on artwork; this is iOS's
+                // documented hairline, the one between list rows, applied to it.
+                .overlay {
+                    RoundedRectangle(cornerRadius: corner, style: .continuous)
+                        .strokeBorder(Color(uiColor: .separator), lineWidth: 1 / displayScale)
+                }
         } else {
-            ZStack {
-                Color(uiColor: .tertiarySystemFill)
-                Image(systemName: "music.note")
-                    .font(.title2)
-                    .foregroundStyle(.secondary)
-            }
+            // Nothing playing: a plain grey square, no symbol, as the owner
+            // asked on 24 Sept 2026. It's distinct from the cell on its own,
+            // so it needs no hairline.
+            RoundedRectangle(cornerRadius: corner, style: .continuous)
+                .fill(Self.emptyFill)
         }
     }
+
+    /// The empty square's colour: the system's own, not a value copied in.
+    ///
+    /// Apple names no colour for it. Measured, Apple's iPhone User Guide
+    /// ("Use and customize Control Center", iOS 26): Control Center shows Not
+    /// Playing as an empty rounded square with no symbol, in the same
+    /// translucent glass as the AirPlay button's platter, a vibrant material
+    /// fill that can't be drawn on an opaque list cell. Apple's iOS 26 UI kit
+    /// has no empty state to read, and the Lock Screen shows no player at all.
+    /// Documented, UIColor: tertiarySystemFill is for "large shapes, such as
+    /// input fields, search bars, or buttons", and like Control Center's it
+    /// lets the background show through. The owner chose it on 24 Sept 2026.
+    private static let emptyFill = Color(uiColor: .tertiarySystemFill)
 
     /// Something Ammy would send right now.
     private var playing: Bool {
