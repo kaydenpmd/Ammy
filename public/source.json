@@ -9,12 +9,12 @@
       "versions": [
         {
           "version": "1.0",
-          "date": "2026-09-24T08:27:33+00:00",
-          "localizedDescription": "Say what went wrong when a connection fails, and what to do\n\nThe popup and the notification now explain the likely cause and what to check, instead of only naming the network error. \"Secure Connection Failed\" becomes \"The connection was cut off before it could be secured. That usually means the receiver can't be reached right now.\" A refused key, an address that won't look up, cellular data switched off for Ammy, and an error from the receiver each get their own advice. Each notice ends with how to try again. History keeps the short labels.",
-          "downloadURL": "https://github.com/kaydenpmd/Ammy/releases/download/v1.0-b103/Ammy-1.0-b103-8ed31e5.ipa",
-          "size": 4394173,
-          "sha256": "a92ada29d6d8fc172412bb06aa4e75d46cf313139deb45cbbec3b97a83697318",
-          "buildVersion": "103",
+          "date": "2026-09-24T10:13:42+00:00",
+          "localizedDescription": "Match the Now Playing row to the Lock Screen's player\n\nThe artwork is the Lock Screen's size, as far from the top and bottom of its section as from its side, with corners that follow the section's. It's drawn from a copy shrunk to the screen's exact pixels, so it looks soft rather than grainy. Title and artist sit on one line each at the same size, and scroll when they're too long. The explicit E sits at the height of the capitals in the title's colour.\n\nThe section has a \"Now Playing\" header. If Ammy can't see what's playing, a prompt at the top of the screen asks for access, in place of the Media Access row.",
+          "downloadURL": "https://github.com/kaydenpmd/Ammy/releases/download/v1.0-b105/Ammy-1.0-b105-27ff19e.ipa",
+          "size": 4427023,
+          "sha256": "18be619909cc0d2facdfa1cf0bcc797f5471191782bcfa133202df19c503d465",
+          "buildVersion": "105",
           "minOSVersion": "26.0"
         }
       ],
