@@ -211,6 +211,18 @@ curl -s "https://api.github.com/repos/kaydenpmd/Ammy/commits/<sha>/check-runs" \
 A browser is the worst instrument for this, because it is the one thing in the
 chain holding a cache you cannot see. Append `?x=1` before believing it.
 
+**A new build doesn't appear in SideStore, and the repo already lists it** — 24
+Sept 2026, build 111. CI published `public/source.json` with 111, but the live
+file still offered 109 fifteen minutes later, cache-busted. The Pages check on
+the publish commit (`source: publish 1.0 (build 111)`) sat at "Build in
+progress" from 19:02, when every deploy before it had finished in about 20
+seconds. Nothing in the repo was wrong. Pages had simply hung. To recover:
+push any commit, which starts a new Pages deploy (a Markdown-only one won't
+build or release the app, because `publish-source.yml` ignores `**.md`), or
+press Retry on the deployment in the Cloudflare dashboard. The check-run
+command above shows which it is: `in_progress` for more than a few minutes
+means a hung deploy, not a cache.
+
 **Source adds but install fails** — check `size` matches the real file. That's
 the field that breaks if `source.json` is ever hand-edited.
 
