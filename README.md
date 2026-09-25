@@ -148,9 +148,12 @@ pressure instead — a different problem, with a different fix.
 
 ## 4. Build the IPA without a Mac
 
-Push to `main` and the **Build unsigned IPA** workflow runs: a macOS runner
-generates the Xcode project from `project.yml` via XcodeGen, compiles with
-signing disabled, and uploads `Ammy-<version>-b<run>-<sha>.ipa` as an artifact.
+Push to `main` and the **Publish to AltStore source** workflow runs. It calls
+**Build unsigned IPA and simulator app**, where a macOS runner generates the
+Xcode project from `project.yml` via XcodeGen, compiles with signing disabled,
+and uploads `Ammy-<version>-b<build>-<sha>.ipa` as an artifact, the build number
+being a commit count. The publish job then releases that `.ipa` on GitHub and in
+the AltStore source; see `PUBLISHING.md`.
 
 Signing is skipped because the sideloader re-signs with your Apple ID at install
 time. That also means no certificates in CI secrets.

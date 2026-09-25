@@ -1,5 +1,5 @@
 {
-  "_comment": "Static metadata for the AltStore source. publish-source.yml merges per-release facts (version, build, size, hash, download URL, changelog) into public/source.json on top of this. Everything here is re-applied on every release, so a typo fixed here goes live with the next tag. sourceIdentifier and app.bundleIdentifier are the two exceptions — see PUBLISHING.md before changing either.",
+  "_comment": "Static metadata for the AltStore source. publish-source.yml merges per-release facts (version, build, size, hash, download URL, changelog) into public/source.json on top of this. Everything here is re-applied on every release, so a typo fixed here goes live with the next release. A push that touches only this file doesn't release (publish-source.yml's paths-ignore); run Publish to AltStore source by hand to publish it sooner. sourceIdentifier and app.bundleIdentifier are the two exceptions — see PUBLISHING.md before changing either.",
 
   "sourceName": "Kayden's Source",
   "sourceIdentifier": "net.kaydenpmd.source",

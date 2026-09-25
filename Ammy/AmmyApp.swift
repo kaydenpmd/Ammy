@@ -4,8 +4,8 @@ import SwiftUI
 import UIKit
 
 extension Bundle {
-    /// e.g. "1.0 (47)". The build number is the CI run that produced the IPA,
-    /// so this is the quickest way to tell whether the phone is actually
+    /// e.g. "1.0 (47)". The build number is the commit count CI built the IPA
+    /// from, so this is the quickest way to tell whether the phone is actually
     /// running the build you just pushed — the artifact is named to match.
     var displayVersion: String {
         let short = infoDictionary?["CFBundleShortVersionString"] as? String ?? "?"

@@ -20,7 +20,7 @@ on:
         description: "MARKETING_VERSION as read out of project.yml."
         value: ${{ jobs.build.outputs.marketing }}
       build:
-        description: "CURRENT_PROJECT_VERSION, i.e. the run number."
+        description: "CURRENT_PROJECT_VERSION, i.e. the commit count (git rev-list --count HEAD)."
         value: ${{ jobs.build.outputs.build }}
 
 jobs:

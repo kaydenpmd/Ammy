@@ -5,8 +5,9 @@ Regenerate the AltStore/SideStore source JSON with a newly built version.
 Static metadata (name, icon, description, screenshots) lives in
 source.config.json and is re-applied on every run, so fixing a typo there and
 cutting any release publishes the fix. Per-build facts arrive as arguments from
-publish-source.yml. Older version entries are preserved — that list is what lets
-someone install a previous build when a new one breaks on their device.
+publish-source.yml. Entries for other versions are preserved; a new build of an
+existing version replaces that version's entry, so the source offers only the
+newest build of each version (earlier builds stay on their GitHub Releases).
 
 Usage:
     build_source.py --config source.config.json \

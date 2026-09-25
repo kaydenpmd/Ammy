@@ -26,8 +26,9 @@ on:
     branches: [main]
     # Only build (and release) when something that can change the app
     # changes. Moved here from build-ipa.yml on 18 Sept 2026 along with the
-    # trigger itself — see that file for why a build number has to mean
-    # something. public/** matters doubly now: without this, the "Commit and
+    # trigger itself. The build number is a commit count, so skipped commits
+    # still advance it and published builds skip numbers, which is harmless.
+    # public/** matters doubly now: without this, the "Commit and
     # push" step below, which touches only public/source.json, would trigger
     # another run of this very workflow.
     paths-ignore:
