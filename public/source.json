@@ -9,12 +9,12 @@
       "versions": [
         {
           "version": "1.0",
-          "date": "2026-09-24T19:35:34+00:00",
-          "localizedDescription": "Get the cover from Apple's catalog when iOS doesn't have it\n\niOS sometimes hands back no cover for a song streamed from Apple Music, even when the Lock Screen shows one, and Ammy showed an empty square. It now asks Apple's catalog for that song's cover by its catalog ID, once per song, and only while it's still the song playing.",
-          "downloadURL": "https://github.com/kaydenpmd/Ammy/releases/download/v1.0-b114/Ammy-1.0-b114-15bf47b.ipa",
-          "size": 4437958,
-          "sha256": "f32fb6014f1b9c41370072b681f975e9c1a18b2c12cf76874f436278f130be01",
-          "buildVersion": "114",
+          "date": "2026-09-25T07:46:55+00:00",
+          "localizedDescription": "No app changes: bring the release docs up to date\n\nNothing in Ammy itself changes in this build. The documentation and code\ncomments still described releasing by tagging a version and a build number\ntaken from the CI run. Releases have come from every push to main since\n18 Sept, and the build number is a commit count; PUBLISHING.md, README.md,\nproject.yml, source.config.json, build_source.py and both workflows now say so.",
+          "downloadURL": "https://github.com/kaydenpmd/Ammy/releases/download/v1.0-b116/Ammy-1.0-b116-612dbe7.ipa",
+          "size": 4437957,
+          "sha256": "d2c5cb77b45600f0cd2c72d2be4641c9ffcc1cfc22b46d64e964a6ab49194751",
+          "buildVersion": "116",
           "minOSVersion": "26.0"
         }
       ],
