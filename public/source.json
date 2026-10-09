@@ -9,12 +9,12 @@
       "versions": [
         {
           "version": "1.0",
-          "date": "2026-09-25T07:46:55+00:00",
-          "localizedDescription": "No app changes: bring the release docs up to date\n\nNothing in Ammy itself changes in this build. The documentation and code\ncomments still described releasing by tagging a version and a build number\ntaken from the CI run. Releases have come from every push to main since\n18 Sept, and the build number is a commit count; PUBLISHING.md, README.md,\nproject.yml, source.config.json, build_source.py and both workflows now say so.",
-          "downloadURL": "https://github.com/kaydenpmd/Ammy/releases/download/v1.0-b116/Ammy-1.0-b116-612dbe7.ipa",
+          "date": "2026-10-09T21:13:05+00:00",
+          "localizedDescription": "No app changes: retire the old relay and tidy the notes\n\nNothing in Ammy itself changes in this build. The Python relay that used\nto ship in this repo is gone; Issun is the receiver Ammy pairs with, and\nthe README now walks through setting it up, along with adding the\nAltStore source in SideStore.\n\nAlso: the release notes now drop GitHub's lower-case Co-authored-by\nlines, and fall back to the version and build when a commit says\nnothing else.",
+          "downloadURL": "https://github.com/kaydenpmd/Ammy/releases/download/v1.0-b118/Ammy-1.0-b118-0462020.ipa",
           "size": 4437957,
-          "sha256": "d2c5cb77b45600f0cd2c72d2be4641c9ffcc1cfc22b46d64e964a6ab49194751",
-          "buildVersion": "116",
+          "sha256": "1c0772698545d425c8d74966c471fa6241aa45c2d2f281786c7cc36c698cb1cc",
+          "buildVersion": "118",
           "minOSVersion": "26.0"
         }
       ],
