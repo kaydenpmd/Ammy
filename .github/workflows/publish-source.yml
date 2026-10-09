@@ -33,7 +33,6 @@ on:
     # another run of this very workflow.
     paths-ignore:
       - '**.md'
-      - 'bridge/**'
       - 'public/**'
       - 'scripts/**'
       - 'source.config.json'
@@ -130,11 +129,15 @@ jobs:
           set -euo pipefail
           # Trailers are for git, not for a subscriber reading What's New. A
           # trailing blank line where they used to be is harmless and not
-          # worth a fragile sed pass to remove.
+          # worth a fragile sed pass to remove. -i because GitHub itself
+          # writes Co-authored-by in lower case.
           git log -1 --format='%B' HEAD \
-            | grep -vE '^(Co-Authored-By|Claude-Session|Signed-off-by): ' \
+            | grep -viE '^(Co-Authored-By|Claude-Session|Signed-off-by): ' \
             > changelog.txt || true
-          if [ ! -s changelog.txt ]; then
+          # Not [ -s ]: git log always ends the message with a newline, so a
+          # message of nothing but trailers leaves a file that isn't empty yet
+          # says nothing. Only a non-blank character counts as notes.
+          if ! grep -q '[^[:space:]]' changelog.txt; then
             echo "Version ${{ needs.build.outputs.marketing }} (build ${{ needs.build.outputs.build }})" > changelog.txt
           fi
           echo "--- changelog ---"

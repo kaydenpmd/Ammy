@@ -75,7 +75,7 @@ release. `publish-source.yml` builds it, publishes it as a GitHub Release tagged
 Because CI pushes to `main` after you do, `git pull --rebase` before your next
 push.
 
-A push that touches only `**.md`, `bridge/**`, `public/**`, `scripts/**` or
+A push that touches only `**.md`, `public/**`, `scripts/**` or
 `source.config.json` doesn't release (the workflow's `paths-ignore`), since none
 of those change the app. To publish anyway, for example after editing
 `source.config.json`, run **Publish to AltStore source** by hand from the Actions
@@ -83,9 +83,11 @@ tab. That publishes a new build, which subscribers are offered as an update,
 with the message of whatever commit is at the tip of `main` as its What's New.
 
 The message of the newest commit in the push (`HEAD`), minus `Co-Authored-By:`,
-`Claude-Session:` and `Signed-off-by:` trailers (matched case-sensitively),
-becomes the Release notes and the AltStore changelog, so it is what a subscriber
-reads under What's New. Earlier commits in the same push don't appear.
+`Claude-Session:` and `Signed-off-by:` trailers in any capitalisation, becomes
+the Release notes and the AltStore changelog, so it is what a subscriber reads
+under What's New. Earlier commits in the same push don't appear. A message with
+nothing left once the trailers are gone becomes "Version <MARKETING_VERSION>
+(build N)", e.g. "Version 1.0 (build 117)".
 
 `MARKETING_VERSION` in `project.yml` is still the only version number a human
 sets. Bump it and push, and that push publishes under the new number; leave it

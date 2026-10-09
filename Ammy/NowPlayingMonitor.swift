@@ -205,7 +205,7 @@ final class NowPlayingMonitor: ObservableObject {
     /// empty square in Ammy while the Lock Screen, which gets its cover
     /// another way, showed it, and other songs from the same album were fine.
     ///
-    /// iTunes Lookup by store ID, as relay.py and Issun ask it for Discord's
+    /// iTunes Lookup by store ID, as Issun asks it for Discord's
     /// cover: an exact lookup, never a search by name, so it can't pick the
     /// wrong cover. No entitlement is needed. Local files have no store ID and
     /// nothing to look up.
@@ -250,7 +250,7 @@ final class NowPlayingMonitor: ObservableObject {
     private static func catalogCover(storeID: String) async -> Result<(jpeg: Data, image: UIImage), CatalogFailure> {
         // The device's region first, since an ID from one country's catalog
         // may not resolve in the lookup's default, the US. Then without a
-        // country, the form relay.py and Issun use: the region is only a
+        // country, the form Issun uses: the region is only a
         // stand-in for the Apple Music storefront, and the API refuses some
         // region codes outright (400 for "zz", checked 24 Sept 2026).
         var countries: [String?] = [nil]

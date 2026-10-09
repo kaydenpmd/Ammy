@@ -65,7 +65,7 @@ enum PushOutcome {
         // Without it, the answer could come from something in front — Funnel
         // answers 502 when the PC is up but nothing is listening — or from a
         // receiver that simply doesn't send the header, which is any receiver
-        // but relay.py and Issun. It can't say which, so it doesn't guess.
+        // but Issun. It can't say which, so it doesn't guess.
         // "Receiver", not "Relay": the text a person reads stays
         // receiver-agnostic (CLAUDE.md, "What Ammy is").
         case .refused(status: let status, fromRelay: true) where (500..<600).contains(status):
@@ -257,14 +257,15 @@ actor PresenceRelay {
             // not about any receiver, so it keeps Ammy receiver-agnostic.
             "app_name": Bundle.main.displayName,
 
-            // Lets the relay tell a late-arriving push from a newer one. Each
-            // push is its own independent Task with no ordering guarantee
+            // Lets the receiver tell a late-arriving push from a newer one.
+            // Each push is its own independent Task with no ordering guarantee
             // against the others, so the farewell from stop() (playing:
-            // false) can land after an in-flight now-playing push that was
-            // already sent, and relay.py used to just apply whatever arrived
-            // last. Milliseconds since epoch rather than an incrementing
-            // counter: a counter resets to 0 on every relaunch, and the relay
-            // would then reject every push from the new process as "older"
+            // false) can land before a now-playing push that was sent
+            // earlier and is still in flight, and a receiver that just
+            // applied whatever arrived last would show a song Ammy had
+            // stopped. Milliseconds since epoch rather than an incrementing
+            // counter: a counter resets to 0 on every relaunch, and the
+            // receiver would then reject every push from the new process as "older"
             // than whatever high number the last one reached. A wall clock
             // only needs the device clock not to run backwards, which a
             // counter can't promise across a cold start.
@@ -274,7 +275,8 @@ actor PresenceRelay {
         // The app cannot report its own death, so every push carries a snapshot
         // of its condition and the relay keeps the most recent one. When the
         // pushes stop, that snapshot is the only account of what was happening
-        // beforehand — see PushDiagnostics here and note_silence() in relay.py.
+        // beforehand — see PushDiagnostics here and UptimeLog.NoteSilence in
+        // Issun.
         if let diag {
             body["diag"] = diag.dictionary
         }

@@ -3,10 +3,10 @@ import Foundation
 
 /// A snapshot of the keepalive's health, sent to the relay on every push.
 ///
-/// This exists because the app cannot report its own death. The relay only ever
-/// sees that pushes stopped, never why — so the last snapshot before the silence
-/// is the only evidence there will be. `note_silence()` on the relay prints it
-/// onto the "phone stopped checking in" line for exactly that reason.
+/// This exists because the app cannot report its own death. The receiver only
+/// ever sees that pushes stopped, never why — so the last snapshot before the
+/// silence is the only evidence there will be. `UptimeLog.NoteSilence` in Issun
+/// prints it onto the "phone stopped checking in" line for exactly that reason.
 ///
 /// `running` is what this class *believes*; `engineRunning` is what
 /// `AVAudioEngine` actually reports. When those two disagree the keepalive is

@@ -20,10 +20,29 @@ so there is never a cosmetic reason to.
 Apple Music on iPhone → Discord Rich Presence on a Windows desktop.
 
 ```
-iPhone ──https──▶ <machine>.<tailnet>.ts.net (Tailscale Funnel) ──▶ relay.py ──IPC──▶ Discord desktop
+iPhone ──https──▶ <machine>.<tailnet>.ts.net (Tailscale Funnel) ──▶ Issun, 127.0.0.1:8787 ──IPC──▶ Discord desktop
 ```
 
-Working as of September 2026. Don't redesign it — the shape is deliberate.
+The receiver on the main PC is **Issun** (github.com/kaydenpmd/Issun, cloned at
+`C:\Users\links\Repos\Issun`), and it is the only one. Don't redesign it — the
+shape is deliberate.
+
+**Two retirements, decided 25 Sept 2026, in the owner's words.** "kill relay.py
+it's obsolete": `bridge/` (`relay.py`, `install-task.ps1`, `ipc_test.py`) was
+deleted from the repo (committed 9 Oct 2026), and Issun has no supported
+fallback. The last relay.py stays in git: `git show 3b7875c:bridge/relay.py`.
+And "i'm gonna stop using kaydenpmd.net across this entire thing in favor of
+tailscale. need to live among the people": the endpoint is Tailscale Funnel
+only, and the old Cloudflare tunnel address is retired as an endpoint. The
+AltStore source stays where it is — "altstore can stay using my site" — on
+`apps.kaydenpmd.net`.
+
+**Leftovers on the PC, as of 9 Oct 2026.** The old installed relay (relay.py,
+its `.env`, `relay.log` and `ammy-uptime.log` in `C:\Users\links\Python
+Scripts`) and the disabled `Ammy Relay` logon task were still there. They are
+obsolete, not a rollback: never enable the task, which would contend with Issun
+for port 8787, and removing them is the owner's call. The tunnel was still
+live too; see "Funnel is the only endpoint" under Where things stand.
 
 ## Why it's built this way
 
@@ -32,21 +51,23 @@ socket (`\\.\pipe\discord-ipc-0`) that only the desktop client exposes. Setting
 presence from a phone directly would mean opening a Gateway WebSocket with a
 user token — self-botting, against ToS, accounts get terminated.
 
-The relay exists to avoid that. The phone never talks to Discord; it POSTs
-now-playing JSON to a relay on the PC, and the relay uses the sanctioned IPC
-path. **Any change that moves Discord communication onto the phone is wrong.**
+The receiver exists to avoid that. The phone never talks to Discord; it POSTs
+now-playing JSON to a receiver on the PC, and the receiver uses the sanctioned
+IPC path. **Any change that moves Discord communication onto the phone is
+wrong.**
 
 Cost of this design: presence requires the PC awake with Discord desktop open.
 That's accepted, not a bug to fix.
 
 ## What Ammy is, in anything a user reads
 
-The architecture above is what the *relay* does. It is not what Ammy is, and
+The architecture above is what the *receiver* does. It is not what Ammy is, and
 the difference is load-bearing in every string a subscriber sees. **Ammy is a
 sender**: it reads Apple Music's now-playing state and POSTs it as JSON to an
-HTTPS endpoint the user chooses. It is built to pair with **Issun** — a planned
-desktop application of the owner's that will complete the bridge to Discord —
-and it works with anything else that accepts an HTTPS POST.
+HTTPS endpoint the user chooses. It is built to pair with **Issun** — the
+owner's Windows desktop application (github.com/kaydenpmd/Issun) that completes
+the bridge to Discord — and it works with anything else that accepts an HTTPS
+POST.
 
 So the subtitle and description in `source.config.json`, the landing page in
 `public/index.html`, `NSAppleMusicUsageDescription` in `project.yml`, and the
@@ -59,10 +80,10 @@ purpose: the field is called **Endpoint**, not Relay, because whether the
 address forwards, renders or files what it receives is none of the app's
 business.
 
-`README.md`, `bridge/` and this file are the other half of the rule. They
-document the Discord receiver, which is genuinely what they are about, and they
-go on saying so — the fix is never to strip accurate Discord information, only
-to move it from "what Ammy is" to "what the included relay does".
+`README.md` and this file are the other half of the rule. They document the
+Discord receiver, which is genuinely what they are about, and they go on saying
+so — the fix is never to strip accurate Discord information, only to move it
+from "what Ammy is" to "what the receiver does".
 
 **The trap that isn't text:** the listing's accent colour was `#5865f2`, which
 is Discord's blurple, so the old framing outlived the words that carried it.
@@ -71,41 +92,35 @@ Changed to Apple Music red the same day. Check the non-prose surfaces too.
 ## Layout
 
 ```
-project.yml                     XcodeGen spec — no .xcodeproj is committed
-.github/workflows/build-ipa.yml CI producing an unsigned, versioned IPA
-bridge/relay.py                 Desktop relay + Discord IPC client
-bridge/install-task.ps1         Registers the logon Scheduled Task
-bridge/ipc_test.py              Minimal pypresence test, no HTTP layer
+project.yml                          XcodeGen spec — no .xcodeproj is committed
+.github/workflows/publish-source.yml On push to main: build, GitHub Release, source.json
+.github/workflows/build-ipa.yml      Called by the above; unsigned IPA + simulator build
+scripts/build_source.py              Regenerates public/source.json
+source.config.json                   AltStore listing metadata (user-facing copy)
+public/                              Cloudflare Pages site: landing page, source.json
+PUBLISHING.md                        One-time setup for the AltStore source
 Ammy/
-  AmmyApp.swift                 SwiftUI entry point + settings screen
-  PresenceController.swift      Wires playback changes to relay pushes
-  NowPlayingMonitor.swift       MediaPlayer observation; store ID + cover art
-  PresenceRelay.swift           HTTPS client for the relay
-  KeepAlive.swift               Silent audio to survive backgrounding
-  Diagnostics.swift             The phone's self-report, sent with every push
-  SilenceWatchdog.swift         Notification for when the app isn't running
+  AmmyApp.swift                      SwiftUI entry point + settings screen
+  PresenceController.swift           Wires playback changes to pushes; failure announcing
+  NowPlayingMonitor.swift            MediaPlayer observation; store ID + cover art
+  PresenceRelay.swift                HTTPS client for the endpoint; PushOutcome
+  KeepAlive.swift                    Silent audio to survive backgrounding
+  Diagnostics.swift                  The phone's self-report, sent with every push
+  SilenceWatchdog.swift              Notification for when the app isn't running
+  EventLog.swift                     Link history: failures, interruptions, recoveries
+  LinkHistoryView.swift              The History screen
 ```
 
-**The running relay is not in the repo tree.** On the main PC the live copy is
-a loose file at `C:\Users\links\Python Scripts\relay.py`, with `.env`,
-`art_cache\`, `relay.log`, `ammy-uptime.log` and `install-task.ps1` beside it.
-Both `_load_env_file()` and `ART_DIR` resolve relative to that folder, so a
-`.env` in the repo's `bridge/` would never be read. Edit the running copy, then
-sync `bridge/relay.py` to match — they have silently diverged before.
+The receiver's code, settings and logs are Issun's; its CLAUDE.md is the
+reference for all three.
 
 ## Telling builds apart
 
 Both halves are versioned. Check these before debugging anything.
 
-**Relay** — `RELAY_VERSION` near the top of `relay.py`, with a changelog in the
-comment above it. Readable three ways without the filename ever changing:
-
-```
-[init] relay <version>      relay.log, every startup
-GET /version                e.g. https://kaydenspc.<tailnet>.ts.net/version
-python relay.py --version
-```
-
+**Receiver** — `GET /version` on the Funnel address answers
+`issun <version> (<build>)`, and the `X-Ammy-Relay` header on every response
+carries the same string. Issun's CLAUDE.md covers where else its version shows.
 This document deliberately does **not** state the current version — it went
 stale within the hour, twice. Ask `/version` instead.
 
@@ -121,13 +136,11 @@ answers `alive`/`stale` for Shortcuts, and `/art/<hash>.jpg` is open because
 Discord's CDN fetches it and cannot send our header.
 
 **iOS app** — the Status section shows a **Version** row, e.g. `1.0 (7)`. The
-build number is the CI run, and the artifact is named to match:
-`Ammy-1.0-b7-a1b2c3d.ipa`. Matching numbers means the phone is running the
-build you think it is. `MARKETING_VERSION` in `project.yml` is the only version
-number a human sets; the build number climbs on its own.
-
-Older notes told you to grep `relay.py` for the string `artwork_by_store_id` to
-guess whether it was current. That hack is retired — use the version.
+build number is the count of commits reachable from the built commit (`git
+rev-list --count HEAD` in `build-ipa.yml`), and the artifact is named to match:
+`Ammy-1.0-b7-a1b2c3d.ipa`. Matching numbers means the phone is running the build
+you think it is. `MARKETING_VERSION` in `project.yml` is the only version number
+a human sets; the build number climbs on its own.
 
 ## Gotchas already paid for — don't rediscover these
 
@@ -189,49 +202,30 @@ before one install settled it in two seconds. **When a question is about how
 something feels on the device, build it and touch it** — that is the cheaper
 instrument, and this project has now paid for that lesson twice.
 
-Related, and separate: elements *melting into each other* is a different effect
-that does need a `GlassEffectContainer` and more than one glass element. A lone
-button has nothing to merge with. Conflating the two is what sent this the wrong
-way — they are unrelated limitations.
+Related, and separate: elements *melting into each other* is a different effect,
+and it needs a `GlassEffectContainer` with more than one glass element. The
+bottom bar has one: Stop (`.glass`) and Start/Restart (`.glassProminent`) sit in
+a `GlassEffectContainer` and morph through `glassEffectID` when editing the
+endpoint mid-session splits the bar into Stop + Restart, and again when it
+rejoins. The container does the merging; an extra `.glassEffect` on either
+button adds nothing. A lone button has nothing to merge with. Conflating the two
+effects is what sent this the wrong way.
 
 **Silent failure is this project's recurring bug.** Three separate times, a
 function returned `None` on a failure path without logging, and the empty log
-read as "working" rather than "broken." Every artwork path now prints on
-failure. **When adding a new failure path, log it** — an unexplained silence
-costs days here.
+read as "working" rather than "broken." Every artwork path in the receiver
+logs on failure. **When adding a new failure path, log it** — an unexplained
+silence costs days here.
 
-**pypresence enums, not ints.** `update()` calls `.value` on `activity_type`
-and `status_display_type`. Passing `2` raises `AttributeError: 'int' object has
-no attribute 'value'`, which the worker's generic handler misreads as a dropped
-socket, producing an infinite connect/fail/reconnect loop. Use
-`ActivityType.LISTENING` and `StatusDisplayType.*`. `push_with_fallback()`
-exists to shed unsupported kwargs rather than tearing down the connection.
-
-**A rejected payload is not a dead socket.** This has now bitten twice, from
-two different triggers, and the second cost an hour of confusion.
-
-Discord requires `details` and `state` to be at least two characters and
-refuses the entire activity otherwise. One-character titles are not exotic —
-the track that exposed this was **"i" by Kendrick Lamar**, hit by shuffling.
-The refusal arrives as a `ServerError`,
-the worker's catch-all read it as a lost connection, closed the socket,
-reconnected, re-sent the identical payload, and looped. Presence stayed empty
-for about a minute until the song changed and broke the cycle.
-
-Diagnosing it was harder than it should have been because `print(f"[rpc] ...")`
-runs *after* a successful push, so the one track responsible is the only one
-that leaves no line in the log.
-
-Fixed three ways in 1.3.0: `pad_for_discord()` pads short fields with U+2060,
-`PAYLOAD_REJECTED` exceptions are caught separately and the track skipped
-rather than the connection torn down, and the reconnect path sleeps so it
-cannot spin. **Don't collapse those two `except` clauses back together.**
-
-**`push_with_fallback` matches quoted field names.** It identifies which field
-to drop from `'x'` in "unexpected keyword argument 'x'". A bare substring test
-is wrong: `state` is a substring of `state_url`, so an error about `state_url`
-would shed the *artist line* and leave the real offender in place. Don't
-"simplify" that back.
+**The Discord-side lessons live in Issun's CLAUDE.md**, under "relay.py's
+gotchas, preserved, and where they live now", with the code that carries each
+one: the playhead anchor paired with the push's arrival time and never the
+clock (the project's most expensive bug, the rubberbanding progress bar); a
+rejected payload is not a dead socket, and Discord's two-character minimum
+("i" by Kendrick Lamar); pypresence's enums and `push_with_fallback`'s quoted
+field names, which Issun's own IPC client made unnecessary; and the
+interactive session Discord's pipe needs. They were relay.py's lessons and are
+Issun's code now, so that is where to read and change them.
 
 **currentPlaybackTime is unreliable right after a track change.** It can report
 the previous song's position for a second or two. `PresenceController` re-reads
@@ -255,29 +249,6 @@ it's worse: every heartbeat says "0 seconds in", and the bar snaps back to the
 start every 30 s. On Discord a station now shows the song and cover with a
 small "♫ 0:42"-style counter. That counter is Discord's own, drawn for
 activities with no timestamps, and nothing sent over RPC removes it.
-
-**The playhead anchor is paired with the push's arrival time, never with
-`time.time()`.** This is the single most expensive bug the project has had, and
-it is invisible on inspection because every individual calculation looks right.
-
-`build_payload()` runs once per second in the RPC worker. The phone refreshes
-`elapsed` once every thirty. So for thirty consecutive calls the same frozen
-reading is in hand — and computing `start = time.time() - elapsed` against it
-slides the anchor forward one second per second. Discord's bar falls steadily
-behind for thirty seconds, then snaps forward when the next push lands. That
-was the rubberbanding.
-
-`Playhead.anchor()` takes an `observed_at` argument for exactly this reason,
-and `build_payload()` receives it from `state.get()`. Never pass either one
-`time.time()`.
-
-Diagnosis tip: the giveaway was `[playhead] re-anchored +10.0s` repeating with
-*identical* drift. A noisy sensor gives varying numbers; a constant drift is a
-clock, not a measurement.
-
-`_materially_different()` still applies a 2-second tolerance to `start`/`end`,
-which is now belt-and-braces rather than load-bearing — a correct anchor
-doesn't move between pushes at all.
 
 **KeepAlive must survive interruptions — and `.ended` is not guaranteed.** The
 silent audio holds the app alive only while its `AVAudioSession` is active. Four
@@ -326,20 +297,27 @@ it with.
 `project.yml`. `SWIFT_VERSION` is a *language mode* — valid values are
 4.0/4.2/5.0/6.0. "5.9" is rejected.
 
-**Don't transcribe config from screenshots.** `DISCORD_CLIENT_ID` was once
+**Don't transcribe config from screenshots.** The Discord client ID was once
 copied from a screenshot with one digit misread, and Discord answered
 `Error Code: 4000 Message: Client ID is Invalid` — which reads like a deleted
-application, not a typo. Have PowerShell write the file from the live variables
-instead, and print `.Length` rather than the value when checking secrets.
+application, not a typo. Paste values rather than retyping them, and print
+`.Length` rather than the value when checking a secret.
 
 ## Diagnostics
 
+The receiver writes these lines, and Issun keeps relay.py's wording for them
+word for word (even "relay up throughout"), because the history and its summary
+parser depend on it. Issun's log is `%LOCALAPPDATA%\Issun\issun.log`, its
+check-in history is `%LOCALAPPDATA%\Issun\uptime.log` (relay.py's history
+merged in ahead of its own), and its window's Diagnostics section shows the
+summary that `python relay.py --summary` used to print.
+
 **The app cannot report its own death.** By the time anyone notices it is gone
-there is nothing left running to ask, and the relay only ever sees that pushes
-stopped — never why. So every push carries a `diag` snapshot of the phone's
-condition, the relay keeps the most recent one, and `note_silence()` prints it
-onto the "phone stopped checking in" line. That last snapshot is the entire
-account of what preceded a silence.
+there is nothing left running to ask, and the receiver only ever sees that
+pushes stopped — never why. So every push carries a `diag` snapshot of the
+phone's condition, the receiver keeps the most recent one, and
+`UptimeLog.NoteSilence` prints it onto the "phone stopped checking in" line.
+That last snapshot is the entire account of what preceded a silence.
 
 ```
 phone stopped checking in  last seen 00:39:33  last state: engine=yes want=yes
@@ -370,21 +348,21 @@ How to read it:
   When you are debugging blind, record everything cheap; you cannot correlate a
   signal you did not keep.
 
-`[keepalive]` lines in `relay.log` record changes as they happen, so the log
+`[keepalive]` lines in the receiver's log record changes as they happen, so the log
 shows the *sequence* leading to a death rather than only the state at the end of
 it. `GET /diag` returns the latest snapshot on demand, authenticated.
 
 ### Was it killed, or just unreachable?
 
 Two different bugs with two different fixes, and until relay 1.8.0 the log could
-not tell them apart. A push that fails never arrives, so from the relay's side
+not tell them apart. A push that fails never arrives, so from the receiver's side
 "iOS evicted the app" and "the app was alive and could not reach me" are the
 same observation: silence. The evidence has to survive the outage and come back
 with the first push that gets through.
 
 Two fields carry it, from opposite directions:
 
-- `app_uptime_s` resets when the process does. The relay keeps the value from
+- `app_uptime_s` resets when the process does. The receiver keeps the value from
   the push *before* the gap and compares. Advanced by roughly the length of the
   gap → one process ran straight through it. Went backwards, or forwards by far
   less than the gap → a different process is talking now.
@@ -436,14 +414,16 @@ recovered by itself; build 51 hit one and gave up permanently. **This is the
 reason the established/never-connected distinction exists** — and the log is what
 found it, which is the whole argument for keeping `pushfail` on every push.
 
-**A relay bug, still open.** The 14:59 gap on 14 Sept is logged *twice*,
-identically, and reads `app restarted 3358s -> 3359s — it died`. Uptime went
-*up* by a second, which is not a restart. `_gap_verdict()` compared against a
-`_prev_app_uptime` that a near-simultaneous second push — the `handleChange()`
-correction, most likely — had already advanced, so the delta was tiny against a
-38-minute gap and the second branch fired. One of the fourteen death verdicts in
-the log is therefore both double-counted and wrong. Small, but it quietly
-corrupts the only record there is.
+**One wrong line in the history, from a relay.py bug Issun fixed.** The 14:59
+gap on 14 Sept is logged *twice*, identically, and reads `app restarted 3358s ->
+3359s — it died`. Uptime went *up* by a second, which is not a restart.
+relay.py's `_gap_verdict()` compared against a `_prev_app_uptime` that a
+near-simultaneous second push — the `handleChange()` correction, most likely —
+had already advanced, so the delta was tiny against a 38-minute gap and the
+second branch fired. One of the fourteen death verdicts in the log is therefore
+both double-counted and wrong. Issun's `CheckinProcessor` holds one lock around
+the whole check-in, so the second push sees the first as its previous check-in
+and writes nothing. The wrong line stays in the imported history; discount it.
 
 ## Artwork
 
@@ -452,7 +432,8 @@ Resolution order, best first:
 1. **Catalog ID from the phone** (`store_id` ← `playbackStoreID`) — exact
    lookup, no guessing. This is the normal path.
 2. **JPEG uploaded by the phone** (`artwork_b64`) — exact, for tracks with no
-   catalog ID. Requires `PUBLIC_BASE`; the relay caches it under a hash of the
+   catalog ID. Needs a public base URL, which Issun takes from Tailscale unless
+   its Settings override it; the receiver caches the JPEG under a hash of the
    track and serves it at `/art/<hash>.jpg`.
 3. **Fuzzy iTunes Search** — best effort, and the source of most historical
    grief.
@@ -472,22 +453,22 @@ time" (Apple Developer Forums thread 743898, no Apple reply). Seen 24 Sept 2026
 on "Handle (feat. Don Toliver)": an empty square in Ammy, a cover on the Lock
 Screen (which gets it another way), and covers for the rest of the album.
 `NowPlayingMonitor` now tries the artwork's own `bounds` size, then asks
-**iTunes Lookup by store ID** from the phone, the same exact lookup the relay and
-Issun make, with the device region as `country`. It runs once per track, backs
+**iTunes Lookup by store ID** from the phone, the same exact lookup Issun
+makes, with the device region as `country`. It runs once per track, backs
 off 60 s after a failure, and drops the answer if the song changed meanwhile.
 It's the only request Ammy makes to anything but the user's endpoint.
 
 **The phone sends the JPEG once per track, not per heartbeat** — it's ~80 KB
-and the heartbeat is every 30s. `existing_uploaded_artwork()` reuses the file
-already on disk, without which the cover would appear on the first push and
-vanish on the next.
+and the heartbeat is every 30s. The receiver reuses the file already on disk
+(`ArtworkResolver.ExistingUploaded` in Issun), without which the cover would
+appear on the first push and vanish on the next.
 
-**A `weak match` line now means the phone didn't send a store ID** for that
-track. With the ID present the fuzzy path never runs, so those lines have
+**An `[art] weak match` line now means the phone didn't send a store ID** for
+that track. With the ID present the fuzzy path never runs, so those lines have
 become a signal about the iOS side rather than about Apple's search index.
 
-`ART_MIN_SCORE` defaults to **0.35**, not the 0.55 an earlier version of this
-document claimed.
+The fuzzy floor is **0.35** (Issun's `ArtMinScore`, locked there by the owner on
+23 Sept 2026).
 
 ## The explicit badge
 
@@ -522,8 +503,8 @@ tracks streamed through `systemMusicPlayer`, rather than only for library items,
 is undocumented. If the phone never shows the E on a song Music marks explicit,
 that is the answer — and Issun's window would still show it, from the lookup.
 
-Discord's activity object has no field for explicitness, so the relay and
-Issun leave the card as it was. `relay.py` ignores the field.
+Discord's activity object has no field for explicitness, so Issun leaves the
+card as it was; the badge is its window's and `GET /now-playing`'s.
 
 ## The Now Playing row's proportions
 
@@ -564,8 +545,8 @@ The short version:
 
 ## Clickable presence
 
-Discord supports hyperlinking activity text and artwork, and pypresence 4.6.2
-accepts all of it:
+Discord supports hyperlinking activity text and artwork, and Issun sends all
+three (its `DetailsUrl`, `StateUrl` and `LargeUrl`):
 
 | Field | Opens from | Source |
 |---|---|---|
@@ -575,7 +556,8 @@ accepts all of it:
 
 `collectionViewUrl` arrives carrying `?i=<trackId>`, which opens the album with
 the current song selected — the same destination `details_url` already provides.
-`_album_url()` drops that one parameter and leaves the rest of the query alone,
+`PyUrl.AlbumUrl` in Issun (relay.py's `_album_url()`) drops that one parameter
+and leaves the rest of the query alone,
 so the two links mean different things: title goes to the song, cover goes to
 the album.
 
@@ -586,17 +568,29 @@ annoyance, but a link that opens the wrong song is a broken promise.
 
 Album name is `large_text`, which Discord renders as *both* the cover tooltip
 and a visible third line on the card — one field, two places, and they can't be
-separated. It's off by default behind `SHOW_ALBUM`. Spotify's presence shows a
+separated. Issun never sends it: the owner locked the album line off on
+23 Sept 2026, and Issun's CLAUDE.md says where. Spotify's presence shows a
 tooltip with no third line, but that's a first-party card Discord special-cases
 (it also carries a "Play on Spotify" button); third-party RPC gets the generic
 renderer and doesn't get to choose.
 
 ## Build and deploy
 
-Push to `main` triggers `.github/workflows/build-ipa.yml` on a `macos-26`
-runner. It reads `MARKETING_VERSION` out of `project.yml`, passes
-`CURRENT_PROJECT_VERSION=${{ github.run_number }}`, builds unsigned
-(SideStore re-signs at install), and uploads `Ammy-<version>-b<run>-<sha>`.
+Push to `main` triggers `.github/workflows/publish-source.yml`, unless the push
+touches only `**.md`, `public/**`, `scripts/**` or `source.config.json` (its
+`paths-ignore`). That workflow calls `build-ipa.yml`
+on a `macos-26` runner, which reads `MARKETING_VERSION` out of `project.yml`,
+sets `CURRENT_PROJECT_VERSION` to `git rev-list --count HEAD` (a commit count,
+not `github.run_number`; the comment in `build-ipa.yml` says why), builds
+unsigned (SideStore re-signs at install), and uploads
+`Ammy-<version>-b<build>-<sha>` plus a simulator build for Appetize. The publish
+job then cuts a GitHub Release tagged `v<version>-b<build>`, regenerates
+`public/source.json` with `scripts/build_source.py`, and commits it back to
+`main`, which Cloudflare Pages deploys to `apps.kaydenpmd.net`. To build without
+releasing, run `build-ipa.yml` by hand (`workflow_dispatch`). **Pushing to main
+is releasing**: the newest commit's message, minus trailers, becomes the release
+notes and What's New in SideStore, and earlier commits in the same push don't
+appear. `PUBLISHING.md` has the rest.
 
 Repo is public — macOS runner minutes bill at 10× on private repos.
 
@@ -610,114 +604,71 @@ Install path is **SideStore**, not AltStore. AltStore's AltServer requires
 iTunes *and* iCloud direct from Apple; the owner keeps the Microsoft Store
 Apple apps, and harvesting the 2020 iCloud components produced "The provided
 anisette data is invalid." SideStore needs only iTunes (Store version is fine)
-and refreshes on-device, so it doesn't hit that wall. Don't suggest AltStore.
+and refreshes on-device, so it doesn't hit that wall. Recommend SideStore; the
+source also works in AltStore for anyone who already has it, but nobody is told
+to go and get it (`PUBLISHING.md` says the same).
 
-## Autostart
+## The receiver on the PC
 
-**Superseded on 22 Sept 2026: the receiver on the main PC is now Issun**
-(github.com/kaydenpmd/Issun, build 23). It is installed at
-`%LOCALAPPDATA%\Programs\Issun\Issun.exe` and starts in the tray from the HKCU
-Run key. It took over the same port, key and Funnel, so Ammy needed no changes. The
-`Ammy Relay` task below is **disabled, not deleted**, so it can serve as the
-fallback. Rolling back means quitting Issun from the tray, then running
-`Enable-ScheduledTask` from an elevated shell (disabling needed elevation too),
-then `Start-ScheduledTask`. Issun's own CLAUDE.md records the handover and its
-live test. The rest of this section describes the relay as it ran until then.
+**Issun**, installed at `%LOCALAPPDATA%\Programs\Issun\Issun.exe` since
+22 Sept 2026 and started in the tray from the HKCU Run key. It took over
+relay.py's port, key and Funnel, so Ammy needed no changes, and since 25 Sept
+2026 there is nothing to roll back to. Its settings, the key included, live in
+`%APPDATA%\Issun\settings.json`. Issun's CLAUDE.md covers settings, autostart,
+updating the installed copy, and the live test of the handover.
 
-Installed on the main PC as the logon Scheduled Task **`Ammy Relay`**, via
-`install-task.ps1` beside the running `relay.py`: `pythonw.exe relay.py`, 30s
-delay, `-LogonType Interactive`, `-RunLevel Limited`.
+What the app's side needs to know:
 
-Interactive is load-bearing. "Run whether user is logged on or not" registers a
-session 0 task that starts cleanly, listens on 8787, and never reaches
-Discord's IPC pipe — a failure that looks like a Discord problem, not a task
-problem.
+- **The key** is Issun's, made on first run or by its **New key** button, and
+  must match the app's **Key** field. `X-Relay-Key` is the header;
+  `X-Relay-Secret`, the old name, is still accepted, so an older build of the
+  app keeps working.
+- **The Discord application stays named `Apple Music`**, not Ammy or Issun. Its
+  name is the text after "Listening to", and that should describe the source,
+  not the bridge.
+- **Public read** (Issun's `PublicRead` setting) serves `GET /now-playing` with
+  no key and with CORS, so a web page can read the feed directly. Off by
+  default, and a separate switch on purpose: it publishes what you are
+  listening to at a URL anyone holding the link can poll. A key cannot be the
+  answer there, because a public page would have to embed it.
+- **127.0.0.1 only**; Funnel is meant to be the sole ingress (see "Funnel is the
+  only endpoint" for the old tunnel still running). `/art/` is deliberately
+  unauthenticated — Discord's CDN can't send the key header — and filenames are
+  hashes, so they aren't enumerable.
 
-```powershell
-Start-ScheduledTask -TaskName "Ammy Relay"
-Stop-ScheduledTask  -TaskName "Ammy Relay"
-Get-ScheduledTaskInfo -TaskName "Ammy Relay" | Select LastRunTime,LastTaskResult
-```
+**Why the receiver logs gaps.** Gap logging exists to answer whether iOS
+actually kills the app in the background. Gaps are classified as phone-silent
+versus receiver-was-down so a PC reboot isn't miscounted as the app dying.
 
-`LastTaskResult` `267009` means running. `Get-Process pythonw` is an unreliable
-check — `relay.log` is the real evidence. `pythonw.exe` resolves to the
-WindowsApps app-execution alias, a zero-byte reparse point; this was expected to
-break under Task Scheduler and **does not**. Don't spend time rewiring it.
-
-The task inherits no variables from any PowerShell window, which is why `.env`
-is mandatory rather than convenient.
-
-## Runtime config
-
-`_load_env_file()` reads `.env` **from the folder containing `relay.py`** and
-returns silently if absent. Real environment variables still win — and one set
-in a PowerShell window applies only to a relay launched from that window, which
-is why a value can look set in one shell and be empty to the running process.
-
-- `DISCORD_CLIENT_ID` — the Discord application ID. Its **name** is the text
-  after "Listening to", so the application stays named `Apple Music`, not Ammy:
-  that string should describe the source, not the bridge.
-- `RELAY_KEY` — the shared key; must match the app's **Key** field.
-  `RELAY_SECRET` is the old name and is still read, so an existing `.env`
-  keeps working. Headers follow the same rule: `X-Relay-Key` is current,
-  `X-Relay-Secret` is still accepted, so an older build of the app keeps
-  working against an updated relay.
-- `PUBLIC_BASE` — e.g. `https://kaydenspc.<tailnet>.ts.net`. **Required** for
-  uploaded artwork: Discord's CDN fetches the image itself and can't reach
-  127.0.0.1.
-- `PUBLIC_READ` — `1` serves `GET /now-playing` with no key and with CORS, so
-  a web page can read the feed directly. Off by default, and a separate switch
-  on purpose: it publishes what you are listening to at a URL anyone holding
-  the link can poll. A key cannot be the answer there, because a public page
-  would have to embed it.
-- `STATUS_LINE` — `name` / `state` / `details`, the compact member-list line.
-  Defaults to `state` (artist).
-- `SHOW_ALBUM` — `1` restores the album name. Default off; see above.
-- `RELAY_PORT` — defaults to 8787.
-- `ART_MIN_SCORE` — fuzzy floor, default 0.35. `0` always takes the best match.
-- `ART_DIR` — uploaded-art cache, default `art_cache`.
-- `UPTIME_LOG` — phone check-in gaps, default `ammy-uptime.log`.
-  `python relay.py --summary` reads it back.
-
-Under `pythonw.exe` there is no console and `sys.stdout` is None, so `relay.py`
-redirects output to `relay.log` in the same folder. That file is the primary
-diagnostic.
-
-Relay binds `127.0.0.1` only; the tunnel is the sole ingress. `/art/` is
-deliberately unauthenticated — Discord's CDN can't send the secret header, and
-filenames are hashes, so they aren't enumerable.
-
-Gap logging exists to answer whether iOS actually kills the app in the
-background. Gaps are classified as phone-silent versus relay-was-down so a PC
-reboot isn't miscounted as the app dying.
-
-Two halves record it, and both are needed. `note_checkin()` writes the gap when
+Two halves record it, and both are needed. The check-in path writes the gap when
 a push *arrives*, so it can only measure a silence that ended — a death you
-never noticed would never have been written down at all. `note_silence()` is
-the other half: the RPC worker watches the clock and logs the moment check-ins
-stop. It works whether or not music was playing, because `updated_at` is
-stamped on every push including `playing: false` ones — a paused app keeps
-checking in, a dead one doesn't. `python relay.py --summary` reports silences
-that never got a matching return as "app died and stayed dead".
+never noticed would never have been written down at all. `NoteSilence` is the
+other half: the presence worker watches the clock and logs the moment check-ins
+stop. It works whether or not music was playing, because every push counts as a
+check-in, `playing: false` ones included — a paused app keeps checking in, a
+dead one doesn't. The summary reports silences that never got a matching return
+as "app died and stayed dead".
 
 On the phone, `SilenceWatchdog` is the third leg: it tells you *that* it died,
-15 minutes after the fact. The relay logs tell you how long.
+15 minutes after the fact. The receiver's log tells you how long.
 
-Each entry is stamped `[relay <version> / app <build>]`, the app build coming
-from `app_version` on every push. **Don't split the log into per-version
-files.** Whether the phone survives backgrounding is decided by the iOS build,
-not the relay's, and the relay restarts far more often than the app changes —
+Each entry is stamped `[issun <version> / app <build>]` (`[relay <version> / app
+<build>]` before 22 Sept 2026), the app build coming from `app_version` on every
+push. **Don't split the log into per-version files.** Whether the phone survives
+backgrounding is decided by the iOS build, not the receiver's, and the receiver
+restarts far more often than the app changes —
 splitting would fragment the data by the wrong variable and can't be undone.
-A stamped line can be grouped any way you like later, which is what
-`--summary` does. Entries predating the stamping group as "before builds were
+A stamped line can be grouped any way you like later, which is what the
+summary does. Entries predating the stamping group as "before builds were
 recorded", so the pre-KeepAlive era stays visible as history without skewing
 current numbers — no archiving needed.
 
 ## Where things stand (September 2026)
 
-Working and verified: autostart, artwork via store ID, clickable title/artist/
-cover, album line removed, versioning on both halves, both secrets rotated, and
-the progress bar.
+Working and verified: artwork via store ID, clickable title/artist/cover, album
+line removed, versioning on both halves, both secrets (the key and the tunnel
+token) rotated on 2 Sept 2026, and the progress
+bar. The receiver autostarts as Issun, from the HKCU Run key.
 
 **Verified — the watchdog fires, and survives the device powering off.** A
 manual kill produced a notification 15 minutes later, corroborated by a
@@ -736,26 +687,21 @@ explanation and none has been an iOS reclaim.
 **Verified — the app survives the night.** Roughly eight unbroken hours on
 Sept 2 with no gap logged, the first clean night on record. Compare the 39-hour
 silent death of Aug 27–29 that prompted the `KeepAlive` interruption fix. One
-night is not proof; check `--summary` periodically and watch whether
-"never came back" ever appears.
+night is not proof; check the summary in Issun's Diagnostics section
+periodically and watch whether "never came back" ever appears.
 
-Lifetime figures in `--summary` still include pre-fix history — the 39-hour
+Lifetime figures in the summary still include pre-fix history — the 39-hour
 death dominates "longest" and "total silent time" and will for a long while.
 
-**Done — secrets rotated (Sept 2 2026).** `RELAY_SECRET` regenerated locally by
-PowerShell straight into `.env` so the value never appeared in a chat or a
-screenshot, then entered into the app. Tunnel token refreshed in the dashboard
-and the cloudflared service reinstalled — the refresh alone does *not* close
-existing connections, so the reinstall is what actually retires the old token.
-Verified end to end with `https://ammy.kaydenpmd.net/version`.
+**Rotating the key.** Issun makes a new one from its **New key** button, so the
+value never appears in a chat or a screenshot. Then enter it in the app's
+**Key** field; until then the receiver refuses the app's pushes.
 
-**Done — the laptop connector is gone.** The tunnel now lists one connector,
-`KaydensPC`. Nothing to clean up.
-
-**Done — the `ammy://` URL scheme is gone (11 Sept 2026).** `ammy://music` and
-`ammy://background` are removed, along with `BounceTarget`, `onOpenURL`,
-`performBounce`, the private `suspend` selector, `CFBundleURLTypes`,
+**Done — `ammy://music` and `ammy://background` are gone (11 Sept 2026)**, along
+with `BounceTarget`, `performBounce`, the private `suspend` selector,
 `LSApplicationQueriesSchemes`, and the settings section that advertised them.
+`CFBundleURLTypes` and `onOpenURL` returned on 14 Sept 2026 for `ammy://notify`
+alone; see Open work item 2.
 
 The scheme existed to tell Ammy what to do *after* launching. Nothing needed
 telling: the app already starts reporting on launch, and the relaunch recipe had
@@ -791,44 +737,39 @@ the admin console. The tailnet half is fixed once certificates have been issued
 for it. Cloudflare quick tunnels were rejected for exactly this failure mode,
 except worse: a fresh hostname on every restart.
 
-`cloudflared` still works and the relay is indifferent to what fronts it, so
-this is a change of default, not a removal.
+**Funnel is the only endpoint, since 25 Sept 2026 — by decision, not yet in
+fact.** The Cloudflare tunnel that fronted the relay before Funnel is retired,
+by the owner's choice to run the same setup everyone else gets (see the top of
+this file). Don't put it in the app or offer it as a way to reach or test the
+receiver. On 9 Oct 2026 it was still live in two places: the `cloudflared`
+Windows service was running and its address still answered with Issun's
+`X-Ammy-Relay` header, and Issun's **Public address** setting still held it
+(imported from relay.py's `.env` on 22 Sept), which overrides the Tailscale
+name for the window's endpoint and for cover URLs sent to Discord. Finishing it
+is the owner's: clear Public address in Issun's Settings, remove the
+`cloudflared` service from an elevated shell, and delete the tunnel's public
+hostname and DNS record in the Cloudflare dashboard. The token lives in the
+service's registry `ImagePath` (token installs have no `config.yml`), and
+refreshing it in the dashboard does *not* drop a connector that is already
+connected; removing the service does.
 
-**Done — playhead fixed (Sept 2 2026).** Cause was the arrival-time bug above,
-not staleness in `currentPlaybackTime` as long assumed. After the fix: zero
-`[playhead]` log lines, and 19 pushes across 15 tracks where a single track
-used to generate thirty-odd — heartbeats now produce identical payloads and get
-suppressed.
+**Done — playhead fixed (Sept 2 2026).** Cause was the arrival-time bug (Issun's
+CLAUDE.md has it), not staleness in `currentPlaybackTime` as long assumed. After
+the fix: zero `[playhead]` log lines, and 19 pushes across 15 tracks where a
+single track used to generate thirty-odd — heartbeats now produce identical
+payloads and get suppressed. The rule that prefers a reading implying the song
+is further along has never fired; it is insurance, and no staleness has been
+observed at all.
 
-The `Playhead` class also carries seek detection and a rule that prefers any
-reading implying the song is further along, on the theory that a stale read can
-only ever make it look earlier. In practice **no staleness has been observed at
-all**, so that rule has never fired. It is insurance, not a working mechanism;
-don't cite it as evidence that staleness exists.
-
-Should either secret need rotating again: the tunnel token lives in the
-cloudflared Windows service's registry `ImagePath`, not in a `config.yml` —
-token-based installs have no config file. In the dashboard the **Refresh
-token** button is at the bottom of the **Add a connector** panel, which the
-Cloudflare docs still call "Add a replica".
-
-**Untested — the uploaded-JPEG path.** `art_cache\` is still empty because
-every track played so far has been in the catalog. It's a genuine fallback now
-rather than the only hope, but it has never actually run.
-
-**Done — the rename shipped (8 Sept 2026).** Committed, pushed, and installed as
-build 25. See the top of this file.
-
-**Done — KeepAlive rewritten and instrumented (8 Sept 2026).** Configuration
-changes observed, `.began` counted separately from `.ended`, resume failures
-retried rather than swallowed, `engine.isRunning` re-checked every 10s and again
-on every push. The relay learned to record the `diag` payload and stamp it onto
-death lines.
+**Untested — the uploaded-JPEG path.** Neither relay.py's `art_cache\` nor
+Issun's (`%LOCALAPPDATA%\Issun\art_cache\`, empty on 9 Oct 2026) has ever held
+a cover, because every track played has had a store ID. It's a genuine fallback,
+but it has never actually run.
 
 **The September regression, and what it actually was.** From 4 Sept the app began
 dying every 7–63 minutes during waking hours; before that, windows ran 8–87
 hours. The break dates precisely to a phone reboot at 13:03–13:19 on 4 Sept, and
-the relay ran unrestarted across it, so the change was entirely phone-side. The
+relay.py ran unrestarted across it, so the change was entirely phone-side. The
 first instrumented build then showed `int=3/2` — a missed `.ended` — which the
 old code could not have survived. It also showed `engine=yes` at every remaining
 death, so that is not the whole story.
@@ -855,8 +796,10 @@ managed 12h37m.
 depended solely on `.ended`, so the *first* of those eight would have stopped the
 audio engine permanently and the app would have been reclaimed within the hour.
 `heals=12` is the self-heal catching each one; `fails=3` is resume failures that
-retried and recovered. Do not remove the retry loop or the periodic
-`engine.isRunning` check — this line is what they are for.
+retried and recovered. Do not remove the retry loop, the 10-second
+`engine.isRunning` check, or `keepAlive.verify()` on every push, which still
+checks the engine when iOS throttles the timer in the background — this line is
+what they are for.
 
 **Three suspects eliminated, and worth not re-testing:**
 
@@ -875,8 +818,6 @@ Whether that is worth chasing further is a judgement call, not an open bug.
 
 ## Open work
 
-Moved here from `AMMY-HANDOFF.md` on 9 Sept 2026, which was then deleted.
-
 **1. Shippable to others**, in the order things actually block:
 
 - ~~The relay is a dead end on first run — it exits with "Set RELAY_KEY", which
@@ -887,22 +828,15 @@ Moved here from `AMMY-HANDOFF.md` on 9 Sept 2026, which was then deleted.
   whatever the user actually runs, and that's meant to be Issun, not a raw
   Python script started by a Scheduled Task. See the self-provisioning-
   executable bullet below, which is a description of Issun.
-- ~~"Endpoint Unreachable" means two different things — a dead receiver and a
-  wrong key produce the same message.~~ **Done — closed by `PushOutcome` (item
-  8).** A dead relay, a wrong key, a wrong path and a Funnel-level failure all
-  read as distinct phrases now — "Connection Failed", "Key Rejected", "Wrong
-  Path", "Nothing at That Address" — verified against `PresenceRelay.swift`'s
-  `PushOutcome.summary` on 18 Sept 2026.
 - **Autostart is Windows-only.**
 - **Each user needs their own Discord application**, which is a five-step detour
   of its own. Note the application's *name* is the "Listening to" text, so it
   stays `Apple Music` — that string describes the source, not the bridge. Fine
   for one person; think hard before it is on hundreds of profiles.
-- Counted end to end, a stranger now needs three accounts — Discord, Tailscale,
-  Apple — and about eight steps. The single biggest lever left is packaging the
-  relay as one self-provisioning executable that registers its own autostart —
-  that collapses Python, the relay, the key and autostart into one download.
-  **This is Issun**, once it exists — not a second thing to build.
+- Counted end to end, a stranger needs three accounts — Discord, Tailscale,
+  Apple — and about eight steps. The biggest lever was packaging the receiver as
+  one self-provisioning executable that generates its own key and registers its
+  own autostart. That executable is **Issun**, not a second thing to build.
 
 **2. Shortcuts relaunch automations.** Built 9 Sept, then deleted to get a clean
 stability measurement. Worth rebuilding only if the app still dies. The recipe,
@@ -917,12 +851,12 @@ so it is not re-derived:
 - Use `Open App` to launch. The old `ammy://` scheme was removed on 11 Sept
   2026 because it made Ammy navigate away itself and race the return; that
   behaviour now lives in the shortcut, and it stays there.
-- `Open App` only worked on a *killed* Ammy until 23 Sept 2026 (build 89 or
-  later). A session that failed, for example after the PC slept past the 20-minute retry
-  window, leaves the process suspended rather than dead, and autostart ran
-  only on a cold launch. Opening it therefore did nothing, and `/status`
-  stayed `stale`. Now coming to the front restarts any session that didn't end
-  by the person pressing Stop.
+- `Open App` restarts a session that failed (build 91 and later): coming to the
+  front restarts any session that didn't end by the person pressing Stop. Before
+  that, autostart ran only on a cold launch, and a session that failed — for
+  example after the PC slept past the 20-minute retry window — left the process
+  suspended rather than dead, so opening it did nothing and `/status` stayed
+  `stale`.
 - A scheme was reinstated on 14 Sept 2026 for an unrelated job, and the two
   should not be confused. `ammy://notify` opens the app exactly as `Open App`
   does and changes one thing: a connection failure arrives as a notification
@@ -994,7 +928,7 @@ The only thing that would dissolve the problem instead of managing it is a
 **different sender**: Apple Music's API can report recently-played tracks with no
 iOS app at all, so nothing to sideload, nothing to keep alive, nothing to die.
 The cost is real — no playback position, so no progress bar, and updates lag
-rather than being live. It fits the modular shape though: same relay, two
+rather than being live. It fits the modular shape though: same receiver, two
 senders, one live and one effortless.
 
 **5. tvOS** was investigated. `MPMusicPlayerController`, `systemMusicPlayer` and
@@ -1002,84 +936,65 @@ senders, one live and one effortless.
 Unknown: whether the silent-audio keepalive survives tvOS backgrounding. Cheap
 to test with a stub target before committing to it.
 
-**6. Pushes can reach the relay out of order — done, 18 Sept 2026.** Each push
+**6. Pushes can reach the receiver out of order — done, 18 Sept 2026.** Each push
 is an independent `Task` with no ordering guarantee against the others, so the
 farewell `stop()` sends (`playing: false`) could land *before* a push that was
 already in flight saying `playing: true` — leaving Discord showing a track
 after Ammy stopped broadcasting it. Found 12 Sept 2026 while fixing the same
 staleness on the app's own side, where a session counter now makes an orphaned
 push keep quiet (`PresenceController.session`). That counter couldn't help
-here: the relay has no way to know which session a request belonged to.
+here: the receiver has no way to know which session a request belonged to.
 
 `PresenceRelay.push()` now stamps every push with `seq` — milliseconds since
 epoch, not an incrementing counter, because a counter resets to 0 on relaunch
-and the relay would then reject every push from the new process as "older"
-than whatever high number the last one reached. `State.set()` in `relay.py`
-(1.9.0) drops a push whose `seq` isn't newer than the last one it accepted,
-logging it rather than failing silently — see the Gotchas note on that. A
-build that doesn't send `seq` is unaffected; always applied, the same rule as
-`RELAY_SECRET`/`RELAY_KEY`. Both `bridge/relay.py` and the running copy were
-updated together.
+and the receiver would then reject every push from the new process as "older"
+than whatever high number the last one reached. The receiver drops a push whose
+`seq` isn't newer than the last one it accepted, and logs it rather than
+failing silently — relay.py from 1.9.0, and Issun's `PhoneState`, which also
+lets a relaunched app's push supersede the old `seq` (item 7). A build that
+doesn't send `seq` is unaffected; such a push is always applied, the same
+compatibility rule as the old key header.
 
-**7. Issun has to survive Ammy's half-open sessions.** Decided 12 Sept 2026,
-alongside making a failed push tear the app's session down. Ammy can now end a
-session without telling the relay: a failed push gets the teardown *without* the
-farewell, because there is nothing reachable to send one to. So Issun will
-routinely be holding a session whose phone has already moved on — and then that
-same phone starts a fresh one. Sessions must be keyed and superseded, or expired
-on silence, never stacked. The material for this already exists: the relay
-records `app_uptime_s` and the push-failure counters, and `_gap_verdict()` in
-`relay.py` already uses them to tell a relaunch from a reconnect.
+**7. Ammy's half-open sessions — handled in Issun.** A failed push tears Ammy's
+session down *without* the farewell, because there is nothing reachable to send
+one to, so a receiver routinely holds a session whose phone has already moved
+on, and then that same phone starts a fresh one. Any receiver has to key and
+supersede sessions, or expire them on silence, never stack them. Issun does: a
+push whose `app_uptime_s` fell further than its `seq` did, by more than a
+5-second slack, comes from a new app process and wins. Uptime merely going
+backwards isn't enough, because a request overtaken in flight comes from the
+same process (`PhoneState.cs`; Issun's CLAUDE.md).
 
-**8. Errors: named, recorded and announced — done.** Design settled
-12 Sept 2026. Earlier ideas — an inline note under the status row, a static
-list of error types — were dropped in favour of a popup plus a history screen,
-and both were built the same day the "not built" wording below was written,
-which is why this item stayed open on paper for four days after it closed in
-practice.
+**8. Errors: named, recorded and announced — done.** Every terminal failure
+becomes a `FailureNotice` and goes through `fail()`, which sets the status row
+to Disconnected, records the failure in `EventLog`, and calls `announce(_:)` in
+`PresenceController`. `announce` shows a popup (`pendingFailure`, the alert in
+`AmmyApp.swift`, titled `PushOutcome.failureTitle`, "Connection Failed", which
+the notification shares) when `UIApplication.shared.applicationState ==
+.active`, and a notification via the watchdog otherwise. Deferring the popup to
+the next foreground was rejected because push failures overwhelmingly happen
+while Ammy is backgrounded. `appDidEnterBackground()` turns a popup shown to an
+empty room (Ammy launched by a Shortcut, failing while technically frontmost,
+switched away a frame later) into a notification, and `suppressNextPopup()`,
+driven by `ammy://notify`, skips the popup for a Shortcut that is about to
+background Ammy on purpose.
 
-*The history.* `EventLog`/`LinkEvent`/`LinkHistoryView` replaced the
-originally-planned `ErrorLog`/`ErrorHistoryView` in `6746c8c` (14 Sept 2026) —
-"`EventLog` and `LinkHistoryView` replace `ErrorLog` and `ErrorHistoryView`,"
-per that commit's own message — and this item never caught up, so grepping
-the app for `ErrorLog` today finds nothing. The log holds all three things
-that can happen to a link, not only failures — `.failed`, `.interrupted`,
-`.recovered` — behind an All/Failures filter, newest first, persisted to
-UserDefaults and bounded at 100 (not the 50 first planned), reached from a
-`History` row (not `Error History`) at the foot of the page. Every failure
-that reaches the status row also reaches it, through the same `fail()` /
-`announce()` path the popup uses, so nothing can appear on the row without
-being recorded.
+The history is `EventLog`/`LinkEvent`/`LinkHistoryView`: all three things that
+can happen to a link — `.failed`, `.interrupted`, `.recovered` — behind an
+All/Failures filter, newest first, persisted to UserDefaults and capped at 100,
+reached from the `History` row at the foot of the page. Because recording
+happens inside `fail()`, no failure can end a session without being recorded.
 
-*The popup.* Also `6746c8c`, same commit. `announce(_:)` in
-`PresenceController` is the single point every terminal failure passes
-through: a popup (`pendingFailure`, shown by the alert in `AmmyApp.swift`,
-titled "Connection Failed" since 23 Sept 2026, when it was "Ammy Stopped"; the
-notification shares the title through `PushOutcome.failureTitle`) if
-`UIApplication.shared.applicationState == .active`, a
-notification via the watchdog otherwise. That resolves the catch this item
-used to worry about — an alert fired at the instant of failure would miss
-most errors, since push failures overwhelmingly happen while Ammy is
-backgrounded — not by deferring to next-foreground as first proposed, but by
-checking liveness at the moment of failure and converting on the way out:
-`appDidEnterBackground()` catches a popup that was shown to an empty room
-(Ammy launched by a Shortcut, fails while technically frontmost, then
-switched away from a frame later) and turns it into a notification instead.
-`suppressNextPopup()`, driven by `ammy://notify`, skips the popup outright for
-a Shortcut that is about to background Ammy on purpose.
+*The precondition.* `PresenceRelay.push()` returns `PushOutcome` rather than a
+`Bool`. `PushOutcome.summary` is the short label History lists, and
+`explanation` is what the popup and the notification show (see the note after
+this item's inventory). A dead receiver reads "Connection Refused" (or
+"Connection Cut Off" behind a broken Funnel), a wrong key "Key Rejected", the
+receiver's own 404 "Wrong Path", and Funnel's 404 "Nothing at That Address".
 
-*The precondition is done* (12 Sept 2026). `PresenceRelay.push()` returns
-`PushOutcome` rather than a `Bool`, and `PushOutcome.summary` turns every case
-below into a phrase the status row and the failure notification both use — so
-the banner and the screen cannot disagree. (Superseded 24 Sept 2026: the
-notification and the popup now show `PushOutcome.explanation`, and only History
-keeps the short phrase. See the note after this item's inventory.) This also closes the half of item 1
-that complained a dead relay and a wrong key read identically; they now read
-"Connection Failed" and "Key Rejected".
-
-Relay side: `relay.py` stamps `X-Ammy-Relay: <version>` on every response, in
-`_reply()` and `_reply_json()`. It exists because status codes alone cannot
-separate the relay's own 404 (wrong path) from Tailscale Funnel's 404
+Receiver side: Issun stamps `X-Ammy-Relay: <version>` on every response, errors
+included (relay.py did on most). It exists because status codes alone cannot
+separate the receiver's own 404 (wrong path) from Tailscale Funnel's 404
 (hostname resolves, nothing served on that port). Presence of the header is
 what `PushOutcome.refused(fromRelay:)` carries.
 
@@ -1090,19 +1005,17 @@ Media Access row on 24 Sept 2026). What `PushOutcome` now names:
 
 - Transport (`URLError`, swallowed by `try?`): `.notConnectedToInternet`
   (which is also what cellular data switched off for Ammy alone produces, per
-  Apple DTS), `.dataNotAllowed` (roaming, or cellular off for the whole device;
-  this line used to say it meant "cellular off for Ammy specifically", which is
-  the case above), `.cannotFindHost` and
+  Apple DTS), `.dataNotAllowed` (roaming, or cellular off for the whole device),
+  `.cannotFindHost` and
   `.dnsLookupFailed` (the Tailscale name does not resolve), `.cannotConnectToHost`
-  (resolves but refuses — relay not running, or port closed), `.timedOut`
+  (resolves but refuses — receiver not running, or port closed), `.timedOut`
   (bounded by the 10s request / 20s resource caps), `.networkConnectionLost`
   (dropped mid-request; the wi-fi to LTE handover), `.secureConnectionFailed`
   and the certificate errors, `.cancelled`.
-- HTTP from `relay.py`'s `POST /now-playing`: **401** key missing or wrong —
-  the big one, today indistinguishable from a dead relay; **404** path is not
-  `/now-playing`, which is what pointing at the host root gives you; **400**
-  body was not valid JSON. Success is 204.
-- HTTP from Tailscale Funnel, in between and not the relay at all: 502/503 when
+- HTTP from the receiver's `POST /now-playing`: **401** key missing or wrong;
+  **404** path is not `/now-playing`, which is what pointing at the host root
+  gives you; **400** body was not valid JSON. Success is 204.
+- HTTP from Tailscale Funnel, in between and not the receiver at all: 502/503 when
   the funnel is up but the node is not, and Funnel's own 404 when the hostname
   resolves but nothing is served on that port. *Unverified, and contradicted
   once:* on 24 Sept 2026, with the node unreachable through Funnel, Funnel's
@@ -1160,56 +1073,30 @@ fetcher got through three times that night while the phone, Safari and all
 five check-host cities could not, so don't rely on it alone. For the public
 DNS records, use DNS-over-HTTPS.
 
-**9. The bottom bar sits too high on Face ID phones.** Found 16 Sept 2026 in
-Appetize, which is what that simulator build is for. `AmmyApp.swift` applies an
-unconditional `.padding(.vertical)` — SwiftUI's 16pt — added by `afa09ee` because
-a home-button phone has a bottom safe area of **zero** and the button sat flush
-against the edge. Face ID phones already reserve 34pt for the home indicator, so
-they get 34 + 16 = **50pt** where a system bar adds nothing on top of the
-indicator. Measured on the SE for comparison: Music's tab bar ends 19pt from the
-edge, Ammy's button 16pt.
-
-The fix is to pad the *shortfall* rather than a constant — `max(0, 16 - bottom
-safe area)`, which gives 16 on a home-button phone and 0 on a Face ID one, with
-no device checks. One wrinkle: reading the safe area *inside* a `safeAreaBar` is
-circular, since the bar is itself modifying it, so it wants reading from the
-window or a `GeometryReader` outside the bar.
-
-**Written 17 Sept 2026, not yet seen.** `bottomSafeArea` is fed by an
-`onGeometryChange` on the `NavigationStack` — outside the bar, so it reports what
-the window reserves rather than what the bar reserved — and the bar pads
-`max(0, barGap - bottomSafeArea)` at the bottom with `barGap` at the top.
-`onGeometryChange` over a key-window read because iPad rotates and resizes, and
-over a `GeometryReader` because that would take over the layout beneath it.
-
-**18 Sept 2026: seen on a Face ID phone, and the assumption from 17 Sept was
-wrong in a different place than expected.** `bottomSafeArea` does read 34 on a
-real device — the question that paragraph left open is answered, and it's not
-the misread it worried about. The button still read as too high anyway.
-Pixel-measured against Shortcuts' own floating tab bar (Library/Automation/
-Gallery) on the same iPhone 16 Pro Max screenshot: Ammy's button sat 34.3pt
-above the true screen edge, Shortcuts' tab bar sat 21.3pt. System bars don't
-stop at the top of the reserved home-indicator zone the way `max(0, barGap -
-bottomSafeArea)` assumed — they intrude about 13pt into it.
-
-`edgeGap = 21` replaces that formula: `.padding(.bottom, edgeGap -
-bottomSafeArea)`, no clamp, because `bottomSafeArea + (edgeGap -
-bottomSafeArea)` is `edgeGap` regardless of what `bottomSafeArea` reads. **Not
-yet touched on a real device** — this is a screenshot pixel measurement, not a
-finger on the glass, and the project's own rule for exactly this class of
-question (see Gotchas, glass button styles) is to build it and touch it before
-trusting a number like this. Check both a Face ID phone and the SE. This item
-stays open until both have been seen, and the iPad screenshots below still
-need capturing after that.
-
-**This got more urgent when the source went public.** It was cosmetic while it
-was one SE; almost no subscriber is on a home-button phone, so the one device
-class the bar is wrong on is now the default first impression. It also gates the
-iPad screenshots for `source.config.json` — capture those after the fix, or the
-listing ships pictures of the wrong bar.
+**9. The bottom bar's distance from the screen edge is unconfirmed by touch.** A
+home-button phone has a bottom safe area of zero and a Face ID phone 34pt, so a
+constant pad is wrong on one of them. `AmmyApp.swift` reads `bottomSafeArea`
+from an `onGeometryChange` on the `NavigationStack`. That is outside the bar
+because reading the safe area inside a `safeAreaBar` is circular; it is
+`onGeometryChange` rather than a key-window read because iPad rotates and
+resizes, and rather than a `GeometryReader` because that would take over the
+layout beneath it. The bar pads `.padding(.bottom, edgeGap - bottomSafeArea)`
+with `edgeGap = 21`, which pins the button 21pt above the true screen edge on
+every device, no clamp needed. System bars don't stop at the top of the
+home-indicator zone; they intrude about 13pt into it. Pixel-measured on an
+iPhone 16 Pro Max screenshot (18 Sept 2026), Shortcuts' floating tab bar sat
+21.3pt above the edge; on the SE, Music's tab bar ends 19pt from it. The read
+itself is settled: on 18 Sept 2026 `bottomSafeArea` read 34 on a real Face ID
+phone, so if the bar still sits wrong, question `edgeGap`, not the read. **The
+result is not yet touched on a real device.** This is a screenshot measurement, and the project's
+rule for this class of question (see Gotchas, glass button styles) is to build
+it and touch it. Check both a Face ID phone and the SE. Almost no subscriber is
+on a home-button phone, so this is the default first impression, and the iPad
+screenshots for `source.config.json` wait on it, or the listing ships pictures
+of the wrong bar.
 
 **Note the shape of the mistake**, because it is the exact inverse of the
-`safeAreaBar` win recorded in Layout. The tint tracked an OS change for free
+`safeAreaBar` win recorded in Gotchas. The tint tracked an OS change for free
 because nothing was drawn by hand; this failed to track a *device class* because
 a constant was.
 
@@ -1221,9 +1108,7 @@ explanation. Give **one command at a time** and wait for output; stacked
 commands hide failures when an early one hangs.
 
 The repo is cloned at `C:\Users\links\Repos\Ammy` (renamed from
-`repos\ampresence` on 9 Sept 2026). Edit the files in place; there is no need to
-hand over whole files for web upload, which is what this document said from
-before the clone existed.
+`repos\ampresence` on 9 Sept 2026). Edit the files in place.
 
 **Git commands are yours to run.** A Claude Code session has a real shell on the
 owner's Windows machine, so `git status`, `git add`, `git commit`, `git log` and
