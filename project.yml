@@ -9,12 +9,23 @@ options:
     iOS: "26.0"
   createIntermediateGroups: true
 
+packages:
+  # UIKit's own marquee for the Now Playing row's long titles; see
+  # SystemMarqueeLines in AmmyApp.swift. Pinned exactly, because there is no
+  # Package.resolved in the repo to hold it still, and a change here changes
+  # how the row moves.
+  LNSystemMarqueeLabel:
+    url: https://github.com/LeoNatan/LNSystemMarqueeLabel
+    exactVersion: 0.1.2
+
 targets:
   Ammy:
     type: application
     platform: iOS
     sources:
       - path: Ammy
+    dependencies:
+      - package: LNSystemMarqueeLabel
 
     info:
       path: Ammy/Info.plist

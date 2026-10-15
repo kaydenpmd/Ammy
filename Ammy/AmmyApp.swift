@@ -1,4 +1,5 @@
 import ImageIO
+import LNSystemMarqueeLabel
 import os
 import SwiftUI
 import UIKit
@@ -33,9 +34,183 @@ struct AmmyApp: App {
     }
 }
 
+/// The Now Playing row's title and artist, scrolled by UIKit's own marquee:
+/// the one built into UILabel, which Apple's apps use and which UIKit keeps
+/// private. LNSystemMarqueeLabel (Léo Natan, MIT; ThirdPartyNotices.txt)
+/// switches it on. LNPopupController, a long-running open-source replica of
+/// Music's player, offers the same label as an option (its
+/// LNPopupUseSystemMarqueeLabel setting) and uses it by default only on Mac
+/// Catalyst, so this path has seen little use on iPhone. The owner asked for
+/// it on 15 Oct 2026, after asking for the scroll to ease into a stop like
+/// Music's: Apple publishes no timing for its marquee, so the only exact
+/// match is the system's own.
+///
+/// Each line scrolls on its own; a new song restarts both from rest at once.
+/// The package's `synchronizedLabels`, which would keep them in step, is left
+/// off: in 0.1.2 its +load reads a C++ static before C++ static initializers
+/// run (Apple's +load ordering), so the sync never switches on, and if it did
+/// it could leave a long title paused beside a short artist that never
+/// scrolls. Unsynced, UIKit's repeat count stays 0 (loop forever) and none of
+/// the package's swizzled paths run.
+///
+/// Private API, so two guards. Ammy is sideloaded and could never pass App
+/// Review anyway (CLAUDE.md, Distribution). And if an iOS release drops the
+/// properties, `available` is false and the row uses MarqueeLine instead,
+/// because LNSystemMarqueeLabel sets them by key and would crash without them.
+private struct SystemMarqueeLines: UIViewRepresentable {
+    let title: String
+    let subtitle: String?
+    let explicit: Bool
+    /// Restarts both lines from rest when it changes.
+    let song: String
+
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.scenePhase) private var scenePhase
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    @Environment(\.legibilityWeight) private var legibilityWeight
+
+    /// Checked once. The names are UILabel's own (iOS 26 header dumps), plus
+    /// the `label` the package's swizzle asks of UIKit's private marquee
+    /// delegate whenever a scroll starts (a missing class means no swizzle).
+    /// The log says which marquee is running, so a fallback isn't a silent one.
+    static let available: Bool = {
+        let label = ["marqueeEnabled", "setMarqueeEnabled:", "marqueeRunning", "setMarqueeRunning:"]
+            .allSatisfy { UILabel.instancesRespond(to: NSSelectorFromString($0)) }
+        let delegate = NSClassFromString("_UILabelMarqueeAnimationDelegate")?
+            .instancesRespond(to: NSSelectorFromString("label")) ?? true
+        let has = label && delegate
+        Logger(subsystem: "com.local.ammy", category: "marquee").notice(
+            "\(has ? "UIKit's marquee" : "UIKit's marquee is missing; using MarqueeLine", privacy: .public)")
+        return has
+    }()
+
+    final class Lines: UIView {
+        let title = LNSystemMarqueeLabel(frame: .zero)
+        let subtitle = LNSystemMarqueeLabel(frame: .zero)
+        /// What the labels were last given, so an update that changes nothing
+        /// doesn't hand UIKit new text and restart the scroll.
+        var shown: [AnyHashable] = []
+        var song: String?
+        /// The gap between the lines, as the VStack in MarqueeLine's layout.
+        static let spacing: CGFloat = 2
+
+        override init(frame: CGRect) {
+            super.init(frame: frame)
+            for label in [title, subtitle] {
+                label.numberOfLines = 1
+                // What shows when the line doesn't scroll: under Reduce Motion,
+                // as Apple's players do.
+                label.lineBreakMode = .byTruncatingTail
+                // VoiceOver reads the SwiftUI label set in NowPlayingRow.lines.
+                label.isAccessibilityElement = false
+                addSubview(label)
+            }
+            accessibilityElementsHidden = true
+        }
+
+        required init?(coder: NSCoder) { nil }
+
+        private func lineHeight(_ label: UILabel) -> CGFloat {
+            ceil(label.sizeThatFits(CGSize(width: CGFloat.greatestFiniteMagnitude, height: .greatestFiniteMagnitude)).height)
+        }
+
+        var contentHeight: CGFloat {
+            subtitle.isHidden ? lineHeight(title) : lineHeight(title) + Self.spacing + lineHeight(subtitle)
+        }
+
+        var naturalWidth: CGFloat {
+            let unbounded = CGSize(width: CGFloat.greatestFiniteMagnitude, height: .greatestFiniteMagnitude)
+            return ceil(max(title.sizeThatFits(unbounded).width, subtitle.isHidden ? 0 : subtitle.sizeThatFits(unbounded).width))
+        }
+
+        override func layoutSubviews() {
+            super.layoutSubviews()
+            let top = lineHeight(title)
+            title.frame = CGRect(x: 0, y: 0, width: bounds.width, height: top)
+            subtitle.frame = CGRect(x: 0, y: top + Self.spacing, width: bounds.width, height: lineHeight(subtitle))
+        }
+    }
+
+    func makeUIView(context: Context) -> Lines {
+        let view = Lines()
+        view.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        view.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+        return view
+    }
+
+    func updateUIView(_ view: Lines, context: Context) {
+        // Fonts built for the environment's text size and Bold Text setting,
+        // as SwiftUI's .font(.headline) would: Headline and Body, both 17 pt at
+        // the default size, the pair the Lock Screen's player measures
+        // (NowPlayingRow.lines).
+        let weight: UILegibilityWeight = switch legibilityWeight {
+        case .some(.bold): .bold
+        case .some(.regular): .regular
+        default: .unspecified
+        }
+        let category = UIContentSizeCategory(dynamicTypeSize)
+        let traits = UITraitCollection { traits in
+            traits.preferredContentSizeCategory = category
+            traits.legibilityWeight = weight
+        }
+        let titleFont = UIFont.preferredFont(forTextStyle: .headline, compatibleWith: traits)
+        let bodyFont = UIFont.preferredFont(forTextStyle: .body, compatibleWith: traits)
+
+        let shown: [AnyHashable] = [title, subtitle ?? "", subtitle == nil, explicit, titleFont, bodyFont]
+        if view.shown != shown {
+            view.shown = shown
+            view.title.attributedText = Self.titleText(title, explicit: explicit, font: titleFont)
+            view.subtitle.attributedText = NSAttributedString(
+                string: subtitle ?? "",
+                attributes: [.font: bodyFont, .foregroundColor: UIColor.secondaryLabel])
+            view.subtitle.isHidden = subtitle == nil
+            view.invalidateIntrinsicContentSize()
+            view.setNeedsLayout()
+        }
+
+        // A new song starts both lines from rest, together.
+        if view.song != song {
+            view.song = song
+            view.title.reset()
+            view.subtitle.reset()
+        }
+        // Stopped in the background, where the keepalive keeps this process
+        // running and nobody can see the row; off under Reduce Motion.
+        let running = !reduceMotion && scenePhase != .background
+        for label in [view.title, view.subtitle] {
+            label.isMarqueeScrollEnabled = !reduceMotion
+            label.isRunning = running
+        }
+    }
+
+    func sizeThatFits(_ proposal: ProposedViewSize, uiView: Lines, context: Context) -> CGSize? {
+        CGSize(width: proposal.width ?? uiView.naturalWidth, height: uiView.contentHeight)
+    }
+
+    /// The title, then for an explicit track Music's E after a space, in the
+    /// title's own colour and at small symbol scale, which is what makes it
+    /// cap height like the Lock Screen's (see NowPlayingRow.lines). UIKit
+    /// places a symbol image in a text attachment on the text's baseline and
+    /// draws a template symbol in the text's colour.
+    static func titleText(_ title: String, explicit: Bool, font: UIFont) -> NSAttributedString {
+        let attributes: [NSAttributedString.Key: Any] = [.font: font, .foregroundColor: UIColor.label]
+        let text = NSMutableAttributedString(string: title, attributes: attributes)
+        if explicit, let badge = UIImage(
+            systemName: "e.square.fill",
+            withConfiguration: UIImage.SymbolConfiguration(font: font, scale: .small)) {
+            text.append(NSAttributedString(string: " ", attributes: attributes))
+            let attachment = NSMutableAttributedString(attachment: NSTextAttachment(image: badge))
+            attachment.addAttributes(attributes, range: NSRange(location: 0, length: attachment.length))
+            text.append(attachment)
+        }
+        return text
+    }
+}
+
 /// One line of text that scrolls sideways when it doesn't fit, the way the
 /// Lock Screen's player shows a long title, rather than wrapping or cutting
-/// it off.
+/// it off. Since 15 Oct 2026 it is the fallback for an iOS without UIKit's
+/// own marquee (SystemMarqueeLines); on iOS 26 and 27 that one runs instead.
 ///
 /// It rests at the start, scrolls left until a second copy has taken the
 /// first one's place, and rests again, so the loop has no seam. The trailing
@@ -296,7 +471,25 @@ private struct NowPlayingRow: View {
     /// `song` restarts both lines' scrolling together, so a new track by the
     /// same artist doesn't leave the artist line mid-scroll beside a title
     /// that has started again from rest.
+    ///
+    /// UIKit's own marquee where the system has it (SystemMarqueeLines), and
+    /// the hand-made one below where it doesn't. The notes below hold for
+    /// both: SystemMarqueeLines builds the same fonts, colours and E.
+    @ViewBuilder
     private func lines(title: String, subtitle: String?, explicit: Bool, song: String) -> some View {
+        if SystemMarqueeLines.available {
+            // Spoken as the hand-made lines were: the title as Text, E and all,
+            // then the artist, one element, which the row's .combine joins.
+            let titleText = explicit ? Text("\(title) \(Image(systemName: "e.square.fill"))") : Text(title)
+            SystemMarqueeLines(title: title, subtitle: subtitle, explicit: explicit, song: song)
+                .accessibilityElement(children: .ignore)
+                .accessibilityLabel(subtitle.map { titleText + Text(", \($0)") } ?? titleText)
+        } else {
+            fallbackLines(title: title, subtitle: subtitle, explicit: explicit, song: song)
+        }
+    }
+
+    private func fallbackLines(title: String, subtitle: String?, explicit: Bool, song: String) -> some View {
         VStack(alignment: .leading, spacing: 2) {
             // An explicit track gets Music's E after a space, in the title's
             // own colour, the way the Lock Screen's player shows it. Small

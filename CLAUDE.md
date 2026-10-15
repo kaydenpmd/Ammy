@@ -539,9 +539,24 @@ The short version:
   hairline. Control Center's is an empty translucent square (Apple's iPhone
   User Guide screenshot); Apple names no colour, and tertiarySystemFill is the
   documented fill "for large shapes".
-- **Scrolling**: 2 s rest, 30 pt/s, 50 pt gap, 10 pt fade. These are
-  LNPopupController's (an open-source replica of Music's player); Apple
-  publishes none. Paused in the background, off under Reduce Motion.
+- **Scrolling** is UIKit's own marquee, since 15 Oct 2026: the one built into
+  UILabel, which Apple keeps private and publishes no timing for. The owner
+  asked for the scroll to ease into a stop like Music's, and the system's own
+  is the only exact match. `SystemMarqueeLines` turns it on through
+  LNSystemMarqueeLabel (MIT, pinned to 0.1.2 in `project.yml`, notice in
+  `ThirdPartyNotices.txt`). LNPopupController, an open-source replica of
+  Music's player, offers the same label as an option and defaults to it only
+  on Mac Catalyst, so the path is little used on iPhone. Each line scrolls on
+  its own and a new song restarts both: the package's line syncing is left
+  off, because in 0.1.2 it never switches on (its +load runs before its C++
+  statics) and could stall a line if it did; the comment on
+  `SystemMarqueeLines` has the detail. Stopped in the background, off under
+  Reduce Motion. If an iOS release drops the private properties, the row falls
+  back to `MarqueeLine`, the hand-made version with LNPopupController's linear
+  numbers (2 s rest, 30 pt/s, 50 pt gap, 10 pt fade), instead of crashing.
+  **Not yet seen on a device:** the easing, whether the E still sits at cap
+  height in UIKit's text, and VoiceOver reading the row, are for the owner's
+  eye.
 
 ## Clickable presence
 
