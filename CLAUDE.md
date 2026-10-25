@@ -1088,6 +1088,33 @@ fetcher got through three times that night while the phone, Safari and all
 five check-host cities could not, so don't rely on it alone. For the public
 DNS records, use DNS-over-HTTPS.
 
+**25 Oct 2026: the address vanished from DNS, and a toggle fixed it.** Ammy
+stopped connecting; Issun's last push from the phone was 22 Oct 00:08. Issun
+was running and answered `ok` on 127.0.0.1:8787, and `tailscale funnel status`
+said "Funnel on". The node was online, its key valid until March 2027, the
+`funnel` attribute present, no health warnings, already on 1.102.4. But this
+time public DNS had no record at all: DNS-over-HTTPS (Google and Cloudflare)
+answered NXDOMAIN for the ts.net name, and check-host.net failed from five
+cities with "No such device or address". Claude's web fetcher got `ok`
+through anyway, again. Turning Funnel off and back on with the same setting
+republished the record within seconds, no reboot:
+
+```
+tailscale funnel --https=443 off
+tailscale funnel --bg --https=443 localhost:8787
+```
+
+For the first minute some check-host cities got "Broken pipe" (the 24 Sept
+symptom) while others got 200; a minute later every city that could resolve
+the name got 200. Resolvers that had cached the NXDOMAIN kept failing for up
+to five minutes, the zone's negative-cache TTL, and the phone can too:
+Airplane Mode on and off clears it.
+
+So when Ammy can't connect and Issun answers locally, look it up with
+DNS-over-HTTPS first. NXDOMAIN means toggle Funnel. If the name resolves and
+check-host still gets "Broken pipe" after a minute or two, it's the 24 Sept
+failure, and what fixed that was a reboot.
+
 **9. The bottom bar's distance from the screen edge is unconfirmed by touch.** A
 home-button phone has a bottom safe area of zero and a Face ID phone 34pt, so a
 constant pad is wrong on one of them. `AmmyApp.swift` reads `bottomSafeArea`
