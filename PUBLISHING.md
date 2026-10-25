@@ -72,7 +72,7 @@ release. `publish-source.yml` builds it, publishes it as a GitHub Release tagged
 `v<version>-b<build>`, adds it to `public/source.json` with
 `scripts/build_source.py`, and commits that file back to `main` as
 `source: publish <version> (build N)`, which Cloudflare Pages then deploys.
-Because CI pushes to `main` after you do, `git pull --rebase` before your next
+Because CI pushes to `main` after you do (Albums' CI too, see below), `git pull --rebase` before your next
 push.
 
 A push that touches only `**.md`, `public/**`, `scripts/**` or
@@ -122,6 +122,29 @@ AltStore can add the source; nobody is told to go get it.
 `minOSVersion` in `source.config.json` is set to `26.0` so the sideloader states
 the requirement instead of letting people fail at install time. Anyone on 18 or
 earlier sees it listed and greyed out rather than broken.
+
+---
+
+## Albums is in this source too
+
+Since 25 Oct 2026 the source lists a second app, Albums
+(github.com/kaydenpmd/Albums, `com.local.albums`). Its own
+`publish-source.yml` releases each build on the Albums repo, then checks out
+this repo and runs this repo's `scripts/build_source.py` with the source-wide
+settings from this repo's `source.config.json` and the app block from Albums'
+own. The script only touches the app it was given, so Ammy's entry and
+Albums' entry never overwrite each other. Albums' icon is
+`public/albums-icon.png`.
+
+It pushes here with an SSH **deploy key** (Settings → Deploy keys, "Albums CI:
+publish to source.json", write access), whose private half is the
+`SOURCE_DEPLOY_KEY` secret in the Albums repo. Delete the key here and Albums
+still builds and releases, but stops appearing in the source. Its commits read
+`source: publish Albums <version> (build N)` and only touch
+`public/source.json`, which this repo's `paths-ignore` skips, so they never
+release Ammy.
+
+The landing page shows `apps[0]`, which stays Ammy. SideStore lists both.
 
 ---
 

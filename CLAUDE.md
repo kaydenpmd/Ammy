@@ -607,6 +607,10 @@ is releasing**: the newest commit's message, minus trailers, becomes the release
 notes and What's New in SideStore, and earlier commits in the same push don't
 appear. `PUBLISHING.md` has the rest.
 
+The source also lists **Albums** since 25 Oct 2026. Albums' own CI pushes
+`public/source.json` here with a deploy key, so `main` can move under you
+from that side too; `PUBLISHING.md`'s "Albums is in this source too" says how.
+
 Repo is public — macOS runner minutes bill at 10× on private repos.
 
 **A paid Apple Developer account changes the expiry from 7 days to 365**, and
