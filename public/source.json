@@ -27,6 +27,34 @@
           "NSAppleMusicUsageDescription": "Reads what you're currently playing so it can be sent to the endpoint you choose."
         }
       }
+    },
+    {
+      "name": "Albums",
+      "bundleIdentifier": "com.local.albums",
+      "developerName": "kaydenpmd",
+      "localizedDescription": "Albums is a place to stash Apple Music albums you want to listen to later. It looks like Apple Music's own Library: a two-column grid of artwork, with each album's page laid out the way Music lays one out.\n\nSAVE FROM APPLE MUSIC. On an album or a song, tap Share, then Albums. Or paste a link.\n\nLISTEN WHEN YOU'RE READY. Play opens the album in Apple Music. Mark albums as listened, and filter the grid to what you haven't heard yet.\n\nAlbum details come from Apple's own catalog, looked up by the album's ID, never guessed.\n\nIF SIDESTORE ASKS ABOUT APP EXTENSIONS, KEEP THEM. The share extension is what puts Albums in the Share menu; without it, albums can only be added by pasting a link.\n\nRequires iOS 26 or later.",
+      "iconURL": "https://apps.kaydenpmd.net/albums-icon.png",
+      "versions": [
+        {
+          "version": "1.0",
+          "date": "2026-10-25T09:58:05+00:00",
+          "localizedDescription": "Publish Albums to Kayden's Source\n\nAlbums is now in the same source as Ammy. Save Apple Music albums to\nlisten to later: in Music, tap Share on an album or a song, then Albums,\nor paste a link with +. Play opens the album in Apple Music.\n\nIf SideStore asks about app extensions, keep them. The share extension is\nwhat puts Albums in the Share menu.",
+          "downloadURL": "https://github.com/kaydenpmd/Albums/releases/download/v1.0-b2/Albums-1.0-b2-a9a0e19.ipa",
+          "size": 726324,
+          "sha256": "4a81a861fd7f81c96d7b729d1dfd9842ffb0748fda8de3c07023997fd81c3888",
+          "buildVersion": "2",
+          "minOSVersion": "26.0"
+        }
+      ],
+      "subtitle": "Save Apple Music albums for later",
+      "category": "entertainment",
+      "tintColor": "007aff",
+      "appPermissions": {
+        "entitlements": [
+          "com.apple.security.application-groups"
+        ],
+        "privacy": {}
+      }
     }
   ],
   "news": [],
