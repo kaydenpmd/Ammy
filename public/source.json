@@ -32,17 +32,17 @@
       "name": "Albums",
       "bundleIdentifier": "com.local.albums",
       "developerName": "kaydenpmd",
-      "localizedDescription": "Albums is a place to stash Apple Music albums you want to listen to later. It looks like Apple Music's own Library: a two-column grid of artwork, with each album's page laid out the way Music lays one out.\n\nSAVE FROM APPLE MUSIC. On an album or a song, tap Share, then Albums. Or paste a link.\n\nLISTEN WHEN YOU'RE READY. Play opens the album in Apple Music. Mark albums as listened, and filter the grid to what you haven't heard yet.\n\nAlbum details come from Apple's own catalog, looked up by the album's ID, never guessed.\n\nIF SIDESTORE ASKS ABOUT APP EXTENSIONS, KEEP THEM. The share extension is what puts Albums in the Share menu; without it, albums can only be added by pasting a link.\n\nRequires iOS 26 or later.",
+      "localizedDescription": "Albums is a place to stash Apple Music albums you want to listen to later. It looks like Apple Music's own Library: a two-column grid of artwork.\n\nSAVE FROM APPLE MUSIC. On an album or a song, tap Share, then Albums. Or paste a link.\n\nLISTEN WHEN YOU'RE READY. Tap an album to open it in Apple Music. Mark albums as listened, and filter the grid to what you haven't heard yet.\n\nAlbum details come from Apple's own catalog, looked up by the album's ID, never guessed.\n\nIF SIDESTORE ASKS ABOUT APP EXTENSIONS, KEEP THEM. The share extension is what puts Albums in the Share menu; without it, albums can only be added by pasting a link.\n\nRequires iOS 26 or later.",
       "iconURL": "https://apps.kaydenpmd.net/albums-icon.png",
       "versions": [
         {
           "version": "1.0",
-          "date": "2026-10-25T18:45:21+00:00",
-          "localizedDescription": "Show album covers as a plain square\n\nAn album's page now shows its cover whole, in a rounded square, instead\nof stretching it edge to edge and fading it into the page. The page is\ntinted with the cover's overall color.",
-          "downloadURL": "https://github.com/kaydenpmd/Albums/releases/download/v1.0-b3/Albums-1.0-b3-c445847.ipa",
-          "size": 719507,
-          "sha256": "7370ce03ac8be528ab5468900d61a0147c82adf290f496ef6a518a6acca51e2e",
-          "buildVersion": "3",
+          "date": "2026-10-28T03:58:20+00:00",
+          "localizedDescription": "Tap an album to open it in Apple Music\n\nAlbums no longer has a page of its own for each album. Tapping a cover\nnow opens the album straight in Apple Music. Long-press an album to mark\nit listened, share it, copy its link or delete it.",
+          "downloadURL": "https://github.com/kaydenpmd/Albums/releases/download/v1.0-b4/Albums-1.0-b4-717a94e.ipa",
+          "size": 624141,
+          "sha256": "3fbd2c8a58db546b8e07307ad33e354f4fd3da3373d458111f4e4c41839a2cf4",
+          "buildVersion": "4",
           "minOSVersion": "26.0"
         }
       ],
