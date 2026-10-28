@@ -62,5 +62,6 @@
   "identifier": "net.kaydenpmd.source",
   "sourceURL": "https://apps.kaydenpmd.net/source.json",
   "website": "https://apps.kaydenpmd.net",
-  "tintColor": "fa2d48"
+  "tintColor": "fa2d48",
+  "iconURL": "https://apps.kaydenpmd.net/source-icon.jpg"
 }

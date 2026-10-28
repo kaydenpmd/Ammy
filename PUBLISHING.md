@@ -63,6 +63,14 @@ Screenshots are an empty list. AltStore shows them on the app page, and the
 simulator build `build-ipa.yml` already produces is an easy way to capture iPad
 ones on hardware you don't own.
 
+The source's own icon is the top-level `iconURL`, `public/source-icon.jpg`
+since 27 Oct 2026 (the owner's picture of a dog eating a burger). SideStore
+shows it for the source in its Sources tab and, with no `headerURL` set, as the
+header of the source's page. Before that the source had none, so SideStore
+borrowed its first app's icon, Ammy's. `build_source.py` writes it into
+`source.json` like the other source-wide settings, and the landing page uses
+the same image as its favicon.
+
 ---
 
 ## Cutting a release

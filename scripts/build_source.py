@@ -145,6 +145,10 @@ def main():
         source["website"] = cfg["website"]
     if hex_color(cfg.get("tintColor")):
         source["tintColor"] = hex_color(cfg["tintColor"])
+    # The source's own icon. Without one, SideStore shows the first app's
+    # icon for the whole source, and uses it as the source page's header too.
+    if cfg.get("iconURL"):
+        source["iconURL"] = cfg["iconURL"]
     source.setdefault("apps", [])
     source.setdefault("news", [])
 

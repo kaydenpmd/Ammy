@@ -5,6 +5,7 @@
   "sourceIdentifier": "net.kaydenpmd.source",
   "sourceURL": "https://apps.kaydenpmd.net/source.json",
   "website": "https://apps.kaydenpmd.net",
+  "iconURL": "https://apps.kaydenpmd.net/source-icon.jpg",
   "tintColor": "#FA2D48",
 
   "app": {
