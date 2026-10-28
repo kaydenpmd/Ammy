@@ -37,12 +37,18 @@ only, and the old Cloudflare tunnel address is retired as an endpoint. The
 AltStore source stays where it is — "altstore can stay using my site" — on
 `apps.kaydenpmd.net`.
 
-**Leftovers on the PC, as of 9 Oct 2026.** The old installed relay (relay.py,
-its `.env`, `relay.log` and `ammy-uptime.log` in `C:\Users\links\Python
+**Leftovers on the PC, unchanged from 9 to 27 Oct 2026.** The old installed relay
+(relay.py, its `.env`, `relay.log` and `ammy-uptime.log` in `C:\Users\links\Python
 Scripts`) and the disabled `Ammy Relay` logon task were still there. They are
 obsolete, not a rollback: never enable the task, which would contend with Issun
 for port 8787, and removing them is the owner's call. The tunnel was still
-live too; see "Funnel is the only endpoint" under Where things stand.
+live too; see "Funnel is the only endpoint" under Where things stand. And the
+installed Issun was build 38 (`/version`), behind releases 40 and 41 of 9 Oct:
+Claude offered to install 41 that day and had no answer by 27 Oct. Build 40
+rewords the two messages that still name Ammy in the installed copy (the tray
+hint and the new-key notice), and 41 changes nothing in the app. Updating stops
+the live receiver for a few seconds, so get a yes first; the procedure is in
+Issun's CLAUDE.md, "Updating the installed copy".
 
 ## Why it's built this way
 
@@ -472,9 +478,13 @@ The fuzzy floor is **0.35** (Issun's `ArtMinScore`, locked there by the owner on
 
 ## The explicit badge
 
-Added 23 Sept 2026. The Now Playing row puts Music's "E" (`e.square.fill`,
-inline in the title's `Text`) after an explicit track, and the push carries
-`explicit: true`. **It's just the symbol after a space, in the title's own
+Added 23 Sept 2026. The Now Playing row puts Music's "E" (`e.square.fill`)
+after an explicit track, and the push carries `explicit: true`. Since build 120
+there are two copies of it, so a change to the E goes in both: on the UIKit
+marquee path it is a text attachment at small symbol scale
+(`SystemMarqueeLines.titleText`, `UIImage.SymbolConfiguration(font:scale:
+.small)`), and on the `MarqueeLine` fallback (`fallbackLines`) it sits inline
+in the title's `Text` with `.imageScale(.small)`. **It's just the symbol after a space, in the title's own
 colour**, by the owner's choice on 24 Sept 2026. It matches the Lock Screen and
 Control Center player, where the E is opaque, not the Music app, where it's
 translucent. The first version dimmed it with `.secondary` and added a
@@ -488,7 +498,8 @@ the baseline. Build 101's, at the default medium scale, was 1.29× cap height
 and overhung both. The HIG's SF Symbols page defines the three scales "relative
 to the cap height", and its figure shows small touching both lines. Whether
 `.imageScale` reaches a symbol embedded in `Text` is undocumented, so check it
-on a device.
+on a device. That question applies only to the fallback; the UIKit path sets
+the scale on the symbol itself.
 
 **Only ever `true`**: `MPMediaItem.isExplicitItem` is a plain
 Bool, and its `false` covers an unrated track as well as a clean one, so the
@@ -539,10 +550,18 @@ The short version:
   hairline. Control Center's is an empty translucent square (Apple's iPhone
   User Guide screenshot); Apple names no colour, and tertiarySystemFill is the
   documented fill "for large shapes".
-- **Scrolling** is UIKit's own marquee, since 15 Oct 2026: the one built into
-  UILabel, which Apple keeps private and publishes no timing for. The owner
-  asked for the scroll to ease into a stop like Music's, and the system's own
-  is the only exact match. `SystemMarqueeLines` turns it on through
+- **Scrolling** has been set to use UIKit's own marquee since 15 Oct 2026
+  (build 120): the one built into UILabel, which Apple keeps private and
+  publishes no timing for. Whether it is what actually runs on the owner's
+  phone is unconfirmed. The owner had asked for the scroll to ease into a stop
+  like Music's, and on build 120 reported "there is no easing visible". So
+  either UIKit's marquee is linear (it is the one tvOS uses for focused text,
+  and may never have been Music's) or `SystemMarqueeLines.available` was false
+  and the row fell back to `MarqueeLine`. The code comments claim more than is
+  known: `SystemMarqueeLines` calls UIKit's marquee the one "Apple's apps use"
+  and "the only exact match", and `MarqueeLine`'s says UIKit's runs on iOS 26
+  and 27. **Unfinished: Open work item 10.** `SystemMarqueeLines` turns UIKit's
+  marquee on through
   LNSystemMarqueeLabel (MIT, pinned to 0.1.2 in `project.yml`, notice in
   `ThirdPartyNotices.txt`). LNPopupController, an open-source replica of
   Music's player, offers the same label as an option and defaults to it only
@@ -554,9 +573,8 @@ The short version:
   Reduce Motion. If an iOS release drops the private properties, the row falls
   back to `MarqueeLine`, the hand-made version with LNPopupController's linear
   numbers (2 s rest, 30 pt/s, 50 pt gap, 10 pt fade), instead of crashing.
-  **Not yet seen on a device:** the easing, whether the E still sits at cap
-  height in UIKit's text, and VoiceOver reading the row, are for the owner's
-  eye.
+  **Not yet seen on a device:** whether the E still sits at cap height in
+  UIKit's text, and VoiceOver reading the row.
 
 ## Clickable presence
 
@@ -682,7 +700,7 @@ summary does. Entries predating the stamping group as "before builds were
 recorded", so the pre-KeepAlive era stays visible as history without skewing
 current numbers — no archiving needed.
 
-## Where things stand (September 2026)
+## Where things stand
 
 Working and verified: artwork via store ID, clickable title/artist/cover, album
 line removed, versioning on both halves, both secrets (the key and the tunnel
@@ -700,8 +718,10 @@ process" premise is no longer theoretical.
 account for the phone being off and for the app simply not having been
 relaunched — nothing restarts Ammy after a reboot. The 01:25:34 gap on Sept 2
 looked alarming and was a dead battery plus an hour before the owner reopened
-the app. Since the `KeepAlive` fix, every recorded gap has had a mundane
-explanation and none has been an iOS reclaim.
+the app. Many gaps since the `KeepAlive` fix have had a mundane explanation like
+this one, so rule those out first, but not all of them: deaths continued after
+it, about once a day as of 10 Sept, with a healthy engine and no explanation yet
+(see "Still unexplained: what ends a run").
 
 **Verified — the app survives the night.** Roughly eight unbroken hours on
 Sept 2 with no gap logged, the first clean night on record. Compare the 39-hour
@@ -760,7 +780,7 @@ except worse: a fresh hostname on every restart.
 fact.** The Cloudflare tunnel that fronted the relay before Funnel is retired,
 by the owner's choice to run the same setup everyone else gets (see the top of
 this file). Don't put it in the app or offer it as a way to reach or test the
-receiver. On 9 Oct 2026 it was still live in two places: the `cloudflared`
+receiver. On 9 Oct 2026, and again on 27 Oct, it was still live in two places: the `cloudflared`
 Windows service was running and its address still answered with Issun's
 `X-Ammy-Relay` header, and Issun's **Public address** setting still held it
 (imported from relay.py's `.env` on 22 Sept), which overrides the Tailscale
@@ -1145,6 +1165,31 @@ of the wrong bar.
 `safeAreaBar` win recorded in Gotchas. The tint tracked an OS change for free
 because nothing was drawn by hand; this failed to track a *device class* because
 a constant was.
+
+**10. Long titles should ease into a stop, as Music's do — waiting on a screen
+recording.** Asked 15 Oct 2026: "can you make the long-title scrolling ease
+into a stop like what happens in apple music if that's easy to match exactly".
+Apple publishes no timing for Music's marquee, and LNPopupController's default
+marquee on iPhone (cbpowell's MarqueeLabel) is linear, which is where
+`MarqueeLine`'s numbers came from. The owner then suggested UIKit's private
+marquee ("how about just lnsystemmarqueelabel"); it shipped in build 120, and
+the owner reported "there is no easing visible in build 120", the same day.
+
+The next step was asked of the owner twice on 15 Oct 2026, before and after
+build 120, and had no answer by 27 Oct: a screen recording showing a long title
+scrolling in Music through at least one full loop until it rests, then a long
+title scrolling in Ammy. Measure Music's curve, speed, pause and gap frame by
+frame with ffmpeg (on PATH here, from winget's yt-dlp.FFmpeg package), using
+each frame's timestamp from `ffprobe` rather than assuming 60 fps, since screen
+recordings drop frames (see the large-title note in Gotchas). Ammy's half shows
+which scroller build 120 ran: `MarqueeLine` moves at exactly 30 pt/s with a
+50 pt gap. The app also logs it once per launch in the phone's system log
+(`Logger`, subsystem `com.local.ammy`, category `marquee`: "UIKit's marquee" or
+"UIKit's marquee is missing; using MarqueeLine"), but reading that needs a
+device-log tool, and none is set up here. Then build the measured timing into
+`MarqueeLine`, and if UIKit's marquee adds nothing, remove `SystemMarqueeLines`,
+the package in `project.yml` and `ThirdPartyNotices.txt` in the same release,
+as promised to the owner.
 
 ## Working with the owner
 
