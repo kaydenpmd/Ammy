@@ -56,9 +56,11 @@ The publish job commits `source.json` back to `main`, and can't without this.
 
 The description and subtitle in there are a first pass written from your
 `Info.plist` strings — rewrite them. The app's `iconURL` is
-`https://apps.kaydenpmd.net/ammy-icon.png`. `public/ammy-icon.png` is a copy of
-the app icon's `AppIcon.png`, which `scripts/make_icon.py` draws, so copy it
-again whenever the icon is redrawn.
+`https://apps.kaydenpmd.net/ammy-icon.png?v=2`. `public/ammy-icon.png` is a copy
+of the app icon's `AppIcon.png`, which `scripts/make_icon.py` draws, so copy it
+again whenever the icon is redrawn, and bump the `?v=`: SideStore can keep
+showing a cached icon for as long as its address stays the same, which it did
+after the 28 Oct 2026 icon change.
 
 Screenshots are an empty list. AltStore shows them on the app page, and the
 simulator build `build-ipa.yml` already produces is an easy way to capture iPad

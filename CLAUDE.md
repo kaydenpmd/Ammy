@@ -113,7 +113,9 @@ playing bars on a black tile beside a speech bubble with three dots: "ammy's
 just represents music, and issun's just represents chat". Our reading of that,
 not the owner's words: an icon here shows what the app does for its partner,
 not its category. `public/ammy-icon.png`, the listing's icon, is a copy of
-`AppIcon.png`. Not yet seen on a device.
+`AppIcon.png`, listed as `ammy-icon.png?v=2`: bump the `?v=` whenever the icon
+changes, because SideStore keeps a cached icon while its address stays the same
+(PUBLISHING.md). Not yet seen on a device.
 
 ## Layout
 
@@ -544,9 +546,24 @@ Matched to the Lock Screen's Now Playing card on 24 Sept 2026, from the owner's
 SE screenshots and Apple's documentation. The code comments say which is which.
 The short version:
 
-- **Artwork 57 pt**: measured on the Lock Screen (56.8). No documentation;
-  Apple's iOS 26 UI kit has Control Center's player (52 pt art) but no Lock
-  Screen one.
+- **Artwork 57 pt, a constant, because the Lock Screen's is one.** The owner
+  asked (29 Oct 2026) for the size to come from "whatever logic makes it the
+  size that it is" rather than from a measurement. There is no logic: Apple's
+  Lock Screen player sets the artwork's frame to a literal 57.0 x 57.0 pt
+  (`-[MRULockscreenView layoutSubviews]` in MediaControls.framework, in the
+  decompiled iOS 17.6.1 build at github.com/SuperChaoM/iPhone15-3_17.6.1_21G101_Restore;
+  the same structure in decompiled 18.2 and 26.1 builds). Nothing there reads
+  Dynamic Type, the screen width or the device. The owner's SE screenshots on
+  iOS 27.2 agree: 57.0 pt at both the smallest and the largest standard text
+  size, while the title grew (cap height 9.5 to 13 pt). So a fixed 57 is the
+  Lock Screen's own rule, on every iPhone and at every text size, and under
+  Display Zoom both scale together, being points. Apple documents none of it,
+  and a later iOS could change the literal: re-measure after a major release.
+  The same code's other numbers, for reference: 14 pt insets on every side
+  (also the HIG's documented Lock Screen margin for Live Activities), a 12 pt
+  gap to the text, a fixed 7.5 pt artwork corner, and text capped at Dynamic
+  Type XL. Its corner is concentric only because its inset is fixed too; the
+  row computes its own, because its margin moves (see Concentric corner).
 - **Title and artist the same size**, one line each, scrolling when too long:
   Headline and Body, both 17 pt per the HIG's type table. The Lock Screen
   measures 17/17, and the UI kit gives Control Center 14/14.
@@ -571,20 +588,16 @@ The short version:
   doesn't give ConcentricRectangle a container shape (developer forums thread
   798726), so it's done by hand. A measured inset outside 8–40 pt is ignored.
 - **Other iPhones**: the inset, the corner and the pixel size of the artwork
-  follow the device. The 57 pt artwork and the 26 pt section radius are
-  believed constant: the radius is confirmed on an SE and a Pro Max, the
-  artwork only on the SE.
+  follow the device. The 57 pt artwork is constant by Apple's own code
+  (above); the 26 pt section radius is believed constant, confirmed on an SE
+  and a Pro Max.
 - **The gaps are the app's own, not the Lock Screen's.** The owner, 29 Oct
   2026: "lock screen player has its own standard. all i want to copy from it
   is the fact that its corners are concentric. in-app clearly needs much wider
   margins than this". So the row's gaps follow the app's own list margin,
   never the Lock Screen's. The 57 pt artwork, the 17/17 type and the fitted
-  covers above still come from the Lock Screen, and the owner wants the
-  artwork's size to follow whatever rule sizes the Lock Screen's, "instead of
-  just copying its point value from my screenshots"; not done yet as of
-  29 Oct 2026. For reference, on iOS 27.2 the Lock Screen's artwork is still
-  57 pt, 14 pt from the player's left edge and top, with the title about
-  11.5 pt after it.
+  covers above still come from the Lock Screen; the artwork's size turned out
+  to be a constant there too (see Artwork 57 pt).
 - **Soft artwork**: downsampled with ImageIO to the exact pixels drawn, WWDC18
   session 219's documented method, instead of Core Animation shrinking a 512 px
   cover on the fly. What filter the Lock Screen itself uses is not documented.
