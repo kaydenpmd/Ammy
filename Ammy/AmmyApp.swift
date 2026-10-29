@@ -321,7 +321,11 @@ private struct MarqueeLine: View {
 /// same size, scrolling when too long, the artwork as far from the section's
 /// top and bottom as from its leading edge, with a corner concentric with the
 /// section's. Each number below says where it came from: the owner's
-/// screenshots, Apple's documentation, or both.
+/// screenshots, Apple's documentation, or both. Since 29 Oct 2026 the spacing
+/// is the app's own: every gap follows the list's margin, which is wider than
+/// the Lock Screen player's, and the corner stays concentric with it, the one
+/// part of the Lock Screen's spacing the row keeps. The 57 pt artwork and the
+/// 17 pt lines are still the Lock Screen's.
 private struct NowPlayingRow: View {
     @ObservedObject var monitor: NowPlayingMonitor
     @Environment(\.displayScale) private var displayScale
@@ -341,11 +345,15 @@ private struct NowPlayingRow: View {
     /// written down here.
     private static let sectionCorner: CGFloat = 26
 
-    /// The row's leading inset as the system laid it out, 16 pt on an SE and
-    /// 20 on a Pro Max. No API reports it either, so it's measured: where the
-    /// row's content starts, less where its cell starts. The top and bottom
-    /// insets are set to match, so the artwork sits as far from the section's
-    /// top and bottom as from its leading edge.
+    /// The row's leading inset as the system laid it out: 20 pt on a Pro Max
+    /// in September 2026, not rechecked since, and on the owner's SE 16 pt in a
+    /// 26 Sept screenshot (iOS 27.0, the owner thinks) but 20 on iOS 27.2, when
+    /// the whole list moved 4 pt in. No API reports it either, so it's measured:
+    /// where the row's content starts, less where its cell starts. The top and
+    /// bottom gaps and the gap between the artwork and the text are set to
+    /// match, so the artwork sits as far from the section's top and bottom,
+    /// and from the text, as from its leading edge. The text gap was a fixed
+    /// 14 pt until the owner asked for it to match too, on 29 Oct 2026.
     @State private var inset: CGFloat = 16
     @State private var contentLeading: CGFloat?
     @State private var cellLeading: CGFloat?
@@ -353,7 +361,8 @@ private struct NowPlayingRow: View {
     /// Concentric with the section: its radius less the distance between
     /// them, which is Apple's own definition ("the container shape's corner
     /// radius minus the distance between corners", ConcentricRectangle's
-    /// Edge.Corner.Style docs). 10 pt on an SE, 6 on a Pro Max.
+    /// Edge.Corner.Style docs). 10 pt with a 16 pt inset and 6 with 20, so
+    /// the SE's corner went from 10 to 6 with iOS 27.2's wider margin.
     ///
     /// Never below `minimumCorner`, the same guard Apple's
     /// `.concentric(minimum:)` offers, so a device with an unusually large
@@ -374,7 +383,7 @@ private struct NowPlayingRow: View {
     @State private var thumbnail: (source: ObjectIdentifier, image: UIImage)?
 
     var body: some View {
-        HStack(spacing: 14) {
+        HStack(spacing: inset) {
             // The artwork, or the empty square, rounded and edged at its own
             // size, then centred in the square it's given, so a cover that
             // isn't square keeps its whole picture and its own rounded
@@ -394,11 +403,16 @@ private struct NowPlayingRow: View {
                 lines(title: title, subtitle: subtitle, explicit: explicit, song: song)
             }
         }
+        // The top and bottom gaps are padding inside the row rather than row
+        // insets, so they follow `inset` as soon as it's measured. As row
+        // insets they kept their first value: after iOS 27.2 the owner's SE
+        // showed the artwork 20 pt from the side but 16 from top and bottom.
+        .padding(.vertical, inset)
         .accessibilityElement(children: .combine)
         // listRowInsets(_:_:) with edges is iOS 26: only the vertical insets
-        // change, and the leading one stays the system's, lined up with the
-        // section header and every other row.
-        .listRowInsets(.vertical, inset)
+        // change, to nothing, and the leading one stays the system's, lined up
+        // with the section header and every other row.
+        .listRowInsets(.vertical, 0)
         .onGeometryChange(for: CGFloat.self) { $0.frame(in: .global).minX } action: {
             contentLeading = $0
             measureInset()
