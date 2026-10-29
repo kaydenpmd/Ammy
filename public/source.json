@@ -9,12 +9,12 @@
       "versions": [
         {
           "version": "1.0",
-          "date": "2026-10-29T14:00:57+00:00",
-          "localizedDescription": "Keep the Now Playing artwork evenly spaced\n\nOn iOS 27.2 the artwork in Now Playing sat closer to the top and bottom\nof its row than to its side. Its gaps above, below and before the title\nnow all match the side margin, whatever iOS sets it to.",
-          "downloadURL": "https://github.com/kaydenpmd/Ammy/releases/download/v1.0-b134/Ammy-1.0-b134-ad211fa.ipa",
-          "size": 550179,
-          "sha256": "368b25683c3fe78086e57cbb63dc8696caa9980fee9060d2aeeb5598fa534c3c",
-          "buildVersion": "134",
+          "date": "2026-10-29T14:39:26+00:00",
+          "localizedDescription": "Space the Now Playing row the way iOS does\n\nAmmy now leaves the gaps around the artwork and before the title to iOS,\nlike the rows in Settings, so they follow iOS when it changes them. The\nartwork's corners still curve with the rounded box around it as closely\nas those gaps allow.",
+          "downloadURL": "https://github.com/kaydenpmd/Ammy/releases/download/v1.0-b137/Ammy-1.0-b137-4d82a86.ipa",
+          "size": 550546,
+          "sha256": "23bc3af459a7ba554c5fe4202e78f00a9841c09afdcb3a5394cdb5e1814de080",
+          "buildVersion": "137",
           "minOSVersion": "26.0"
         }
       ],
