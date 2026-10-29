@@ -55,9 +55,10 @@ The publish job commits `source.json` back to `main`, and can't without this.
 ### 3. Fill in `source.config.json`
 
 The description and subtitle in there are a first pass written from your
-`Info.plist` strings — rewrite them. `iconURL` points at a file that doesn't
-exist yet; export the app icon at 512×512 or larger to `public/ammy-icon.png`
-and set the URL to `https://apps.kaydenpmd.net/ammy-icon.png`.
+`Info.plist` strings — rewrite them. The app's `iconURL` is
+`https://apps.kaydenpmd.net/ammy-icon.png`. `public/ammy-icon.png` is a copy of
+the app icon's `AppIcon.png`, which `scripts/make_icon.py` draws, so copy it
+again whenever the icon is redrawn.
 
 Screenshots are an empty list. AltStore shows them on the app page, and the
 simulator build `build-ipa.yml` already produces is an easy way to capture iPad

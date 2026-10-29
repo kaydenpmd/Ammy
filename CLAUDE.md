@@ -95,6 +95,23 @@ from "what Ammy is" to "what the receiver does".
 is Discord's blurple, so the old framing outlived the words that carried it.
 Changed to Apple Music red the same day. Check the non-prose surfaces too.
 
+**The icon, since 28 Oct 2026, is an album cover being sent:** Albums' black
+tile, a little larger, with two waves leaving it in Albums' greys, fading as
+they go. Like the app's own screens, it names no receiver; the waves go out to
+whatever is listening. Issun's icon is the other half of the sentence, the same
+two waves arriving at a speech bubble. Both are drawn the way Albums' icon is
+(`scripts/make_icon.py` here, `tools/make_icon.py` in Issun), black on white
+with no accent colour. Ammy's, like Albums', also has a white-on-black dark
+version and a tinted one; Issun's `.ico` is the light tile only. There is no
+music note on purpose: since iOS 27.2 the Music app's own icon is a dark note
+on a light tile. The owner set aside a sumi-e ink note, asking for "a more
+vanilla apple style approach like the albums icon", then turned down white
+playing bars on a black tile beside a speech bubble with three dots: "ammy's
+just represents music, and issun's just represents chat". Our reading of that,
+not the owner's words: an icon here shows what the app does for its partner,
+not its category. `public/ammy-icon.png`, the listing's icon, is a copy of
+`AppIcon.png`. Not yet seen on a device.
+
 ## Layout
 
 ```
@@ -102,6 +119,7 @@ project.yml                          XcodeGen spec — no .xcodeproj is committe
 .github/workflows/publish-source.yml On push to main: build, GitHub Release, source.json
 .github/workflows/build-ipa.yml      Called by the above; unsigned IPA + simulator build
 scripts/build_source.py              Regenerates public/source.json
+scripts/make_icon.py                 Draws the app icon, like Albums' script of the same name
 source.config.json                   AltStore listing metadata (user-facing copy)
 public/                              Cloudflare Pages site: landing page, source.json
 PUBLISHING.md                        One-time setup for the AltStore source
