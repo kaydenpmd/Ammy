@@ -605,6 +605,21 @@ The short version:
   same after 27.2. A List cell doesn't give ConcentricRectangle a container
   shape (developer forums thread 798726), so it's done by hand. The owner asked
   to keep this "so it can do its best to match".
+- **Temporary toggle, 29 Oct 2026**: "Lock Screen Spacing", a switch in its
+  own section under Now Playing, lays the row out with the Lock Screen
+  player's spacing instead: 14 pt on every side and the text 12 pt after the
+  artwork, the constants in its code (see Artwork 57 pt). It pads the row by
+  the difference from the list's own insets, so negative where the list's are
+  wider: the side measured from where the list put the row, and the top from
+  the cell's height only while the switch is off, since with it on a reading
+  could feed back into the padding. The corner follows on its own: 12 pt at
+  14 and 14. The owner asked for it to compare the two on the device. Once one
+  is chosen, remove the switch (`lockScreenSpacing`, an `@AppStorage` key of
+  the same name) and its section, and in NowPlayingRow the lockScreenSpacing
+  parameter, lockScreenInset/lockScreenGap, listSide/listTop/rowX/rowHeight,
+  the two paddings, the two onGeometryChange modifiers after them, and their
+  part of measureInsets(). If the Lock Screen's spacing wins, keep those and
+  drop only the switch. Not yet seen on a device.
 - **Other iPhones**: the gaps, the corner and the pixel size of the artwork
   follow the device. The 57 pt artwork is constant by Apple's own code
   (above); the 26 pt section radius is believed constant, confirmed on an SE
