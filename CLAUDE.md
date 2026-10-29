@@ -93,7 +93,10 @@ from "what Ammy is" to "what the receiver does".
 
 **The trap that isn't text:** the listing's accent colour was `#5865f2`, which
 is Discord's blurple, so the old framing outlived the words that carried it.
-Changed to Apple Music red the same day. Check the non-prose surfaces too.
+Changed to Apple Music red the same day, and on 29 Oct 2026, with the source's
+own colour, to system blue (`#007AFF`, Albums' colour): Music had dropped its
+red in iOS 27.2, and Ammy's icon had gone black and white. Check the non-prose
+surfaces too.
 
 **The icon, since 28 Oct 2026, is an album cover being sent:** Albums' black
 tile, a little larger, with two waves leaving it in Albums' greys, fading as

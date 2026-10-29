@@ -20,7 +20,7 @@
       ],
       "subtitle": "Beta · Apple Music now playing, over HTTPS",
       "category": "entertainment",
-      "tintColor": "fa2d48",
+      "tintColor": "007aff",
       "appPermissions": {
         "entitlements": [],
         "privacy": {
@@ -62,6 +62,6 @@
   "identifier": "net.kaydenpmd.source",
   "sourceURL": "https://apps.kaydenpmd.net/source.json",
   "website": "https://apps.kaydenpmd.net",
-  "tintColor": "fa2d48",
+  "tintColor": "007aff",
   "iconURL": "https://apps.kaydenpmd.net/source-icon.jpg"
 }
