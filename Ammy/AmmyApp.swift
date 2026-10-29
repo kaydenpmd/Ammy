@@ -322,19 +322,24 @@ private struct MarqueeLine: View {
 /// top and bottom as from its leading edge, with a corner concentric with the
 /// section's. Each number below says where it came from: the owner's
 /// screenshots, Apple's documentation, or both. Since 29 Oct 2026 the spacing
-/// is the app's own: every gap follows the list's margin, which is wider than
-/// the Lock Screen player's, and the corner stays concentric with it, the one
-/// part of the Lock Screen's spacing the row keeps. The 57 pt artwork and the
-/// 17 pt lines are still the Lock Screen's.
+/// is the system's: the row sets none of its gaps, so the top and bottom are
+/// the list's own row padding and the gap to the text is SwiftUI's standard
+/// spacing, and the corner stays as concentric with the
+/// section as those gaps allow, the one part of the Lock Screen's spacing the
+/// row keeps. The 57 pt artwork and the 17 pt lines are still the Lock
+/// Screen's.
 private struct NowPlayingRow: View {
     @ObservedObject var monitor: NowPlayingMonitor
     @Environment(\.displayScale) private var displayScale
 
-    /// The Lock Screen's Now Playing artwork, measured on the owner's iPhone SE
-    /// screenshot on 24 Sept 2026 at 56.8 pt; the same method reads this row's
-    /// old 60 pt artwork as 59.9. No documentation gives it: Apple's iOS 26 UI
-    /// kit has no Lock Screen player (it has Control Center's, whose artwork
-    /// is 52 pt).
+    /// The Lock Screen's Now Playing artwork, which is a constant there too:
+    /// Apple's player sets its frame to a literal 57 x 57 pt
+    /// (-[MRULockscreenView layoutSubviews] in MediaControls.framework, as
+    /// decompiled from iOS 17.6.1, with the same structure in 18.2 and 26.1),
+    /// reading neither text size, screen width nor device. The owner's SE
+    /// screenshots agree: 56.8 pt on 24 Sept 2026, and 57.0 on iOS 27.2 at both
+    /// the smallest and the largest standard text size. Apple documents none
+    /// of it; re-measure after a major iOS release.
     private static let side: CGFloat = 57
 
     /// An iOS 26 grouped section's corner radius. Measured, not documented:
@@ -345,45 +350,64 @@ private struct NowPlayingRow: View {
     /// written down here.
     private static let sectionCorner: CGFloat = 26
 
-    /// The row's leading inset as the system laid it out: 20 pt on a Pro Max
-    /// in September 2026, not rechecked since, and on the owner's SE 16 pt in a
-    /// 26 Sept screenshot (iOS 27.0, the owner thinks) but 20 on iOS 27.2, when
-    /// the whole list moved 4 pt in. No API reports it either, so it's measured:
-    /// where the row's content starts, less where its cell starts. The top and
-    /// bottom gaps and the gap between the artwork and the text are set to
-    /// match, so the artwork sits as far from the section's top and bottom,
-    /// and from the text, as from its leading edge. The text gap was a fixed
-    /// 14 pt until the owner asked for it to match too, on 29 Oct 2026.
-    @State private var inset: CGFloat = 16
-    @State private var contentLeading: CGFloat?
-    @State private var cellLeading: CGFloat?
+    /// How far the artwork sits from its cell's leading and top edges, as the
+    /// system laid it out. No API reports either, so both are measured: the
+    /// side as the artwork's leading edge less the cell's, the top as half the
+    /// cell's height beyond the artwork, which the row centres, because a
+    /// height doesn't move when the list scrolls. The side is the list's
+    /// leading margin: 20 pt on a Pro Max in September 2026, not rechecked
+    /// since, and on the owner's SE 16 pt in a 26 Sept screenshot (iOS 27.0,
+    /// the owner thinks) but 20 on iOS 27.2, when the whole list moved 4 pt in.
+    /// The top is the list's own row padding: 15 pt on the owner's SE on 27.2
+    /// (build 134's 35 less its 20), as Settings' Apple Account row measures
+    /// against 20 from the side.
+    ///
+    /// The row sets none of these gaps, nor the one to the text, since 29 Oct
+    /// 2026: the owner chose iOS 27.2's spacing over even gaps ("wanna match
+    /// here for better or worse"), so whatever a later iOS does to the list's
+    /// own spacing it also does here. The starting values are guesses,
+    /// replaced as soon as the row is measured: 16 was the SE's side before
+    /// 27.2, and 15 its top on 27.2.
+    @State private var sideInset: CGFloat = 16
+    @State private var topInset: CGFloat = 15
+    @State private var artworkX: CGFloat?
+    @State private var cellX: CGFloat?
+    @State private var cellHeight: CGFloat?
 
-    /// Concentric with the section: its radius less the distance between
-    /// them, which is Apple's own definition ("the container shape's corner
-    /// radius minus the distance between corners", ConcentricRectangle's
-    /// Edge.Corner.Style docs). 10 pt with a 16 pt inset and 6 with 20, so
-    /// the SE's corner went from 10 to 6 with iOS 27.2's wider margin.
+    /// As concentric with the section as the gaps allow. With equal gaps that
+    /// is the section's radius less the gap, Apple's own definition ("the
+    /// container shape's corner radius minus the distance between corners",
+    /// ConcentricRectangle's Edge.Corner.Style docs). With unequal gaps no
+    /// radius is exactly concentric, so this takes the one whose centre lands
+    /// nearest the section corner's: the radius less the average of the two
+    /// gaps. With the SE's 15 pt top and 20 pt side on 27.2, 26 - 17.5 = 8.5 pt.
     ///
     /// Never below `minimumCorner`, the same guard Apple's
-    /// `.concentric(minimum:)` offers, so a device with an unusually large
-    /// inset gets a softer corner rather than a square one. GUESS: 6, the
-    /// smallest value any iPhone measured so far produces, so no iPhone is
-    /// affected by it.
-    private var corner: CGFloat { max(Self.minimumCorner, Self.sectionCorner - inset) }
+    /// `.concentric(minimum:)` offers, so a device with unusually large gaps
+    /// gets a softer corner rather than a square one. GUESS: 6, the smallest
+    /// value any iPhone measured so far has produced.
+    private var corner: CGFloat {
+        max(Self.minimumCorner, Self.sectionCorner - (sideInset + topInset) / 2)
+    }
     private static let minimumCorner: CGFloat = 6
 
-    /// The range a measured inset has to fall in to be believed. Anything
-    /// outside it means the measurement went wrong, and the last good value
-    /// (16 at first) stays. GUESS: iPhones measure 16 and 20; this leaves room
-    /// for iPad and Display Zoom without letting a broken read through.
-    private static let plausibleInset: ClosedRange<CGFloat> = 8...40
+    /// The ranges a measured gap has to fall in to be believed. Anything
+    /// outside means the measurement went wrong, and the last good value
+    /// stays. GUESS: iPhones measure 16 or 20 at the side and about 15 at the
+    /// top; these leave room for iPad, Display Zoom and large text without
+    /// letting a broken read through.
+    private static let plausibleSide: ClosedRange<CGFloat> = 8...40
+    private static let plausibleTop: ClosedRange<CGFloat> = 4...60
 
     /// The cover shrunk to exactly the pixels it's drawn at, and which cover
     /// it was made from, so a new track never shows the last one's.
     @State private var thumbnail: (source: ObjectIdentifier, image: UIImage)?
 
     var body: some View {
-        HStack(spacing: inset) {
+        // No spacing given: SwiftUI's standard gap between the artwork and the
+        // text rather than a number of Ammy's own. Settings' Apple Account row
+        // measures about 9 pt there; this row isn't measured yet.
+        HStack {
             // The artwork, or the empty square, rounded and edged at its own
             // size, then centred in the square it's given, so a cover that
             // isn't square keeps its whole picture and its own rounded
@@ -391,6 +415,10 @@ private struct NowPlayingRow: View {
             artwork
                 .frame(width: Self.side, height: Self.side)
                 .accessibilityHidden(true)
+                .onGeometryChange(for: CGFloat.self) { $0.frame(in: .global).minX } action: {
+                    artworkX = $0
+                    measureInsets()
+                }
 
             // The text always has the room of a title line and an artist line.
             // A lone "Not Playing" is centred vertically in that room, the way
@@ -403,28 +431,23 @@ private struct NowPlayingRow: View {
                 lines(title: title, subtitle: subtitle, explicit: explicit, song: song)
             }
         }
-        // The top and bottom gaps are padding inside the row rather than row
-        // insets, so they follow `inset` as soon as it's measured. As row
-        // insets they kept their first value: after iOS 27.2 the owner's SE
-        // showed the artwork 20 pt from the side but 16 from top and bottom.
-        .padding(.vertical, inset)
         .accessibilityElement(children: .combine)
-        // listRowInsets(_:_:) with edges is iOS 26: only the vertical insets
-        // change, to nothing, and the leading one stays the system's, lined up
-        // with the section header and every other row.
-        .listRowInsets(.vertical, 0)
-        .onGeometryChange(for: CGFloat.self) { $0.frame(in: .global).minX } action: {
-            contentLeading = $0
-            measureInset()
-        }
-        // The system's own cell colour, supplied here only so the cell's edge
-        // can be measured; this row isn't tappable, so there's no pressed
-        // state to lose.
+        // No listRowInsets here. Build 134 asked for zero on the vertical edges
+        // and added 20 pt of padding, and the owner's SE on iOS 27.2 showed
+        // 35 pt above and below the artwork: the list's own 15 plus the 20, so
+        // the zero never took effect.
+        // The system's own cell colour, supplied here only so the cell can be
+        // measured; this row isn't tappable, so there's no pressed state to
+        // lose.
         .listRowBackground(
             Color(uiColor: .secondarySystemGroupedBackground)
                 .onGeometryChange(for: CGFloat.self) { $0.frame(in: .global).minX } action: {
-                    cellLeading = $0
-                    measureInset()
+                    cellX = $0
+                    measureInsets()
+                }
+                .onGeometryChange(for: CGFloat.self) { $0.size.height } action: {
+                    cellHeight = $0
+                    measureInsets()
                 }
         )
         .task(id: ArtworkKey(source: monitor.artworkImage.map(ObjectIdentifier.init), scale: displayScale)) {
@@ -432,11 +455,15 @@ private struct NowPlayingRow: View {
         }
     }
 
-    private func measureInset() {
-        guard let contentLeading, let cellLeading else { return }
-        let measured = contentLeading - cellLeading
-        if Self.plausibleInset.contains(measured), abs(measured - inset) > 0.25 {
-            inset = measured
+    private func measureInsets() {
+        guard let artworkX, let cellX, let cellHeight else { return }
+        let leading = artworkX - cellX
+        let top = (cellHeight - Self.side) / 2
+        if Self.plausibleSide.contains(leading), abs(leading - sideInset) > 0.25 {
+            sideInset = leading
+        }
+        if Self.plausibleTop.contains(top), abs(top - topInset) > 0.25 {
+            topInset = top
         }
     }
 

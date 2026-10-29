@@ -567,37 +567,54 @@ The short version:
 - **Title and artist the same size**, one line each, scrolling when too long:
   Headline and Body, both 17 pt per the HIG's type table. The Lock Screen
   measures 17/17, and the UI kit gives Control Center 14/14.
-- **Equal padding**: the top and bottom gaps, and since 29 Oct 2026 the gap
-  between the artwork and the text, all equal the leading inset the system
-  chose, which is measured at run time; no API reports it. It was 20 pt on a
-  Pro Max in September 2026, not rechecked since 27.2, and on the owner's SE it
-  was 16 pt in a 26 Sept screenshot (iOS 27.0, the owner thinks) and is 20 on
-  27.2: the whole list moved 4 pt in, headers and the Endpoint rows too, and
-  Apple's own Settings shows the same margin. The gaps are padding inside the
-  row, with the row's own vertical insets set to zero, because as
-  `listRowInsets` they kept their first value: after 27.2 the artwork sat 20 pt
-  from the side but 16 from top and bottom. The text gap was a fixed 14 pt
-  until the owner asked for all three to match the left ("update
-  top/bottom/right (right being gap between art and text) to match"). Not yet
-  seen on a device: that the padding follows a re-measured inset where the row
-  insets didn't. Check the SE on 27.2 once this build is installed.
-- **Concentric corner**: section radius (26 pt, measured on two phones; no API)
-  minus that inset: 10 pt with a 16 pt inset, 6 with 20, never below 6. That
-  is why the SE's artwork corner went from 10 to 6 pt with iOS 27.2, by design,
-  not a regression. The section radius measured the same after 27.2. A List cell
-  doesn't give ConcentricRectangle a container shape (developer forums thread
-  798726), so it's done by hand. A measured inset outside 8–40 pt is ignored.
-- **Other iPhones**: the inset, the corner and the pixel size of the artwork
+- **System spacing, since 29 Oct 2026**: the row sets none of its gaps. The
+  side is the list's leading margin, the top and bottom are the list's own row
+  padding, and the gap to the text is SwiftUI's standard `HStack` spacing
+  (Settings measures about 9 pt there; Ammy's isn't measured yet), so whatever
+  a later iOS does to the list's own spacing it also does here. iOS 27.2
+  widened the side: on the owner's SE the side was
+  16 pt in a 26 Sept screenshot (iOS 27.0, the owner thinks) and is 20 on 27.2,
+  where the whole list moved 4 pt in, headers and the Endpoint rows too, and
+  Settings shows the same. Settings' Apple Account row, the model for this one,
+  measures a 60 pt picture 20 pt from the side and 15 from the top and bottom
+  on 27.2, with the name about 9 pt after it; its ordinary rows are about 52 pt
+  tall. The owner suspects 27.2's spacing may be Apple's mistake and matched
+  it anyway: "wanna match here for better or worse / and if they fix it in a
+  future update it should make ammy look better". History, so it isn't redone: on
+  24 Sept the top and bottom were set equal to the side to match the Lock
+  Screen, with the text 14 pt along; on 29 Oct, build 134 made all three gaps
+  equal to the side with 20 pt of padding and `listRowInsets(.vertical, 0)`,
+  and the owner's SE showed 35 pt above and below the artwork: the list's own
+  15 plus the 20. **A zero vertical `listRowInsets` had no effect on this
+  row.** Whether other values do isn't known: after 27.2, builds that asked
+  for 16 measured 15 to 16 from top and bottom. Don't rely on them without
+  checking on a device. The same day the
+  owner chose the system's gaps, after seeing that Apple's own rows don't
+  follow the side. Not yet seen on a device.
+- **Concentric corner, as close as the gaps allow**: the section's radius
+  (26 pt, measured on two phones; no API) less the average of the artwork's
+  measured side and top gaps, never below 6. With equal gaps that is exactly
+  concentric, Apple's rule; with unequal ones no radius is, and this one puts
+  the artwork corner's centre nearest the section corner's. Expected 8.5 pt on
+  the SE on 27.2 (20 and 15). Before this the corner followed the side alone:
+  10 pt while the side was 16, and 6 once iOS 27.2 made it 20, the drop the
+  owner noticed, which build 134 kept. Both gaps are measured at run time: the
+  side from the artwork's leading edge against its cell's, the top from the
+  cell's height, which scrolling can't change; a side outside 8–40 pt or a top
+  outside 4–60 pt is ignored. The section radius measured the
+  same after 27.2. A List cell doesn't give ConcentricRectangle a container
+  shape (developer forums thread 798726), so it's done by hand. The owner asked
+  to keep this "so it can do its best to match".
+- **Other iPhones**: the gaps, the corner and the pixel size of the artwork
   follow the device. The 57 pt artwork is constant by Apple's own code
   (above); the 26 pt section radius is believed constant, confirmed on an SE
   and a Pro Max.
-- **The gaps are the app's own, not the Lock Screen's.** The owner, 29 Oct
+- **The gaps are the system's, not the Lock Screen's.** The owner, 29 Oct
   2026: "lock screen player has its own standard. all i want to copy from it
   is the fact that its corners are concentric. in-app clearly needs much wider
-  margins than this". So the row's gaps follow the app's own list margin,
-  never the Lock Screen's. The 57 pt artwork, the 17/17 type and the fitted
-  covers above still come from the Lock Screen; the artwork's size turned out
-  to be a constant there too (see Artwork 57 pt).
+  margins than this". The 57 pt artwork, the 17/17 type and the fitted covers
+  above still come from the Lock Screen; the artwork's size turned out to be a
+  constant there too (see Artwork 57 pt).
 - **Soft artwork**: downsampled with ImageIO to the exact pixels drawn, WWDC18
   session 219's documented method, instead of Core Animation shrinking a 512 px
   cover on the fly. What filter the Lock Screen itself uses is not documented.
