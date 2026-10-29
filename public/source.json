@@ -9,12 +9,12 @@
       "versions": [
         {
           "version": "1.0",
-          "date": "2026-10-15T09:08:24+00:00",
-          "localizedDescription": "Scroll long titles with iOS's own marquee\n\nA title or artist too long for the Now Playing row now scrolls with the\nmarquee built into iOS, the one Apple's own apps use, instead of Ammy's\nhand-made copy of it. If a future iOS takes that away, Ammy goes back to\nits own.",
-          "downloadURL": "https://github.com/kaydenpmd/Ammy/releases/download/v1.0-b120/Ammy-1.0-b120-18daaae.ipa",
-          "size": 4465396,
-          "sha256": "ae5be0b2a3841f65fbf87d7edeb097b2e0422678f1ccc42ef0ac67b46ce82a20",
-          "buildVersion": "120",
+          "date": "2026-10-29T02:16:02+00:00",
+          "localizedDescription": "Give Ammy a new icon: an album cover, sent\n\nAmmy's icon is now one album cover with two waves leaving it, drawn\nin the same style as Albums: black on white, and white on black in\ndark mode, with a version for tinted Home Screens.",
+          "downloadURL": "https://github.com/kaydenpmd/Ammy/releases/download/v1.0-b130/Ammy-1.0-b130-778869c.ipa",
+          "size": 549160,
+          "sha256": "49bd9e735690333e6385df7b21dd2c3830867409484655eb6ee9bf3f25b9cc89",
+          "buildVersion": "130",
           "minOSVersion": "26.0"
         }
       ],
