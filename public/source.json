@@ -9,12 +9,12 @@
       "versions": [
         {
           "version": "1.0",
-          "date": "2026-10-29T14:39:26+00:00",
-          "localizedDescription": "Space the Now Playing row the way iOS does\n\nAmmy now leaves the gaps around the artwork and before the title to iOS,\nlike the rows in Settings, so they follow iOS when it changes them. The\nartwork's corners still curve with the rounded box around it as closely\nas those gaps allow.",
-          "downloadURL": "https://github.com/kaydenpmd/Ammy/releases/download/v1.0-b137/Ammy-1.0-b137-4d82a86.ipa",
-          "size": 550546,
-          "sha256": "23bc3af459a7ba554c5fe4202e78f00a9841c09afdcb3a5394cdb5e1814de080",
-          "buildVersion": "137",
+          "date": "2026-10-29T16:07:31+00:00",
+          "localizedDescription": "Add a temporary switch for the Now Playing row's spacing\n\nA Lock Screen Spacing switch under Now Playing lays the row out with the\nLock Screen player's own spacing, 14 points all round and 12 before the\ntitle, instead of the list's. It's there to compare the two, and will go\nonce one is chosen.",
+          "downloadURL": "https://github.com/kaydenpmd/Ammy/releases/download/v1.0-b139/Ammy-1.0-b139-e7fc490.ipa",
+          "size": 554580,
+          "sha256": "973d9a08b77183d0008c0ea1ec1bebfa020a179792d65dba329a57063e770daf",
+          "buildVersion": "139",
           "minOSVersion": "26.0"
         }
       ],
