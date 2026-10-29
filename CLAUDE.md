@@ -42,13 +42,13 @@ AltStore source stays where it is — "altstore can stay using my site" — on
 Scripts`) and the disabled `Ammy Relay` logon task were still there. They are
 obsolete, not a rollback: never enable the task, which would contend with Issun
 for port 8787, and removing them is the owner's call. The tunnel was still
-live too; see "Funnel is the only endpoint" under Where things stand. And the
-installed Issun was build 38 (`/version`), behind releases 40 and 41 of 9 Oct:
-Claude offered to install 41 that day and had no answer by 27 Oct. Build 40
-rewords the two messages that still name Ammy in the installed copy (the tray
-hint and the new-key notice), and 41 changes nothing in the app. Updating stops
-the live receiver for a few seconds, so get a yes first; the procedure is in
-Issun's CLAUDE.md, "Updating the installed copy".
+live too; see "Funnel is the only endpoint" under Where things stand. The
+installed Issun, build 38 through all of that, is build 43 since 29 Oct 2026
+(`/version`), installed at the owner's yes, with build 38 kept beside it as
+`Issun.exe.b38.bak`. It has the new icon, and its tray hint and new-key notice
+no longer name Ammy. Updating stops the live receiver for a few seconds, so get
+a yes first; the procedure is in Issun's CLAUDE.md, "Updating the installed
+copy".
 
 ## Why it's built this way
 
