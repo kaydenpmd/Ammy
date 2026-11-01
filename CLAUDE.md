@@ -502,12 +502,11 @@ The fuzzy floor is **0.35** (Issun's `ArtMinScore`, locked there by the owner on
 ## The explicit badge
 
 Added 23 Sept 2026. The Now Playing row puts Music's "E" (`e.square.fill`)
-after an explicit track, and the push carries `explicit: true`. Since build 120
-there are two copies of it, so a change to the E goes in both: on the UIKit
-marquee path it is a text attachment at small symbol scale
-(`SystemMarqueeLines.titleText`, `UIImage.SymbolConfiguration(font:scale:
-.small)`), and on the `MarqueeLine` fallback (`fallbackLines`) it sits inline
-in the title's `Text` with `.imageScale(.small)`. **It's just the symbol after a space, in the title's own
+after an explicit track, and the push carries `explicit: true`. It sits inline
+in the title's `Text` with `.imageScale(.small)` (`NowPlayingRow.lines`). From
+build 120 to 1 Nov 2026 there was a second copy, a text attachment on UIKit's
+marquee path, which went with that path (see Scrolling, under the Now Playing
+row's proportions). **It's just the symbol after a space, in the title's own
 colour**, by the owner's choice on 24 Sept 2026. It matches the Lock Screen and
 Control Center player, where the E is opaque, not the Music app, where it's
 translucent. The first version dimmed it with `.secondary` and added a
@@ -521,8 +520,7 @@ the baseline. Build 101's, at the default medium scale, was 1.29× cap height
 and overhung both. The HIG's SF Symbols page defines the three scales "relative
 to the cap height", and its figure shows small touching both lines. Whether
 `.imageScale` reaches a symbol embedded in `Text` is undocumented, so check it
-on a device. That question applies only to the fallback; the UIKit path sets
-the scale on the symbol itself.
+on a device; since 1 Nov 2026 this is the only path.
 
 **Only ever `true`**: `MPMediaItem.isExplicitItem` is a plain
 Bool, and its `false` covers an unrated track as well as a clean one, so the
@@ -645,31 +643,22 @@ The short version:
   hairline. Control Center's is an empty translucent square (Apple's iPhone
   User Guide screenshot); Apple names no colour, and tertiarySystemFill is the
   documented fill "for large shapes".
-- **Scrolling** has been set to use UIKit's own marquee since 15 Oct 2026
-  (build 120): the one built into UILabel, which Apple keeps private and
-  publishes no timing for. Whether it is what actually runs on the owner's
-  phone is unconfirmed. The owner had asked for the scroll to ease into a stop
-  like Music's, and on build 120 reported "there is no easing visible". So
-  either UIKit's marquee is linear (it is the one tvOS uses for focused text,
-  and may never have been Music's) or `SystemMarqueeLines.available` was false
-  and the row fell back to `MarqueeLine`. The code comments claim more than is
-  known: `SystemMarqueeLines` calls UIKit's marquee the one "Apple's apps use"
-  and "the only exact match", and `MarqueeLine`'s says UIKit's runs on iOS 26
-  and 27. **Unfinished: Open work item 10.** `SystemMarqueeLines` turns UIKit's
-  marquee on through
-  LNSystemMarqueeLabel (MIT, pinned to 0.1.2 in `project.yml`, notice in
-  `ThirdPartyNotices.txt`). LNPopupController, an open-source replica of
-  Music's player, offers the same label as an option and defaults to it only
-  on Mac Catalyst, so the path is little used on iPhone. Each line scrolls on
-  its own and a new song restarts both: the package's line syncing is left
-  off, because in 0.1.2 it never switches on (its +load runs before its C++
-  statics) and could stall a line if it did; the comment on
-  `SystemMarqueeLines` has the detail. Stopped in the background, off under
-  Reduce Motion. If an iOS release drops the private properties, the row falls
-  back to `MarqueeLine`, the hand-made version with LNPopupController's linear
-  numbers (2 s rest, 30 pt/s, 50 pt gap, 10 pt fade), instead of crashing.
-  **Not yet seen on a device:** whether the E still sits at cap height in
-  UIKit's text, and VoiceOver reading the row.
+- **Scrolling is Music's own timing, measured, since 1 Nov 2026** (Open work
+  item 10 has how). `MarqueeLine` is a plain marquee, holding 3 s and then
+  scrolling at 30 pt/s until the line's repeat has taken its place, whose
+  whole loop runs through ease-in-ease-out (`UnitCurve.easeInOut`, Core
+  Animation's (0.42, 0, 0.58, 1)). So the hold stretches to 4–5 s, longer
+  for a longer line, and the scroll sets off briskly, is fastest (52 pt/s) at
+  the middle of the loop, and eases into the stop as the loop ends. The
+  repeat follows 32 pt after the text, and both edges fade over
+  20 pt, the leading one only while the line moves. Each line scrolls on its
+  own and a new song restarts both. Stopped in the background, off under
+  Reduce Motion, where a long line truncates. From build 120 until then the
+  row used UIKit's private UILabel marquee through LNSystemMarqueeLabel; the
+  owner saw "no easing visible" on it, and Music's motion is eased from end
+  to end, so whatever ran was not Music's. It went, with the package and
+  `ThirdPartyNotices.txt`, in the release that brought the measured timing,
+  as promised. **Not yet seen on a device.**
 
 ## Clickable presence
 
@@ -1261,30 +1250,82 @@ of the wrong bar.
 because nothing was drawn by hand; this failed to track a *device class* because
 a constant was.
 
-**10. Long titles should ease into a stop, as Music's do — waiting on a screen
-recording.** Asked 15 Oct 2026: "can you make the long-title scrolling ease
-into a stop like what happens in apple music if that's easy to match exactly".
-Apple publishes no timing for Music's marquee, and LNPopupController's default
-marquee on iPhone (cbpowell's MarqueeLabel) is linear, which is where
-`MarqueeLine`'s numbers came from. The owner then suggested UIKit's private
-marquee ("how about just lnsystemmarqueelabel"); it shipped in build 120, and
-the owner reported "there is no easing visible in build 120", the same day.
+**10. Long titles ease into a stop, as Music's do — built 1 Nov 2026, not yet
+seen on a device.** Asked 15 Oct 2026: "can you make the long-title scrolling
+ease into a stop like what happens in apple music if that's easy to match
+exactly". `MarqueeLine`'s first numbers were LNPopupController's (cbpowell's
+MarqueeLabel, linear). The owner then suggested UIKit's private marquee ("how
+about just lnsystemmarqueelabel"); it shipped in build 120, and the owner
+reported "there is no easing visible in build 120", the same day.
 
-The next step was asked of the owner twice on 15 Oct 2026, before and after
-build 120, and had no answer by 27 Oct: a screen recording showing a long title
-scrolling in Music through at least one full loop until it rests, then a long
-title scrolling in Ammy. Measure Music's curve, speed, pause and gap frame by
-frame with ffmpeg (on PATH here, from winget's yt-dlp.FFmpeg package), using
-each frame's timestamp from `ffprobe` rather than assuming 60 fps, since screen
-recordings drop frames (see the large-title note in Gotchas). Ammy's half shows
-which scroller build 120 ran: `MarqueeLine` moves at exactly 30 pt/s with a
-50 pt gap. The app also logs it once per launch in the phone's system log
-(`Logger`, subsystem `com.local.ammy`, category `marquee`: "UIKit's marquee" or
-"UIKit's marquee is missing; using MarqueeLine"), but reading that needs a
-device-log tool, and none is set up here. Then build the measured timing into
-`MarqueeLine`, and if UIKit's marquee adds nothing, remove `SystemMarqueeLines`,
-the package in `project.yml` and `ThirdPartyNotices.txt` in the same release,
-as promised to the owner.
+The recording arrived on 1 Nov 2026, after the chat's 30 MB attachment limit
+turned it back. It was already on the PC: the owner's iCloud Photos syncs
+through iCloud for Windows, and it is
+`Pictures\iCloud Photos\Photos\ScreenRecording_11-01-2026 04-29-11_1.mp4`.
+1:40 of Music's full-screen player on the owner's SE (iOS 27.2), 750x1334
+HEVC at a variable ~59.5 fps, 5958 decoded frames. Music only, so it says
+nothing about which scroller build 120 ran, which no longer matters.
+
+**How, so it can be redone: `scripts/measure_marquee.py`.** Give it a
+recording and the line's pixel rows (`... rec.mp4 784 840 --columns
+150:450` for this one). It tracks the line from frame to frame to 0.01 px at
+each frame's own pts_time, fits a cubic Bézier to every scroll that runs from
+rest to rest, prints the loop periods, and checks every frame of each title
+against the model below. On this recording it reproduces everything below in
+about 40 s. The gap and the fades came from stitching the tracked frames into
+the whole title, which the script doesn't do.
+
+What Music does, from two titles that looped in full ('Light the Fire Up in
+the Night "KAGEJIKAN"', 426.9 pt a loop, and 'Shoot to kill, kill your
+darlings', 299.6 pt):
+- **A plain marquee, eased as a whole.** It holds 3 s, then scrolls at
+  30 pt/s until the repeat has taken the text's place, and that whole loop,
+  hold and scroll together, runs through ease-in-ease-out, Core Animation's
+  (0.42, 0, 0.58, 1). The ease-in stretches the hold into a rest of 4–5 s,
+  longer for a longer title; the scroll sets off already moving, is fastest
+  at the loop's midpoint (52 pt/s on both titles, 30 pt/s times the curve's
+  peak slope of 1.72), and eases to a stop as the loop ends. Against every
+  frame of both titles, rests included, it misses by 0.37–0.49 pt RMS and
+  1.2 pt at most, with nothing fitted but where the loops start. Left free,
+  the hold and speed come out at 3.07 s and 30.2 pt/s here, and at 2.997 s
+  and 30.001 pt/s in the independent measurement.
+- **The evidence that it is one eased loop**, not an eased scroll after a
+  rest: the loop periods, 17.222 and 17.223 s, and 12.990 s, are each within
+  10 ms of 3 s plus the distance at 30 pt/s; the peak speed falls at the
+  middle of the whole loop (19.44 s against 19.49 s, 87.79 s against
+  87.75 s); and the rests, 5.03 s and 4.43 s, are what the curve leaves of
+  the hold. Fitted alone, each scroll is a different slice of the same curve,
+  which is why their best Béziers differ slightly, (0.31, 0.31, 0.56, 1.0)
+  and (0.29, 0.33, 0.56, 1.0); the first model built here was their average
+  with the loop timing bolted on, and missed by up to 2.2 pt rather than 1.2.
+  The named curves applied to the scroll alone miss by 2–18 pt; ease-out is
+  the nearest. It was the independent re-measurement, a second agent working
+  from the same recording without seeing these numbers, that found the
+  whole-loop structure; it agreed with this one's distances to 0.2% and peak
+  speeds to 1.5%.
+- After a song change the first scroll came 4.27 s and 4.63 s after the new
+  title appeared, about one rest: a loop starts with its hold.
+- **The gap is 32 pt.** There is 34–35 pt of clear space between the end of
+  the title and its repeat. SF Pro's own side bearings at 20 pt make that a
+  31.4–32.1 pt gap between the two copies; the font file is on this PC, in
+  `%LOCALAPPDATA%\Microsoft\Windows\Fonts\SF-Pro.ttf`. 32 pt is also Music's
+  side margin.
+- **The fades are about 20 pt** (18.5–22.3 measured). Music's leading fade
+  sits in the margin, from 6 to 28 pt across the screen, short of the title's
+  resting place at 32 pt, so a title at rest is never faded at its start. The
+  trailing fade ends 257.5 pt across, inside the title's column. The row has
+  no margin to spare beside its artwork, so both of its fades stay inside the
+  line, as before.
+- **Music's title is 20 pt SF Pro** (cap height 14.0 pt); the row's is 17.
+  The numbers stay in points, as measured. Whether Apple scales any of them
+  with the type size isn't known.
+
+`MarqueeLine` now uses all of it, the model exactly as above, and is the only
+scroller. `SystemMarqueeLines`, LNSystemMarqueeLabel and
+`ThirdPartyNotices.txt` went in the same release, as promised: UIKit's marquee
+showed the owner no easing, and Music's eases from end to end. What's left is
+the device. A recording of a long title in Ammy's row, run through the script,
+should give the same curve, speeds and loop.
 
 ## Working with the owner
 
