@@ -9,12 +9,12 @@
       "versions": [
         {
           "version": "1.0",
-          "date": "2026-11-01T02:03:01+00:00",
-          "localizedDescription": "Give Now Playing the Lock Screen's spacing\n\nThe Now Playing row now uses the Lock Screen player's spacing: 14 points\naround the artwork and 12 before the title. The temporary switch for\ncomparing it with the list's own spacing is gone.",
-          "downloadURL": "https://github.com/kaydenpmd/Ammy/releases/download/v1.0-b143/Ammy-1.0-b143-e35acaf.ipa",
-          "size": 556390,
-          "sha256": "980550efc00f1e3dce9e714ff7087f17c291cd3e7ad94b22bb6904eed9e9608e",
-          "buildVersion": "143",
+          "date": "2026-11-01T21:54:59+00:00",
+          "localizedDescription": "Scroll long titles the way Music does\n\nA title or artist too long for the Now Playing row now moves with the\ntiming of Music's own player, measured frame by frame from a recording of\nit: it waits a few seconds, sets off, and eases into a stop, and a longer\nline waits a little longer. This replaces the scrolling built into iOS that\nAmmy used from build 120, which never eased.",
+          "downloadURL": "https://github.com/kaydenpmd/Ammy/releases/download/v1.0-b145/Ammy-1.0-b145-97f7747.ipa",
+          "size": 525931,
+          "sha256": "7dacbf2fcc85ccb1c11f8d2ebee4e127be47f77f49454bef032aef9ee77b56f5",
+          "buildVersion": "145",
           "minOSVersion": "26.0"
         }
       ],
