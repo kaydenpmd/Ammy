@@ -9,12 +9,12 @@
       "versions": [
         {
           "version": "1.0",
-          "date": "2026-11-01T01:24:43+00:00",
-          "localizedDescription": "Make the Lock Screen Spacing switch work on every flip\n\nWith Lock Screen Spacing on, the row sometimes kept the list's spacing above\nand below the artwork, so everything under it moved on some flips and not\nothers. It now measures the list only once the row has settled, so the\nLock Screen spacing comes out the same every time.",
-          "downloadURL": "https://github.com/kaydenpmd/Ammy/releases/download/v1.0-b141/Ammy-1.0-b141-1c50112.ipa",
-          "size": 557504,
-          "sha256": "8998735f9152bac621662ba160b5a0a2483c601cba523f4b91f999b62aa96b87",
-          "buildVersion": "141",
+          "date": "2026-11-01T02:03:01+00:00",
+          "localizedDescription": "Give Now Playing the Lock Screen's spacing\n\nThe Now Playing row now uses the Lock Screen player's spacing: 14 points\naround the artwork and 12 before the title. The temporary switch for\ncomparing it with the list's own spacing is gone.",
+          "downloadURL": "https://github.com/kaydenpmd/Ammy/releases/download/v1.0-b143/Ammy-1.0-b143-e35acaf.ipa",
+          "size": 556390,
+          "sha256": "980550efc00f1e3dce9e714ff7087f17c291cd3e7ad94b22bb6904eed9e9608e",
+          "buildVersion": "143",
           "minOSVersion": "26.0"
         }
       ],
