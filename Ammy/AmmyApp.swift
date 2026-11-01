@@ -391,15 +391,20 @@ private struct NowPlayingRow: View {
     /// row less where the cell starts, and half the cell's height beyond the
     /// row. The Lock Screen spacing pads by the difference from these. The
     /// side can't move with that padding: the list puts the row at its own
-    /// inset, however wide the row is. The top could: the padding changes the
-    /// row's height at once and the cell's only when the list resizes it, so a
-    /// reading taken in between would feed its own error back into the
-    /// padding. So the top is read only with the switch off, and a launch with
-    /// it on starts from 15, the owner's SE on 27.2.
+    /// inset, however wide the row is. The top can be misread: the two heights
+    /// come from different views at different moments, so while either is
+    /// changing their difference is wrong, and a wrong value moves the
+    /// padding. Build 139 read it whenever either changed, with the switch off,
+    /// and on every other flip on kept a 14 from mid-change, leaving the card
+    /// 87 pt tall instead of 85 (the owner's screen recording, 31 Oct 2026).
+    /// So it's read only once nothing has moved for a moment
+    /// (`settleListTop`), in either mode. 15, the owner's SE on 27.2, is the
+    /// starting guess.
     @State private var listSide: CGFloat = 16
     @State private var listTop: CGFloat = 15
     @State private var rowX: CGFloat?
     @State private var rowHeight: CGFloat?
+    @State private var listTopCheck: Task<Void, Never>?
 
     /// As concentric with the section as the gaps allow. With equal gaps that
     /// is the section's radius less the gap, Apple's own definition ("the
@@ -516,7 +521,19 @@ private struct NowPlayingRow: View {
                 listSide = leading
             }
         }
-        if !lockScreenSpacing, let rowHeight {
+        if let rowHeight, abs((cellHeight - rowHeight) / 2 - listTop) > 0.25 {
+            settleListTop()
+        }
+    }
+
+    /// Reads the list's top inset once the row and its cell have both stopped
+    /// changing: a moment after the last change, so a half-finished resize is
+    /// never taken for the inset. A further change restarts the wait.
+    private func settleListTop() {
+        listTopCheck?.cancel()
+        listTopCheck = Task { @MainActor in
+            try? await Task.sleep(for: .milliseconds(150))
+            guard !Task.isCancelled, let cellHeight, let rowHeight else { return }
             let top = (cellHeight - rowHeight) / 2
             if Self.plausibleTop.contains(top), abs(top - listTop) > 0.25 {
                 listTop = top
@@ -768,10 +785,10 @@ struct ContentView: View {
     /// spacing on the device, the Lock Screen player's or the list's own.
     /// Once one is chosen, remove the switch and its section, and in
     /// NowPlayingRow the lockScreenSpacing parameter, lockScreenInset and
-    /// lockScreenGap, listSide/listTop/rowX/rowHeight, the two paddings, the
-    /// two onGeometryChange modifiers after them, and their part of
-    /// measureInsets(). If the Lock Screen's spacing wins, keep those and drop
-    /// only the switch.
+    /// lockScreenGap, listSide/listTop/rowX/rowHeight/listTopCheck, the two
+    /// paddings, the two onGeometryChange modifiers after them,
+    /// settleListTop(), and their part of measureInsets(). If the Lock
+    /// Screen's spacing wins, keep those and drop only the switch.
     @AppStorage("lockScreenSpacing") private var lockScreenSpacing = false
 
     /// Ties the glass surfaces together so they morph into one another rather

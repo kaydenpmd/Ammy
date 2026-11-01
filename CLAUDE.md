@@ -610,16 +610,24 @@ The short version:
   player's spacing instead: 14 pt on every side and the text 12 pt after the
   artwork, the constants in its code (see Artwork 57 pt). It pads the row by
   the difference from the list's own insets, so negative where the list's are
-  wider: the side measured from where the list put the row, and the top from
-  the cell's height only while the switch is off, since with it on a reading
-  could feed back into the padding. The corner follows on its own: 12 pt at
-  14 and 14. The owner asked for it to compare the two on the device. Once one
+  wider: the side measured from where the list put the row, and the top as
+  half the cell's height beyond the row's, read only once both have stopped
+  changing for 150 ms. Build 139 read the top at every change with the switch
+  off, and the owner's screen recording (31 Oct 2026) showed what that does:
+  on every other flip on, a reading taken mid-change (14 instead of 15) stuck,
+  the card stayed 87 pt instead of 85, and everything below jumped 2 pt on
+  alternate flips only. The good flips measured exactly 14 pt at the side, top
+  and bottom. The corner follows on its own: 12 pt at 14 and 14. The owner
+  asked for it to compare the two on the device, and likes the Lock Screen's
+  "vastly more". Once one
   is chosen, remove the switch (`lockScreenSpacing`, an `@AppStorage` key of
   the same name) and its section, and in NowPlayingRow the lockScreenSpacing
-  parameter, lockScreenInset/lockScreenGap, listSide/listTop/rowX/rowHeight,
-  the two paddings, the two onGeometryChange modifiers after them, and their
-  part of measureInsets(). If the Lock Screen's spacing wins, keep those and
-  drop only the switch. Not yet seen on a device.
+  parameter, lockScreenInset/lockScreenGap,
+  listSide/listTop/rowX/rowHeight/listTopCheck, the two paddings, the two
+  onGeometryChange modifiers after them, settleListTop(), and their part of
+  measureInsets(). If the Lock Screen's spacing wins, keep those and drop only
+  the switch. Build 139 seen on the owner's SE (screen recording, 31 Oct
+  2026); the 150 ms settling isn't seen on a device yet.
 - **Other iPhones**: the gaps, the corner and the pixel size of the artwork
   follow the device. The 57 pt artwork is constant by Apple's own code
   (above); the 26 pt section radius is believed constant, confirmed on an SE
