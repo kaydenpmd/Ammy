@@ -563,81 +563,78 @@ The short version:
   (also the HIG's documented Lock Screen margin for Live Activities), a 12 pt
   gap to the text, a fixed 7.5 pt artwork corner, and text capped at Dynamic
   Type XL. Its corner is concentric only because its inset is fixed too; the
-  row computes its own, because its margin moves (see Concentric corner).
+  row computes its own from the artwork's measured gaps (see Concentric corner).
 - **Title and artist the same size**, one line each, scrolling when too long:
   Headline and Body, both 17 pt per the HIG's type table. The Lock Screen
   measures 17/17, and the UI kit gives Control Center 14/14.
-- **System spacing, since 29 Oct 2026**: the row sets none of its gaps. The
-  side is the list's leading margin, the top and bottom are the list's own row
-  padding, and the gap to the text is SwiftUI's standard `HStack` spacing
-  (Settings measures about 9 pt there; Ammy's isn't measured yet), so whatever
-  a later iOS does to the list's own spacing it also does here. iOS 27.2
-  widened the side: on the owner's SE the side was
-  16 pt in a 26 Sept screenshot (iOS 27.0, the owner thinks) and is 20 on 27.2,
-  where the whole list moved 4 pt in, headers and the Endpoint rows too, and
-  Settings shows the same. Settings' Apple Account row, the model for this one,
-  measures a 60 pt picture 20 pt from the side and 15 from the top and bottom
-  on 27.2, with the name about 9 pt after it; its ordinary rows are about 52 pt
-  tall. The owner suspects 27.2's spacing may be Apple's mistake and matched
-  it anyway: "wanna match here for better or worse / and if they fix it in a
-  future update it should make ammy look better". History, so it isn't redone: on
-  24 Sept the top and bottom were set equal to the side to match the Lock
-  Screen, with the text 14 pt along; on 29 Oct, build 134 made all three gaps
-  equal to the side with 20 pt of padding and `listRowInsets(.vertical, 0)`,
-  and the owner's SE showed 35 pt above and below the artwork: the list's own
-  15 plus the 20. **A zero vertical `listRowInsets` had no effect on this
-  row.** Whether other values do isn't known: after 27.2, builds that asked
-  for 16 measured 15 to 16 from top and bottom. Don't rely on them without
-  checking on a device. The same day the
-  owner chose the system's gaps, after seeing that Apple's own rows don't
-  follow the side. Not yet seen on a device.
+- **Lock Screen spacing, since 31 Oct 2026**: 14 pt from the artwork to the
+  section's side, top and bottom, and 12 pt from the artwork to the text, the
+  Lock Screen player's own constants (see Artwork 57 pt), on every iPhone. A
+  List won't give a row those numbers directly, so the row pads by the
+  difference from the list's own insets, which are measured: the side from
+  where the list put the row against its cell, and the top as half the cell's
+  height beyond the row's, read only once both have stopped changing for
+  150 ms. The padding is negative where the list's insets are wider: on the
+  owner's SE on iOS 27.2 the list gives 20 at the side and 15 at the top, so
+  -6 and -1. Verified on the owner's SE: a screen recording of build 141
+  measured the artwork exactly 14 pt from the side, top and bottom, in an
+  85 pt card, the same on every flip of the then-temporary switch.
+- **Why padding and not `listRowInsets`**: on 29 Oct, build 134 asked for zero
+  vertical insets with `listRowInsets(.vertical, 0)` and added 20 pt of
+  padding, and the owner's SE showed 35 pt above and below the artwork: the
+  list's own 15 plus the 20. **A zero vertical `listRowInsets` had no effect on
+  this row.** Whether other values do isn't known: after 27.2, builds that
+  asked for 16 measured 15 to 16 from top and bottom. Don't rely on them
+  without checking on a device.
+- **Why the top is read only once things settle**: the two heights come from
+  different views (the row and its `listRowBackground`) at different moments,
+  so mid-change their difference is wrong, and a wrong value moves the
+  padding. Build 139 read it at every change, but only while the switch was
+  off, and the owner's recording (31 Oct 2026) showed a reading taken
+  mid-change (14 instead of 15) sticking on every other flip on: the card
+  stayed 87 pt instead of 85 and everything below jumped 2 pt on alternate
+  flips only. Build 141 reads it with the switch in either position and waits
+  for 150 ms of stillness, and its recording shows every flip identical.
+- **How the owner chose it, so it isn't redone.** On 24 Sept the top and bottom
+  were set equal to the side to match the Lock Screen, with the text 14 pt
+  along. iOS 27.2 then widened the list's side margin: on the owner's SE 16 pt
+  in a 26 Sept screenshot (iOS 27.0, the owner thinks) and 20 on 27.2, where
+  the whole list moved 4 pt in, headers and the Endpoint rows too, and Settings
+  shows the same. Settings' Apple Account row measures a 60 pt picture 20 pt
+  from the side and 15 from the top and bottom on 27.2, with the name about
+  9 pt after it. On 29 Oct the owner first said "lock screen player has its
+  own standard. all i want to copy from it is the fact that its corners are
+  concentric. in-app clearly needs much wider margins than this", then chose
+  the system's own gaps (build 137), suspecting 27.2's spacing was Apple's
+  mistake and matching it anyway: "wanna match here for better or worse /
+  and if they fix it in a future update it should make ammy look better".
+  Then they asked for the Lock Screen's margins "from first principles"
+  behind a temporary switch
+  (builds 139 and 141), compared the two on the device, and chose the Lock
+  Screen's: "i do like the lock screen spacing vastly more". The switch was
+  removed on 31 Oct 2026. So the artwork's size, the type, the fitted covers
+  and now the spacing all come from the Lock Screen; the corner rule is the
+  row's own.
 - **Concentric corner, as close as the gaps allow**: the section's radius
   (26 pt, measured on two phones; no API) less the average of the artwork's
   measured side and top gaps, never below 6. With equal gaps that is exactly
   concentric, Apple's rule; with unequal ones no radius is, and this one puts
-  the artwork corner's centre nearest the section corner's. Expected 8.5 pt on
-  the SE on 27.2 (20 and 15). Before this the corner followed the side alone:
-  10 pt while the side was 16, and 6 once iOS 27.2 made it 20, the drop the
-  owner noticed, which build 134 kept. Both gaps are measured at run time: the
-  side from the artwork's leading edge against its cell's, the top from the
-  cell's height, which scrolling can't change; a side outside 8–40 pt or a top
-  outside 4–60 pt is ignored. The section radius measured the
-  same after 27.2. A List cell doesn't give ConcentricRectangle a container
-  shape (developer forums thread 798726), so it's done by hand. The owner asked
-  to keep this "so it can do its best to match".
-- **Temporary toggle, 29 Oct 2026**: "Lock Screen Spacing", a switch in its
-  own section under Now Playing, lays the row out with the Lock Screen
-  player's spacing instead: 14 pt on every side and the text 12 pt after the
-  artwork, the constants in its code (see Artwork 57 pt). It pads the row by
-  the difference from the list's own insets, so negative where the list's are
-  wider: the side measured from where the list put the row, and the top as
-  half the cell's height beyond the row's, read only once both have stopped
-  changing for 150 ms. Build 139 read the top at every change with the switch
-  off, and the owner's screen recording (31 Oct 2026) showed what that does:
-  on every other flip on, a reading taken mid-change (14 instead of 15) stuck,
-  the card stayed 87 pt instead of 85, and everything below jumped 2 pt on
-  alternate flips only. The good flips measured exactly 14 pt at the side, top
-  and bottom. The corner follows on its own: 12 pt at 14 and 14. The owner
-  asked for it to compare the two on the device, and likes the Lock Screen's
-  "vastly more". Once one
-  is chosen, remove the switch (`lockScreenSpacing`, an `@AppStorage` key of
-  the same name) and its section, and in NowPlayingRow the lockScreenSpacing
-  parameter, lockScreenInset/lockScreenGap,
-  listSide/listTop/rowX/rowHeight/listTopCheck, the two paddings, the two
-  onGeometryChange modifiers after them, settleListTop(), and their part of
-  measureInsets(). If the Lock Screen's spacing wins, keep those and drop only
-  the switch. Build 139 seen on the owner's SE (screen recording, 31 Oct
-  2026); the 150 ms settling isn't seen on a device yet.
-- **Other iPhones**: the gaps, the corner and the pixel size of the artwork
-  follow the device. The 57 pt artwork is constant by Apple's own code
-  (above); the 26 pt section radius is believed constant, confirmed on an SE
-  and a Pro Max.
-- **The gaps are the system's, not the Lock Screen's.** The owner, 29 Oct
-  2026: "lock screen player has its own standard. all i want to copy from it
-  is the fact that its corners are concentric. in-app clearly needs much wider
-  margins than this". The 57 pt artwork, the 17/17 type and the fitted covers
-  above still come from the Lock Screen; the artwork's size turned out to be a
-  constant there too (see Artwork 57 pt).
+  the artwork corner's centre nearest the section corner's. With the Lock
+  Screen's 14 and 14 it's 12 pt. (It was 10 pt with 16 and 16, 6 once iOS 27.2
+  made the side 20, which the owner noticed, and 8.5 with the system's 20 and
+  15.) Both gaps are measured at run time: the side from the artwork's leading
+  edge against its cell's, the top from the cell's height, which scrolling
+  can't change; a side outside 8–40 pt or a top outside 4–60 pt is ignored. If
+  the text outgrows the artwork at the largest text sizes, the artwork sits
+  centred lower and the corner follows. The section radius measured the same
+  after 27.2. A List cell doesn't give ConcentricRectangle a container shape
+  (developer forums thread 798726), so it's done by hand. The owner asked to
+  keep this "so it can do its best to match".
+- **Other iPhones**: the corner and the pixel size of the artwork follow the
+  device, and the gaps are the Lock Screen's on every one, reached by
+  measuring each device's list. The 57 pt artwork is constant by Apple's own
+  code (above); the 26 pt section radius is believed constant, confirmed on an
+  SE and a Pro Max.
 - **Soft artwork**: downsampled with ImageIO to the exact pixels drawn, WWDC18
   session 219's documented method, instead of Core Animation shrinking a 512 px
   cover on the fly. What filter the Lock Screen itself uses is not documented.

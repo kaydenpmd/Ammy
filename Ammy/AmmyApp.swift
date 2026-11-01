@@ -321,19 +321,14 @@ private struct MarqueeLine: View {
 /// same size, scrolling when too long, the artwork as far from the section's
 /// top and bottom as from its leading edge, with a corner concentric with the
 /// section's. Each number below says where it came from: the owner's
-/// screenshots, Apple's documentation, or both. Since 29 Oct 2026 the spacing
-/// is the system's: the row sets none of its gaps, so the top and bottom are
-/// the list's own row padding and the gap to the text is SwiftUI's standard
-/// spacing, and the corner stays as concentric with the
-/// section as those gaps allow, the one part of the Lock Screen's spacing the
-/// row keeps. The 57 pt artwork and the 17 pt lines are still the Lock
-/// Screen's.
+/// screenshots, Apple's documentation, or both. Since 31 Oct 2026 the spacing
+/// is the Lock Screen player's too: 14 pt from the artwork to the section's
+/// edges and 12 pt to the text, which the owner chose over the list's own
+/// after comparing both on the device ("i do like the lock screen spacing
+/// vastly more"). The corner is the row's own, as concentric with the section
+/// as the gaps allow.
 private struct NowPlayingRow: View {
     @ObservedObject var monitor: NowPlayingMonitor
-    /// TEMPORARY, 29 Oct 2026: the Lock Screen player's spacing instead of
-    /// the list's own, for the owner to compare (ContentView's
-    /// lockScreenSpacing).
-    let lockScreenSpacing: Bool
     @Environment(\.displayScale) private var displayScale
 
     /// The Lock Screen's Now Playing artwork, which is a constant there too:
@@ -354,31 +349,21 @@ private struct NowPlayingRow: View {
     /// written down here.
     private static let sectionCorner: CGFloat = 26
 
-    /// How far the artwork sits from its cell's leading and top edges, as the
-    /// system laid it out. No API reports either, so both are measured: the
+    /// How far the artwork actually sits from its cell's leading and top
+    /// edges, for the corner. No API reports either, so both are measured: the
     /// side as the artwork's leading edge less the cell's, the top as half the
     /// cell's height beyond the artwork, which the row centres, because a
-    /// height doesn't move when the list scrolls. The side is the list's
-    /// leading margin: 20 pt on a Pro Max in September 2026, not rechecked
-    /// since, and on the owner's SE 16 pt in a 26 Sept screenshot (iOS 27.0,
-    /// the owner thinks) but 20 on iOS 27.2, when the whole list moved 4 pt in.
-    /// The top is the list's own row padding: 15 pt on the owner's SE on 27.2
-    /// (build 134's 35 less its 20), as Settings' Apple Account row measures
-    /// against 20 from the side.
-    ///
-    /// The row sets none of these gaps, nor the one to the text, since 29 Oct
-    /// 2026: the owner chose iOS 27.2's spacing over even gaps ("wanna match
-    /// here for better or worse"), so whatever a later iOS does to the list's
-    /// own spacing it also does here. The starting values are guesses,
-    /// replaced as soon as the row is measured: 16 was the SE's side before
-    /// 27.2, and 15 its top on 27.2.
-    @State private var sideInset: CGFloat = 16
-    @State private var topInset: CGFloat = 15
+    /// height doesn't move when the list scrolls. With the Lock Screen spacing
+    /// both come out 14; the top is larger only when the text outgrows the
+    /// artwork. The starting values are that expectation, replaced as soon as
+    /// the row is measured.
+    @State private var sideInset: CGFloat = 14
+    @State private var topInset: CGFloat = 14
     @State private var artworkX: CGFloat?
     @State private var cellX: CGFloat?
     @State private var cellHeight: CGFloat?
 
-    /// The Lock Screen player's own spacing, for the temporary comparison.
+    /// The Lock Screen player's own spacing, the row's since 31 Oct 2026.
     /// -[MRULockscreenViewController viewDidLoad] sets the player's content
     /// insets to 14 pt on every side, and -[MRULockscreenView layoutSubviews]
     /// puts the artwork at their top-left and starts the text 57 + 12 pt in
@@ -389,18 +374,19 @@ private struct NowPlayingRow: View {
 
     /// The list's own insets around the row, padding aside: where it put the
     /// row less where the cell starts, and half the cell's height beyond the
-    /// row. The Lock Screen spacing pads by the difference from these. The
-    /// side can't move with that padding: the list puts the row at its own
-    /// inset, however wide the row is. The top can be misread: the two heights
-    /// come from different views at different moments, so while either is
-    /// changing their difference is wrong, and a wrong value moves the
-    /// padding. Build 139 read it whenever either changed, with the switch off,
-    /// and on every other flip on kept a 14 from mid-change, leaving the card
-    /// 87 pt tall instead of 85 (the owner's screen recording, 31 Oct 2026).
-    /// So it's read only once nothing has moved for a moment
-    /// (`settleListTop`), in either mode. 15, the owner's SE on 27.2, is the
-    /// starting guess.
-    @State private var listSide: CGFloat = 16
+    /// row. A List won't give a row the Lock Screen's numbers directly, so the
+    /// row pads by the difference from these: 20 pt at the side and 15 at the
+    /// top on the owner's SE on iOS 27.2, so -6 and -1. The side can't move
+    /// with that padding: the list puts the row at its own inset, however wide
+    /// the row is. The top can be misread: the two heights come from different
+    /// views at different moments, so while either is changing their
+    /// difference is wrong, and a wrong value moves the padding. Build 139 read
+    /// it at every change, but only while that build's temporary switch was
+    /// off, and on every other flip on kept a 14 from mid-change, leaving the
+    /// card 87 pt tall instead of 85 (the owner's screen recording, 31 Oct
+    /// 2026). So it's read only once nothing has moved for a moment
+    /// (`settleListTop`). The owner's SE on 27.2 gives the starting guesses.
+    @State private var listSide: CGFloat = 20
     @State private var listTop: CGFloat = 15
     @State private var rowX: CGFloat?
     @State private var rowHeight: CGFloat?
@@ -412,7 +398,7 @@ private struct NowPlayingRow: View {
     /// ConcentricRectangle's Edge.Corner.Style docs). With unequal gaps no
     /// radius is exactly concentric, so this takes the one whose centre lands
     /// nearest the section corner's: the radius less the average of the two
-    /// gaps. With the SE's 15 pt top and 20 pt side on 27.2, 26 - 17.5 = 8.5 pt.
+    /// gaps. With the Lock Screen's 14 pt on both, 26 - 14 = 12 pt.
     ///
     /// Never below `minimumCorner`, the same guard Apple's
     /// `.concentric(minimum:)` offers, so a device with unusually large gaps
@@ -425,9 +411,9 @@ private struct NowPlayingRow: View {
 
     /// The ranges a measured gap has to fall in to be believed. Anything
     /// outside means the measurement went wrong, and the last good value
-    /// stays. GUESS: iPhones measure 16 or 20 at the side and about 15 at the
-    /// top; these leave room for iPad, Display Zoom and large text without
-    /// letting a broken read through.
+    /// stays. GUESS: iPhones' lists measure 16 or 20 at the side and about 15
+    /// at the top, and the artwork 14 on both; these leave room for iPad,
+    /// Display Zoom and large text without letting a broken read through.
     private static let plausibleSide: ClosedRange<CGFloat> = 8...40
     private static let plausibleTop: ClosedRange<CGFloat> = 4...60
 
@@ -436,12 +422,8 @@ private struct NowPlayingRow: View {
     @State private var thumbnail: (source: ObjectIdentifier, image: UIImage)?
 
     var body: some View {
-        // No spacing given, except under the temporary lockScreenSpacing (the
-        // Lock Screen's 12 pt, lockScreenGap): SwiftUI's standard gap between
-        // the artwork and the text rather than a number of Ammy's own.
-        // Settings' Apple Account row measures about 9 pt there; this row
-        // isn't measured yet.
-        HStack(spacing: lockScreenSpacing ? Self.lockScreenGap : nil) {
+        // The Lock Screen's 12 pt between the artwork and the text.
+        HStack(spacing: Self.lockScreenGap) {
             // The artwork, or the empty square, rounded and edged at its own
             // size, then centred in the square it's given, so a cover that
             // isn't square keeps its whole picture and its own rounded
@@ -469,8 +451,8 @@ private struct NowPlayingRow: View {
         // difference: padding that's negative where the list's is wider. The
         // trailing side takes the leading side's difference, the list's margins
         // being the same on both sides.
-        .padding(.horizontal, lockScreenSpacing ? Self.lockScreenInset - listSide : 0)
-        .padding(.vertical, lockScreenSpacing ? Self.lockScreenInset - listTop : 0)
+        .padding(.horizontal, Self.lockScreenInset - listSide)
+        .padding(.vertical, Self.lockScreenInset - listTop)
         .onGeometryChange(for: CGFloat.self) { $0.frame(in: .global).minX } action: {
             rowX = $0
             measureInsets()
@@ -781,16 +763,6 @@ struct ContentView: View {
     /// their text behind their back.
     @State private var schemeToConfirm: String?
 
-    /// TEMPORARY, 29 Oct 2026: lets the owner compare the Now Playing row's
-    /// spacing on the device, the Lock Screen player's or the list's own.
-    /// Once one is chosen, remove the switch and its section, and in
-    /// NowPlayingRow the lockScreenSpacing parameter, lockScreenInset and
-    /// lockScreenGap, listSide/listTop/rowX/rowHeight/listTopCheck, the two
-    /// paddings, the two onGeometryChange modifiers after them,
-    /// settleListTop(), and their part of measureInsets(). If the Lock
-    /// Screen's spacing wins, keep those and drop only the switch.
-    @AppStorage("lockScreenSpacing") private var lockScreenSpacing = false
-
     /// Ties the glass surfaces together so they morph into one another rather
     /// than fading. See the bar below for what the two IDs mean.
     @Namespace private var glass
@@ -842,14 +814,7 @@ struct ContentView: View {
                 }
 
                 Section("Now Playing") {
-                    NowPlayingRow(monitor: controller.monitor, lockScreenSpacing: lockScreenSpacing)
-                }
-
-                // TEMPORARY: see lockScreenSpacing.
-                Section {
-                    Toggle("Lock Screen Spacing", isOn: $lockScreenSpacing)
-                } footer: {
-                    Text("Temporary. Spaces Now Playing like the Lock Screen's player instead of with the list's own spacing.")
+                    NowPlayingRow(monitor: controller.monitor)
                 }
 
                 // "Endpoint", not "Relay": a relay forwards what it receives,
