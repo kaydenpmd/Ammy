@@ -1,0 +1,129 @@
+name: Header lab (Apple apps)
+
+# Runs only on the header-lab-apple branch, never on main, and releases
+# nothing. It boots an iPhone SE (3rd generation) in dark mode on iOS 27 and
+# on iOS 26.5, drives Apple's own apps with the UI tests in headerlab/, and
+# uploads a screenshot of each screen at rest at the top, another after one
+# swipe up, the accessibility tree of both, and the list of installed apps.
+# The question is which of Apple's screens pair a large title with section
+# headers, and in what style.
+
+on:
+  push:
+    branches: [header-lab-apple]
+  workflow_dispatch:
+
+env:
+  # Comma-separated app slugs (settings, files, contacts, ...) to run; blank
+  # runs every app.
+  LAB_ONLY: ''
+
+jobs:
+  lab:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: ios27
+            runner: xcode-27
+            xcode: /Applications/Xcode_27.2_Release_Candidate.app
+            major: "27"
+          - name: ios26
+            runner: macos-26
+            xcode: /Applications/Xcode_26.6.app
+            major: "26"
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 110
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Select Xcode
+        run: |
+          X="${{ matrix.xcode }}"
+          [ -d "$X" ] || X=/Applications/Xcode.app
+          sudo xcode-select -s "$X"
+          xcodebuild -version
+          xcrun simctl list runtimes
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Generate project
+        run: cd headerlab && xcodegen generate
+
+      - name: Create and boot an iPhone SE in dark mode
+        id: sim
+        run: |
+          set -euo pipefail
+          # Newest runtime of this major version first; a runtime made for one
+          # device (27.1 on the xcode-27 image is iPhone Duo's) refuses the
+          # others, so fall back.
+          UDID=""
+          for RUNTIME in $(xcrun simctl list runtimes -j | python3 -c '
+          import json, sys
+          major = sys.argv[1]
+          rs = [r for r in json.load(sys.stdin)["runtimes"]
+                if r["platform"] == "iOS" and r["isAvailable"] and r["version"].split(".")[0] == major]
+          rs.sort(key=lambda r: [int(x) for x in r["version"].split(".")], reverse=True)
+          print(" ".join(r["identifier"] for r in rs))' "${{ matrix.major }}"); do
+            if UDID=$(xcrun simctl create "Header Lab SE" com.apple.CoreSimulator.SimDeviceType.iPhone-SE-3rd-generation "$RUNTIME" 2>/dev/null); then
+              echo "device: iPhone SE (3rd generation) on $RUNTIME"
+              echo "runtime=$RUNTIME" >> "$GITHUB_OUTPUT"
+              break
+            fi
+            UDID=""
+          done
+          [ -n "$UDID" ] || { echo "no usable simulator"; exit 1; }
+          echo "udid=$UDID" >> "$GITHUB_OUTPUT"
+          xcrun simctl boot "$UDID"
+          xcrun simctl bootstatus "$UDID" -b
+          # The owner's phone is in dark mode.
+          xcrun simctl ui "$UDID" appearance dark
+          echo "appearance: $(xcrun simctl ui "$UDID" appearance)"
+          xcrun simctl status_bar "$UDID" override --time 9:41 --batteryState charged --batteryLevel 100 || true
+          mkdir -p out
+          echo "$RUNTIME" > out/runtime.txt
+          xcodebuild -version > out/xcode.txt
+          xcrun simctl listapps "$UDID" > out/listapps.txt
+          plutil -convert json -o out/listapps.json out/listapps.txt || echo "plutil could not convert listapps"
+          python3 headerlab/apps.py out
+          cat out/apps.tsv
+          # A fresh simulator stays busy for a while after it boots.
+          sleep 30
+
+      - name: Build for testing
+        run: |
+          cd headerlab
+          if ! xcodebuild build-for-testing \
+            -project HeaderLab.xcodeproj -scheme HeaderLab \
+            -destination "id=${{ steps.sim.outputs.udid }}" \
+            -derivedDataPath dd \
+            CODE_SIGNING_ALLOWED=NO > ../out/build.log 2>&1; then
+            grep -E "error|BUILD" ../out/build.log | head -60
+            exit 1
+          fi
+          tail -5 ../out/build.log
+
+      - name: Run
+        run: |
+          UDID="${{ steps.sim.outputs.udid }}"
+          TEST_RUNNER_LAB_OUT="$PWD/out" \
+          TEST_RUNNER_LAB_APPS="$(cat out/apps-all.txt)" \
+          TEST_RUNNER_LAB_VISIBLE="$(cat out/apps-visible.txt)" \
+          TEST_RUNNER_LAB_ONLY="$LAB_ONLY" \
+          xcodebuild test-without-building \
+            -project headerlab/HeaderLab.xcodeproj -scheme HeaderLab \
+            -destination "id=$UDID" \
+            -derivedDataPath headerlab/dd \
+            -parallel-testing-enabled NO \
+            CODE_SIGNING_ALLOWED=NO > out/xcodebuild-test.log 2>&1 || echo "tests exited $?"
+          tail -40 out/xcodebuild-test.log
+          echo "files: $(ls out | wc -l)"
+          du -sh out
+
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: header-lab-apple-${{ matrix.name }}
+          path: out

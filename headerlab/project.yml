@@ -1,0 +1,51 @@
+name: HeaderLab
+
+# A throwaway lab on the header-lab-apple branch, never merged or released.
+# The app itself shows nothing worth seeing: its UI tests drive Apple's own
+# apps in a simulator and save, for each screen worth seeing, a screenshot at
+# rest at the top, another after one swipe up, and the accessibility tree of
+# both. The question is which of Apple's screens pair a large title with
+# section headers, and in what style (the owner, 2 Nov 2026: "i don't see
+# apple using the Big Title with Section Headers pattern anywhere").
+
+options:
+  bundleIdPrefix: com.local
+  deploymentTarget:
+    iOS: "26.0"
+
+targets:
+  HeaderLab:
+    type: application
+    platform: iOS
+    sources:
+      - path: HeaderLab
+    info:
+      path: HeaderLab/Info.plist
+      properties:
+        CFBundleDisplayName: HeaderLab
+        UILaunchScreen: {}
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.local.headerlab
+        SWIFT_VERSION: "5.0"
+        GENERATE_INFOPLIST_FILE: NO
+        TARGETED_DEVICE_FAMILY: "1"
+    scheme:
+      testTargets:
+        - HeaderLabUITests
+
+  HeaderLabUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources:
+      - path: HeaderLabUITests
+    dependencies:
+      - target: HeaderLab
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.local.headerlab.uitests
+        SWIFT_VERSION: "5.0"
+        GENERATE_INFOPLIST_FILE: YES
+        TEST_TARGET_NAME: HeaderLab
