@@ -16,11 +16,21 @@ name: Header lab (option 1)
 #                   build-ipa.yml builds it (macos-26's default Xcode, the
 #                   iOS 26.5 SDK), which is what the owner's phone runs
 #   17e-ios27-sdk26 a Face ID iPhone 17e on iOS 27.0, the same build
+#
+# SUITE picks the tests. "first" was run 41439442116, everything above.
+# "second" fills its gaps: the default-size scrolls again on se-ios27-sdk26,
+# whose first test runner stalled before option 1's; three more flicks of
+# option 1 and build 156 on each SE; and every layout at the XXXL text size,
+# scrolled, taken to the end of the page and photographed at rest in dark,
+# because at the default size the page fits a 17e's screen.
 
 on:
   push:
     branches: [header-lab-option1]
   workflow_dispatch:
+
+env:
+  SUITE: second
 
 jobs:
   ammy-sdk26:
@@ -69,24 +79,32 @@ jobs:
             device: iPhone-SE-3rd-generation
             runtime: "27.0"
             ammy: native
+            scroll: "no"
+            flicks: "yes"
           - name: se-ios26
             runner: macos-26
             xcode: /Applications/Xcode_26.6.app
             device: iPhone-SE-3rd-generation
             runtime: "26.5"
             ammy: native
+            scroll: "no"
+            flicks: "yes"
           - name: se-ios27-sdk26
             runner: xcode-27
             xcode: /Applications/Xcode_27.2_Release_Candidate.app
             device: iPhone-SE-3rd-generation
             runtime: "27.0"
             ammy: sdk26
+            scroll: "yes"
+            flicks: "yes"
           - name: 17e-ios27-sdk26
             runner: xcode-27
             xcode: /Applications/Xcode_27.2_Release_Candidate.app
             device: iPhone-17e
             runtime: "27.0"
             ammy: sdk26
+            scroll: "no"
+            flicks: "no"
     runs-on: ${{ matrix.runner }}
     timeout-minutes: 80
 
@@ -188,42 +206,70 @@ jobs:
           stamp() { python3 -c 'import time; print(time.time())'; }
           run_tests() {
             local label="$1" suffix="$2" only="$3"
-            echo "$(stamp) begin $label" >> out/phases.txt
-            TEST_RUNNER_LAB_OUT="$PWD/out" TEST_RUNNER_LAB_SUFFIX="$suffix" xcodebuild test-without-building \
-              -project lab/JitterLab.xcodeproj -scheme JitterLab \
-              -destination "id=$UDID" \
-              -derivedDataPath lab/dd \
-              -parallel-testing-enabled NO \
-              -only-testing:"$T/$only" \
-              CODE_SIGNING_ALLOWED=NO > "out/xcodebuild-$label.log" 2>&1 || echo "$label: tests exited $?"
-            echo "$(stamp) end $label" >> out/phases.txt
-            xcrun simctl terminate "$UDID" com.local.ammy > /dev/null 2>&1 || true
-            echo "== $label"
-            grep -E "Test Case|error:|failed" "out/xcodebuild-$label.log" | tail -12 || true
+            # A second try only when the runner never got as far as a test:
+            # run 41439442116's first runner on se-ios27-sdk26 stalled while
+            # preparing and ran nothing.
+            for attempt in 1 2; do
+              echo "$(stamp) begin $label (attempt $attempt)" >> out/phases.txt
+              TEST_RUNNER_LAB_OUT="$PWD/out" TEST_RUNNER_LAB_SUFFIX="$suffix" xcodebuild test-without-building \
+                -project lab/JitterLab.xcodeproj -scheme JitterLab \
+                -destination "id=$UDID" \
+                -derivedDataPath lab/dd \
+                -parallel-testing-enabled NO \
+                -only-testing:"$T/$only" \
+                CODE_SIGNING_ALLOWED=NO > "out/xcodebuild-$label-$attempt.log" 2>&1 || echo "$label: tests exited $?"
+              echo "$(stamp) end $label (attempt $attempt)" >> out/phases.txt
+              xcrun simctl terminate "$UDID" com.local.ammy > /dev/null 2>&1 || true
+              echo "== $label (attempt $attempt)"
+              grep -E "Test Case|error:|failed" "out/xcodebuild-$label-$attempt.log" | tail -12 || true
+              if grep -q "Test Case '-\[" "out/xcodebuild-$label-$attempt.log"; then break; fi
+            done
           }
+          # Let a freshly booted simulator settle before the first runner.
+          xcrun simctl launch "$UDID" com.local.ammy > /dev/null 2>&1 || true
+          sleep 8
+          xcrun simctl terminate "$UDID" com.local.ammy > /dev/null 2>&1 || true
           stamp > out/record-start.txt
           xcrun simctl io "$UDID" recordVideo --codec=h264 --force out/lab.mp4 > out/record.log 2>&1 &
           REC=$!
           sleep 3
-          run_tests scroll-option1 "" test1aScrollOption1
-          run_tests scroll-main156 "" test1bScrollMain156
-          run_tests scroll-largeForm "" test1cScrollLargeForm
-          run_tests scroll-option1Margins "" test1dScrollOption1Margins
-          run_tests bottom "" test2Bottom
-          run_tests history-option1 "" test3aHistoryOption1
-          run_tests history-main156 "" test3bHistoryMain156
-          run_tests keyboard "" test4Keyboard
-          run_tests rest-light "-light" test5Rest
-          xcrun simctl ui "$UDID" appearance dark || echo "dark failed"
-          echo "$(stamp) appearance dark" >> out/phases.txt
-          run_tests rest-dark "-dark" test5Rest
-          xcrun simctl privacy "$UDID" revoke media-library com.local.ammy || echo "revoke failed"
-          echo "$(stamp) media access revoked" >> out/phases.txt
-          run_tests prompt-dark "-dark" test6Prompt
-          xcrun simctl ui "$UDID" appearance light || echo "light failed"
-          echo "$(stamp) appearance light" >> out/phases.txt
-          run_tests prompt-light "-light" test6Prompt
-          xcrun simctl privacy "$UDID" grant media-library com.local.ammy || true
+          if [ "$SUITE" = "first" ]; then
+            run_tests scroll-option1 "" test1aScrollOption1
+            run_tests scroll-main156 "" test1bScrollMain156
+            run_tests scroll-largeForm "" test1cScrollLargeForm
+            run_tests scroll-option1Margins "" test1dScrollOption1Margins
+            run_tests bottom "" test2Bottom
+            run_tests history-option1 "" test3aHistoryOption1
+            run_tests history-main156 "" test3bHistoryMain156
+            run_tests keyboard "" test4Keyboard
+            run_tests rest-light "-light" test5Rest
+            xcrun simctl ui "$UDID" appearance dark || echo "dark failed"
+            echo "$(stamp) appearance dark" >> out/phases.txt
+            run_tests rest-dark "-dark" test5Rest
+            xcrun simctl privacy "$UDID" revoke media-library com.local.ammy || echo "revoke failed"
+            echo "$(stamp) media access revoked" >> out/phases.txt
+            run_tests prompt-dark "-dark" test6Prompt
+            xcrun simctl ui "$UDID" appearance light || echo "light failed"
+            echo "$(stamp) appearance light" >> out/phases.txt
+            run_tests prompt-light "-light" test6Prompt
+            xcrun simctl privacy "$UDID" grant media-library com.local.ammy || true
+          else
+            if [ "${{ matrix.scroll }}" = "yes" ]; then
+              run_tests scroll-option1 "" test1aScrollOption1
+              run_tests scroll-main156 "" test1bScrollMain156
+              run_tests scroll-largeForm "" test1cScrollLargeForm
+              run_tests scroll-option1Margins "" test1dScrollOption1Margins
+            fi
+            if [ "${{ matrix.flicks }}" = "yes" ]; then
+              run_tests flicks "" test1eFlicks
+            fi
+            run_tests scrollXXXL "" test1fScrollLargeText
+            run_tests bottomXXXL "" test2bBottomLargeText
+            xcrun simctl ui "$UDID" appearance dark || echo "dark failed"
+            echo "$(stamp) appearance dark" >> out/phases.txt
+            run_tests restXXXL-dark "-dark" test5bRestLargeText
+            xcrun simctl ui "$UDID" appearance light || echo "light failed"
+          fi
           kill -INT $REC || true
           wait $REC || true
           ls -la out | head -40

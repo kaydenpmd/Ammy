@@ -58,10 +58,18 @@ final class AmmyUITests: XCTestCase {
 
     private func now() -> String { "\(Date().timeIntervalSince1970)" }
 
+    /// The text size the larger-text tests launch with: XXXL, the largest
+    /// before the accessibility sizes, so the page outgrows a Face ID phone's
+    /// screen and has an end to scroll to.
+    private static let largeText = "UICTContentSizeCategoryXXXL"
+
     @MainActor
-    private func launch(_ layout: String, tag: String) -> XCUIApplication {
+    private func launch(_ layout: String, tag: String, textSize: String? = nil) -> XCUIApplication {
         let app = XCUIApplication(bundleIdentifier: "com.local.ammy")
         app.launchArguments = ["-labLayout", layout]
+        if let textSize {
+            app.launchArguments += ["-UIPreferredContentSizeCategoryName", textSize]
+        }
         app.launchEnvironment = ["LAB_OUT": outDir, "LAB_TAG": tag]
         app.launch()
         _ = app.navigationBars.firstMatch.waitForExistence(timeout: 15)
@@ -87,20 +95,40 @@ final class AmmyUITests: XCTestCase {
     @MainActor func test1cScrollLargeForm() { scroll("largeForm") }
     @MainActor func test1dScrollOption1Margins() { scroll("option1Margins") }
 
+    /// Option 1 and build 156 flicked again, three more times each, from a
+    /// fresh launch each time, to see how much a flick's lag varies.
+    @MainActor
+    func test1eFlicks() {
+        for round in 2...4 {
+            for layout in ["option1", "main156"] {
+                scroll(layout, gestures: ["flick"], suffix: "\(round)")
+            }
+        }
+    }
+
+    /// Each layout at the larger text size, dragged slowly and fast.
+    @MainActor
+    func test1fScrollLargeText() {
+        for layout in ["option1", "main156", "largeForm", "option1Margins"] {
+            scroll(layout, gestures: ["slow", "drag"], suffix: "XXXL", textSize: Self.largeText)
+        }
+    }
+
     /// Scrolled down from the top, from a fresh launch each time: slowly, more
     /// slowly, fast, and flicked, as the jitter lab does.
     @MainActor
-    private func scroll(_ layout: String) {
+    private func scroll(_ layout: String, gestures: [String] = ["slow", "slower", "drag", "flick"],
+                        suffix: String = "", textSize: String? = nil) {
         var marks: [String] = []
-        for gesture in ["slow", "slower", "drag", "flick"] {
-            let tag = "real-\(layout)__\(gesture)"
-            let app = launch(layout, tag: tag)
+        for gesture in gestures {
+            let tag = "real-\(layout)__\(gesture)\(suffix)"
+            let app = launch(layout, tag: tag, textSize: textSize)
             if gesture == "slow" { shot(tag + "__0") }
             let high = app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.25))
             let middle = app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5))
             let low = app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.7))
             marks.append("\(now()) start \(tag)")
-            write(marks, to: "scroll-marks-\(layout).txt")
+            write(marks, to: "scroll-marks-\(layout)\(suffix).txt")
             switch gesture {
             case "slow":
                 low.press(forDuration: 0.3, thenDragTo: middle,
@@ -116,7 +144,7 @@ final class AmmyUITests: XCTestCase {
                           withVelocity: .fast, thenHoldForDuration: 0)
             }
             marks.append("\(now()) end \(tag)")
-            write(marks, to: "scroll-marks-\(layout).txt")
+            write(marks, to: "scroll-marks-\(layout)\(suffix).txt")
             Thread.sleep(forTimeInterval: 1.5)
             if gesture == "slow" || gesture == "drag" { shot(tag + "__1") }
             app.terminate()
@@ -129,10 +157,18 @@ final class AmmyUITests: XCTestCase {
     /// scroll bar's track (from the accessibility tree), and a screenshot
     /// straight after the last swipe, while the indicator still shows.
     @MainActor
-    func test2Bottom() {
+    func test2Bottom() { bottom("bottom", textSize: nil) }
+
+    /// The same at the larger text size, where the page is longer than a Face
+    /// ID phone's screen too.
+    @MainActor
+    func test2bBottomLargeText() { bottom("bottomXXXL", textSize: Self.largeText) }
+
+    @MainActor
+    private func bottom(_ name: String, textSize: String?) {
         for layout in ["option1", "main156", "option1Margins", "largeForm"] {
-            let tag = "real-\(layout)__bottom"
-            let app = launch(layout, tag: tag)
+            let tag = "real-\(layout)__\(name)"
+            let app = launch(layout, tag: tag, textSize: textSize)
             app.swipeUp()
             Thread.sleep(forTimeInterval: 1.5)
             app.swipeUp()
@@ -256,10 +292,17 @@ final class AmmyUITests: XCTestCase {
     /// Each layout at rest at the top, then at the end of the page, for
     /// pixel comparisons. The workflow runs it in light and in dark.
     @MainActor
-    func test5Rest() {
+    func test5Rest() { rest("rest", textSize: nil) }
+
+    /// The same at the larger text size.
+    @MainActor
+    func test5bRestLargeText() { rest("restXXXL", textSize: Self.largeText) }
+
+    @MainActor
+    private func rest(_ name: String, textSize: String?) {
         for layout in ["option1", "main156", "option1Margins", "largeForm"] {
-            let tag = "real-\(layout)__rest\(suffix)"
-            let app = launch(layout, tag: tag)
+            let tag = "real-\(layout)__\(name)\(suffix)"
+            let app = launch(layout, tag: tag, textSize: textSize)
             Thread.sleep(forTimeInterval: 1.0)
             shot(tag + "__top")
             dump(app, tag + "__top_tree")
