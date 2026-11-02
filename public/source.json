@@ -9,12 +9,12 @@
       "versions": [
         {
           "version": "1.0",
-          "date": "2026-11-02T08:11:52+00:00",
-          "localizedDescription": "Slide the Start button away with the page\n\nOpening History now slides the Start and Stop buttons away with the\npage, under History, and going back brings them in with it, as it was\nbefore the title fix. They no longer fade over History, which left a\ndim, half-transparent button there for a moment.",
-          "downloadURL": "https://github.com/kaydenpmd/Ammy/releases/download/v1.0-b156/Ammy-1.0-b156-7ed9f13.ipa",
-          "size": 539320,
-          "sha256": "c31cdc9cf7aadb892d6185a02e5a19ce341f5f74874ed8e5707ebd08b8633aac",
-          "buildVersion": "156",
+          "date": "2026-11-02T13:26:13+00:00",
+          "localizedDescription": "Drop the section headings from the main screen\n\nThe main screen no longer has Now Playing, Endpoint and Status headings,\nas Settings' own main page has none: just the large title, then groups\nset apart by space. On an iPhone SE, everything but History now fits\nabove the Start button when Ammy opens. At the end of the page, History\nsits as far above the button as it did before the title fix.",
+          "downloadURL": "https://github.com/kaydenpmd/Ammy/releases/download/v1.0-b158/Ammy-1.0-b158-4e6136f.ipa",
+          "size": 536331,
+          "sha256": "9726ac5eb4474ad7e2d69e33226cdb4361c6b0ada784e93b0d27312b795c113f",
+          "buildVersion": "158",
           "minOSVersion": "26.0"
         }
       ],
