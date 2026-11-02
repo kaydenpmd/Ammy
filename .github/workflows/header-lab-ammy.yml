@@ -139,7 +139,11 @@ jobs:
           # the test can't take itself: it asks by writing <name>.request,
           # holding a delay in seconds and a count, and waits for
           # <name>.done. Each picture's start and end go to <name>.times.
+          # The step's shell runs with -e, and read fails on a request with no
+          # final newline, which ended the helper at its first request; it
+          # has nothing it should stop for.
           (
+            set +e
             while :; do
               for REQ in "$OUT"/*.request; do
                 [ -e "$REQ" ] || continue
