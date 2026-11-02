@@ -30,10 +30,37 @@ struct LabRoot: View {
     private let variant = Lab.variant
     @State private var bottomSafeArea: CGFloat = 0
     @State private var barHeight: CGFloat = 0
+    @State private var historyShown = false
 
     var body: some View {
         Group {
             switch variant {
+            case "stackFull":
+                // The proposed fix in full: the bar on the stack, the Form's
+                // scroll room given back as margins, and no bar over History.
+                NavigationStack {
+                    LabForm(variant: variant, historyShown: $historyShown)
+                        .navigationTitle("Ammy")
+                        .contentMargins(.bottom, barHeight, for: .scrollContent)
+                        .contentMargins(.bottom, barHeight, for: .scrollIndicators)
+                        .onGeometryChange(for: CGFloat.self) { $0.safeAreaInsets.bottom } action: {
+                            Probe.shared.note(["k": "formSafeBottom", "v": Double($0)])
+                        }
+                        .onScrollGeometryChange(for: CGFloat.self) { $0.contentInsets.bottom } action: { _, new in
+                            Probe.shared.note(["k": "scrollInsetBottom", "v": Double(new)])
+                        }
+                }
+                .safeAreaBar(edge: .bottom) {
+                    if !historyShown {
+                        AmmyBar(bottomSafeArea: bottomSafeArea)
+                            .onGeometryChange(for: CGFloat.self) { $0.size.height } action: {
+                                barHeight = $0
+                                Probe.shared.note(["k": "barHeight", "v": Double($0)])
+                            }
+                            .transition(.opacity)
+                    }
+                }
+                .animation(.default, value: historyShown)
             case "stackMargins":
                 // The bar on the stack (UIKit's eager inset path survives),
                 // with the scroll room it no longer passes down given back
@@ -173,7 +200,11 @@ struct BarHost: View {
                 .safeAreaBar(edge: .bottom) { AmmyBar(bottomSafeArea: bottomSafeArea) }
         default:
             // "ammy", "list" and "scroll": Ammy's own bar.
-            titled.safeAreaBar(edge: .bottom) { AmmyBar(bottomSafeArea: bottomSafeArea) }
+            titled
+                .onScrollGeometryChange(for: CGFloat.self) { $0.contentInsets.bottom } action: { _, new in
+                    Probe.shared.note(["k": "scrollInsetBottom", "v": Double(new)])
+                }
+                .safeAreaBar(edge: .bottom) { AmmyBar(bottomSafeArea: bottomSafeArea) }
         }
     }
 }
@@ -182,6 +213,7 @@ struct BarHost: View {
 /// ScrollView for the "scroll" variant).
 struct LabForm: View {
     let variant: String
+    var historyShown: Binding<Bool> = .constant(false)
     @State private var url = ""
     @State private var key = ""
 
@@ -249,7 +281,12 @@ struct LabForm: View {
 
         Section {
             NavigationLink("History") {
-                Text("History")
+                List(0..<30, id: \.self) { i in
+                    Text("Event \(i)")
+                }
+                .navigationTitle("History")
+                .onAppear { historyShown.wrappedValue = true }
+                .onDisappear { historyShown.wrappedValue = false }
             }
         }
 

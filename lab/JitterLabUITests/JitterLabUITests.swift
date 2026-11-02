@@ -5,10 +5,7 @@ import XCTest
 /// screenshot before and after the plain drag so each variant's look is on
 /// record too.
 final class JitterLabUITests: XCTestCase {
-    private static let variants = [
-        "none", "ammy", "inset", "insetEdge", "insetEdgeOver", "stackMargins",
-        "toolbarFlexA", "toolbarFlexB",
-    ]
+    private static let variants = ["ammy", "stackFull"]
 
     private var outDir: String {
         ProcessInfo.processInfo.environment["LAB_OUT"] ?? NSTemporaryDirectory()
@@ -24,6 +21,46 @@ final class JitterLabUITests: XCTestCase {
     func test2Drag() { sweep("drag") }
     @MainActor
     func test3Up() { sweep("up") }
+
+    /// How each variant looks: at launch, with the keyboard up, and through
+    /// a push to History and back.
+    @MainActor
+    func test4Look() {
+        for variant in Self.variants {
+            let tag = "\(variant)__look"
+            XCTContext.runActivity(named: tag) { _ in
+                let app = XCUIApplication()
+                app.launchArguments = ["-variant", variant, "-content", "ammy"]
+                app.launchEnvironment = ["LAB_OUT": outDir, "LAB_TAG": tag]
+                app.launch()
+                _ = app.navigationBars.firstMatch.waitForExistence(timeout: 15)
+                Thread.sleep(forTimeInterval: 1.0)
+                shot(tag + "__launch")
+
+                let history = app.buttons["History"]
+                if history.waitForExistence(timeout: 5) {
+                    history.tap()
+                    Thread.sleep(forTimeInterval: 0.2)
+                    shot(tag + "__push")
+                    Thread.sleep(forTimeInterval: 1.2)
+                    shot(tag + "__history")
+                    app.navigationBars.buttons.element(boundBy: 0).tap()
+                    Thread.sleep(forTimeInterval: 0.2)
+                    shot(tag + "__pop")
+                    Thread.sleep(forTimeInterval: 1.2)
+                    shot(tag + "__back")
+                }
+
+                let field = app.textFields.firstMatch
+                if field.waitForExistence(timeout: 5) {
+                    field.tap()
+                    Thread.sleep(forTimeInterval: 1.5)
+                    shot(tag + "__keyboard")
+                }
+                app.terminate()
+            }
+        }
+    }
 
     @MainActor
     private func sweep(_ gesture: String) {
