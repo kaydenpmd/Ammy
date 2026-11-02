@@ -5,8 +5,10 @@ name: Header lab (Ammy)
 # screen three ways on iOS 27: -HeaderLab current (build 156), noHeaders
 # (the large title, no section headers) and inline (the headers, an inline
 # title), each with -HeaderLabDemo, the owner's screen while a session runs.
-# An iPhone SE in dark and in light, and a Face ID iPhone in dark. The
-# pictures are the artifact; headerlab/HeaderLabUITests says what each is.
+# An iPhone SE in dark and in light, and a Face ID iPhone in dark, with
+# iOS's own Settings, Files and Contacts photographed on the same simulator
+# for reference. The pictures are the artifact;
+# headerlab/HeaderLabUITests says what each is.
 
 on:
   push:
@@ -129,16 +131,27 @@ jobs:
           OUT="$PWD/out"
           mkdir -p "$OUT"
           echo "${{ steps.sim.outputs.device }} on ${{ steps.sim.outputs.runtime }}, ${{ matrix.appearance }}" > "$OUT/device.txt"
+          now() { perl -MTime::HiRes=time -e 'printf "%.3f\n", time'; }
+          # simctl's first screenshot is slow; take it before anything needs
+          # to be on time.
+          xcrun simctl io "$UDID" screenshot "$OUT/warmup.png" > /dev/null 2>&1 && rm -f "$OUT/warmup.png"
           # Pictures taken from outside while a finger is still down, which
           # the test can't take itself: it asks by writing <name>.request,
-          # holding a delay in seconds, and waits for <name>.done.
+          # holding a delay in seconds and a count, and waits for
+          # <name>.done. Each picture's start and end go to <name>.times.
           (
             while :; do
               for REQ in "$OUT"/*.request; do
                 [ -e "$REQ" ] || continue
                 NAME=$(basename "$REQ" .request)
-                sleep "$(cat "$REQ")"
-                xcrun simctl io "$UDID" screenshot "$OUT/$NAME.png" > /dev/null 2>&1 || echo "helper: $NAME failed"
+                read -r DELAY COUNT < "$REQ"
+                echo "requested $(now)" > "$OUT/$NAME.times"
+                sleep "$DELAY"
+                for K in $(seq 1 "${COUNT:-1}"); do
+                  START=$(now)
+                  xcrun simctl io "$UDID" screenshot "$OUT/$NAME-$K.png" > /dev/null 2>&1 || echo "helper: $NAME-$K failed"
+                  echo "$K $START $(now)" >> "$OUT/$NAME.times"
+                done
                 mv "$REQ" "$OUT/$NAME.done"
               done
               sleep 0.1

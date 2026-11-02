@@ -12,9 +12,10 @@ import XCTest
 ///   top        at rest, as the app opens
 ///   mid        a slow drag of 120 pt up, let go: past the large title's
 ///              52 pt collapse, if the page is tall enough to stay there
-///   mid-held   the same drag, photographed from outside (simctl, by the
-///              workflow) while the finger is still down, for a page too short
-///              to stay scrolled once let go
+///   mid-held   the same drag, held for 8 s and photographed three times
+///              from outside (simctl, by the workflow) while the finger is
+///              still down, for a page too short to stay scrolled once let
+///              go: mid-held-1.png to -3.png, timed in mid-held.times
 ///   bottom     swiped up until History is clear of the bar
 ///
 /// Each position is saved to LAB_OUT as <variant>-<position>.png, with the
@@ -74,16 +75,19 @@ final class HeaderLabUITests: XCTestCase {
         }
     }
 
-    /// Asks the workflow's helper to photograph the simulator `delay` seconds
-    /// from now, with simctl, which can do it while a gesture is under way.
-    private func requestOutsideShot(_ name: String, after delay: Double) {
-        try? "\(delay)".write(to: outDir.appendingPathComponent("\(name).request"),
-                              atomically: true, encoding: .utf8)
+    /// Asks the workflow's helper to photograph the simulator `count` times,
+    /// starting `delay` seconds from now, with simctl, which can do it while
+    /// a gesture is under way. It saves <name>-1.png and on, and writes when
+    /// each began and ended to <name>.times; simctl's own delay varies, so
+    /// those times are what say whether a picture caught the finger down.
+    private func requestOutsideShot(_ name: String, after delay: Double, count: Int) {
+        try? "\(delay) \(count)".write(to: outDir.appendingPathComponent("\(name).request"),
+                                       atomically: true, encoding: .utf8)
     }
 
     private func waitForOutsideShot(_ name: String) {
         let done = outDir.appendingPathComponent("\(name).done").path
-        let deadline = Date().addingTimeInterval(12)
+        let deadline = Date().addingTimeInterval(20)
         while !FileManager.default.fileExists(atPath: done), Date() < deadline {
             Thread.sleep(forTimeInterval: 0.2)
         }
@@ -109,9 +113,13 @@ final class HeaderLabUITests: XCTestCase {
             // fields, and slow enough to leave no momentum when let go.
             let from = app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.72))
             let to = from.withOffset(CGVector(dx: 0, dy: -120))
-            requestOutsideShot("\(variant)-mid-held", after: 2.5)
+            // Held for 8 s, photographed from 2.5 s on: the drag is over by
+            // then (0.2 s down, 0.4 s moving, plus XCTest's own preamble).
+            requestOutsideShot("\(variant)-mid-held", after: 2.5, count: 3)
+            let pressed = Date().timeIntervalSince1970
             from.press(forDuration: 0.2, thenDragTo: to,
-                       withVelocity: XCUIGestureVelocity(rawValue: 300), thenHoldForDuration: 4)
+                       withVelocity: XCUIGestureVelocity(rawValue: 300), thenHoldForDuration: 8)
+            note("\(variant)-mid-held: press called \(pressed), returned \(Date().timeIntervalSince1970), hold 8 s")
             waitForOutsideShot("\(variant)-mid-held")
             Thread.sleep(forTimeInterval: 2)
             save(app, "\(variant)-mid")
@@ -136,5 +144,42 @@ final class HeaderLabUITests: XCTestCase {
             save(app, "\(variant)-bottom")
             app.terminate()
         }
+    }
+
+    /// For reference, iOS's own screens on the same simulator, runtime and
+    /// appearance: Settings' top level, Files' Browse and Contacts, the
+    /// screens the question turns on that the simulator has (it has no Mail
+    /// and no Notes). Named to run last.
+    @MainActor
+    func testZReference() {
+        let settings = XCUIApplication(bundleIdentifier: "com.apple.Preferences")
+        settings.launch()
+        Thread.sleep(forTimeInterval: 3)
+        save(settings, "apple-settings")
+        settings.terminate()
+
+        let files = XCUIApplication(bundleIdentifier: "com.apple.DocumentsApp")
+        files.launch()
+        Thread.sleep(forTimeInterval: 3)
+        // Twice: the first may only switch tabs, the second returns the tab
+        // to its root if it opened inside a location.
+        for _ in 0..<2 {
+            let browse = files.tabBars.buttons["Browse"].exists
+                ? files.tabBars.buttons["Browse"] : files.buttons["Browse"].firstMatch
+            if browse.exists {
+                browse.tap()
+                Thread.sleep(forTimeInterval: 1.5)
+            } else {
+                note("Files: no Browse button")
+            }
+        }
+        save(files, "apple-files-browse")
+        files.terminate()
+
+        let contacts = XCUIApplication(bundleIdentifier: "com.apple.MobileAddressBook")
+        contacts.launch()
+        Thread.sleep(forTimeInterval: 3)
+        save(contacts, "apple-contacts")
+        contacts.terminate()
     }
 }
