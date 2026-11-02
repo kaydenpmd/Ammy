@@ -35,7 +35,7 @@ We logged every display frame (contentOffset, adjustedContentInset, the navigati
 
 **Configurations**
 
-- iPhone SE (3rd generation), iOS 27.2: app built with Xcode 26.6 (iOS 26.5 SDK). Also seen on iOS 26.0 in September 2026.
+- iPhone SE (3rd generation), iOS 27.2: app built with Xcode 26.6 (iOS 26.5 SDK). Also recorded on the same device on 11 September 2026, iOS version not noted: at the start of most downward scrolls the list jumped 49–57 pt in a single frame.
 - iOS 26.5 simulator (Xcode 26.6) and iOS 27.0 simulator (Xcode 27.2 RC), iPhone SE (3rd generation).
 
 **Workaround and its cost**
