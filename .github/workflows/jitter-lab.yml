@@ -11,9 +11,10 @@ on:
   push:
     branches: [jitter-lab]
     paths:
-      - 'lab/**'
+      - 'lab/JitterLab/**'
+      - 'lab/JitterLabUITests/**'
+      - 'lab/project.yml'
       - 'Ammy/**'
-      - '.github/workflows/jitter-lab.yml'
   workflow_dispatch:
 
 env:

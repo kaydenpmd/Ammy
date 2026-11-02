@@ -1,0 +1,23 @@
+name: SafeAreaBarLargeTitle
+
+options:
+  bundleIdPrefix: com.example
+  deploymentTarget:
+    iOS: "26.0"
+
+targets:
+  SafeAreaBarLargeTitle:
+    type: application
+    platform: iOS
+    sources:
+      - path: Repro
+    info:
+      path: Repro/Info.plist
+      properties:
+        UILaunchScreen: {}
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.example.safeareabarlargetitle
+        SWIFT_VERSION: "5.0"
+        GENERATE_INFOPLIST_FILE: NO
+        TARGETED_DEVICE_FAMILY: "1"
