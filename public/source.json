@@ -37,12 +37,12 @@
       "versions": [
         {
           "version": "1.0",
-          "date": "2026-10-28T03:58:20+00:00",
-          "localizedDescription": "Tap an album to open it in Apple Music\n\nAlbums no longer has a page of its own for each album. Tapping a cover\nnow opens the album straight in Apple Music. Long-press an album to mark\nit listened, share it, copy its link or delete it.",
-          "downloadURL": "https://github.com/kaydenpmd/Albums/releases/download/v1.0-b4/Albums-1.0-b4-717a94e.ipa",
-          "size": 624141,
-          "sha256": "3fbd2c8a58db546b8e07307ad33e354f4fd3da3373d458111f4e4c41839a2cf4",
-          "buildVersion": "4",
+          "date": "2026-11-02T00:25:46+00:00",
+          "localizedDescription": "Long-press an album for a menu like Music's\n\nLong-pressing an album now shows a card with its cover, title and artist,\nlike Apple Music's. Tap the card to open the album in Apple Music. Below\nit: Listened, Copy Link and Share in a row, then Delete from Library.",
+          "downloadURL": "https://github.com/kaydenpmd/Albums/releases/download/v1.0-b5/Albums-1.0-b5-d38249b.ipa",
+          "size": 640006,
+          "sha256": "a79c105011c412fa37569d10239f4d771d6b62a26fc197fbd5f0bb3cd9f17298",
+          "buildVersion": "5",
           "minOSVersion": "26.0"
         }
       ],
