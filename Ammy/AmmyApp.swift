@@ -598,6 +598,24 @@ struct ContentView: View {
     /// measure it from within itself. See the padding at the foot of the bar.
     @State private var bottomSafeArea: CGFloat = 0
 
+    /// TEMPORARY, 2 Nov 2026: where the bottom bar is attached, for the owner
+    /// to compare on the device. On, the default, it's the navigation stack's;
+    /// off, it's the Form's, as it was until build 146. The switch goes once
+    /// the two have been compared. See the bar on the stack for why it moved.
+    @AppStorage("barOnStack") private var barOnStack = true
+
+    /// History is on screen. A bar on the stack outlives the pages under it,
+    /// so it would sit over History too; instead it fades out as History
+    /// arrives and back in as it leaves, the way a toolbar's items change
+    /// between pages.
+    @State private var historyShown = false
+
+    /// The bar's own height. A stack doesn't pass its bar's inset down to the
+    /// lists inside it (FB23732628, Apple Developer Forums thread 837946), so
+    /// the Form takes it as content margins instead: the same scroll room the
+    /// bar gave it from the Form, so the last row still clears the button.
+    @State private var barHeight: CGFloat = 0
+
     /// SwiftUI's own `.padding()` amount, spelled out because the bar subtracts
     /// from it rather than simply applying it.
     private static let barGap: CGFloat = 16
@@ -633,249 +651,53 @@ struct ContentView: View {
 
     var body: some View {
         NavigationStack {
-            Form {
-                if !controller.monitor.authorized {
-                    MediaAccessPrompt(monitor: controller.monitor)
-                }
-
-                Section("Now Playing") {
-                    NowPlayingRow(monitor: controller.monitor)
-                }
-
-                // "Endpoint", not "Relay": a relay forwards what it receives,
-                // and nothing here requires that. Ammy posts JSON to an address;
-                // whether that address passes it on, renders it, or files it
-                // away is none of the app's business. The same reasoning keeps
-                // the relay's /now-playing path out of the placeholder — that is
-                // one receiver's convention, not a rule of the app.
-                //
-                // Labels persist where placeholders vanish, so the row names
-                // live on the left and the value column carries only whether the
-                // field must be filled in.
-                // Label above a full-width field, rather than Mail's two-column
-                // row. Both values here are long enough to overflow a shared
-                // row, and LabeledContent's response to that is to stack them
-                // anyway — so the layout would silently change shape depending
-                // on how long someone's address happened to be. Doing it on
-                // purpose keeps it fixed, and gives the value the whole width.
-                //
-                // Both rows get the same treatment even though "Optional" would
-                // fit on one line: matching rows read as one thing, and the key
-                // is as long as the URL in practice.
-                //
-                // The visible label is hidden from VoiceOver and applied to the
-                // field instead, so it is announced once as a labelled control
-                // rather than twice as loose text.
-                // GUESS: spacing 4 between a field's label and its value. No
-                // source; it was picked to look right when these rows were
-                // stacked and has never been checked against anything.
-                Section {
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text("URL")
-                            .accessibilityHidden(true)
-                        TextField("Required", text: $controller.endpoint)
-                            .textInputAutocapitalization(.never)
-                            .autocorrectionDisabled()
-                            .keyboardType(.URL)
-                            .accessibilityLabel("URL")
-                    }
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text("Key")
-                            .accessibilityHidden(true)
-                        SecureField("Optional", text: $controller.key)
-                            .textInputAutocapitalization(.never)
-                            .autocorrectionDisabled()
-                            .accessibilityLabel("Key")
-                    }
-                } header: {
-                    Text("Endpoint")
-                } footer: {
-                    Text("Ammy sends your now-playing details to this address. "
-                         + "If you set a key, it's sent as a header.")
-                }
-
-                Section("Status") {
-                    // A spinner rather than a word until the first push comes
-                    // back, because until then there is no answer to show —
-                    // only the wait for one.
-                    LabeledContent("Endpoint") {
-                        if controller.resolving {
-                            ProgressView()
-                        } else {
-                            Text(controller.linkStatus)
-                        }
-                    }
-                    .animation(.default, value: controller.resolving)
-                    LabeledContent("Version", value: Bundle.main.displayVersion)
-                }
-
-                // Unlabeled on purpose: it is a way out of this screen rather
-                // than another fact about the current one, so a header would
-                // group it with things it has nothing to do with.
-                Section {
-                    NavigationLink("History") {
-                        LinkHistoryView()
-                    }
-                }
-
-            }
-            .navigationTitle("Ammy")
-            // safeAreaBar, not safeAreaInset. Both reserve the space — which
-            // is what keeps the last row scrollable clear of the button
-            // instead of permanently buried, as an overlay would — but the bar
-            // also applies the scroll edge effect, so content blurs out as it
-            // passes underneath. That is the whole reason no background is set
-            // here: a hard fill would be doing badly what the system already
-            // does properly, and it is what made the first attempt look stuck
-            // on rather than floating.
-            //
-            // Start/Stop lives here because it is the only control on this
-            // screen anyone touches twice, and the only one that used to
-            // scroll out of reach. The Form is what you set up once; this is
-            // what you actually do.
-            .safeAreaBar(edge: .bottom) {
-                // Three states, two slots.
-                //
-                //   idle              [ Start ]                 prominent
-                //   running           [ Stop ]                  glass
-                //   running + edited  [ Stop ][ Restart ]       glass + prominent
-                //
-                // IDs are assigned by ROLE, not by button, and that is the whole
-                // trick. glassEffectID is a separate identity from SwiftUI's
-                // own, so the material follows the slot even when the view
-                // inside it is torn down and rebuilt — which is exactly the
-                // limitation that made a plain style swap read as a hard cut.
-                //
-                // "primary" is Start and Restart: pressing Stop while split
-                // therefore grows Restart out to full width and relabels it,
-                // rather than replacing it. "secondary" is Stop alone, so it
-                // melts into the primary as that expands past it.
-                //
-                // The one transition this cannot also smooth is Start -> Stop,
-                // since those are different roles occupying the same space. They
-                // cross-fade in place, which is acceptable because the label is
-                // changing anyway. Trying to give Start the same ID as Stop
-                // would fix that one and break the split, which matters more.
-                // GUESS: 8 — the container's spacing is the *blend threshold*,
-                // how close two glass surfaces must be before they merge into
-                // one another. That governs behaviour mid-transition, so it
-                // cannot be measured from a screenshot. Matched to the layout
-                // gap below because the published examples set the two equal;
-                // that is convention, not evidence. Tune by watching the split.
-                GlassEffectContainer(spacing: 8) {
-                    // Measured: Apple leaves 8pt between the Music/News tab bar
-                    // and its detached search button — glass ends at x=566, next
-                    // glass begins at x=584 in a 2x screenshot.
-                    HStack(spacing: 8) {
-                        if controller.isRunning {
-                            Button {
-                                stopSession()
-                            } label: {
-                                Text("Stop")
-                                    .fontWeight(.medium)
-                            }
-                            .buttonStyle(.glass)
-                            .glassEffectID("secondary", in: glass)
-                            .controlSize(.large)
-                            .buttonSizing(.flexible)
-                        }
-
-                        if !controller.isRunning || isEdited {
-                            Button {
-                                if controller.isRunning {
-                                    // Restart: drop the old session first so the
-                                    // new endpoint is what actually gets used.
-                                    Task {
-                                        await controller.stop()
-                                        beginOrConfirm()
-                                    }
-                                } else {
-                                    beginOrConfirm()
-                                }
-                            } label: {
-                                Text(controller.isRunning ? "Restart" : "Start")
-                                    .fontWeight(.medium)
-                                    // The glass morphs; the word does not. Label
-                                    // changes never interpolate, so this fades
-                                    // the text while the pill flows underneath.
-                                    .contentTransition(.opacity)
-                            }
-                            .buttonStyle(.glassProminent)
-                            .glassEffectID("primary", in: glass)
-                            .controlSize(.large)
-                            .buttonSizing(.flexible)
-                            .disabled(!canAutoStart)
-                        }
-                    }
-                }
-                // .animation(value:) rather than withAnimation, because one of
-                // the triggers is a TextField binding writing straight to the
-                // controller — there is no call site here to wrap.
-                // 0.4s measured off Music's tab bar collapsing into its search
-                // field — 24 frames at 60fps. That transition is far larger than
-                // this one (five elements to two, with the widths changing
-                // completely), so treat it as an upper bound rather than a
-                // target; if this reads slow, shorten it.
-                // Duration measured; bounce is not.
-                // GUESS: bounce 0.15 — the reference settles too smoothly to read
-                // overshoot off three-frame samples, so this is picked to be
-                // slightly springy without wobbling. Raise it for more rubber.
-                .animation(.spring(duration: 0.4, bounce: 0.15), value: controller.isRunning)
-                .animation(.spring(duration: 0.4, bounce: 0.15), value: isEdited)
-                // The gap above the button is a constant. The gap below it
-                // targets `edgeGap` from the true screen edge regardless of
-                // device — see the doc comment on `edgeGap` for why 34pt (the
-                // raw home-indicator inset, and what the first fix here
-                // produced) still read as too high. This subtracts whatever
-                // `bottomSafeArea` already provides, going negative on a Face
-                // ID phone to pull the button into part of the reserved zone;
-                // no clamp needed, since the two `bottomSafeArea` terms cancel
-                // and the total is pinned at `edgeGap` no matter what it reads.
-                .padding(.top, Self.barGap)
-                .padding(.bottom, Self.edgeGap - bottomSafeArea)
-                .padding(.horizontal, 21)
-            }
-            .alert("Use HTTPS?", isPresented: Binding(
-                get: { schemeToConfirm != nil },
-                set: { if !$0 { schemeToConfirm = nil } }
-            ), presenting: schemeToConfirm) { resolved in
-                Button("Use HTTPS") {
-                    controller.endpoint = resolved
-                    schemeToConfirm = nil
-                    Task { await start() }
-                }
-                // Not dead code on a device with no keyboard. This is what marks
-                // the preferred action, and on iOS 26 the preferred action in an
-                // alert renders as a filled button rather than plain blue text.
-                // Without it the system emphasises the .cancel button instead,
-                // which is backwards here: declining the suggestion would be the
-                // one that looks like the thing to press.
-                //
-                // ButtonRole.confirm does NOT do this — it exists in iOS 26 but
-                // does not produce the filled treatment.
-                .keyboardShortcut(.defaultAction)
-                // "Ignore", not "Cancel": in iOS, Cancel usually means discard
-                // what you did, which here reads as though it might throw away
-                // the address just typed. This only declines the suggestion.
-                //
-                // The .cancel *role* stays regardless of the label — it sets the
-                // button's placement and weight, answers the Escape key on a
-                // hardware keyboard, and marks this as the dismissive action for
-                // accessibility. (It does not add a swipe or tap-outside gesture:
-                // alerts are strictly modal. That is sheets.)
-                Button("Ignore", role: .cancel) { schemeToConfirm = nil }
-            } message: { resolved in
-                // HTTPS and HTTP are capitalised as prose; the scheme inside
-                // the URL stays lowercase, because that is part of the address
-                // rather than a word in a sentence.
-                Text("Ammy will send to \(resolved). Almost every endpoint needs "
-                     + "HTTPS, and iOS blocks plain HTTP.")
+            if barOnStack {
+                form
+                    .contentMargins(.bottom, barHeight, for: .scrollContent)
+                    .contentMargins(.bottom, barHeight, for: .scrollIndicators)
+            } else {
+                form
+                    .safeAreaBar(edge: .bottom) { bar }
             }
         }
-        // Attached to the NavigationStack, deliberately outside the bottom bar:
-        // `safeAreaBar` extends the safe area of whatever it modifies, so a
-        // reading taken inside the bar's own content is measuring the bar. The
-        // stack sits outside that and reports what the window reserves.
+        // safeAreaBar, not safeAreaInset. Both reserve the space — which
+        // is what keeps the last row scrollable clear of the button
+        // instead of permanently buried, as an overlay would — but the bar
+        // also applies the scroll edge effect, so content blurs out as it
+        // passes underneath. That is the whole reason no background is set
+        // here: a hard fill would be doing badly what the system already
+        // does properly, and it is what made the first attempt look stuck
+        // on rather than floating.
+        //
+        // Start/Stop lives here because it is the only control on this
+        // screen anyone touches twice, and the only one that used to
+        // scroll out of reach. The Form is what you set up once; this is
+        // what you actually do.
+        //
+        // On the stack, not the Form, since 2 Nov 2026. A safeAreaBar on the
+        // Form wraps it in the view that collects the scroll edge effect, and
+        // that view stops UIKit handing the Form the large title's insets as it
+        // collapses. They arrive a render late instead, and each one moves the
+        // content, which collapses the title further, which asks for another:
+        // the title snaps shut as a scroll down begins and the content jumps
+        // ahead of the finger, 52 pt in one frame on iOS 26.5 and about 34 over
+        // three on 27.0. On the stack, the edge effect is the same pixel for
+        // pixel and UIKit updates the Form directly (CLAUDE.md, the large
+        // title's jump).
+        .safeAreaBar(edge: .bottom) {
+            ZStack {
+                if barOnStack && !historyShown {
+                    bar
+                        .onGeometryChange(for: CGFloat.self) { $0.size.height } action: { barHeight = $0 }
+                        .transition(.opacity)
+                }
+            }
+            .animation(.default, value: historyShown)
+        }
+        // Attached outside both bottom bars, deliberately: `safeAreaBar`
+        // extends the safe area of whatever it modifies, so a reading taken
+        // inside the bar's own content is measuring the bar. Out here it
+        // reports what the window reserves.
         //
         // onGeometryChange rather than a one-shot read of the key window, since
         // iPad rotates and Split View resizes; and rather than a GeometryReader,
@@ -941,6 +763,249 @@ struct ContentView: View {
                 $0.explanation + (controller.isRunning ? " Ammy is trying again." : " Press Start to try again.")
             } ?? "")
         }
+    }
+
+    /// What you set up once, under the large title.
+    private var form: some View {
+        Form {
+            if !controller.monitor.authorized {
+                MediaAccessPrompt(monitor: controller.monitor)
+            }
+
+            Section("Now Playing") {
+                NowPlayingRow(monitor: controller.monitor)
+            }
+
+            // "Endpoint", not "Relay": a relay forwards what it receives,
+            // and nothing here requires that. Ammy posts JSON to an address;
+            // whether that address passes it on, renders it, or files it
+            // away is none of the app's business. The same reasoning keeps
+            // the relay's /now-playing path out of the placeholder — that is
+            // one receiver's convention, not a rule of the app.
+            //
+            // Labels persist where placeholders vanish, so the row names
+            // live on the left and the value column carries only whether the
+            // field must be filled in.
+            // Label above a full-width field, rather than Mail's two-column
+            // row. Both values here are long enough to overflow a shared
+            // row, and LabeledContent's response to that is to stack them
+            // anyway — so the layout would silently change shape depending
+            // on how long someone's address happened to be. Doing it on
+            // purpose keeps it fixed, and gives the value the whole width.
+            //
+            // Both rows get the same treatment even though "Optional" would
+            // fit on one line: matching rows read as one thing, and the key
+            // is as long as the URL in practice.
+            //
+            // The visible label is hidden from VoiceOver and applied to the
+            // field instead, so it is announced once as a labelled control
+            // rather than twice as loose text.
+            // GUESS: spacing 4 between a field's label and its value. No
+            // source; it was picked to look right when these rows were
+            // stacked and has never been checked against anything.
+            Section {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("URL")
+                        .accessibilityHidden(true)
+                    TextField("Required", text: $controller.endpoint)
+                        .textInputAutocapitalization(.never)
+                        .autocorrectionDisabled()
+                        .keyboardType(.URL)
+                        .accessibilityLabel("URL")
+                }
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Key")
+                        .accessibilityHidden(true)
+                    SecureField("Optional", text: $controller.key)
+                        .textInputAutocapitalization(.never)
+                        .autocorrectionDisabled()
+                        .accessibilityLabel("Key")
+                }
+            } header: {
+                Text("Endpoint")
+            } footer: {
+                Text("Ammy sends your now-playing details to this address. "
+                     + "If you set a key, it's sent as a header.")
+            }
+
+            Section("Status") {
+                // A spinner rather than a word until the first push comes
+                // back, because until then there is no answer to show —
+                // only the wait for one.
+                LabeledContent("Endpoint") {
+                    if controller.resolving {
+                        ProgressView()
+                    } else {
+                        Text(controller.linkStatus)
+                    }
+                }
+                .animation(.default, value: controller.resolving)
+                LabeledContent("Version", value: Bundle.main.displayVersion)
+            }
+
+            // Unlabeled on purpose: it is a way out of this screen rather
+            // than another fact about the current one, so a header would
+            // group it with things it has nothing to do with.
+            Section {
+                NavigationLink("History") {
+                    LinkHistoryView()
+                        .onAppear { historyShown = true }
+                        .onDisappear { historyShown = false }
+                }
+            }
+
+            // TEMPORARY, 2 Nov 2026: barOnStack's switch, to compare the
+            // two placements on the device.
+            Section {
+                Toggle("Title Fix", isOn: $barOnStack)
+            } footer: {
+                Text("Temporary, for comparing. On, the Start button belongs to the "
+                     + "navigation stack and the title collapses as you scroll. Off, it "
+                     + "belongs to this list, as in build 146.")
+            }
+
+        }
+        .navigationTitle("Ammy")
+        .alert("Use HTTPS?", isPresented: Binding(
+            get: { schemeToConfirm != nil },
+            set: { if !$0 { schemeToConfirm = nil } }
+        ), presenting: schemeToConfirm) { resolved in
+            Button("Use HTTPS") {
+                controller.endpoint = resolved
+                schemeToConfirm = nil
+                Task { await start() }
+            }
+            // Not dead code on a device with no keyboard. This is what marks
+            // the preferred action, and on iOS 26 the preferred action in an
+            // alert renders as a filled button rather than plain blue text.
+            // Without it the system emphasises the .cancel button instead,
+            // which is backwards here: declining the suggestion would be the
+            // one that looks like the thing to press.
+            //
+            // ButtonRole.confirm does NOT do this — it exists in iOS 26 but
+            // does not produce the filled treatment.
+            .keyboardShortcut(.defaultAction)
+            // "Ignore", not "Cancel": in iOS, Cancel usually means discard
+            // what you did, which here reads as though it might throw away
+            // the address just typed. This only declines the suggestion.
+            //
+            // The .cancel *role* stays regardless of the label — it sets the
+            // button's placement and weight, answers the Escape key on a
+            // hardware keyboard, and marks this as the dismissive action for
+            // accessibility. (It does not add a swipe or tap-outside gesture:
+            // alerts are strictly modal. That is sheets.)
+            Button("Ignore", role: .cancel) { schemeToConfirm = nil }
+        } message: { resolved in
+            // HTTPS and HTTP are capitalised as prose; the scheme inside
+            // the URL stays lowercase, because that is part of the address
+            // rather than a word in a sentence.
+            Text("Ammy will send to \(resolved). Almost every endpoint needs "
+                 + "HTTPS, and iOS blocks plain HTTP.")
+        }
+    }
+
+    /// Start/Stop, floating at the foot of the screen.
+    private var bar: some View {
+        // Three states, two slots.
+        //
+        //   idle              [ Start ]                 prominent
+        //   running           [ Stop ]                  glass
+        //   running + edited  [ Stop ][ Restart ]       glass + prominent
+        //
+        // IDs are assigned by ROLE, not by button, and that is the whole
+        // trick. glassEffectID is a separate identity from SwiftUI's
+        // own, so the material follows the slot even when the view
+        // inside it is torn down and rebuilt — which is exactly the
+        // limitation that made a plain style swap read as a hard cut.
+        //
+        // "primary" is Start and Restart: pressing Stop while split
+        // therefore grows Restart out to full width and relabels it,
+        // rather than replacing it. "secondary" is Stop alone, so it
+        // melts into the primary as that expands past it.
+        //
+        // The one transition this cannot also smooth is Start -> Stop,
+        // since those are different roles occupying the same space. They
+        // cross-fade in place, which is acceptable because the label is
+        // changing anyway. Trying to give Start the same ID as Stop
+        // would fix that one and break the split, which matters more.
+        // GUESS: 8 — the container's spacing is the *blend threshold*,
+        // how close two glass surfaces must be before they merge into
+        // one another. That governs behaviour mid-transition, so it
+        // cannot be measured from a screenshot. Matched to the layout
+        // gap below because the published examples set the two equal;
+        // that is convention, not evidence. Tune by watching the split.
+        GlassEffectContainer(spacing: 8) {
+            // Measured: Apple leaves 8pt between the Music/News tab bar
+            // and its detached search button — glass ends at x=566, next
+            // glass begins at x=584 in a 2x screenshot.
+            HStack(spacing: 8) {
+                if controller.isRunning {
+                    Button {
+                        stopSession()
+                    } label: {
+                        Text("Stop")
+                            .fontWeight(.medium)
+                    }
+                    .buttonStyle(.glass)
+                    .glassEffectID("secondary", in: glass)
+                    .controlSize(.large)
+                    .buttonSizing(.flexible)
+                }
+
+                if !controller.isRunning || isEdited {
+                    Button {
+                        if controller.isRunning {
+                            // Restart: drop the old session first so the
+                            // new endpoint is what actually gets used.
+                            Task {
+                                await controller.stop()
+                                beginOrConfirm()
+                            }
+                        } else {
+                            beginOrConfirm()
+                        }
+                    } label: {
+                        Text(controller.isRunning ? "Restart" : "Start")
+                            .fontWeight(.medium)
+                            // The glass morphs; the word does not. Label
+                            // changes never interpolate, so this fades
+                            // the text while the pill flows underneath.
+                            .contentTransition(.opacity)
+                    }
+                    .buttonStyle(.glassProminent)
+                    .glassEffectID("primary", in: glass)
+                    .controlSize(.large)
+                    .buttonSizing(.flexible)
+                    .disabled(!canAutoStart)
+                }
+            }
+        }
+        // .animation(value:) rather than withAnimation, because one of
+        // the triggers is a TextField binding writing straight to the
+        // controller — there is no call site here to wrap.
+        // 0.4s measured off Music's tab bar collapsing into its search
+        // field — 24 frames at 60fps. That transition is far larger than
+        // this one (five elements to two, with the widths changing
+        // completely), so treat it as an upper bound rather than a
+        // target; if this reads slow, shorten it.
+        // Duration measured; bounce is not.
+        // GUESS: bounce 0.15 — the reference settles too smoothly to read
+        // overshoot off three-frame samples, so this is picked to be
+        // slightly springy without wobbling. Raise it for more rubber.
+        .animation(.spring(duration: 0.4, bounce: 0.15), value: controller.isRunning)
+        .animation(.spring(duration: 0.4, bounce: 0.15), value: isEdited)
+        // The gap above the button is a constant. The gap below it
+        // targets `edgeGap` from the true screen edge regardless of
+        // device — see the doc comment on `edgeGap` for why 34pt (the
+        // raw home-indicator inset, and what the first fix here
+        // produced) still read as too high. This subtracts whatever
+        // `bottomSafeArea` already provides, going negative on a Face
+        // ID phone to pull the button into part of the reserved zone;
+        // no clamp needed, since the two `bottomSafeArea` terms cancel
+        // and the total is pinned at `edgeGap` no matter what it reads.
+        .padding(.top, Self.barGap)
+        .padding(.bottom, Self.edgeGap - bottomSafeArea)
+        .padding(.horizontal, 21)
     }
 
     @MainActor

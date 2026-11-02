@@ -1,17 +1,23 @@
 name: Jitter lab
 
 # Runs only on the jitter-lab branch, never on main, and releases nothing:
-# it builds lab/JitterLab, drives every bar variant through the same scroll
+# it builds lab/JitterLab, drives bar variants through the same scroll
 # gestures in a simulator, and uploads the per-frame probe logs, screenshots
-# and a screen recording.
+# and a screen recording. LAB_MODE "ammy" instead builds the real Ammy from
+# this branch and records it being scrolled with its bar on the stack and on
+# the Form.
 
 on:
   push:
     branches: [jitter-lab]
     paths:
       - 'lab/**'
+      - 'Ammy/**'
       - '.github/workflows/jitter-lab.yml'
   workflow_dispatch:
+
+env:
+  LAB_MODE: ammy
 
 jobs:
   lab:
@@ -37,15 +43,15 @@ jobs:
           [ -d "$X" ] || X=/Applications/Xcode.app
           sudo xcode-select -s "$X"
           xcodebuild -version
-          ls /Applications | grep -i xcode || true
           xcrun simctl list runtimes
-          xcrun simctl list devicetypes | grep -iE "iphone (se|1[6-8]e)" || true
 
       - name: Install XcodeGen
         run: brew install xcodegen
 
-      - name: Generate project
-        run: cd lab && xcodegen generate
+      - name: Generate projects
+        run: |
+          (cd lab && xcodegen generate)
+          xcodegen generate
 
       - name: Create and boot an iPhone SE
         id: sim
@@ -70,7 +76,6 @@ jobs:
           done
           [ -n "$UDID" ] || { echo "no usable simulator"; exit 1; }
           echo "udid=$UDID" >> "$GITHUB_OUTPUT"
-          xcrun simctl list devices | grep "$UDID"
           xcrun simctl boot "$UDID"
           xcrun simctl bootstatus "$UDID" -b
 
@@ -84,10 +89,29 @@ jobs:
             -derivedDataPath dd \
             CODE_SIGNING_ALLOWED=NO 2>&1 | tail -60
 
-      - name: Run the lab
+      - name: Build and install Ammy
+        if: env.LAB_MODE == 'ammy'
+        run: |
+          set -o pipefail
+          UDID="${{ steps.sim.outputs.udid }}"
+          xcodebuild build \
+            -project Ammy.xcodeproj -scheme Ammy -configuration Release \
+            -destination "id=$UDID" \
+            -derivedDataPath build-ammy \
+            CODE_SIGNING_ALLOWED=NO 2>&1 | grep -E "error|warning: .*AmmyApp|BUILD" | tail -40
+          xcrun simctl install "$UDID" build-ammy/Build/Products/Release-iphonesimulator/Ammy.app
+          xcrun simctl privacy "$UDID" grant media-library com.local.ammy || true
+
+      - name: Run
         run: |
           UDID="${{ steps.sim.outputs.udid }}"
           mkdir -p out
+          if [ "$LAB_MODE" = "ammy" ]; then
+            ONLY="-only-testing:JitterLabUITests/AmmyUITests"
+          else
+            ONLY=""
+          fi
+          python3 -c 'import time; print(time.time())' > out/record-start.txt
           xcrun simctl io "$UDID" recordVideo --codec=h264 --force out/lab.mp4 > out/record.log 2>&1 &
           REC=$!
           sleep 3
@@ -96,25 +120,11 @@ jobs:
             -destination "id=$UDID" \
             -derivedDataPath lab/dd \
             -parallel-testing-enabled NO \
-            -resultBundlePath out/results.xcresult \
+            $ONLY \
             CODE_SIGNING_ALLOWED=NO > out/xcodebuild-test.log 2>&1 || echo "tests exited $?"
           kill -INT $REC || true
           wait $REC || true
-          tail -40 out/xcodebuild-test.log
-          # The same look test on a Face ID phone, whose 34 pt bottom inset
-          # the bar has to account for.
-          FACE=$(xcrun simctl create "Lab Face ID" com.apple.CoreSimulator.SimDeviceType.iPhone-17e "${{ steps.sim.outputs.runtime }}" 2>/dev/null             || xcrun simctl create "Lab Face ID" com.apple.CoreSimulator.SimDeviceType.iPhone-17 "${{ steps.sim.outputs.runtime }}" 2>/dev/null || true)
-          if [ -n "$FACE" ]; then
-            xcrun simctl boot "$FACE" && xcrun simctl bootstatus "$FACE" -b
-            mkdir -p out/faceid
-            TEST_RUNNER_LAB_OUT="$PWD/out/faceid" xcodebuild test-without-building               -project lab/JitterLab.xcodeproj -scheme JitterLab               -destination "id=$FACE"               -derivedDataPath lab/dd               -parallel-testing-enabled NO               -only-testing:JitterLabUITests/JitterLabUITests/test4Look               CODE_SIGNING_ALLOWED=NO > out/faceid/xcodebuild-test.log 2>&1 || echo "face id tests exited $?"
-            tail -5 out/faceid/xcodebuild-test.log
-          fi
-          # Logs the app could not write to the host land in its own container.
-          DATA=$(xcrun simctl get_app_container "$UDID" com.local.jitterlab data 2>/dev/null || true)
-          if [ -n "$DATA" ] && ls "$DATA/Documents"/*.jsonl > /dev/null 2>&1; then
-            mkdir -p out/container && cp "$DATA/Documents"/*.jsonl out/container/
-          fi
+          tail -30 out/xcodebuild-test.log
           ls -la out | head -80
 
       - name: Demangle stacks
@@ -122,7 +132,6 @@ jobs:
           for f in $(find out -name '*.jsonl'); do
             xcrun swift-demangle --simplified < "$f" > "${f%.jsonl}.dm"
           done
-          rm -rf out/results.xcresult
           du -sh out
 
       - uses: actions/upload-artifact@v7
