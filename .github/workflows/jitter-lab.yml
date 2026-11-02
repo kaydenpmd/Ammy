@@ -29,9 +29,20 @@ jobs:
           - name: ios26
             runner: macos-26
             xcode: /Applications/Xcode_26.6.app
+            devices: iPhone-SE-3rd-generation iPhone-17e
           - name: ios27
             runner: xcode-27
             xcode: /Applications/Xcode_27.2_Release_Candidate.app
+            devices: iPhone-SE-3rd-generation iPhone-17e
+          # Face ID phones, for where the bar sits above the home indicator.
+          - name: ios26-faceid
+            runner: macos-26
+            xcode: /Applications/Xcode_26.6.app
+            devices: iPhone-17 iPhone-16e iPhone-16 iPhone-17e
+          - name: ios27-faceid
+            runner: xcode-27
+            xcode: /Applications/Xcode_27.2_Release_Candidate.app
+            devices: iPhone-17e iPhone-17 iPhone-16e
     runs-on: ${{ matrix.runner }}
     timeout-minutes: 80
 
@@ -66,7 +77,7 @@ jobs:
           rs = [r for r in json.load(sys.stdin)["runtimes"] if r["platform"] == "iOS" and r["isAvailable"]]
           rs.sort(key=lambda r: [int(x) for x in r["version"].split(".")], reverse=True)
           print(" ".join(r["identifier"] for r in rs))'); do
-            for TYPE in iPhone-SE-3rd-generation iPhone-17e; do
+            for TYPE in ${{ matrix.devices }}; do
               if UDID=$(xcrun simctl create "Lab $TYPE" "com.apple.CoreSimulator.SimDeviceType.$TYPE" "$RUNTIME" 2>/dev/null); then
                 echo "device: $TYPE on $RUNTIME"
                 echo "runtime=$RUNTIME" >> "$GITHUB_OUTPUT"
