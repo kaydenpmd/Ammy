@@ -39,45 +39,56 @@ struct AmmyApp: App {
 ///
 /// It rests at the start, scrolls left until a second copy has taken the
 /// first one's place, and rests again, so the loop has no seam. The trailing
-/// edge fades while the text overflows, and the leading edge fades only while
-/// it moves, so a line at rest starts crisp. Text that fits never moves, and
+/// edge fades while the text overflows, and the leading edge fades only the
+/// copy that's leaving, so the line's start is never faded, at rest or while
+/// its repeat eases into place, as in Music. Text that fits never moves, and
 /// with Reduce Motion on nothing moves: it truncates, as Apple's players do.
 ///
-/// Position comes from the clock rather than from an animation, so a change
-/// of `id` starts the line from rest, and nothing keeps running after it.
+/// Position comes from the clock rather than from an animation, so a new
+/// `since` starts the line from rest, and nothing keeps running after it.
 private struct MarqueeLine: View {
     let text: Text
-    /// Restarts the loop from rest when it changes. The Now Playing row passes
-    /// the song, so its title and artist lines restart together.
-    let id: String
+    /// When the loops began. The Now Playing row passes the moment its song
+    /// changed, the same moment to the title and the artist.
+    let since: Date
+    /// How far the longest line scrolling beside this one travels in a loop,
+    /// as `Travel` reports it. Music's title and artist share one loop, as
+    /// long as the longer line needs: they set off together, the longer one
+    /// eases into its stop, and the shorter one, moving at the same pace,
+    /// stops where it runs out. 0 for a line on its own.
+    var loopTravel: CGFloat = 0
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.scenePhase) private var scenePhase
     @State private var textWidth: CGFloat = 0
     @State private var boxWidth: CGFloat = 0
-    @State private var restingSince = Date()
 
-    // Music's own timing, measured 1 Nov 2026 from the owner's screen
-    // recording of its full-screen player (iOS 27.2, an SE), frame by frame
-    // at each frame's own timestamp; Apple publishes none of it (CLAUDE.md,
-    // Open work item 10).
+    // Music's own timing, from Apple's code and from the owner's screen
+    // recording (CLAUDE.md, Open work item 10). Music's MarqueeView, in a
+    // decompiled iOS 26.1, waits 3 s, scrolls at 30 pt/s, and sets
+    // ease-in-ease-out as the timing function of each whole loop. The
+    // recording of iOS 27.2 on an SE agrees: fitted freely, two titles held
+    // 3.01 and 3.02 s and scrolled at 30.0 pt/s, and each loop began 0 to
+    // 25 ms after 3 s plus the distance at 30 pt/s, the moment Music takes to
+    // start the next. Played through every frame, this puts the text within
+    // 1 pt of where Music had it, 0.2 to 0.4 pt on average (rms), except one
+    // frame whose timestamp is out of step with the rest (1.7 pt).
     //
-    // It's a plain marquee, holding 3 s and then scrolling at 30 pt/s, whose
-    // whole loop, hold and scroll together, runs through ease-in-ease-out:
-    // UnitCurve.easeInOut, the same curve as Core Animation's. So the hold
-    // stretches to 4 or 5 s, longer for a longer line; the scroll sets off at
-    // a good pace, is fastest at the middle of the loop, 52 pt/s, and eases
-    // into the stop as the loop ends. Two titles looped every 17.222 and
-    // 12.990 s, each within 10 ms of 3 s plus the distance at 30 pt/s, and
-    // both peaked at the middle of each loop. Played through every frame,
-    // rests included, this puts the text within 1.2 pt of where Music had it.
+    // So it's a plain marquee, holding 3 s and then scrolling at 30 pt/s,
+    // whose whole loop, hold and scroll together, runs through
+    // UnitCurve.easeInOut, the same curve as Core Animation's. The hold
+    // stretches to about 4 s, longer for a longer line (4.2 s for one that
+    // barely overflows the row on an SE, 3.9 s under Display Zoom, 5.8 s with
+    // 600 pt to travel); the scroll sets off at a good pace, is fastest at the
+    // middle of the loop, 52 pt/s, and eases into the stop as the loop ends.
     private static let hold: TimeInterval = 3
     private static let pointsPerSecond: CGFloat = 30
-    // Measured the same way: 34 to 35 pt of clear space between the end of
-    // the title and its repeat, which SF Pro's own side bearings at Music's
-    // 20 pt make a 31.4 and a 32.1 pt gap between the two copies; and fades
-    // about 20 pt wide at both edges (18.5 to 22.3). Kept in points as
-    // measured, though the row's title is 17 pt.
+    // 32 pt from the end of the text to its repeat: set in the same code, and
+    // 32.1 to 32.2 pt on the recording, through SF Pro's own side bearings.
+    // Fades 20 pt wide at each edge, as the recording shows Music's: straight
+    // ramps 18.5 to 20.3 pt wide. Apple's 26.1 code was read as setting 24;
+    // this matches the phone. Kept in points, though the row's title is 17 pt
+    // and Music's 20.
     private static let gap: CGFloat = 32
     private static let fade: CGFloat = 20
 
@@ -113,28 +124,51 @@ private struct MarqueeLine: View {
                         .fixedSize()
                         .offset(x: -x)
                         .frame(width: boxWidth, alignment: .leading)
-                        .mask { edges(leading: min(1, min(x, travel - x) / Self.fade)) }
+                        .mask { edges(leading: leadingFade(x: x, travel: travel)) }
                     }
                 }
             }
-            .onChange(of: id) { restingSince = Date() }
+            // How far this line travels, so the lines beside it can share
+            // its loop.
+            .preference(key: Travel.self, value: scrolls ? textWidth + Self.gap : 0)
             // Read once, as the text, however many copies are on screen.
             .accessibilityElement(children: .ignore)
             .accessibilityLabel(text)
     }
 
     /// How far the line has scrolled: the plain marquee's position at the
-    /// loop's eased time. Each loop starts with its hold, as Music's does
-    /// after a song changes.
+    /// loop's eased time, held where this line runs out. Each loop starts with
+    /// its hold, as Music's does after a song changes.
     private func offset(at date: Date, travel: CGFloat) -> CGFloat {
-        let loop = Self.hold + Double(travel / Self.pointsPerSecond)
-        let t = date.timeIntervalSince(restingSince).truncatingRemainder(dividingBy: loop)
+        let loop = Self.hold + Double(max(travel, loopTravel) / Self.pointsPerSecond)
+        let t = date.timeIntervalSince(since).truncatingRemainder(dividingBy: loop)
         let eased = loop * UnitCurve.easeInOut.value(at: t / loop)
-        return CGFloat(max(0, eased - Self.hold)) * Self.pointsPerSecond
+        return min(travel, CGFloat(max(0, eased - Self.hold)) * Self.pointsPerSecond)
     }
 
-    /// Opaque in the middle, fading at each end. `leading` is 0 at rest, so
-    /// the first letter isn't faded until it starts to move.
+    /// How strongly the leading edge fades: growing over the first `fade` of
+    /// the scroll, so the line sets off from a crisp start, then held only
+    /// while the copy that's leaving can still be under it. Music's fade is
+    /// fixed in a margin short of where the title rests (its MarqueeView lays
+    /// the text out at `fadeEdgeInsets.left`), so its repeat eases into place
+    /// unfaded. This row has no margin, so the fade switches off when the
+    /// repeat is (gap + fade) / 2 from its place: the leaving copy is past the
+    /// edge by then and the repeat not yet under the fade, so only the gap is
+    /// there and nothing on screen changes. Needs `gap` wider than `fade`.
+    private func leadingFade(x: CGFloat, travel: CGFloat) -> CGFloat {
+        x < travel - (Self.gap + Self.fade) / 2 ? min(1, x / Self.fade) : 0
+    }
+
+    /// The farthest any of the lines travels in a loop.
+    struct Travel: PreferenceKey {
+        static let defaultValue: CGFloat = 0
+        static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
+            value = max(value, nextValue())
+        }
+    }
+
+    /// Opaque in the middle, fading at each end. `leading` is 0 at rest and
+    /// while the repeat arrives, so a first letter is faded only as it leaves.
     private func edges(leading: CGFloat) -> some View {
         HStack(spacing: 0) {
             LinearGradient(colors: [.black.opacity(1 - leading), .black], startPoint: .leading, endPoint: .trailing)
@@ -264,6 +298,12 @@ private struct NowPlayingRow: View {
     /// it was made from, so a new track never shows the last one's.
     @State private var thumbnail: (source: ObjectIdentifier, image: UIImage)?
 
+    /// The title and artist loop together, as Music's do: from one start, the
+    /// moment the song changed, and over one loop, as long as the line that
+    /// travels farther needs (MarqueeLine.Travel).
+    @State private var linesSince = Date()
+    @State private var loopTravel: CGFloat = 0
+
     var body: some View {
         // The Lock Screen's 12 pt between the artwork and the text.
         HStack(spacing: Self.lockScreenGap) {
@@ -284,10 +324,12 @@ private struct NowPlayingRow: View {
             // Control Center centres it where the song and artist would be, and
             // the row keeps its height when music starts or stops.
             ZStack(alignment: .leading) {
-                lines(title: "Title", subtitle: "Artist", explicit: false, song: "")
+                lines(title: "Title", subtitle: "Artist", explicit: false)
                     .hidden()
                     .accessibilityHidden(true)
-                lines(title: title, subtitle: subtitle, explicit: explicit, song: song)
+                lines(title: title, subtitle: subtitle, explicit: explicit)
+                    .onPreferenceChange(MarqueeLine.Travel.self) { loopTravel = $0 }
+                    .onChange(of: song) { linesSince = Date() }
             }
         }
         // The Lock Screen's 14 pt is the list's own inset moved by the
@@ -408,10 +450,10 @@ private struct NowPlayingRow: View {
         return UIImage(cgImage: image, scale: scale, orientation: .up)
     }
 
-    /// `song` restarts both lines' scrolling together, so a new track by the
-    /// same artist doesn't leave the artist line mid-scroll beside a title
-    /// that has started again from rest.
-    private func lines(title: String, subtitle: String?, explicit: Bool, song: String) -> some View {
+    /// Both lines loop from `linesSince`, so a new track by the same artist
+    /// doesn't leave the artist line mid-scroll beside a title that has
+    /// started again from rest, and over `loopTravel`, so they stay together.
+    private func lines(title: String, subtitle: String?, explicit: Bool) -> some View {
         VStack(alignment: .leading, spacing: 2) {
             // An explicit track gets Music's E after a space, in the title's
             // own colour, the way the Lock Screen's player shows it. Small
@@ -433,7 +475,8 @@ private struct NowPlayingRow: View {
             MarqueeLine(
                 text: (explicit ? Text("\(title) \(Image(systemName: "e.square.fill"))") : Text(title))
                     .font(.headline),
-                id: song)
+                since: linesSince,
+                loopTravel: loopTravel)
                 .imageScale(.small)
             // The same size as the title, lighter and secondary. Measured: the
             // Lock Screen draws both lines at 17 pt (cap height 12 pt on each)
@@ -446,7 +489,8 @@ private struct NowPlayingRow: View {
                     text: Text(subtitle)
                         .font(.body)
                         .foregroundStyle(.secondary),
-                    id: song)
+                    since: linesSince,
+                    loopTravel: loopTravel)
             }
         }
     }
@@ -511,9 +555,15 @@ private struct NowPlayingRow: View {
         playing ? monitor.track?.artist : nil
     }
 
-    /// Which track the lines are showing, so both restart together on a new one.
+    /// Which track the lines are showing, so both restart together on a new
+    /// one. `explicit` beside the key, as PresenceController compares it: a
+    /// song's clean and explicit editions share a title, artist and album,
+    /// but moving from one to the other adds or takes away the title's E,
+    /// which changes its width and can change the loop both lines share.
+    /// Without a new start, the lines would jump partway through a scroll.
     private var song: String {
-        playing ? monitor.track?.key ?? "" : ""
+        guard playing, let track = monitor.track else { return "" }
+        return "\(track.key)|\(track.explicit)"
     }
 
     private var explicit: Bool {

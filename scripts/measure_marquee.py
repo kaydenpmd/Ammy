@@ -11,8 +11,11 @@ Ammy's row against it.
 The two numbers are the first and last-plus-one pixel rows of the line, in
 the recording's own pixels. --scale is pixels per point (2 on an SE, 3 on a
 Pro Max); --columns is a stretch of the line clear of both fades (default:
-the middle 40% of the frame). Uses each frame's own timestamp, never an
-assumed frame rate, since screen recordings drop frames. Writes
+the middle 40% of the frame, which can reach into one, so pass it: 150:450
+for Music's full-screen title on an SE). Uses each frame's own timestamp,
+never an assumed frame rate, since screen recordings drop frames, and finds
+each frame against an earlier one rather than adding up moves from frame to
+frame, which drifts by a point over a long scroll. Writes
 RECORDING.positions.csv beside the recording. Needs ffmpeg on PATH and numpy.
 """
 import argparse
@@ -24,8 +27,9 @@ import numpy as np
 
 HOLD, RATE = 3.0, 30.0  # Music's plain marquee under its eased loop (CLAUDE.md, item 10)
 REST_PX = 0.05      # a frame that moves less than this is resting
-REST_FRAMES = 30    # and half a second of those is a rest
+REST_TIME = 0.5     # and half a second of those is a rest
 CHANGE = 0.05       # a frame that matches the last this badly is new text
+ANCHOR = 1 / 3      # measure against one frame until the line has moved this share of the columns
 
 NAMED = {
     "linear": (0.0, 0.0, 1.0, 1.0),
@@ -42,9 +46,11 @@ def decode(video, top, bottom):
         ["ffprobe", "-v", "error", "-select_streams", "v:0", "-show_entries", "stream=width",
          "-of", "csv=p=0", video], capture_output=True, text=True, check=True).stdout.split()[0])
     rows = bottom - top
+    # Grey before cropping: crop on 4:2:0 video rounds an odd height and an odd
+    # top down to even, which breaks the reshape or silently reads a row higher.
     run = subprocess.run(
         ["ffmpeg", "-v", "info", "-nostats", "-i", video, "-map", "0:v:0", "-fps_mode", "passthrough",
-         "-vf", f"crop={width}:{rows}:0:{top},format=gray,showinfo", "-f", "rawvideo", "-"],
+         "-vf", f"format=gray,crop={width}:{rows}:0:{top},showinfo", "-f", "rawvideo", "-"],
         capture_output=True, check=True)
     times = np.array([float(t) for t in re.findall(rb"pts_time:([0-9.]+)", run.stderr)])
     frames = np.frombuffer(run.stdout, np.uint8).reshape(-1, rows, width)
@@ -53,25 +59,67 @@ def decode(video, top, bottom):
     return times, frames
 
 
-def track(frames, x0, x1):
-    """How far the line moved left since the frame before, to 0.01 px, and how
-    badly the best match still fits (large when the text itself changed)."""
+def track(frames, times, x0, x1):
+    """How far the line moved left since the frame before, on a 0.01 px grid,
+    and how badly the best match still fits (large when the text itself
+    changed)."""
     # Text stands out from what's behind it, light on dark or dark on light.
     profile = np.concatenate([
         np.abs(chunk - np.median(chunk, axis=2, keepdims=True)).sum(axis=1)
-        for chunk in (frames[k:k + 500].astype(np.float32) for k in range(0, len(frames), 500))])
+        for chunk in (frames[k:k + 500].astype(np.float32) for k in range(0, len(frames), 500))]).astype(np.float64)
     width = profile.shape[1]
-    xs = np.arange(x0, x1, dtype=np.float64)
     fine = np.arange(-1.0, 1.0001, 0.01)
-    moved, misfit = [0.0], [0.0]
-    for i in range(1, len(profile)):
-        before, now = profile[i - 1].astype(np.float64), profile[i, x0:x1].astype(np.float64)
-        coarse = min(range(-12, 13), key=lambda s: ((now - before[x0 + s:x1 + s]) ** 2).sum())
+    frame = np.median(np.diff(times)) if len(times) > 1 else 0.0
+
+    def match(before, now, shifts, inside=False):
+        """How far left of `before` `now` sits, trying whole-pixel `shifts`,
+        then hundredths around the best; and how badly it fits there. With
+        `inside`, both frames are read only within x0-x1, however far apart."""
+        if inside:
+            lo, hi = x0 + max(0, 1 - min(shifts)), x1 - max(0, max(shifts) + 2)
+        else:
+            shifts, lo, hi = [s for s in shifts if x0 + s >= 0 and x1 + s <= width], x0, x1
+        xs, seen = np.arange(lo, hi, dtype=np.float64), now[lo:hi]
+        coarse = min(shifts, key=lambda s: ((seen - before[lo + s:hi + s]) ** 2).sum())
         grid = xs[None, :] + (coarse + fine)[:, None]
-        errors = ((np.interp(grid.ravel(), np.arange(width), before).reshape(grid.shape) - now) ** 2).sum(axis=1)
+        errors = ((np.interp(grid.ravel(), np.arange(width), before).reshape(grid.shape) - seen) ** 2).sum(axis=1)
         k = int(errors.argmin())
-        moved.append(coarse + fine[k])
-        misfit.append(errors[k] / ((now ** 2).sum() + 1e-9))
+        return coarse + fine[k], errors[k] / ((seen ** 2).sum() + 1e-9)
+
+    moved, misfit = [0.0], [0.0]
+    anchor, since = 0, 0.0  # the frame measured against, and how far the line has moved since it
+    for i in range(1, len(profile)):
+        # Screen recordings drop frames, and a burst of them mid-scroll can
+        # move the line further than 12 px: look where the last frame's speed
+        # would have carried it too.
+        gap, last = times[i] - times[i - 1], (times[i - 1] - times[i - 2]) if i > 1 else 0.0
+        ahead = int(round(moved[-1] * gap / last)) if last > 0 and misfit[-1] <= CHANGE else 0
+        step, bad = match(profile[i - 1], profile[i], sorted({*range(-12, 13), *range(ahead - 12, ahead + 13)}))
+        reach = 12 * max(1, int(round(gap / frame))) if frame > 0 else 12
+        if bad > CHANGE and reach > 12:
+            # A scroll leaves rest already moving, so a gap there has no speed
+            # to go on: try everywhere 12 px a frame could have taken it. Once
+            # the line has a speed, it can't have reversed or gone much past
+            # where that speed would carry it, and a match out there is a new
+            # title repeating the old one: the same song again, or one that
+            # begins the same way. Its first moving frame gives no speed yet:
+            # the line moved for only part of it.
+            lo, hi = sorted((0, 2 * ahead)) if ahead and abs(moved[-2]) >= REST_PX else (-reach, reach)
+            step, bad = match(profile[i - 1], profile[i], range(max(-reach, lo - 12), min(reach, hi + 12) + 1))
+        if bad <= CHANGE and anchor < i - 1:
+            # Measured against an earlier frame, not added up from one frame
+            # to the next: each match is off by a few hundredths of a pixel,
+            # one way or the other with the fraction of a pixel moved, and
+            # over the hundreds of frames in a scroll that adds up to a point.
+            near = int(round(since + step))
+            total, _ = match(profile[anchor], profile[i], range(near - 2, near + 3), inside=True)
+            if abs(total - since - step) < 0.5:  # the same match, only more exact
+                step = total - since
+        since += step
+        if bad > CHANGE or abs(since) >= ANCHOR * (x1 - x0):
+            anchor, since = i, 0.0
+        moved.append(step)
+        misfit.append(bad)
     return np.array(moved), np.array(misfit)
 
 
@@ -175,7 +223,7 @@ def main():
     times, frames = decode(a.video, a.top, a.bottom)
     width = frames.shape[2]
     x0, x1 = a.columns or (int(width * 0.3), int(width * 0.7))
-    moved, misfit = track(frames, x0, x1)
+    moved, misfit = track(frames, times, x0, x1)
     print(f"{len(times)} frames, {times[0]:.3f}-{times[-1]:.3f} s, tracked on columns {x0}-{x1}")
 
     position = np.cumsum(np.where(misfit > CHANGE, 0.0, moved)) / a.scale
@@ -184,28 +232,58 @@ def main():
         for row in zip(times, position, moved, misfit):
             out.write("%.6f,%.3f,%.3f,%.5f\n" % row)
 
-    # Rests: half a second or more without movement. Text changes split titles.
     still = np.abs(moved) < REST_PX
     changes = set(np.where(misfit > CHANGE)[0])
+
+    def began(r1):
+        """When the line left the rest that ends at frame r1: its first moving
+        frame taken back to the rest position at its own speed, so a gap in the
+        recording there doesn't move the start to the last frame before it."""
+        k = r1 + 1
+        if k + 1 >= len(times) or k + 1 in changes or times[k + 1] <= times[k]:
+            return times[r1]
+        speed = (position[k + 1] - position[k]) / (times[k + 1] - times[k])
+        if speed <= 0:
+            return times[r1]
+        return min(max(times[k] - (position[k] - position[r1]) / speed, times[r1]), times[k])
+
+    # Rests: half a second or more without movement, timed to when the line
+    # set off, since a recording of a screen where nothing moves can send
+    # frames far apart, or none, until something does; but not simply to the
+    # frame after a gap, or one still frame before a gap (a recording's
+    # first, or a repeated one) would rest while the line moved. Text changes
+    # split titles, and a rest can start on one: that frame is the new text's
+    # first.
     rests, i = [], 0
     while i < len(times):
-        j = i
+        j = i + 1 if i in changes else i
         while j < len(times) and still[j] and j not in changes:
             j += 1
-        if j - i >= REST_FRAMES:
-            rests.append((i, j - 1))
+        if j > i:
+            end = times[-1] if j == len(times) else times[j] if j in changes else began(j - 1)
+            if end - times[i] >= REST_TIME:
+                rests.append((i, j - 1))
         i = max(j, i + 1)
 
+    scrolls = 0
     for (a0, a1), (b0, b1) in zip(rests, rests[1:]):
-        if any(a1 < c <= b0 for c in changes):
-            continue                            # a different title by the end
-        distance = position[b0] - position[a1]
+        cut = sorted(c for c in changes if a1 < c <= b0)
+        if cut:                                 # a different title by the end
+            if position[cut[0] - 1] - position[a1] >= 1:
+                print(f"\nthe scroll from {began(a1):.3f} s is left out: the text changed at "
+                      f"{times[cut[0]]:.3f} s, before it came to rest")
+            continue
+        distance = position[b1] - position[a1]  # to the rest's end: the eased stop creeps on below REST_PX
         if distance < 1:
             continue
+        scrolls += 1
         window = slice(max(a0, a1 - 30), min(b1, b0 + 30) + 1)
         t, x = times[window], position[window] - position[a1]
-        guess_start, guess_end = times[a1], times[b0]
-        params, rms, named = fit(t, x, distance, guess_start, guess_end - guess_start)
+        # Fitted from the last still frame and from when the line set off,
+        # keeping the better: a gap before the scroll leaves the first far
+        # out, and the fit has more than one near-best answer.
+        params, rms, named = min((fit(t, x, distance, guess, times[b0] - guess) for guess in sorted({times[a1], began(a1)})),
+                                 key=lambda r: r[1])
         start, duration, x1, y1, x2, y2 = params
         speed = np.diff(position[a1:b0 + 1]) / np.diff(times[a1:b0 + 1])
         peak = np.convolve(speed, np.ones(15) / 15, mode="valid").max()
@@ -223,21 +301,31 @@ def main():
         print(f"  {ts[0]:.1f}-{ts[-1]:.1f} s against Music's model (hold {HOLD:g} s, then {RATE:g} pt/s, the whole loop "
               f"eased in and out): {rms:.2f} pt rms, {worst:.2f} at most; best hold {q[2]:.2f} s and "
               f"speed {q[3]:.1f} pt/s, {rms_free:.2f} pt rms")
+    if not scrolls:
+        print(f"\nno scroll ran from rest to rest: {len(rests)} rests and {len(changes)} text changes "
+              f"on columns {x0}-{x1}")
 
-    # Loops: from one scroll's first moving frame to the next one's, the same
-    # text throughout. Needs only the starts, so a scroll cut off later counts.
+    # Loops: from when one scroll set off to when the next did, the same text
+    # throughout. Needs only the starts, so a scroll cut off later counts.
     print()
     moving = [k for k, (r0, r1) in enumerate(rests) if r1 + 1 < len(times) and r1 + 1 not in changes]
     for k0, k1 in zip(moving, moving[1:]):
         (p0, p1), (q0, q1) = rests[k0], rests[k1]
         if any(p1 < c <= q1 for c in changes):
             continue
-        print(f"loop {times[q1] - times[p1]:.3f} s from {times[p1]:.3f} s: moving for {times[q0] - times[p1]:.3f} s, "
-              f"then still for {times[q1] - times[q0]:.3f} s (still: under {REST_PX} px a frame)")
+        s0, s1 = began(p1), began(q1)
+        print(f"loop {s1 - s0:.3f} s from {s0:.3f} s: moving for {times[q0] - s0:.3f} s, "
+              f"then still for {s1 - times[q0]:.3f} s (still: under {REST_PX} px a frame)")
     for c in sorted(changes):
-        later = [k for k in moving if rests[k][0] > c and not any(c < d <= rests[k][0] for d in changes)]
-        if later:
-            print(f"text changed at {times[c]:.3f} s and first moved {times[rests[later[0]][1]] - times[c]:.3f} s later")
+        later = [k for k in moving if rests[k][0] >= c and not any(c < d <= rests[k][0] for d in changes)]
+        if later and position[rests[later[0]][0]] - position[c] >= 1:
+            # It moved before it had rested REST_TIME in view: a gap hid the
+            # rest it began with, or all but the end of it, and the next rest
+            # found is a loop later.
+            print(f"text changed at {times[c]:.3f} s and moved before resting {REST_TIME:g} s, "
+                  "so its first move isn't timed")
+        elif later:
+            print(f"text changed at {times[c]:.3f} s and first moved {began(rests[later[0]][1]) - times[c]:.3f} s later")
 
 
 if __name__ == "__main__":

@@ -125,6 +125,7 @@ project.yml                          XcodeGen spec — no .xcodeproj is committe
 .github/workflows/build-ipa.yml      Called by the above; unsigned IPA + simulator build
 scripts/build_source.py              Regenerates public/source.json
 scripts/make_icon.py                 Draws the app icon, like Albums' script of the same name
+scripts/measure_marquee.py           Times a scrolling line in a screen recording (Open work item 10)
 source.config.json                   AltStore listing metadata (user-facing copy)
 public/                              Cloudflare Pages site: landing page, source.json
 PUBLISHING.md                        One-time setup for the AltStore source
@@ -528,7 +529,10 @@ phone can't honestly claim "clean". Receivers treat an absent flag as "don't
 know"; Issun then asks the exact store-ID lookup's `trackExplicitness`, never
 fuzzy search. `PresenceController` compares `explicit` beside `Track.key` so a
 switch between a song's clean and explicit editions, which share title, artist
-and album, pushes at once rather than at the next heartbeat.
+and album, pushes at once rather than at the next heartbeat. The Now Playing
+row's `song` does the same, so on that switch the title and artist start again
+from rest, as for a new song, rather than jumping partway through a scroll when
+the E changes the title's width.
 
 **Not yet seen on a device.** Whether `isExplicitItem` is populated for catalog
 tracks streamed through `systemMusicPlayer`, rather than only for library items,
@@ -643,22 +647,30 @@ The short version:
   hairline. Control Center's is an empty translucent square (Apple's iPhone
   User Guide screenshot); Apple names no colour, and tertiarySystemFill is the
   documented fill "for large shapes".
-- **Scrolling is Music's own timing, measured, since 1 Nov 2026** (Open work
-  item 10 has how). `MarqueeLine` is a plain marquee, holding 3 s and then
-  scrolling at 30 pt/s until the line's repeat has taken its place, whose
-  whole loop runs through ease-in-ease-out (`UnitCurve.easeInOut`, Core
-  Animation's (0.42, 0, 0.58, 1)). So the hold stretches to 4–5 s, longer
-  for a longer line, and the scroll sets off briskly, is fastest (52 pt/s) at
-  the middle of the loop, and eases into the stop as the loop ends. The
-  repeat follows 32 pt after the text, and both edges fade over
-  20 pt, the leading one only while the line moves. Each line scrolls on its
-  own and a new song restarts both. Stopped in the background, off under
-  Reduce Motion, where a long line truncates. From build 120 until then the
-  row used UIKit's private UILabel marquee through LNSystemMarqueeLabel; the
-  owner saw "no easing visible" on it, and Music's motion is eased from end
-  to end, so whatever ran was not Music's. It went, with the package and
-  `ThirdPartyNotices.txt`, in the release that brought the measured timing,
-  as promised. **Not yet seen on a device.**
+- **Scrolling is Music's own, from Apple's code and measured, since 1 Nov
+  2026** (Open work item 10 has both). `MarqueeLine` is a plain marquee,
+  holding 3 s and then scrolling at 30 pt/s until the line's repeat has taken
+  its place, whose whole loop runs through ease-in-ease-out
+  (`UnitCurve.easeInOut`, Core Animation's (0.42, 0, 0.58, 1)). So the hold
+  stretches to about 4 s, longer for a longer line (4.2 s for one that barely
+  overflows the row on an SE, 3.9 s under Display Zoom, 5.8 s with 600 pt to
+  travel), and the scroll sets off briskly, is fastest (52 pt/s) at the
+  middle of the loop, and eases into the stop as the loop ends. The repeat
+  follows 32 pt after the text,
+  and both edges fade over 20 pt, the leading one only over the copy that's
+  leaving, so the line's start is never faded, at rest or easing into place.
+  Since build 148 the title and artist share one loop, as Music's do: both
+  start when the song changes, the loop is as long as the line that travels
+  farther needs, and the shorter line, moving at the same pace, stops where
+  it runs out (`MarqueeLine.Travel`, a preference the row reads). Stopped in
+  the background, off under Reduce Motion, where a long line truncates. From
+  build 120 until build 145 the row was set to use UIKit's private UILabel
+  marquee through LNSystemMarqueeLabel, falling back to a linear
+  `MarqueeLine` where iOS lacked it. Which one ran was never confirmed, and
+  it doesn't matter: both were linear (UIKit's by Apple's code; item 10), and
+  the owner saw "no easing visible". It went, with the package and
+  `ThirdPartyNotices.txt`, in build 145, as promised. **Build 148 not yet
+  seen on a device.**
 
 ## Clickable presence
 
@@ -1250,13 +1262,14 @@ of the wrong bar.
 because nothing was drawn by hand; this failed to track a *device class* because
 a constant was.
 
-**10. Long titles ease into a stop, as Music's do — built 1 Nov 2026, not yet
-seen on a device.** Asked 15 Oct 2026: "can you make the long-title scrolling
-ease into a stop like what happens in apple music if that's easy to match
-exactly". `MarqueeLine`'s first numbers were LNPopupController's (cbpowell's
-MarqueeLabel, linear). The owner then suggested UIKit's private marquee ("how
-about just lnsystemmarqueelabel"); it shipped in build 120, and the owner
-reported "there is no easing visible in build 120", the same day.
+**10. Long titles ease into a stop, as Music's do — built 1 Nov 2026 (builds
+145 and 148).** Asked 15 Oct 2026: "can you make
+the long-title scrolling ease into a stop like what happens in apple music if
+that's easy to match exactly". `MarqueeLine`'s first numbers were
+LNPopupController's (cbpowell's MarqueeLabel, linear). The owner then
+suggested UIKit's private marquee ("how about just lnsystemmarqueelabel"); it
+shipped in build 120, and the owner reported "there is no easing visible in
+build 120", the same day.
 
 The recording arrived on 1 Nov 2026, after the chat's 30 MB attachment limit
 turned it back. It was already on the PC: the owner's iCloud Photos syncs
@@ -1267,65 +1280,209 @@ HEVC at a variable ~59.5 fps, 5958 decoded frames. Music only, so it says
 nothing about which scroller build 120 ran, which no longer matters.
 
 **How, so it can be redone: `scripts/measure_marquee.py`.** Give it a
-recording and the line's pixel rows (`... rec.mp4 784 840 --columns
-150:450` for this one). It tracks the line from frame to frame to 0.01 px at
-each frame's own pts_time, fits a cubic Bézier to every scroll that runs from
-rest to rest, prints the loop periods, and checks every frame of each title
-against the model below. On this recording it reproduces everything below in
-about 40 s. The gap and the fades came from stitching the tracked frames into
-the whole title, which the script doesn't do.
+recording, the line's pixel rows and a stretch of columns clear of both
+fades (`... rec.mp4 784 840 --columns 150:450` for this one). It finds the
+line in every frame at that frame's own pts_time, on a 0.01 px grid, against
+an earlier frame rather than the one before: build 145's version added up
+frame-to-frame moves, whose small errors lean one way with the fraction of a
+pixel moved, and read each scroll here 0.4–0.6 pt long. For every scroll
+from rest to rest it prints the distance, the peak speed and the cubic
+Bézier that scroll fits on its own; then every frame of the title against
+the model below, with the hold and speed that fit it best; then the loop
+periods, and how soon after a song change the line first moved. It takes
+about a minute here. A rest is half a second without movement, timed to when
+the line set off, so a recording that sends frames far apart while nothing
+moves, or none at all, still has its rests, and a lone still frame before a
+gap mid-scroll isn't taken for one. Loops and first moves
+are timed from when the line set off: its first moving frame, taken back at
+its own speed. After a gap in the recording it looks for the line as far as
+it could have gone, but once the line is moving, no further than twice as
+far as its speed would carry it, plus 12 px, so a new title that begins
+like the old one isn't taken for the old one moving on, unless it sits
+within that reach, as in the 0.87 s case below.
 
-What Music does, from two titles that looped in full ('Light the Fire Up in
-the Night "KAGEJIKAN"', 426.9 pt a loop, and 'Shoot to kill, kill your
-darlings', 299.6 pt):
+It was tried on 22 synthetic recordings of the model (26 runs, some repeated
+with other rows or columns): Ammy's row and Music's player, at 2x and 3x,
+light and dark, with dropped frames, gaps of up to 2 s, frames far apart or
+none while the line rests, odd crops, loops over 1,000 pt and song changes.
+In all but two it gave back 3.00 s and 30.0 pt/s (2.99 s in three), the
+distances to 0.07 pt, and the loops and first moves to 3 ms, or to 0.11 s
+where gaps of up to 2 s covered a scroll's start. A song change inside a
+gap is timed at the first frame after it, so the first move after one reads
+short by up to the gap, or, if the gap left under half a second of the new
+title's rest in view, isn't timed, since the next rest is a loop later. The
+two it gets wrong: a title that changed during
+a rest to the same words plus (Live), which looks no different until the
+line moves and which it takes for the same title, so it fitted holds of
+3.91 and 3.54 s at 28.4 and 27.8 pt/s and a 14.29 s loop spanning both
+titles; and a change, inside a 0.87 s gap, to the same title again, which
+sits just where the old title's last speed would have carried it, though,
+slowing to its stop, the old title wouldn't have got there yet. Eight more,
+made in review for the newest code, come out right: a recording that starts
+mid-scroll with its second frame 0.6 s late, a repeated frame before a
+0.6 s gap, a song change during a rest with no frames, and gaps that leave
+a new title under half a second of rest in view. Numbers
+below that it doesn't print either name their source or came from one-off
+measurements and calculations on 1 Nov 2026 that aren't in the repo. Those
+include the Baditude figures, the gap's clear space, the fades, the title's
+resting place and the cap height.
+
+What Music does, from two titles that looped in full: 'Light the Fire Up in
+the Night "KAGEJIKAN"', 426.5 pt a loop, and 'Shoot to kill, kill your
+darlings', 299.0 pt (the script prints 426.49 and 298.96; the independent
+measurement found 426.50 and 299.00):
 - **A plain marquee, eased as a whole.** It holds 3 s, then scrolls at
   30 pt/s until the repeat has taken the text's place, and that whole loop,
   hold and scroll together, runs through ease-in-ease-out, Core Animation's
-  (0.42, 0, 0.58, 1). The ease-in stretches the hold into a rest of 4–5 s,
-  longer for a longer title; the scroll sets off already moving, is fastest
-  at the loop's midpoint (52 pt/s on both titles, 30 pt/s times the curve's
-  peak slope of 1.72), and eases to a stop as the loop ends. Against every
-  frame of both titles, rests included, it misses by 0.37–0.49 pt RMS and
-  1.2 pt at most, with nothing fitted but where the loops start. Left free,
-  the hold and speed come out at 3.07 s and 30.2 pt/s here, and at 2.997 s
-  and 30.001 pt/s in the independent measurement.
+  (0.42, 0, 0.58, 1). The ease-in stretches the hold into a rest of over
+  4 s, longer for a longer title (4.98 and 4.32 s here); the scroll sets off
+  already moving, is fastest at the loop's midpoint (51.8–51.9 pt/s on both
+  titles, where the model's is 30 pt/s times the curve's peak slope of 1.72,
+  51.7), and eases to a stop as the loop ends. Against every frame of both
+  titles, rests included, with nothing fitted but where each title's loops
+  start, it misses by 0.42 and 0.21 pt RMS, and by under 1 pt on every frame
+  but one. The misses near 1 pt are KAGEJIKAN's first loop, which ran 24 ms
+  longer than 3 s plus its distance at 30 pt/s (next bullet); given that
+  loop its own start, it misses there by under 0.1 pt on every frame but the
+  same one. That frame, at 2.495 s, misses by 1.7 pt, 0.9 from the loop and
+  0.8 from its own timing: its timestamp is out of step with its neighbours'
+  (28.3 then 21.7 ms apart, the only such steps in the recording), and it
+  shows the line where its neighbours put it 16 ms after that timestamp.
+  Left free, the hold and speed come out at 3.01–3.02 s and 30.0 pt/s, and
+  at 2.997 s and 30.001 pt/s in the independent measurement.
 - **The evidence that it is one eased loop**, not an eased scroll after a
-  rest: the loop periods, 17.222 and 17.223 s, and 12.990 s, are each within
-  10 ms of 3 s plus the distance at 30 pt/s; the peak speed falls at the
-  middle of the whole loop (19.44 s against 19.49 s, 87.79 s against
-  87.75 s); and the rests, 5.03 s and 4.43 s, are what the curve leaves of
-  the hold. Fitted alone, each scroll is a different slice of the same curve,
-  which is why their best Béziers differ slightly, (0.31, 0.31, 0.56, 1.0)
-  and (0.29, 0.33, 0.56, 1.0); the first model built here was their average
-  with the loop timing bolted on, and missed by up to 2.2 pt rather than 1.2.
-  The named curves applied to the scroll alone miss by 2–18 pt; ease-out is
-  the nearest. It was the independent re-measurement, a second agent working
-  from the same recording without seeing these numbers, that found the
-  whole-loop structure; it agreed with this one's distances to 0.2% and peak
-  speeds to 1.5%.
-- After a song change the first scroll came 4.27 s and 4.63 s after the new
-  title appeared, about one rest: a loop starts with its hold.
-- **The gap is 32 pt.** There is 34–35 pt of clear space between the end of
-  the title and its repeat. SF Pro's own side bearings at 20 pt make that a
-  31.4–32.1 pt gap between the two copies; the font file is on this PC, in
-  `%LOCALAPPDATA%\Microsoft\Windows\Fonts\SF-Pro.ttf`. 32 pt is also Music's
-  side margin.
-- **The fades are about 20 pt** (18.5–22.3 measured). Music's leading fade
-  sits in the margin, from 6 to 28 pt across the screen, short of the title's
-  resting place at 32 pt, so a title at rest is never faded at its start. The
-  trailing fade ends 257.5 pt across, inside the title's column. The row has
-  no margin to spare beside its artwork, so both of its fades stay inside the
-  line, as before.
-- **Music's title is 20 pt SF Pro** (cap height 14.0 pt); the row's is 17.
-  The numbers stay in points, as measured. Whether Apple scales any of them
-  with the type size isn't known.
+  rest: the loops repeat 0–25 ms after 3 s plus the distance at 30 pt/s
+  (17.217 and 12.967 s). The script times them at 17.219 and 12.982 s, and
+  fits of each loop on its own (the review's, 1 Nov 2026) put KAGEJIKAN's
+  first at 17.241 s. The extra is a pause at rest before the next loop,
+  which fits Music building each loop when the last one ends (below);
+  Ammy's loop runs off the clock and has none. In those fits the peak speed
+  falls at the middle of each loop (19.49 s against 19.49 s, 87.75 s
+  against 87.75 s), and the rests are what the curve leaves of the hold
+  (4.98 and 4.32 s) plus that pause; the script's "still for 5.21 and
+  4.51 s" also counts the slow end of each scroll, under 0.05 px a frame.
+  Fitted alone, each scroll is a different slice of the same curve, which is
+  why their best Béziers differ, (0.330, 0.345, 0.567, 0.994) and (0.319,
+  0.380, 0.568, 0.988), each within 0.012 of its slice of the eased loop,
+  (0.329, 0.347, 0.566, 1) and (0.318, 0.384, 0.567, 1). Keep three places:
+  rounded to two they fit several times worse. They aren't exact, though:
+  the fit has a long valley of near-best answers, and started from when the
+  line set off rather than from its last still frame, Shoot to kill's comes
+  out (0.317, 0.387, 0.564, 1.010) at 0.022 pt rms against 0.021, so the
+  script tries both and keeps the better. The named curves applied to
+  the scroll alone miss by 2.6–18 pt; ease-out is the nearest. It was the
+  independent re-measurement, a second agent working from the same recording
+  without seeing these numbers, that found the whole-loop structure.
+- **Corrected the same day.** Build 145's version of this item took its
+  distances and per-scroll Béziers from the drifting frame-to-frame track
+  (426.9 and 299.6 pt), and its periods and rests from a superseded first
+  model (an averaged Bézier after a fixed rest), and said the script
+  reproduced them all, which it didn't. A review by independent agents
+  found each one on 1 Nov 2026; these are the corrected numbers. Two more
+  reviews, of build 148 before it shipped, found more of the same: this item
+  gave the build as 146, a number no build will carry, overstated the
+  synthetic tests, explained only half of the 1.7 pt miss, claimed every
+  number the script doesn't print named its source and missed the second
+  recording; and the script lost a song change hidden in a gap, timed
+  starts from the last still frame, counted a rest in frames rather than
+  time and, when a gap hid most of a new title's first rest, timed its
+  first move a loop late. All are fixed above, though a song change in a
+  long enough gap can still be lost (the 0.87 s case).
+- After a song change the first scroll came 4.28 s and 4.65 s after the new
+  title appeared: one rest of the loop that ran, which began 37 and 38 ms
+  before the title showed (the curve leaves rests of 4.318 and 4.684 s for
+  those loops). A loop starts with its hold. The second,
+  'Baditude (Original Radio Edit)', ran a 15.24 s loop, not the 13.07 s its
+  own 302 pt needs. 15.24 s is what the previous song's artist line needed
+  ('digifae, diana starshine & Galen Tipton', about 367 pt with the gap), so
+  Music sized the shared loop (below) while that line still held the
+  previous song; Baditude's own artist line didn't scroll. It is the first
+  recording's only sight of the shared loop, and the next bullet has a
+  direct one. Ammy's row sizes the loop from both lines as they are after
+  the change, so it doesn't copy that.
+- **A second recording shows the shared loop directly.**
+  `ScreenRecording_11-01-2026 17-30-58_1.mp4`, in the same folder, is 50 s
+  of the same player on the same phone at 17:30 that day, and its title and
+  artist line both scroll: 'Prime Time Golden Hour Show (Soundtrack)',
+  437.0 pt a loop, and 'Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC',
+  535.5 pt. Run on rows 784 840 and 836 892, columns 150:450 for both, the
+  script has them setting off within 2 ms of each other and both repeating
+  every 20.85 s (it times them at 20.852 and 20.854 s): the artist's own
+  loop, 3 s plus 535.5 pt at 30 pt/s, which it fits at 0.16 pt rms (left
+  free, 3.01 s and 30.0 pt/s). The title's own 437.0 pt would need 17.57 s,
+  and on that loop the model misses it by 60 pt rms. Instead it keeps the
+  artist's pace, peaking at 51.8 pt/s, and after 9.6 s stops where it runs
+  out, then rests 11.2 s. From the positions file the script writes: the
+  title stops from about 35 pt/s, with no easing, and the artist's loop
+  with the title held at its own 437.0 pt puts it within 0.07 pt rms of
+  every frame, 0.7 pt at most.
+- **The gap is 32 pt.** There is 35.7 pt (KAGEJIKAN) and 34.0 pt (Shoot to
+  kill) of clear space between the end of the title and its repeat, to the
+  ink's half-coverage edge, and SF Pro Semibold's side bearings at 20 pt
+  (3.58 and 1.84 pt) make both a 32.1–32.2 pt gap between the two copies.
+  The font file is on this PC, in
+  `%LOCALAPPDATA%\Microsoft\Windows\Fonts\SF-Pro.ttf`. Apple's code sets 32
+  (below).
+- **The fades are 20 pt.** Both are straight ramps 18.5–20.3 pt wide (10% to
+  90%, over 0.8): the leading one from about 8 to 28 pt across the screen,
+  short of the title's resting place at 32 pt, so a title at rest or easing
+  into place is never faded at its start; the trailing one ending at about
+  258 pt, inside the title's column. Apple's 26.1 code was read as setting 24
+  (below). A video whose brightness isn't in proportion to opacity can't
+  explain that, since it would bend the ramp rather than straighten it at
+  20 pt, so the row follows the phone. The row has no margin beside its
+  artwork, so both of its fades sit inside the line, and the leading one
+  fades only the copy that's leaving: it ramps in over the scroll's first
+  20 pt, then switches off once the leaving copy is past the edge, when only
+  the gap is under it, so the repeat eases into place unfaded, as Music's
+  does. Build 145's ramped off over the scroll's last 20 pt instead, which
+  the eased stop stretched into 1–2 s a loop of the arriving first letter
+  dimmed by up to 25%; the owner had noticed ("cool was hoping i wouldn't
+  have to mention that").
+- **Music's title is 20 pt SF Pro** (cap height 14.1 pt); the row's is 17.
+  The numbers stay in points, as Apple's code has them.
 
-`MarqueeLine` now uses all of it, the model exactly as above, and is the only
-scroller. `SystemMarqueeLines`, LNSystemMarqueeLabel and
-`ThirdPartyNotices.txt` went in the same release, as promised: UIKit's marquee
-showed the owner no easing, and Music's eases from end to end. What's left is
-the device. A recording of a long title in Ammy's row, run through the script,
-should give the same curve, speeds and loop.
+**What Apple's code says**, found by a research agent in decompiled iOS
+builds: iOS 26.1 at github.com/EthanArbuckle/iPhone18-3_26.1_23B85_Restore
+(Music.app and its MusicApplication.framework), 18.2 at
+EthanArbuckle/iPhone17-1_18.2_22C152_Restore, and the 17.6.1 build above.
+- Music's full-screen title and artist are drawn by Music's own `MarqueeView`,
+  a fork of MPUFoundation's `MPUMarqueeView` that arrived in iOS 26.0
+  (ipsw-diffs). Its defaults, which Music never changes: `marqueeDelay` 3.0
+  and `marqueeScrollRate` 30.0. The full-screen player sets `contentGap` 32
+  and, as the research read it, fade insets of 24 on each side, where the
+  recording shows 20 (above); the mini player, 32 with fades of 8 leading
+  and 40 trailing. The fade is one `CAGradientLayer` over the whole view,
+  white to clear across each inset with `kCAFilterDestOut`, fixed while the
+  text moves under it, and the text is laid out at the leading inset, so it
+  rests clear of the fade.
+- Each loop is one `CAKeyframeAnimation` on `transform.translation.x`, values
+  [0, 0, -L, -L] at key times [0, delay/D, duration/D, 1], with
+  `kCAMediaTimingFunctionEaseInEaseOut` as the animation's own timing
+  function. Core Animation applies that to the whole animation before its
+  segments, which are linear: hence one eased loop, the hold included.
+  `duration` is 3 s + (width + gap) / 30, and D is the longest of the title's
+  and the artist's, which the title coordinates, so the two lines share a
+  loop and the shorter one stops where it runs out. When a loop ends,
+  `animationDidStop:finished:` builds the next from that moment, so every
+  loop starts with its hold, and the 0–25 ms pause measured above fits it.
+- For comparison, from the same decompiles: the Lock Screen's
+  `MPUMarqueeView` is linear (Linear by name in 17.6.1 and, by the import
+  table, in 26.1), with a 3 s delay, 30 pt/s, a 26 pt gap and 3 pt fades.
+  UIKit's private UILabel marquee, which build 120 switched to, has no timing
+  function at all: a 1.5 s rest, 30 pt/s, a 40 pt gap and an image mask. No
+  setting on that path could ever have eased, which is what the owner saw.
+- This is iOS 26.1 code. The owner's phone runs 27.2, and the recording
+  agrees with it on everything but the fades. Music's `MarqueeView` is still
+  in the 27.0 betas' symbol lists.
+
+`MarqueeLine` now does all of it and is the only scroller: build 145 brought
+the eased loop, the 32 pt gap and 20 pt fades, and removed
+`SystemMarqueeLines`, LNSystemMarqueeLabel and `ThirdPartyNotices.txt`, as
+promised; build 148 brought the shared loop of title and artist, the leading
+fade that spares the arriving copy, and the corrected script and numbers.
+What's left is the device: a recording of a long title in Ammy's row, run
+through the script, should give the same curve, speeds and loop.
 
 ## Working with the owner
 
