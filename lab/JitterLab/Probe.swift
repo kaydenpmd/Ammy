@@ -33,6 +33,10 @@ final class Probe: NSObject {
     private var lastDelta: CGFloat = 0
     private var stacksLogged = 0
     private let origin = CACurrentMediaTime()
+    /// Symbolising a stack takes tens of milliseconds, which on the main
+    /// thread is itself a hitch, so the main thread only grabs the return
+    /// addresses and this queue names them and writes every record.
+    private let writer = DispatchQueue(label: "probe.writer")
 
     func start(directory: String, tag: String) {
         try? FileManager.default.createDirectory(atPath: directory, withIntermediateDirectories: true)
@@ -46,6 +50,7 @@ final class Probe: NSObject {
         handle = FileHandle(forWritingAtPath: path)
         print("[probe] writing \(path)")
         UIScrollView.installProbeSwizzle()
+        UIWindow.installTouchSwizzle()
         emit([
             "k": "start", "tag": tag, "wall": Date().timeIntervalSince1970,
             "variant": Lab.variant, "content": Lab.content,
@@ -90,6 +95,11 @@ final class Probe: NSObject {
             d["trk"] = s.isTracking
             d["drg"] = s.isDragging
             d["dec"] = s.isDecelerating
+            let pan = s.panGestureRecognizer
+            d["pst"] = pan.state.rawValue
+            if pan.state == .began || pan.state == .changed {
+                d["pan"] = n(pan.location(in: nil).y)
+            }
         }
         if let bar = navBar {
             d["nb"] = n(bar.convert(CGPoint(x: 0, y: bar.bounds.maxY), to: nil).y)
@@ -135,13 +145,14 @@ final class Probe: NSObject {
         ]
         let reversal = abs(delta) > 0.5 && lastDelta != 0 && (delta > 0) != (lastDelta > 0)
         let unattended = !s.isTracking && !s.isDecelerating && abs(delta) > 0.01
+        var addresses: [UInt]?
         if (reversal || unattended) && stacksLogged < 600 {
-            d["st"] = stack()
+            addresses = stack()
             d["why"] = reversal ? "reversal" : "unattended"
             stacksLogged += 1
         }
         if abs(delta) > 0.5 { lastDelta = delta }
-        emit(d)
+        emit(d, stack: addresses)
     }
 
     private func insetChanged(_ s: UIScrollView, old: UIEdgeInsets?, new: UIEdgeInsets?) {
@@ -149,8 +160,8 @@ final class Probe: NSObject {
             "k": "ci", "f": frameIndex, "now": n(CACurrentMediaTime() - origin),
             "oldTop": n(old?.top ?? .nan), "oldBottom": n(old?.bottom ?? .nan),
             "top": n(new?.top ?? .nan), "bottom": n(new?.bottom ?? .nan),
-            "oy": n(s.contentOffset.y), "st": stack(),
-        ])
+            "oy": n(s.contentOffset.y),
+        ], stack: stack())
     }
 
     fileprivate func adjustedInsetChanged(_ s: UIScrollView) {
@@ -159,8 +170,19 @@ final class Probe: NSObject {
             "k": "aic", "f": frameIndex, "now": n(CACurrentMediaTime() - origin),
             "top": n(s.adjustedContentInset.top), "bottom": n(s.adjustedContentInset.bottom),
             "sat": n(s.safeAreaInsets.top), "sab": n(s.safeAreaInsets.bottom),
-            "oy": n(s.contentOffset.y), "trk": s.isTracking, "st": stack(),
-        ])
+            "oy": n(s.contentOffset.y), "trk": s.isTracking,
+        ], stack: stack())
+    }
+
+    fileprivate func touched(_ event: UIEvent) {
+        guard event.type == .touches, let touches = event.allTouches else { return }
+        for touch in touches {
+            emit([
+                "k": "t", "f": frameIndex, "now": n(CACurrentMediaTime() - origin),
+                "ts": n(event.timestamp - origin), "y": n(touch.location(in: nil).y),
+                "ph": touch.phase.rawValue,
+            ])
+        }
     }
 
     // MARK: Helpers
@@ -195,11 +217,20 @@ final class Probe: NSObject {
         return y
     }
 
-    private func stack() -> [String] {
-        Thread.callStackSymbols.dropFirst(2).prefix(48).map { line in
-            let parts = line.split(separator: " ", omittingEmptySubsequences: true)
-            guard parts.count >= 4 else { return line }
-            return String(parts[1]) + " " + parts[3...].joined(separator: " ")
+    private func stack() -> [UInt] {
+        Thread.callStackReturnAddresses.dropFirst(2).prefix(48).map(\.uintValue)
+    }
+
+    private nonisolated static func symbolize(_ addresses: [UInt]) -> [String] {
+        addresses.map { address in
+            var info = Dl_info()
+            guard let pointer = UnsafeRawPointer(bitPattern: address), dladdr(pointer, &info) != 0 else {
+                return String(format: "0x%lx", address)
+            }
+            let image = info.dli_fname.map { (String(cString: $0) as NSString).lastPathComponent } ?? "?"
+            let name = info.dli_sname.map { String(cString: $0) } ?? "?"
+            let offset = info.dli_saddr.map { address &- UInt(bitPattern: $0) } ?? 0
+            return "\(image) \(name) + \(offset)"
         }
     }
 
@@ -211,12 +242,43 @@ final class Probe: NSObject {
         value.isFinite ? (value * 10000).rounded() / 10000 : NSNull()
     }
 
-    private func emit(_ record: [String: Any]) {
-        guard let handle, JSONSerialization.isValidJSONObject(record),
-              let data = try? JSONSerialization.data(withJSONObject: record, options: [.sortedKeys])
+    private func emit(_ record: [String: Any], stack: [UInt]? = nil) {
+        guard let handle else { return }
+        let box = RecordBox(record: record)
+        writer.async {
+            var record = box.record
+            if let stack { record["st"] = Probe.symbolize(stack) }
+            guard JSONSerialization.isValidJSONObject(record),
+                  let data = try? JSONSerialization.data(withJSONObject: record, options: [.sortedKeys])
+            else { return }
+            handle.write(data)
+            handle.write(Data([0x0A]))
+        }
+    }
+}
+
+/// Carries a record to the writer queue; it holds only numbers, strings,
+/// booleans, arrays of them and NSNull.
+private struct RecordBox: @unchecked Sendable {
+    let record: [String: Any]
+}
+
+extension UIWindow {
+    @objc dynamic func lab_sendEvent(_ event: UIEvent) {
+        Probe.shared.touched(event)
+        // After the exchange this calls UIKit's original.
+        lab_sendEvent(event)
+    }
+
+    private static let labTouchSwizzle: Void = {
+        guard let original = class_getInstanceMethod(UIWindow.self, #selector(UIWindow.sendEvent(_:))),
+              let replacement = class_getInstanceMethod(UIWindow.self, #selector(UIWindow.lab_sendEvent(_:)))
         else { return }
-        handle.write(data)
-        handle.write(Data([0x0A]))
+        method_exchangeImplementations(original, replacement)
+    }()
+
+    static func installTouchSwizzle() {
+        _ = labTouchSwizzle
     }
 }
 

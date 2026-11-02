@@ -51,14 +51,23 @@ jobs:
         id: sim
         run: |
           set -euo pipefail
-          RUNTIME=$(xcrun simctl list runtimes -j | python3 -c '
+          # Newest runtime first; a runtime made for one device (27.1 on the
+          # xcode-27 image is iPhone Duo's) refuses the others, so fall back.
+          UDID=""
+          for RUNTIME in $(xcrun simctl list runtimes -j | python3 -c '
           import json, sys
           rs = [r for r in json.load(sys.stdin)["runtimes"] if r["platform"] == "iOS" and r["isAvailable"]]
-          rs.sort(key=lambda r: [int(x) for x in r["version"].split(".")])
-          print(rs[-1]["identifier"])')
-          echo "runtime: $RUNTIME"
-          UDID=$(xcrun simctl create "Lab SE" com.apple.CoreSimulator.SimDeviceType.iPhone-SE-3rd-generation "$RUNTIME" 2>/dev/null \
-            || xcrun simctl create "Lab 17e" com.apple.CoreSimulator.SimDeviceType.iPhone-17e "$RUNTIME")
+          rs.sort(key=lambda r: [int(x) for x in r["version"].split(".")], reverse=True)
+          print(" ".join(r["identifier"] for r in rs))'); do
+            for TYPE in iPhone-SE-3rd-generation iPhone-17e; do
+              if UDID=$(xcrun simctl create "Lab $TYPE" "com.apple.CoreSimulator.SimDeviceType.$TYPE" "$RUNTIME" 2>/dev/null); then
+                echo "device: $TYPE on $RUNTIME"
+                break 2
+              fi
+              UDID=""
+            done
+          done
+          [ -n "$UDID" ] || { echo "no usable simulator"; exit 1; }
           echo "udid=$UDID" >> "$GITHUB_OUTPUT"
           xcrun simctl list devices | grep "$UDID"
           xcrun simctl boot "$UDID"

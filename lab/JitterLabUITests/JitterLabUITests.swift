@@ -7,8 +7,7 @@ import XCTest
 final class JitterLabUITests: XCTestCase {
     private static let variants = [
         "none", "ammy", "inset", "build39", "tall", "thin", "zero", "clear87",
-        "onStack", "insetOnStack", "toolbar", "toolbarPlain", "list", "scroll",
-        "margins", "padding", "hard", "noEffect",
+        "onStack", "toolbar", "list", "scroll", "margins", "padding", "hard", "noEffect",
     ]
 
     private var outDir: String {
@@ -20,18 +19,18 @@ final class JitterLabUITests: XCTestCase {
     }
 
     @MainActor
-    func test1Drag() { sweep("drag") }
+    func test1Slow() { sweep("slow") }
     @MainActor
-    func test2Flick() { sweep("flick") }
+    func test2Drag() { sweep("drag") }
     @MainActor
-    func test3Hold() { sweep("hold") }
+    func test3Flick() { sweep("flick") }
     @MainActor
     func test4Up() { sweep("up") }
 
     @MainActor
     func test5Long() {
-        for variant in ["none", "ammy", "toolbar", "onStack"] {
-            run(variant, content: "long", gesture: "drag")
+        for variant in ["none", "ammy", "margins", "toolbar"] {
+            run(variant, content: "long", gesture: "slow")
         }
     }
 
@@ -52,14 +51,18 @@ final class JitterLabUITests: XCTestCase {
             app.launch()
             _ = app.navigationBars.firstMatch.waitForExistence(timeout: 15)
             Thread.sleep(forTimeInterval: 1.0)
-            if gesture == "drag" { shot(tag + "__0") }
+            if gesture == "slow" { shot(tag + "__0") }
 
             let high = app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.25))
             let middle = app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5))
             let low = app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.7))
             switch gesture {
+            case "slow":
+                // About a point a frame, like the crawl in the owner's recording.
+                low.press(forDuration: 0.3, thenDragTo: middle,
+                          withVelocity: XCUIGestureVelocity(rawValue: 150), thenHoldForDuration: 0.5)
             case "drag":
-                low.press(forDuration: 0.05, thenDragTo: high,
+                low.press(forDuration: 0.3, thenDragTo: high,
                           withVelocity: XCUIGestureVelocity(rawValue: 600), thenHoldForDuration: 0.5)
             case "flick":
                 low.press(forDuration: 0.01, thenDragTo: middle,
@@ -78,7 +81,7 @@ final class JitterLabUITests: XCTestCase {
                 break
             }
             Thread.sleep(forTimeInterval: 2.0)
-            if gesture == "drag" { shot(tag + "__1") }
+            if gesture == "slow" { shot(tag + "__1") }
             app.terminate()
         }
     }
