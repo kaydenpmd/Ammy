@@ -648,10 +648,10 @@ struct ContentView: View {
     /// measure it from within itself. See the padding at the foot of the bar.
     @State private var bottomSafeArea: CGFloat = 0
 
-    /// History is on screen. A bar on the stack outlives the pages under it,
-    /// so it would sit over History too; instead it fades out as History
-    /// arrives and back in as it leaves, the way a toolbar's items change
-    /// between pages.
+    /// History is on screen, or sliding in. A bar on the stack outlives the
+    /// pages under it, so it would sit over History too; instead it fades
+    /// out as History slides in and back in as History slides out, over the
+    /// slide itself, the way a toolbar's items change between pages.
     @State private var historyShown = false
 
     /// The bar's own height. A stack doesn't pass its bar's inset down to the
@@ -698,6 +698,17 @@ struct ContentView: View {
             form
                 .contentMargins(.bottom, barHeight, for: .scrollContent)
                 .contentMargins(.bottom, barHeight, for: .scrollIndicators)
+                // UIKit says when this page starts to give way to History or
+                // to come back, as the slide begins and with its duration.
+                // SwiftUI's onAppear and onDisappear on History come after the
+                // slide: on the owner's SE the bar lingered over History and
+                // came back 0.4 s late. An overlay rather than a background,
+                // to leave the list first among the page's views, which is
+                // how UIKit has picked the scroll view a large title follows.
+                .overlay {
+                    PageTransitions(willAppear: pageWillAppear, willDisappear: pageWillDisappear)
+                        .frame(width: 0, height: 0)
+                }
         }
         // safeAreaBar, not safeAreaInset. Both reserve the space — which
         // is what keeps the last row scrollable clear of the button
@@ -731,7 +742,6 @@ struct ContentView: View {
                         .transition(.opacity)
                 }
             }
-            .animation(.default, value: historyShown)
         }
         // Attached after the stack's bottom bar, deliberately: `safeAreaBar`
         // extends the safe area of whatever it modifies, so a reading taken
@@ -888,8 +898,10 @@ struct ContentView: View {
             Section {
                 NavigationLink("History") {
                     LinkHistoryView()
-                        .onAppear { historyShown = true }
-                        .onDisappear { historyShown = false }
+                        // Late, and only a backstop: should the page's
+                        // transitions never arrive, the bar still steps aside.
+                        .onAppear { setHistoryShown(true, over: nil) }
+                        .onDisappear { setHistoryShown(false, over: nil) }
                 }
             }
 
@@ -1037,6 +1049,41 @@ struct ContentView: View {
         .padding(.horizontal, 21)
     }
 
+    /// The page has begun to give way to History: the bar fades out over the
+    /// same slide.
+    private func pageWillDisappear(_ transition: (any UIViewControllerTransitionCoordinator)?) {
+        setHistoryShown(true, over: transition)
+    }
+
+    /// The page has begun to come back. Back always finishes, so the bar fades
+    /// in over the whole slide. A swipe back can still be called off, so for
+    /// one the bar waits for the finger to lift, then takes what's left of
+    /// the slide, or stays away if the swipe was let go.
+    private func pageWillAppear(_ transition: (any UIViewControllerTransitionCoordinator)?) {
+        guard let transition, transition.isInteractive else {
+            setHistoryShown(false, over: transition)
+            return
+        }
+        transition.notifyWhenInteractionChanges { context in
+            MainActor.assumeIsolated {
+                guard !context.isCancelled else { return }
+                let rest = max(0.15, context.transitionDuration * (1 - context.percentComplete))
+                withAnimation(.easeInOut(duration: rest)) { historyShown = false }
+            }
+        }
+    }
+
+    /// Fades the bar over the transition's own duration, or SwiftUI's default
+    /// when there is no transition to follow.
+    private func setHistoryShown(_ shown: Bool, over transition: (any UIViewControllerTransitionCoordinator)?) {
+        guard historyShown != shown else { return }
+        if let transition, transition.isAnimated {
+            withAnimation(.easeInOut(duration: transition.transitionDuration)) { historyShown = shown }
+        } else {
+            withAnimation { historyShown = shown }
+        }
+    }
+
     @MainActor
     private func start() async {
         stoppedByUser = false
@@ -1079,5 +1126,43 @@ struct ContentView: View {
     private func autoStartIfPossible() async {
         guard !stoppedByUser, !controller.isRunning, canAutoStart else { return }
         await controller.start()
+    }
+}
+
+/// Hears UIKit say that the page it sits in has begun to appear or to
+/// disappear, with the transition that's moving it, if there is one: the
+/// moment a toolbar's items change, as the slide begins. SwiftUI's onAppear
+/// and onDisappear arrive once the slide is over.
+private struct PageTransitions: UIViewControllerRepresentable {
+    typealias Handler = @MainActor ((any UIViewControllerTransitionCoordinator)?) -> Void
+
+    var willAppear: Handler
+    var willDisappear: Handler
+
+    func makeUIViewController(context: Context) -> Listener { Listener() }
+
+    func updateUIViewController(_ listener: Listener, context: Context) {
+        listener.willAppear = willAppear
+        listener.willDisappear = willDisappear
+    }
+
+    final class Listener: UIViewController {
+        var willAppear: Handler?
+        var willDisappear: Handler?
+
+        override func loadView() {
+            view = UIView()
+            view.isUserInteractionEnabled = false
+        }
+
+        override func viewWillAppear(_ animated: Bool) {
+            super.viewWillAppear(animated)
+            willAppear?(transitionCoordinator)
+        }
+
+        override func viewWillDisappear(_ animated: Bool) {
+            super.viewWillDisappear(animated)
+            willDisappear?(transitionCoordinator)
+        }
     }
 }
