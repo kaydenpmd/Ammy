@@ -241,24 +241,30 @@ and a Face ID iPhone 17e (27.0). Two things come with it:
   scroll room as before, 87.5 pt on the SE and 34 + 53.3 on the 17e. If a
   later iOS starts passing it down, the Form gets that room twice, and the
   margins go.
-- A stack's bar outlives its pages, so it would sit over History. It fades out
-  as History slides in and back in as History slides out, the way a toolbar's
-  items change between pages, where it used to slide away with the page.
-  Builds 150 and 152 drove it from History's `onAppear` and `onDisappear`,
-  which arrive after the slide: on the owner's SE "Stop" was still faintly
-  there for about 0.1 s after History had arrived, and came back about 0.4 s
-  after the page had returned. Since build 154 the page's own UIKit
-  transitions drive it, as they do a toolbar's items: `PageTransitions`, a
-  view controller in the page that hears `viewWillAppear` and
-  `viewWillDisappear` with the transition's duration. History's callbacks
-  stay as a backstop. A swipe back can still be called off, so for one the
-  bar waits for the finger to lift. In the lab's SE simulator, iOS 26.5 and
-  27.0, the bar is 90% gone 0.28–0.32 s into a 0.40–0.45 s push and 90% back
-  0.28–0.29 s into a 0.36–0.42 s Back; after a full swipe it comes back as the
-  finger lifts, and a swipe called off leaves it away. Not yet seen on a
-  device. The lab's recordings carry wall-clock `pts_time` beside a `dts`
-  that drifts behind it, and ffmpeg's default timestamps follow the `dts`, so
-  read `pts_time`: the default made the History test look unrecorded.
+- A stack's bar outlives its pages, so it would sit over History. Since
+  build 156 the page carries an identical copy of the bar while it slides to
+  History and back, from its `viewWillDisappear` to its `viewDidAppear`
+  (`PageTransitions`, a view controller in the page; History's `onAppear`
+  and `onDisappear` arrive after the slides and stay only as a backstop).
+  The stack's bar steps aside without animating, and the copy goes with the
+  page and under History, as the bar did when it was the Form's. Fading the
+  stack's bar instead was tried twice. Builds 150 and 152 faded it after the
+  slide, from History's callbacks: "Stop" lingered over History for about
+  0.1 s and came back about 0.4 s after the page. Build 154 faded it during
+  the slide, from the page's transitions, and the owner found that "bottom
+  looks worse now on page transitions": a fading glass button is a murky
+  half-transparent capsule, navy for the blue Start, over History's rows for
+  about 0.4 s, and the edge effect's band then switched off in one frame.
+  In the lab (SE and Face ID simulators, iOS 26.5 and 27.0) the copy lands on
+  the stack bar's pixels at both handovers, the capsule's edges within
+  0.02 px; History has neither bar nor band; and a swipe back that's called
+  off leaves the page carrying it. iOS 26 still tints the strip behind the
+  bar, so there the tint goes as the slide away starts and returns once the
+  page has settled back. Not yet seen on a device. The lab's recordings carry
+  wall-clock `pts_time` beside a `dts` that drifts behind it, and ffmpeg's
+  default timestamps follow the `dts`, so read `pts_time`: the default made
+  the History test look unrecorded. The macos-26 runner's recorder also drops
+  most frames while anything moves, so time slides on the xcode-27 runner's.
 
 **Rejected, so not worth retrying:** `safeAreaInset`, or `contentMargins` with
 an overlay (no edge effect: rows show crisp behind the button); UIKit's
