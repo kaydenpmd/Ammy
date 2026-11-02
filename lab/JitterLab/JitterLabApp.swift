@@ -29,10 +29,25 @@ enum Lab {
 struct LabRoot: View {
     private let variant = Lab.variant
     @State private var bottomSafeArea: CGFloat = 0
+    @State private var barHeight: CGFloat = 0
 
     var body: some View {
         Group {
             switch variant {
+            case "stackMargins":
+                // The bar on the stack (UIKit's eager inset path survives),
+                // with the scroll room it no longer passes down given back
+                // as content margins.
+                NavigationStack {
+                    LabForm(variant: variant)
+                        .navigationTitle("Ammy")
+                        .contentMargins(.bottom, barHeight, for: .scrollContent)
+                        .contentMargins(.bottom, barHeight, for: .scrollIndicators)
+                }
+                .safeAreaBar(edge: .bottom) {
+                    AmmyBar(bottomSafeArea: bottomSafeArea)
+                        .onGeometryChange(for: CGFloat.self) { $0.size.height } action: { barHeight = $0 }
+                }
             case "onStack":
                 NavigationStack {
                     LabForm(variant: variant).navigationTitle("Ammy")
@@ -95,6 +110,47 @@ struct BarHost: View {
                 ToolbarItem(placement: .bottomBar) {
                     Button("Start") {}
                 }
+            }
+        case "toolbarFlexA":
+            titled.toolbar {
+                ToolbarItem(placement: .bottomBar) {
+                    Button {
+                    } label: {
+                        Text("Start")
+                            .fontWeight(.medium)
+                            .frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(.glassProminent)
+                    .buttonSizing(.flexible)
+                    .controlSize(.large)
+                }
+            }
+        case "toolbarFlexB":
+            titled.toolbar {
+                ToolbarItem(placement: .bottomBar) {
+                    Button {
+                    } label: {
+                        Text("Start")
+                            .fontWeight(.medium)
+                            .frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(.glassProminent)
+                    .buttonSizing(.flexible)
+                    .controlSize(.large)
+                }
+                .sharedBackgroundVisibility(.hidden)
+            }
+        case "insetEdge":
+            // safeAreaInset keeps UIKit's eager inset path; UIKit's own
+            // interaction for custom bars asks for the edge effect behind it.
+            titled.safeAreaInset(edge: .bottom, spacing: 0) {
+                AmmyBar(bottomSafeArea: bottomSafeArea)
+                    .background { ScrollEdgeAnchor(edge: .bottom) }
+            }
+        case "insetEdgeOver":
+            titled.safeAreaInset(edge: .bottom, spacing: 0) {
+                AmmyBar(bottomSafeArea: bottomSafeArea)
+                    .overlay { ScrollEdgeAnchor(edge: .bottom).allowsHitTesting(false) }
             }
         case "margins":
             titled

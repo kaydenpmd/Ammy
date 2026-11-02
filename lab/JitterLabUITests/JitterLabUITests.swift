@@ -6,8 +6,8 @@ import XCTest
 /// record too.
 final class JitterLabUITests: XCTestCase {
     private static let variants = [
-        "none", "ammy", "inset", "build39", "tall", "thin", "zero", "clear87",
-        "onStack", "toolbar", "list", "scroll", "margins", "padding", "hard", "noEffect",
+        "none", "ammy", "inset", "insetEdge", "insetEdgeOver", "stackMargins",
+        "toolbarFlexA", "toolbarFlexB",
     ]
 
     private var outDir: String {
@@ -23,16 +23,7 @@ final class JitterLabUITests: XCTestCase {
     @MainActor
     func test2Drag() { sweep("drag") }
     @MainActor
-    func test3Flick() { sweep("flick") }
-    @MainActor
-    func test4Up() { sweep("up") }
-
-    @MainActor
-    func test5Long() {
-        for variant in ["none", "ammy", "margins", "toolbar"] {
-            run(variant, content: "long", gesture: "slow")
-        }
-    }
+    func test3Up() { sweep("up") }
 
     @MainActor
     private func sweep(_ gesture: String) {
@@ -81,7 +72,7 @@ final class JitterLabUITests: XCTestCase {
                 break
             }
             Thread.sleep(forTimeInterval: 2.0)
-            if gesture == "slow" { shot(tag + "__1") }
+            if gesture == "slow" || gesture == "drag" { shot(tag + "__1") }
             app.terminate()
         }
     }

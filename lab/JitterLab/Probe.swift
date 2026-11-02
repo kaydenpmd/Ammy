@@ -174,6 +174,14 @@ final class Probe: NSObject {
         ], stack: stack())
     }
 
+    /// A one-off record from elsewhere in the app, stamped with the frame.
+    func note(_ record: [String: Any]) {
+        var record = record
+        record["f"] = frameIndex
+        record["now"] = n(CACurrentMediaTime() - origin)
+        emit(record)
+    }
+
     fileprivate func touched(_ event: UIEvent) {
         guard event.type == .touches, let touches = event.allTouches else { return }
         for touch in touches {
