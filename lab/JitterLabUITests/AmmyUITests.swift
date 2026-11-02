@@ -164,6 +164,12 @@ final class AmmyUITests: XCTestCase {
     @MainActor
     func test2bBottomLargeText() { bottom("bottomXXXL", textSize: Self.largeText) }
 
+    /// The same with media access revoked, which the workflow arranges: the
+    /// prompt's section at the top makes the page long enough to have an end
+    /// on an iPhone 17e at the default text size.
+    @MainActor
+    func test2cBottomPrompt() { bottom("bottomPrompt", textSize: nil) }
+
     @MainActor
     private func bottom(_ name: String, textSize: String?) {
         for layout in ["option1", "main156", "option1Margins", "largeForm"] {
@@ -297,6 +303,11 @@ final class AmmyUITests: XCTestCase {
     /// The same at the larger text size.
     @MainActor
     func test5bRestLargeText() { rest("restXXXL", textSize: Self.largeText) }
+
+    /// The same with media access revoked: the prompt at the top, and a page
+    /// long enough to have an end on an iPhone 17e.
+    @MainActor
+    func test5cRestPrompt() { rest("restPrompt", textSize: nil) }
 
     @MainActor
     private func rest(_ name: String, textSize: String?) {

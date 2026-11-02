@@ -22,7 +22,10 @@ name: Header lab (option 1)
 # whose first test runner stalled before option 1's; three more flicks of
 # option 1 and build 156 on each SE; and every layout at the XXXL text size,
 # scrolled, taken to the end of the page and photographed at rest in dark,
-# because at the default size the page fits a 17e's screen.
+# because at the default size the page fits a 17e's screen. "third" is every
+# layout with media access revoked, taken to the end of the page and
+# photographed at rest in dark: the prompt's section makes the page long
+# enough to have an end on the 17e, which XXXL text alone did not.
 
 on:
   push:
@@ -30,7 +33,7 @@ on:
   workflow_dispatch:
 
 env:
-  SUITE: second
+  SUITE: third
 
 jobs:
   ammy-sdk26:
@@ -252,6 +255,15 @@ jobs:
             xcrun simctl ui "$UDID" appearance light || echo "light failed"
             echo "$(stamp) appearance light" >> out/phases.txt
             run_tests prompt-light "-light" test6Prompt
+            xcrun simctl privacy "$UDID" grant media-library com.local.ammy || true
+          elif [ "$SUITE" = "third" ]; then
+            xcrun simctl privacy "$UDID" revoke media-library com.local.ammy || echo "revoke failed"
+            echo "$(stamp) media access revoked" >> out/phases.txt
+            run_tests bottomPrompt "" test2cBottomPrompt
+            xcrun simctl ui "$UDID" appearance dark || echo "dark failed"
+            echo "$(stamp) appearance dark" >> out/phases.txt
+            run_tests restPrompt-dark "-dark" test5cRestPrompt
+            xcrun simctl ui "$UDID" appearance light || echo "light failed"
             xcrun simctl privacy "$UDID" grant media-library com.local.ammy || true
           else
             if [ "${{ matrix.scroll }}" = "yes" ]; then
