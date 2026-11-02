@@ -648,12 +648,6 @@ struct ContentView: View {
     /// measure it from within itself. See the padding at the foot of the bar.
     @State private var bottomSafeArea: CGFloat = 0
 
-    /// TEMPORARY, 2 Nov 2026: where the bottom bar is attached, for the owner
-    /// to compare on the device. On, the default, it's the navigation stack's;
-    /// off, it's the Form's, as it was until build 148. The switch goes once
-    /// the two have been compared. See the bar on the stack for why it moved.
-    @AppStorage("barOnStack") private var barOnStack = true
-
     /// History is on screen. A bar on the stack outlives the pages under it,
     /// so it would sit over History too; instead it fades out as History
     /// arrives and back in as it leaves, the way a toolbar's items change
@@ -701,14 +695,9 @@ struct ContentView: View {
 
     var body: some View {
         NavigationStack {
-            if barOnStack {
-                form
-                    .contentMargins(.bottom, barHeight, for: .scrollContent)
-                    .contentMargins(.bottom, barHeight, for: .scrollIndicators)
-            } else {
-                form
-                    .safeAreaBar(edge: .bottom) { bar }
-            }
+            form
+                .contentMargins(.bottom, barHeight, for: .scrollContent)
+                .contentMargins(.bottom, barHeight, for: .scrollIndicators)
         }
         // safeAreaBar, not safeAreaInset. Both reserve the space — which
         // is what keeps the last row scrollable clear of the button
@@ -736,7 +725,7 @@ struct ContentView: View {
         // title's jump).
         .safeAreaBar(edge: .bottom) {
             ZStack {
-                if barOnStack && !historyShown {
+                if !historyShown {
                     bar
                         .onGeometryChange(for: CGFloat.self) { $0.size.height } action: { barHeight = $0 }
                         .transition(.opacity)
@@ -744,10 +733,10 @@ struct ContentView: View {
             }
             .animation(.default, value: historyShown)
         }
-        // Attached outside both bottom bars, deliberately: `safeAreaBar`
+        // Attached after the stack's bottom bar, deliberately: `safeAreaBar`
         // extends the safe area of whatever it modifies, so a reading taken
-        // inside the bar's own content is measuring the bar. Out here it
-        // reports what the window reserves.
+        // inside the bar, or on the stack beneath it, is measuring the bar.
+        // Out here it reports what the window reserves.
         //
         // onGeometryChange rather than a one-shot read of the key window, since
         // iPad rotates and Split View resizes; and rather than a GeometryReader,
@@ -902,16 +891,6 @@ struct ContentView: View {
                         .onAppear { historyShown = true }
                         .onDisappear { historyShown = false }
                 }
-            }
-
-            // TEMPORARY, 2 Nov 2026: barOnStack's switch, to compare the
-            // two placements on the device.
-            Section {
-                Toggle("Title Fix", isOn: $barOnStack)
-            } footer: {
-                Text("Temporary, for comparing. On, the Start button belongs to the "
-                     + "navigation stack and the title collapses as you scroll. Off, it "
-                     + "belongs to this list, as in build 148.")
             }
 
         }

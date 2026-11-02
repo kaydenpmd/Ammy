@@ -243,7 +243,11 @@ and a Face ID iPhone 17e (27.0). Two things come with it:
   margins go.
 - A stack's bar outlives its pages, so it would sit over History. It fades out
   as History arrives and back in as it leaves, the way a toolbar's items
-  change between pages, where it used to slide away with the page.
+  change between pages, where it used to slide away with the page. History's
+  `onAppear` and `onDisappear` drive it, and on the owner's SE it lags the
+  slide: "Stop" is still faintly there for about 0.1 s after History has
+  arrived, and comes back about 0.4 s after the page has returned, fading in
+  over about 0.2 s.
 
 **Rejected, so not worth retrying:** `safeAreaInset`, or `contentMargins` with
 an overlay (no edge effect: rows show crisp behind the button); UIKit's
@@ -254,15 +258,24 @@ toolbar (the button shrinks to a capsule whatever `.buttonSizing(.flexible)` or
 almost invisible, and full-width toolbar buttons have their own hit-area bug,
 forums thread 836076).
 
-**Not yet seen on a device.** Build 150 carries a temporary **Title Fix**
-switch at the foot of the page: on, the default, the bar is the stack's; off,
-it's the Form's, as in build 148. It's there to compare the two on the owner's
-SE, and goes once they have been compared. The simulator never ran this
-combination: an app built with the iOS 26.5 SDK, as CI builds Ammy, on iOS 27,
-which handles bars and edge effects differently for such apps (forums thread
-834059). A Feedback report is drafted with a minimal reproduction
-(`lab/FEEDBACK.md` and `lab/Repro` on the `jitter-lab` branch) and waits to be
-filed from the owner's account.
+**Seen on the owner's SE on 2 Nov 2026 (iOS 27.2), and the switch is gone.**
+Build 148 still jumped that night: "the vertical scroll bug is still here build
+148". Build 150 had a temporary **Title Fix** switch, on for the stack's bar and
+off for the Form's, and with it on the owner's verdict was "i think it looks
+good now". Their screen recording agrees: the title rises with the content and
+the inline title fades in, and the two scrolls down from the top start at no
+more than 2.5 pt a frame, where September's leapt up to 57 pt in one. The foot
+of the page is the same to the pixel in either position: two screenshots there
+differ only in the clock and the switch. What the recording couldn't show is
+the other position jumping. Flipping the switch rebuilt the list, which landed
+back at the top, and after a flip neither position jumped, in six scrolls with
+the bar on the Form and two with it on the stack. So the evidence is build
+against build, 148 against 150, and the next test of this kind should compare
+launches, not flips. It was also the fix's first run as CI builds it, with the
+iOS 26.5 SDK, on iOS 27, a combination the simulator never covered. The switch
+went in build 152. A Feedback report is drafted with a minimal
+reproduction (`lab/FEEDBACK.md` and `lab/Repro` on the `jitter-lab` branch)
+and waits to be filed from the owner's account.
 
 **16 Sept 2026: iOS 27 removed the tint behind the bar, and Ammy followed for
 free.** `safeAreaBar` does not draw a background — it applies the system's scroll
