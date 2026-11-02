@@ -75,6 +75,26 @@ struct LabRoot: View {
                     AmmyBar(bottomSafeArea: bottomSafeArea)
                         .onGeometryChange(for: CGFloat.self) { $0.size.height } action: { barHeight = $0 }
                 }
+            case "inlineStack":
+                // (C) An inline title, with the bar on the stack as build 156
+                // has it: the Form's scroll room given back as margins.
+                NavigationStack {
+                    LabForm(variant: variant)
+                        .navigationTitle("Ammy")
+                        .navigationBarTitleDisplayMode(.inline)
+                        .contentMargins(.bottom, barHeight, for: .scrollContent)
+                        .contentMargins(.bottom, barHeight, for: .scrollIndicators)
+                        .onScrollGeometryChange(for: CGFloat.self) { $0.contentInsets.bottom } action: { _, new in
+                            Probe.shared.note(["k": "scrollInsetBottom", "v": Double(new)])
+                        }
+                }
+                .safeAreaBar(edge: .bottom) {
+                    AmmyBar(bottomSafeArea: bottomSafeArea)
+                        .onGeometryChange(for: CGFloat.self) { $0.size.height } action: {
+                            barHeight = $0
+                            Probe.shared.note(["k": "barHeight", "v": Double($0)])
+                        }
+                }
             case "onStack":
                 NavigationStack {
                     LabForm(variant: variant).navigationTitle("Ammy")
@@ -107,6 +127,18 @@ struct BarHost: View {
         switch variant {
         case "none":
             titled
+        case "inlineNone":
+            // An inline title and no bar: what an inline title does alone.
+            titled.navigationBarTitleDisplayMode(.inline)
+        case "inlineForm":
+            // (B) Option 2: an inline title, with Ammy's bar back on the
+            // Form, where it sat until build 150.
+            titled
+                .navigationBarTitleDisplayMode(.inline)
+                .onScrollGeometryChange(for: CGFloat.self) { $0.contentInsets.bottom } action: { _, new in
+                    Probe.shared.note(["k": "scrollInsetBottom", "v": Double(new)])
+                }
+                .safeAreaBar(edge: .bottom) { AmmyBar(bottomSafeArea: bottomSafeArea) }
         case "inset":
             titled.safeAreaInset(edge: .bottom, spacing: 0) { AmmyBar(bottomSafeArea: bottomSafeArea) }
         case "build39":

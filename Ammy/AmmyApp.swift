@@ -26,6 +26,15 @@ extension Bundle {
 struct AmmyApp: App {
     @StateObject private var controller = PresenceController()
 
+    init() {
+        // Lab only (jitter-lab-inline): the jitter lab's per-frame probe,
+        // when the UI test asks for it.
+        let env = ProcessInfo.processInfo.environment
+        if let dir = env["LAB_OUT"], let tag = env["LAB_TAG"] {
+            Probe.shared.start(directory: dir, tag: tag)
+        }
+    }
+
     var body: some Scene {
         WindowGroup {
             ContentView().environmentObject(controller)
@@ -695,8 +704,88 @@ struct ContentView: View {
     }
 
     var body: some View {
+        layout
+        // Attached outside every layout's bottom bar, deliberately:
+        // `safeAreaBar` extends the safe area of whatever it modifies, so a
+        // reading taken inside the bar, or beneath it, is measuring the bar.
+        // Out here it reports what the window reserves.
+        //
+        // onGeometryChange rather than a one-shot read of the key window, since
+        // iPad rotates and Split View resizes; and rather than a GeometryReader,
+        // which would take over the layout of everything inside it.
+        .onGeometryChange(for: CGFloat.self) { proxy in
+            proxy.safeAreaInsets.bottom
+        } action: { bottomSafeArea = $0 }
+        .task {
+            // The monitor reads the device, not the relay, so it runs whether
+            // or not a session does. That is what lets Now Playing and the
+            // access prompt say something true before anything has started.
+            controller.appDidBecomeActive()
+            await controller.monitor.start()
+            await autoStartIfPossible()
+        }
+        // .task covers a cold launch; this covers coming back from the
+        // background, which is the more common way of arriving at a notice
+        // that has already fired. onChange never sees the initial value, so
+        // both are needed.
+        .onChange(of: scenePhase) { _, phase in
+            if phase == .active {
+                controller.appDidBecomeActive()
+                Task { await controller.monitor.start() }
+                Task { await autoStartIfPossible() }
+            } else if phase == .background {
+                controller.appDidEnterBackground()
+            }
+        }
+        .onOpenURL { url in
+            if url.host()?.lowercased() == "notify" || url.path().lowercased() == "/notify" {
+                controller.suppressNextPopup()
+            }
+        }
+        .alert(PushOutcome.failureTitle, isPresented: Binding(
+            get: { controller.pendingFailure != nil },
+            set: { if !$0 { controller.dismissFailure() } }
+        )) {
+            Button("OK") { controller.dismissFailure() }
+        } message: {
+            Text(controller.pendingFailure.map {
+                $0.explanation + (controller.isRunning ? " Ammy is trying again." : " Press Start to try again.")
+            } ?? "")
+        }
+    }
+
+    /// Lab only (jitter-lab-inline): the arrangement of title and bar, from
+    /// the `-labLayout` launch argument.
+    @ViewBuilder private var layout: some View {
+        switch Lab.variant {
+        case "largeForm":
+            // (A) Build 148: a large title, the bar on the Form.
+            NavigationStack {
+                form
+                    .safeAreaBar(edge: .bottom) { bar }
+            }
+        case "inlineForm":
+            // (B) Option 2: an inline title, the bar back on the Form, with
+            // no margins and no page copy for History.
+            NavigationStack {
+                form
+                    .navigationBarTitleDisplayMode(.inline)
+                    .safeAreaBar(edge: .bottom) { bar }
+            }
+        case "inlineStack":
+            // (C) An inline title, the bar on the stack as build 156 has it.
+            stacked(form.navigationBarTitleDisplayMode(.inline))
+        default:
+            // Build 156 as shipped.
+            stacked(form)
+        }
+    }
+
+    /// Build 156's arrangement: the bar on the stack, the Form's scroll room
+    /// given back as margins, and the page's own copy of the bar for History.
+    private func stacked(_ page: some View) -> some View {
         NavigationStack {
-            form
+            page
                 .contentMargins(.bottom, barHeight, for: .scrollContent)
                 .contentMargins(.bottom, barHeight, for: .scrollIndicators)
                 // The page's own copy of the bar, for its slides to History
@@ -748,75 +837,6 @@ struct ContentView: View {
                 bar
                     .onGeometryChange(for: CGFloat.self) { $0.size.height } action: { barHeight = $0 }
             }
-        }
-        // Attached after the stack's bottom bar, deliberately: `safeAreaBar`
-        // extends the safe area of whatever it modifies, so a reading taken
-        // inside the bar, or on the stack beneath it, is measuring the bar.
-        // Out here it reports what the window reserves.
-        //
-        // onGeometryChange rather than a one-shot read of the key window, since
-        // iPad rotates and Split View resizes; and rather than a GeometryReader,
-        // which would take over the layout of everything inside it.
-        .onGeometryChange(for: CGFloat.self) { proxy in
-            proxy.safeAreaInsets.bottom
-        } action: { bottomSafeArea = $0 }
-        .task {
-            // The monitor reads the device, not the relay, so it runs whether
-            // or not a session does. That is what lets Now Playing and the
-            // access prompt say something true before anything has started.
-            controller.appDidBecomeActive()
-            await controller.monitor.start()
-            await autoStartIfPossible()
-        }
-        // .task covers a cold launch; this covers coming back from the
-        // background, which is the more common way of arriving at a notice
-        // that has already fired. onChange never sees the initial value, so
-        // both are needed.
-        .onChange(of: scenePhase) { _, phase in
-            if phase == .active {
-                controller.appDidBecomeActive()
-                // Coming back from Settings with access newly granted: the
-                // monitor only asks again while it isn't running, so this
-                // costs nothing once access is in hand. The autostart below
-                // may ask at the same moment; it waits for this answer rather
-                // than seeing none.
-                Task { await controller.monitor.start() }
-                // A session that failed leaves the process alive but idle —
-                // iOS suspends it rather than killing it — so a cold-launch-only
-                // autostart never ran again, and opening Ammy after (say) the PC
-                // slept for half an hour silently did nothing.
-                Task { await autoStartIfPossible() }
-            } else if phase == .background {
-                // .background, not .inactive. Inactive also fires for Control
-                // Centre, a pulled-down notification shade and an incoming
-                // call banner — none of which means the alert has been
-                // abandoned, and converting on those would snatch it away
-                // while the person was still going to read it.
-                controller.appDidEnterBackground()
-            }
-        }
-        // Opening ammy://notify says this launch is about to be switched away
-        // from, so any failure should arrive as a notification. Nothing else:
-        // the app opens exactly as it would have otherwise.
-        .onOpenURL { url in
-            if url.host()?.lowercased() == "notify" || url.path().lowercased() == "/notify" {
-                controller.suppressNextPopup()
-            }
-        }
-        .alert(PushOutcome.failureTitle, isPresented: Binding(
-            get: { controller.pendingFailure != nil },
-            set: { if !$0 { controller.dismissFailure() } }
-        )) {
-            Button("OK") { controller.dismissFailure() }
-        } message: {
-            // The alert appears with the session already ended, so the way back
-            // is usually the Start button beneath it. Usually: a trip through
-            // Control Center or a call banner comes back through .active, which
-            // autostarts while the alert is still up. It says whichever is true
-            // when it is read.
-            Text(controller.pendingFailure.map {
-                $0.explanation + (controller.isRunning ? " Ammy is trying again." : " Press Start to try again.")
-            } ?? "")
         }
     }
 

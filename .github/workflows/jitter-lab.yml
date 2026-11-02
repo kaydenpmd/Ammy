@@ -1,24 +1,20 @@
-name: Jitter lab
+name: Jitter lab (inline title)
 
-# Runs only on the jitter-lab branch, never on main, and releases nothing:
-# it builds lab/JitterLab, drives bar variants through the same scroll
-# gestures in a simulator, and uploads the per-frame probe logs, screenshots
-# and a screen recording. LAB_MODE "ammy" instead builds the real Ammy from
-# this branch and records it being scrolled with its bar on the stack and on
-# the Form.
+# Runs only on the jitter-lab-inline branch, never on main, and releases
+# nothing. Option 2 of the section-header question: an inline title with the
+# bar back on the Form. It builds lab/JitterLab and drives its variants
+# through the same scroll gestures in a simulator, logging every frame: (A)
+# "ammy", a large title with the bar on the Form (the known jump); (B)
+# "inlineForm", an inline title with the bar on the Form; (C) "inlineStack",
+# an inline title with the bar on the stack. Then it builds the real Ammy
+# from this branch, with the probe in it and its layout picked at launch,
+# and does the same, plus History opened and left every way. Uploads the
+# probe logs, screenshots and a screen recording of the whole run.
 
 on:
   push:
-    branches: [jitter-lab]
-    paths:
-      - 'lab/JitterLab/**'
-      - 'lab/JitterLabUITests/**'
-      - 'lab/project.yml'
-      - 'Ammy/**'
+    branches: [jitter-lab-inline]
   workflow_dispatch:
-
-env:
-  LAB_MODE: ammy
 
 jobs:
   lab:
@@ -29,20 +25,11 @@ jobs:
           - name: ios26
             runner: macos-26
             xcode: /Applications/Xcode_26.6.app
-            devices: iPhone-SE-3rd-generation iPhone-17e
+            devices: iPhone-SE-3rd-generation
           - name: ios27
             runner: xcode-27
             xcode: /Applications/Xcode_27.2_Release_Candidate.app
-            devices: iPhone-SE-3rd-generation iPhone-17e
-          # Face ID phones, for where the bar sits above the home indicator.
-          - name: ios26-faceid
-            runner: macos-26
-            xcode: /Applications/Xcode_26.6.app
-            devices: iPhone-17 iPhone-16e iPhone-16 iPhone-17e
-          - name: ios27-faceid
-            runner: xcode-27
-            xcode: /Applications/Xcode_27.2_Release_Candidate.app
-            devices: iPhone-17e iPhone-17 iPhone-16e
+            devices: iPhone-SE-3rd-generation
     runs-on: ${{ matrix.runner }}
     timeout-minutes: 80
 
@@ -90,6 +77,8 @@ jobs:
           echo "udid=$UDID" >> "$GITHUB_OUTPUT"
           xcrun simctl boot "$UDID"
           xcrun simctl bootstatus "$UDID" -b
+          mkdir -p out
+          { echo "device: $TYPE"; echo "runtime: $RUNTIME"; xcodebuild -version; } > out/device.txt
 
       - name: Build for testing
         run: |
@@ -102,7 +91,6 @@ jobs:
             CODE_SIGNING_ALLOWED=NO 2>&1 | tail -60
 
       - name: Build and install Ammy
-        if: env.LAB_MODE == 'ammy'
         run: |
           set -o pipefail
           UDID="${{ steps.sim.outputs.udid }}"
@@ -110,7 +98,7 @@ jobs:
             -project Ammy.xcodeproj -scheme Ammy -configuration Release \
             -destination "id=$UDID" \
             -derivedDataPath build-ammy \
-            CODE_SIGNING_ALLOWED=NO 2>&1 | grep -E "error|warning: .*AmmyApp|BUILD" | tail -40
+            CODE_SIGNING_ALLOWED=NO 2>&1 | grep -E "error|warning: .*(AmmyApp|LabProbe)|BUILD" | tail -40
           xcrun simctl install "$UDID" build-ammy/Build/Products/Release-iphonesimulator/Ammy.app
           xcrun simctl privacy "$UDID" grant media-library com.local.ammy || true
 
@@ -118,11 +106,6 @@ jobs:
         run: |
           UDID="${{ steps.sim.outputs.udid }}"
           mkdir -p out
-          if [ "$LAB_MODE" = "ammy" ]; then
-            ONLY="-only-testing:JitterLabUITests/AmmyUITests"
-          else
-            ONLY=""
-          fi
           python3 -c 'import time; print(time.time())' > out/record-start.txt
           xcrun simctl io "$UDID" recordVideo --codec=h264 --force out/lab.mp4 > out/record.log 2>&1 &
           REC=$!
@@ -132,12 +115,11 @@ jobs:
             -destination "id=$UDID" \
             -derivedDataPath lab/dd \
             -parallel-testing-enabled NO \
-            $ONLY \
             CODE_SIGNING_ALLOWED=NO > out/xcodebuild-test.log 2>&1 || echo "tests exited $?"
           kill -INT $REC || true
           wait $REC || true
-          tail -30 out/xcodebuild-test.log
-          ls -la out | head -80
+          grep -E "Test Case|error|passed|failed" out/xcodebuild-test.log | tail -60
+          ls -la out | head -120
 
       - name: Demangle stacks
         run: |
