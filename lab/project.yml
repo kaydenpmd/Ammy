@@ -1,0 +1,49 @@
+name: JitterLab
+
+# A throwaway lab for the large-title jitter (CLAUDE.md, "The large title
+# jitters on collapse"). It lives on the jitter-lab branch only and is never
+# released: the app copies Ammy's main screen, swaps the bottom bar for one
+# variant at a time, and logs every display frame's scroll position, so a
+# simulator run in CI can say which variants jump.
+
+options:
+  bundleIdPrefix: com.local
+  deploymentTarget:
+    iOS: "26.0"
+
+targets:
+  JitterLab:
+    type: application
+    platform: iOS
+    sources:
+      - path: JitterLab
+    info:
+      path: JitterLab/Info.plist
+      properties:
+        CFBundleDisplayName: JitterLab
+        UILaunchScreen: {}
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.local.jitterlab
+        SWIFT_VERSION: "5.0"
+        GENERATE_INFOPLIST_FILE: NO
+        TARGETED_DEVICE_FAMILY: "1"
+    scheme:
+      testTargets:
+        - JitterLabUITests
+
+  JitterLabUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources:
+      - path: JitterLabUITests
+    dependencies:
+      - target: JitterLab
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.local.jitterlab.uitests
+        SWIFT_VERSION: "5.0"
+        GENERATE_INFOPLIST_FILE: YES
+        TEST_TARGET_NAME: JitterLab

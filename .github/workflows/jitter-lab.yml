@@ -1,0 +1,113 @@
+name: Jitter lab
+
+# Runs only on the jitter-lab branch, never on main, and releases nothing:
+# it builds lab/JitterLab, drives every bar variant through the same scroll
+# gestures in a simulator, and uploads the per-frame probe logs, screenshots
+# and a screen recording.
+
+on:
+  push:
+    branches: [jitter-lab]
+    paths:
+      - 'lab/**'
+      - '.github/workflows/jitter-lab.yml'
+  workflow_dispatch:
+
+jobs:
+  lab:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: ios26
+            runner: macos-26
+            xcode: /Applications/Xcode_26.6.app
+          - name: ios27
+            runner: xcode-27
+            xcode: /Applications/Xcode_27.2_Release_Candidate.app
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 80
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Select Xcode
+        run: |
+          X="${{ matrix.xcode }}"
+          [ -d "$X" ] || X=/Applications/Xcode.app
+          sudo xcode-select -s "$X"
+          xcodebuild -version
+          ls /Applications | grep -i xcode || true
+          xcrun simctl list runtimes
+          xcrun simctl list devicetypes | grep -iE "iphone (se|1[6-8]e)" || true
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Generate project
+        run: cd lab && xcodegen generate
+
+      - name: Create and boot an iPhone SE
+        id: sim
+        run: |
+          set -euo pipefail
+          RUNTIME=$(xcrun simctl list runtimes -j | python3 -c '
+          import json, sys
+          rs = [r for r in json.load(sys.stdin)["runtimes"] if r["platform"] == "iOS" and r["isAvailable"]]
+          rs.sort(key=lambda r: [int(x) for x in r["version"].split(".")])
+          print(rs[-1]["identifier"])')
+          echo "runtime: $RUNTIME"
+          UDID=$(xcrun simctl create "Lab SE" com.apple.CoreSimulator.SimDeviceType.iPhone-SE-3rd-generation "$RUNTIME" 2>/dev/null \
+            || xcrun simctl create "Lab 17e" com.apple.CoreSimulator.SimDeviceType.iPhone-17e "$RUNTIME")
+          echo "udid=$UDID" >> "$GITHUB_OUTPUT"
+          xcrun simctl list devices | grep "$UDID"
+          xcrun simctl boot "$UDID"
+          xcrun simctl bootstatus "$UDID" -b
+
+      - name: Build for testing
+        run: |
+          set -o pipefail
+          cd lab
+          xcodebuild build-for-testing \
+            -project JitterLab.xcodeproj -scheme JitterLab \
+            -destination "id=${{ steps.sim.outputs.udid }}" \
+            -derivedDataPath dd \
+            CODE_SIGNING_ALLOWED=NO 2>&1 | tail -60
+
+      - name: Run the lab
+        run: |
+          UDID="${{ steps.sim.outputs.udid }}"
+          mkdir -p out
+          xcrun simctl io "$UDID" recordVideo --codec=h264 --force out/lab.mp4 > out/record.log 2>&1 &
+          REC=$!
+          sleep 3
+          TEST_RUNNER_LAB_OUT="$PWD/out" xcodebuild test-without-building \
+            -project lab/JitterLab.xcodeproj -scheme JitterLab \
+            -destination "id=$UDID" \
+            -derivedDataPath lab/dd \
+            -parallel-testing-enabled NO \
+            -resultBundlePath out/results.xcresult \
+            CODE_SIGNING_ALLOWED=NO > out/xcodebuild-test.log 2>&1 || echo "tests exited $?"
+          kill -INT $REC || true
+          wait $REC || true
+          tail -40 out/xcodebuild-test.log
+          # Logs the app could not write to the host land in its own container.
+          DATA=$(xcrun simctl get_app_container "$UDID" com.local.jitterlab data 2>/dev/null || true)
+          if [ -n "$DATA" ] && ls "$DATA/Documents"/*.jsonl > /dev/null 2>&1; then
+            mkdir -p out/container && cp "$DATA/Documents"/*.jsonl out/container/
+          fi
+          ls -la out | head -80
+
+      - name: Demangle stacks
+        run: |
+          for f in $(find out -name '*.jsonl'); do
+            xcrun swift-demangle --simplified < "$f" > "${f%.jsonl}.dm"
+          done
+          rm -rf out/results.xcresult
+          du -sh out
+
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: lab-${{ matrix.name }}
+          path: out
