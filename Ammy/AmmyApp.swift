@@ -27,7 +27,7 @@ struct AmmyApp: App {
     @StateObject private var controller = PresenceController()
 
     init() {
-        // Lab only (jitter-lab-inline): the jitter lab's per-frame probe,
+        // Lab only (header-lab-option1): the jitter lab's per-frame probe,
         // when the UI test asks for it.
         let env = ProcessInfo.processInfo.environment
         if let dir = env["LAB_OUT"], let tag = env["LAB_TAG"] {
@@ -666,8 +666,11 @@ struct ContentView: View {
 
     /// The bar's own height. A stack doesn't pass its bar's inset down to the
     /// lists inside it (FB23732628, Apple Developer Forums thread 837946), so
-    /// the Form takes it as content margins instead: the same scroll room the
-    /// bar gave it from the Form, so the last row still clears the button.
+    /// the Form adds it to its own safe area instead, as the bar did when it
+    /// was the Form's, and the list keeps its own room below the last row on
+    /// top of that. Content margins in its place (builds 150 to 156) took
+    /// that room's place rather than adding to it, leaving History 16 pt
+    /// above the button at the end of the page instead of 36.
     @State private var barHeight: CGFloat = 0
 
     /// SwiftUI's own `.padding()` amount, spelled out because the bar subtracts
@@ -705,9 +708,9 @@ struct ContentView: View {
 
     var body: some View {
         layout
-        // Attached outside every layout's bottom bar, deliberately:
-        // `safeAreaBar` extends the safe area of whatever it modifies, so a
-        // reading taken inside the bar, or beneath it, is measuring the bar.
+        // Attached after the stack's bottom bar, deliberately: `safeAreaBar`
+        // extends the safe area of whatever it modifies, so a reading taken
+        // inside the bar, or on the stack beneath it, is measuring the bar.
         // Out here it reports what the window reserves.
         //
         // onGeometryChange rather than a one-shot read of the key window, since
@@ -731,12 +734,29 @@ struct ContentView: View {
         .onChange(of: scenePhase) { _, phase in
             if phase == .active {
                 controller.appDidBecomeActive()
+                // Coming back from Settings with access newly granted: the
+                // monitor only asks again while it isn't running, so this
+                // costs nothing once access is in hand. The autostart below
+                // may ask at the same moment; it waits for this answer rather
+                // than seeing none.
                 Task { await controller.monitor.start() }
+                // A session that failed leaves the process alive but idle —
+                // iOS suspends it rather than killing it — so a cold-launch-only
+                // autostart never ran again, and opening Ammy after (say) the PC
+                // slept for half an hour silently did nothing.
                 Task { await autoStartIfPossible() }
             } else if phase == .background {
+                // .background, not .inactive. Inactive also fires for Control
+                // Centre, a pulled-down notification shade and an incoming
+                // call banner — none of which means the alert has been
+                // abandoned, and converting on those would snatch it away
+                // while the person was still going to read it.
                 controller.appDidEnterBackground()
             }
         }
+        // Opening ammy://notify says this launch is about to be switched away
+        // from, so any failure should arrive as a notification. Nothing else:
+        // the app opens exactly as it would have otherwise.
         .onOpenURL { url in
             if url.host()?.lowercased() == "notify" || url.path().lowercased() == "/notify" {
                 controller.suppressNextPopup()
@@ -748,100 +768,278 @@ struct ContentView: View {
         )) {
             Button("OK") { controller.dismissFailure() }
         } message: {
+            // The alert appears with the session already ended, so the way back
+            // is usually the Start button beneath it. Usually: a trip through
+            // Control Center or a call banner comes back through .active, which
+            // autostarts while the alert is still up. It says whichever is true
+            // when it is read.
             Text(controller.pendingFailure.map {
                 $0.explanation + (controller.isRunning ? " Ammy is trying again." : " Press Start to try again.")
             } ?? "")
         }
     }
 
-    /// Lab only (jitter-lab-inline): the arrangement of title and bar, from
-    /// the `-labLayout` launch argument.
+    /// Lab only (header-lab-option1): the arrangement of sections and bar,
+    /// from the `-labLayout` launch argument. "option1" is main's working
+    /// tree on 2 Nov 2026, unchanged; the others are its controls.
     @ViewBuilder private var layout: some View {
         switch Lab.variant {
+        case "main156":
+            // Build 156 as released: its headers, the bar on the stack,
+            // the Form's room given back as content margins, and the
+            // page's copy of the bar for History.
+            NavigationStack {
+                form156
+                    .contentMargins(.bottom, barHeight, for: .scrollContent)
+                    .contentMargins(.bottom, barHeight, for: .scrollIndicators)
+                    .overlay(alignment: .bottom) {
+                        if barOnPage { bar.labFrame("page") }
+                    }
+                    .overlay {
+                        PageTransitions(willDisappear: { barOnPage = true },
+                                        didAppear: { barOnPage = false })
+                            .frame(width: 0, height: 0)
+                    }
+            }
+            .safeAreaBar(edge: .bottom) {
+                if !barOnPage {
+                    bar
+                        .onGeometryChange(for: CGFloat.self) { $0.size.height } action: { barHeight = $0 }
+                        .labFrame("stack")
+                }
+            }
+        case "option1Margins":
+            // Option 1's page with build 156's two content margins in
+            // place of the safe-area padding: the headers without the
+            // gap fix.
+            NavigationStack {
+                form
+                    .contentMargins(.bottom, barHeight, for: .scrollContent)
+                    .contentMargins(.bottom, barHeight, for: .scrollIndicators)
+                    .overlay(alignment: .bottom) {
+                        if barOnPage { bar.labFrame("page") }
+                    }
+                    .overlay {
+                        PageTransitions(willDisappear: { barOnPage = true },
+                                        didAppear: { barOnPage = false })
+                            .frame(width: 0, height: 0)
+                    }
+            }
+            .safeAreaBar(edge: .bottom) {
+                if !barOnPage {
+                    bar
+                        .onGeometryChange(for: CGFloat.self) { $0.size.height } action: { barHeight = $0 }
+                        .labFrame("stack")
+                }
+            }
         case "largeForm":
-            // (A) Build 148: a large title, the bar on the Form.
+            // Build 148's bar on option 1's page: a large title, the bar on
+            // the Form, no margins and no page copy. The positive control
+            // for the jump, and the room the bar on the Form left.
             NavigationStack {
                 form
-                    .safeAreaBar(edge: .bottom) { bar }
+                    .safeAreaBar(edge: .bottom) { bar.labFrame("form") }
             }
-        case "inlineForm":
-            // (B) Option 2: an inline title, the bar back on the Form, with
-            // no margins and no page copy for History.
-            NavigationStack {
-                form
-                    .navigationBarTitleDisplayMode(.inline)
-                    .safeAreaBar(edge: .bottom) { bar }
-            }
-        case "inlineStack":
-            // (C) An inline title, the bar on the stack as build 156 has it.
-            stacked(form.navigationBarTitleDisplayMode(.inline))
         default:
-            // Build 156 as shipped.
-            stacked(form)
-        }
-    }
-
-    /// Build 156's arrangement: the bar on the stack, the Form's scroll room
-    /// given back as margins, and the page's own copy of the bar for History.
-    private func stacked(_ page: some View) -> some View {
-        NavigationStack {
-            page
-                .contentMargins(.bottom, barHeight, for: .scrollContent)
-                .contentMargins(.bottom, barHeight, for: .scrollIndicators)
-                // The page's own copy of the bar, for its slides to History
-                // and back: it goes with the page and under History, as the
-                // bar did when it was the Form's. Fading the stack's bar
-                // instead (builds 150 to 154) left a murky half-transparent
-                // capsule over History, then the edge effect switching off.
-                .overlay(alignment: .bottom) {
-                    if barOnPage { bar }
+            // "option1": main's working tree, unchanged but for labFrame.
+            NavigationStack {
+                form
+                    .safeAreaPadding(.bottom, barHeight)
+                    // The page's own copy of the bar, for its slides to History
+                    // and back: it goes with the page and under History, as the
+                    // bar did when it was the Form's. Fading the stack's bar
+                    // instead (builds 150 to 154) left a murky half-transparent
+                    // capsule over History, then the edge effect switching off.
+                    .overlay(alignment: .bottom) {
+                        if barOnPage { bar.labFrame("page") }
+                    }
+                    // UIKit says when this page starts to give way to History and
+                    // when it has settled back. SwiftUI's onAppear and onDisappear
+                    // on History come after the slides. An overlay rather than a
+                    // background, to leave the list first among the page's views,
+                    // which is how UIKit has picked the scroll view a large title
+                    // follows.
+                    .overlay {
+                        PageTransitions(willDisappear: { barOnPage = true },
+                                        didAppear: { barOnPage = false })
+                            .frame(width: 0, height: 0)
+                    }
+            }
+            // safeAreaBar, not safeAreaInset. Both reserve the space — which
+            // is what keeps the last row scrollable clear of the button
+            // instead of permanently buried, as an overlay would — but the bar
+            // also applies the scroll edge effect, so content blurs out as it
+            // passes underneath. That is the whole reason no background is set
+            // here: a hard fill would be doing badly what the system already
+            // does properly, and it is what made the first attempt look stuck
+            // on rather than floating.
+            //
+            // Start/Stop lives here because it is the only control on this
+            // screen anyone touches twice, and the only one that used to
+            // scroll out of reach. The Form is what you set up once; this is
+            // what you actually do.
+            //
+            // On the stack, not the Form, since 2 Nov 2026. A safeAreaBar on the
+            // Form wraps it in the view that collects the scroll edge effect, and
+            // that view stops UIKit handing the Form the large title's insets as it
+            // collapses. They arrive a render late instead, and each one moves the
+            // content, which collapses the title further, which asks for another:
+            // the title snaps shut as a scroll down begins and the content jumps
+            // ahead of the finger, 52 pt in one frame on iOS 26.5 and about 34 over
+            // three on 27.0. On the stack, the edge effect is the same pixel for
+            // pixel and UIKit updates the Form directly (CLAUDE.md, the large
+            // title's jump).
+            .safeAreaBar(edge: .bottom) {
+                if !barOnPage {
+                    bar
+                        .onGeometryChange(for: CGFloat.self) { $0.size.height } action: { barHeight = $0 }
+                        .labFrame("stack")
                 }
-                // UIKit says when this page starts to give way to History and
-                // when it has settled back. SwiftUI's onAppear and onDisappear
-                // on History come after the slides. An overlay rather than a
-                // background, to leave the list first among the page's views,
-                // which is how UIKit has picked the scroll view a large title
-                // follows.
-                .overlay {
-                    PageTransitions(willDisappear: { barOnPage = true },
-                                    didAppear: { barOnPage = false })
-                        .frame(width: 0, height: 0)
-                }
-        }
-        // safeAreaBar, not safeAreaInset. Both reserve the space — which
-        // is what keeps the last row scrollable clear of the button
-        // instead of permanently buried, as an overlay would — but the bar
-        // also applies the scroll edge effect, so content blurs out as it
-        // passes underneath. That is the whole reason no background is set
-        // here: a hard fill would be doing badly what the system already
-        // does properly, and it is what made the first attempt look stuck
-        // on rather than floating.
-        //
-        // Start/Stop lives here because it is the only control on this
-        // screen anyone touches twice, and the only one that used to
-        // scroll out of reach. The Form is what you set up once; this is
-        // what you actually do.
-        //
-        // On the stack, not the Form, since 2 Nov 2026. A safeAreaBar on the
-        // Form wraps it in the view that collects the scroll edge effect, and
-        // that view stops UIKit handing the Form the large title's insets as it
-        // collapses. They arrive a render late instead, and each one moves the
-        // content, which collapses the title further, which asks for another:
-        // the title snaps shut as a scroll down begins and the content jumps
-        // ahead of the finger, 52 pt in one frame on iOS 26.5 and about 34 over
-        // three on 27.0. On the stack, the edge effect is the same pixel for
-        // pixel and UIKit updates the Form directly (CLAUDE.md, the large
-        // title's jump).
-        .safeAreaBar(edge: .bottom) {
-            if !barOnPage {
-                bar
-                    .onGeometryChange(for: CGFloat.self) { $0.size.height } action: { barHeight = $0 }
             }
         }
     }
 
     /// What you set up once, under the large title.
+    ///
+    /// No section headers, since 2 Nov 2026, as on Settings' own top level: a
+    /// large title over groups that space alone separates, the first of them
+    /// a picture card. Settings keeps its small grey headers for the pages
+    /// beneath it, under an inline title or a header card, and the apps that
+    /// do put headers under a large title, such as Files, Notes and Health,
+    /// use a bolder, larger kind. The rows here name themselves: the cover
+    /// and song, the URL and Key labels with the footer beneath them, and
+    /// the status rows. CLAUDE.md, "No section headers", has the survey.
     private var form: some View {
+        Form {
+            if !controller.monitor.authorized {
+                MediaAccessPrompt(monitor: controller.monitor)
+            }
+
+            Section {
+                NowPlayingRow(monitor: controller.monitor)
+            }
+
+            // The relay's /now-playing path stays out of the placeholder, for
+            // the reason the status row says Endpoint and not Relay: that
+            // path is one receiver's convention, not a rule of the app.
+            //
+            // Labels persist where placeholders vanish, so the row names
+            // live on the left and the value column carries only whether the
+            // field must be filled in.
+            // Label above a full-width field, rather than Mail's two-column
+            // row. Both values here are long enough to overflow a shared
+            // row, and LabeledContent's response to that is to stack them
+            // anyway — so the layout would silently change shape depending
+            // on how long someone's address happened to be. Doing it on
+            // purpose keeps it fixed, and gives the value the whole width.
+            //
+            // Both rows get the same treatment even though "Optional" would
+            // fit on one line: matching rows read as one thing, and the key
+            // is as long as the URL in practice.
+            //
+            // The visible label is hidden from VoiceOver and applied to the
+            // field instead, so it is announced once as a labelled control
+            // rather than twice as loose text.
+            // GUESS: spacing 4 between a field's label and its value. No
+            // source; it was picked to look right when these rows were
+            // stacked and has never been checked against anything.
+            Section {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("URL")
+                        .accessibilityHidden(true)
+                    TextField("Required", text: $controller.endpoint)
+                        .textInputAutocapitalization(.never)
+                        .autocorrectionDisabled()
+                        .keyboardType(.URL)
+                        .accessibilityLabel("URL")
+                }
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Key")
+                        .accessibilityHidden(true)
+                    SecureField("Optional", text: $controller.key)
+                        .textInputAutocapitalization(.never)
+                        .autocorrectionDisabled()
+                        .accessibilityLabel("Key")
+                }
+            } footer: {
+                Text("Ammy sends your now-playing details to this address. "
+                     + "If you set a key, it's sent as a header.")
+            }
+
+            Section {
+                // "Endpoint", not "Relay": a relay forwards what it receives,
+                // and nothing here requires that. Ammy posts JSON to an
+                // address; whether that address passes it on, renders it, or
+                // files it away is none of the app's business.
+                //
+                // A spinner rather than a word until the first push comes
+                // back, because until then there is no answer to show —
+                // only the wait for one.
+                LabeledContent("Endpoint") {
+                    if controller.resolving {
+                        ProgressView()
+                    } else {
+                        Text(controller.linkStatus)
+                    }
+                }
+                .animation(.default, value: controller.resolving)
+                LabeledContent("Version", value: Bundle.main.displayVersion)
+            }
+
+            // A group of its own: it is a way out of this screen rather than
+            // another fact about the current one.
+            Section {
+                NavigationLink("History") {
+                    LinkHistoryView()
+                        // Late, and only a backstop: should the page's
+                        // transitions never arrive, the bar still steps aside.
+                        .onAppear { barOnPage = true }
+                        .onDisappear { barOnPage = false }
+                }
+            }
+
+        }
+        .navigationTitle("Ammy")
+        .alert("Use HTTPS?", isPresented: Binding(
+            get: { schemeToConfirm != nil },
+            set: { if !$0 { schemeToConfirm = nil } }
+        ), presenting: schemeToConfirm) { resolved in
+            Button("Use HTTPS") {
+                controller.endpoint = resolved
+                schemeToConfirm = nil
+                Task { await start() }
+            }
+            // Not dead code on a device with no keyboard. This is what marks
+            // the preferred action, and on iOS 26 the preferred action in an
+            // alert renders as a filled button rather than plain blue text.
+            // Without it the system emphasises the .cancel button instead,
+            // which is backwards here: declining the suggestion would be the
+            // one that looks like the thing to press.
+            //
+            // ButtonRole.confirm does NOT do this — it exists in iOS 26 but
+            // does not produce the filled treatment.
+            .keyboardShortcut(.defaultAction)
+            // "Ignore", not "Cancel": in iOS, Cancel usually means discard
+            // what you did, which here reads as though it might throw away
+            // the address just typed. This only declines the suggestion.
+            //
+            // The .cancel *role* stays regardless of the label — it sets the
+            // button's placement and weight, answers the Escape key on a
+            // hardware keyboard, and marks this as the dismissive action for
+            // accessibility. (It does not add a swipe or tap-outside gesture:
+            // alerts are strictly modal. That is sheets.)
+            Button("Ignore", role: .cancel) { schemeToConfirm = nil }
+        } message: { resolved in
+            // HTTPS and HTTP are capitalised as prose; the scheme inside
+            // the URL stays lowercase, because that is part of the address
+            // rather than a word in a sentence.
+            Text("Ammy will send to \(resolved). Almost every endpoint needs "
+                 + "HTTPS, and iOS blocks plain HTTP.")
+        }
+    }
+
+    /// Lab only: build 156's form, verbatim, with its three section headers.
+    private var form156: some View {
         Form {
             if !controller.monitor.authorized {
                 MediaAccessPrompt(monitor: controller.monitor)

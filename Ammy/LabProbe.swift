@@ -1,16 +1,18 @@
-// Lab only: jitter-lab-inline, never merged. The jitter lab's per-frame probe
-// (lab/JitterLab/Probe.swift, unchanged below the Lab enum), compiled into the
-// real Ammy so its scrolling can be measured the way the lab's variants are.
-// It runs only when the UI test sets LAB_OUT and LAB_TAG.
+// Lab only: header-lab-option1, never merged. The jitter lab's per-frame probe
+// (lab/JitterLab/Probe.swift), compiled into the real Ammy so its scrolling
+// can be measured the way the lab's variants are, plus what option 1 needs:
+// the scroll indicator and its insets, the keyboard, and where each copy of
+// the bar is. It runs only when the UI test sets LAB_OUT and LAB_TAG.
 
 import ObjectiveC
 import QuartzCore
+import SwiftUI
 import UIKit
 
-/// Which arrangement of title and bar ContentView uses, from the
-/// `-labLayout` launch argument; "main" is build 156 as shipped.
+/// Which arrangement of sections and bar ContentView uses, from the
+/// `-labLayout` launch argument; "option1" is main's working tree.
 enum Lab {
-    static var variant: String { UserDefaults.standard.string(forKey: "labLayout") ?? "main" }
+    static var variant: String { UserDefaults.standard.string(forKey: "labLayout") ?? "option1" }
     static var content: String { "ammy" }
 }
 
@@ -31,6 +33,14 @@ enum Lab {
 ///           changes made while neither tracking nor decelerating
 ///   ci      a contentInset change, always with a stack
 ///   aic     adjustedContentInsetDidChange, always with a stack
+///   ind     the scroll view's indicator subviews, by class, once attached
+///   kb      a keyboard notification: its end frame, and the focused
+///           field's frame in the window
+///   bar     a copy of the bar laid out somewhere new (labFrame): which
+///           copy ("stack", "page" or "form") and its frame in the window
+/// Frames also carry the vertical indicator's insets ("vit", "vib"), whether
+/// UIKit adjusts them ("aas"), and the indicator view itself, in the window
+/// ("viy" top, "vih" height, "via" alpha).
 @MainActor
 final class Probe: NSObject {
     static let shared = Probe()
@@ -63,8 +73,10 @@ final class Probe: NSObject {
         print("[probe] writing \(path)")
         UIScrollView.installProbeSwizzle()
         UIWindow.installTouchSwizzle()
+        observeKeyboard()
         emit([
             "k": "start", "tag": tag, "wall": Date().timeIntervalSince1970,
+            "now": n(CACurrentMediaTime() - origin),
             "variant": Lab.variant, "content": Lab.content,
             "os": UIDevice.current.systemVersion,
             "scale": UIScreen.main.scale,
@@ -104,6 +116,15 @@ final class Probe: NSObject {
             d["sat"] = n(s.safeAreaInsets.top)
             d["sab"] = n(s.safeAreaInsets.bottom)
             d["ch"] = n(s.contentSize.height)
+            d["vit"] = n(s.verticalScrollIndicatorInsets.top)
+            d["vib"] = n(s.verticalScrollIndicatorInsets.bottom)
+            d["aas"] = s.automaticallyAdjustsScrollIndicatorInsets
+            if let indicator = verticalIndicator(of: s) {
+                let r = indicator.convert(indicator.bounds, to: nil)
+                d["viy"] = n(r.minY)
+                d["vih"] = n(r.height)
+                d["via"] = n(indicator.alpha)
+            }
             d["trk"] = s.isTracking
             d["drg"] = s.isDragging
             d["dec"] = s.isDecelerating
@@ -137,6 +158,10 @@ final class Probe: NSObject {
         emit([
             "k": "attach", "f": frameIndex, "cls": String(describing: type(of: s)), "chain": chain,
             "behavior": s.contentInsetAdjustmentBehavior.rawValue,
+        ])
+        emit([
+            "k": "ind", "f": frameIndex,
+            "views": s.subviews.map { String(describing: type(of: $0)) }.filter { $0.contains("ndicator") },
         ])
         offsetObservation = s.observe(\.contentOffset, options: [.old, .new]) { [weak self] view, change in
             let old = change.oldValue?.y, new = change.newValue?.y
@@ -205,7 +230,51 @@ final class Probe: NSObject {
         }
     }
 
+    // MARK: Keyboard
+
+    private func observeKeyboard() {
+        let names: [Notification.Name] = [
+            UIResponder.keyboardWillShowNotification, UIResponder.keyboardDidShowNotification,
+            UIResponder.keyboardWillHideNotification, UIResponder.keyboardDidHideNotification,
+            UIResponder.keyboardDidChangeFrameNotification,
+        ]
+        for name in names {
+            NotificationCenter.default.addObserver(forName: name, object: nil, queue: .main) { [weak self] note in
+                let end = (note.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue
+                let what = note.name.rawValue
+                MainActor.assumeIsolated { self?.keyboard(what, end: end) }
+            }
+        }
+    }
+
+    private func keyboard(_ what: String, end: CGRect?) {
+        var d: [String: Any] = ["k": "kb", "f": frameIndex, "now": n(CACurrentMediaTime() - origin), "what": what]
+        if let end {
+            d["y"] = n(end.minY)
+            d["h"] = n(end.height)
+        }
+        if let window = keyWindow,
+           let field = all(UIView.self, in: window).first(where: { ($0 is UITextField || $0 is UITextView) && $0.isFirstResponder }) {
+            let r = field.convert(field.bounds, to: nil)
+            d["fy"] = n(r.minY)
+            d["fh"] = n(r.height)
+        }
+        if let s = scroll {
+            d["oy"] = n(s.contentOffset.y)
+            d["aib"] = n(s.adjustedContentInset.bottom)
+            d["sab"] = n(s.safeAreaInsets.bottom)
+        }
+        emit(d)
+    }
+
     // MARK: Helpers
+
+    /// UIKit's vertical scroll indicator, a private subview of the scroll view.
+    private func verticalIndicator(of s: UIScrollView) -> UIView? {
+        s.subviews.first { view in
+            String(describing: type(of: view)).contains("ndicator") && view.bounds.height > view.bounds.width
+        }
+    }
 
     private var keyWindow: UIWindow? {
         let windows = UIApplication.shared.connectedScenes
@@ -318,5 +387,20 @@ extension UIScrollView {
 
     static func installProbeSwizzle() {
         _ = labSwizzle
+    }
+}
+
+extension View {
+    /// Lab only: tells the probe where this copy of the bar is laid out, in
+    /// the window, whenever that changes. Reads geometry, changes nothing.
+    func labFrame(_ which: String) -> some View {
+        onGeometryChange(for: CGRect.self) { $0.frame(in: .global) } action: { r in
+            MainActor.assumeIsolated {
+                Probe.shared.note([
+                    "k": "bar", "w": which,
+                    "x": Double(r.minX), "y": Double(r.minY), "wd": Double(r.width), "h": Double(r.height),
+                ])
+            }
+        }
     }
 }

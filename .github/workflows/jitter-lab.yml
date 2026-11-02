@@ -1,21 +1,25 @@
-name: Jitter lab (inline title)
+name: Header lab (option 1)
 
-# Runs only on the jitter-lab-inline branch, never on main, and releases
-# nothing. Option 2 of the section-header question: an inline title with the
-# bar back on the Form.
-#
-# This version covers the pairing the owner's phone runs: Ammy built as
-# build-ipa.yml builds it, on the macos-26 image's default Xcode (the iOS 26
-# SDK), installed on an iOS 27.0 simulator. The first job builds that app;
-# the second builds the lab's UI tests with Xcode 27.2 and drives the real
-# Ammy by bundle ID, with the probe in it and its layout picked at launch
-# (A "largeForm", B "inlineForm", C "inlineStack", and build 156 as "main"),
-# plus History opened and left every way. The earlier version of this file
-# (commit 6677739) ran the lab's own variants on iOS 26.5 and 27.0.
+# Runs only on the header-lab-option1 branch, never on main, and releases
+# nothing. Option 1 of the section-header question, as main's working tree
+# had it on 2 Nov 2026: the large title kept, the three section headers
+# gone, and safeAreaPadding giving the Form the bar's room in place of build
+# 156's two contentMargins. The real Ammy is built with the jitter lab's
+# probe in it and its layout picked at launch ("option1", "option1Margins",
+# "main156", "largeForm"; lab/JitterLabUITests/AmmyUITests.swift), then
+# scrolled, taken to the end of the page and into History, given the
+# keyboard, and photographed at rest in light and dark and with media access
+# revoked, on:
+#   se-ios27        an iPhone SE on iOS 27.0, Ammy built with Xcode 27.2
+#   se-ios26        an iPhone SE on iOS 26.5, Ammy built with Xcode 26.6
+#   se-ios27-sdk26  an iPhone SE on iOS 27.0 running Ammy built as
+#                   build-ipa.yml builds it (macos-26's default Xcode, the
+#                   iOS 26.5 SDK), which is what the owner's phone runs
+#   17e-ios27-sdk26 a Face ID iPhone 17e on iOS 27.0, the same build
 
 on:
   push:
-    branches: [jitter-lab-inline]
+    branches: [header-lab-option1]
   workflow_dispatch:
 
 jobs:
@@ -55,50 +59,87 @@ jobs:
 
   lab:
     needs: ammy-sdk26
-    runs-on: xcode-27
-    timeout-minutes: 60
-    env:
-      XCODE: /Applications/Xcode_27.2_Release_Candidate.app
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: se-ios27
+            runner: xcode-27
+            xcode: /Applications/Xcode_27.2_Release_Candidate.app
+            device: iPhone-SE-3rd-generation
+            runtime: "27.0"
+            ammy: native
+          - name: se-ios26
+            runner: macos-26
+            xcode: /Applications/Xcode_26.6.app
+            device: iPhone-SE-3rd-generation
+            runtime: "26.5"
+            ammy: native
+          - name: se-ios27-sdk26
+            runner: xcode-27
+            xcode: /Applications/Xcode_27.2_Release_Candidate.app
+            device: iPhone-SE-3rd-generation
+            runtime: "27.0"
+            ammy: sdk26
+          - name: 17e-ios27-sdk26
+            runner: xcode-27
+            xcode: /Applications/Xcode_27.2_Release_Candidate.app
+            device: iPhone-17e
+            runtime: "27.0"
+            ammy: sdk26
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 80
+
     steps:
       - uses: actions/checkout@v4
 
       - name: Select Xcode
         run: |
-          sudo xcode-select -s "$XCODE"
+          X="${{ matrix.xcode }}"
+          [ -d "$X" ] || X=/Applications/Xcode.app
+          sudo xcode-select -s "$X"
           xcodebuild -version
           xcrun simctl list runtimes
 
       - name: Install XcodeGen
         run: brew install xcodegen
 
-      - name: Generate the lab project
-        run: (cd lab && xcodegen generate)
+      - name: Generate projects
+        run: |
+          (cd lab && xcodegen generate)
+          xcodegen generate
 
-      - name: Create and boot an iPhone SE
+      - name: Create and boot the simulator
         id: sim
         run: |
           set -euo pipefail
-          # Newest runtime first; a runtime made for one device (27.1 on the
-          # xcode-27 image is iPhone Duo's) refuses the others, so fall back.
+          # The software keyboard, not a hardware one, for the keyboard test.
+          defaults write com.apple.iphonesimulator ConnectHardwareKeyboard -bool false || true
+          TYPE="${{ matrix.device }}"
+          WANT="${{ matrix.runtime }}"
+          # The runtime asked for first, then the newest that takes the
+          # device: a runtime made for one device (27.1 on the xcode-27
+          # image is iPhone Duo's) refuses the others.
           UDID=""
-          for RUNTIME in $(xcrun simctl list runtimes -j | python3 -c '
-          import json, sys
+          for RUNTIME in $(xcrun simctl list runtimes -j | WANT="$WANT" python3 -c '
+          import json, os, sys
+          want = os.environ["WANT"]
           rs = [r for r in json.load(sys.stdin)["runtimes"] if r["platform"] == "iOS" and r["isAvailable"]]
-          rs.sort(key=lambda r: [int(x) for x in r["version"].split(".")], reverse=True)
+          rs.sort(key=lambda r: (r["version"] == want or r["version"].startswith(want + "."),
+                                 [int(x) for x in r["version"].split(".")]), reverse=True)
           print(" ".join(r["identifier"] for r in rs))'); do
-            for TYPE in iPhone-SE-3rd-generation; do
-              if UDID=$(xcrun simctl create "Lab $TYPE" "com.apple.CoreSimulator.SimDeviceType.$TYPE" "$RUNTIME" 2>/dev/null); then
-                echo "device: $TYPE on $RUNTIME"
-                echo "runtime=$RUNTIME" >> "$GITHUB_OUTPUT"
-                break 2
-              fi
-              UDID=""
-            done
+            if UDID=$(xcrun simctl create "Lab $TYPE" "com.apple.CoreSimulator.SimDeviceType.$TYPE" "$RUNTIME" 2>/dev/null); then
+              echo "device: $TYPE on $RUNTIME"
+              echo "runtime=$RUNTIME" >> "$GITHUB_OUTPUT"
+              break
+            fi
+            UDID=""
           done
           [ -n "$UDID" ] || { echo "no usable simulator"; exit 1; }
           echo "udid=$UDID" >> "$GITHUB_OUTPUT"
           xcrun simctl boot "$UDID"
           xcrun simctl bootstatus "$UDID" -b
+          xcrun simctl ui "$UDID" appearance light || true
           mkdir -p out
           { echo "device: $TYPE"; echo "runtime: $RUNTIME"; echo "test runner:"; xcodebuild -version; } > out/device.txt
 
@@ -112,14 +153,30 @@ jobs:
             -derivedDataPath dd \
             CODE_SIGNING_ALLOWED=NO 2>&1 | tail -30
 
+      - name: Build Ammy with this Xcode
+        if: matrix.ammy == 'native'
+        run: |
+          set -o pipefail
+          xcodebuild build \
+            -project Ammy.xcodeproj -scheme Ammy -configuration Release \
+            -destination "id=${{ steps.sim.outputs.udid }}" \
+            -derivedDataPath build-ammy \
+            CODE_SIGNING_ALLOWED=NO 2>&1 | grep -E "error|warning: .*(AmmyApp|LabProbe)|BUILD" | tail -40
+          mkdir -p ammy-app
+          cp -R build-ammy/Build/Products/Release-iphonesimulator/Ammy.app ammy-app/
+
       - uses: actions/download-artifact@v4
+        if: matrix.ammy == 'sdk26'
         with:
           name: ammy-sdk26
 
-      - name: Install the iOS 26 SDK build of Ammy
+      - name: Unpack the iOS 26 SDK build
+        if: matrix.ammy == 'sdk26'
+        run: mkdir -p ammy-app && tar -xzf Ammy-sdk26.tgz -C ammy-app
+
+      - name: Install Ammy
         run: |
           UDID="${{ steps.sim.outputs.udid }}"
-          mkdir -p ammy-app && tar -xzf Ammy-sdk26.tgz -C ammy-app
           { echo "Ammy built with:"; plutil -p ammy-app/Ammy.app/Info.plist | grep -E "DTSDKName|DTXcode|DTPlatformVersion|MinimumOSVersion"; } | tee -a out/device.txt
           xcrun simctl install "$UDID" ammy-app/Ammy.app
           xcrun simctl privacy "$UDID" grant media-library com.local.ammy || true
@@ -127,22 +184,50 @@ jobs:
       - name: Run
         run: |
           UDID="${{ steps.sim.outputs.udid }}"
-          mkdir -p out
-          python3 -c 'import time; print(time.time())' > out/record-start.txt
+          T=JitterLabUITests/AmmyUITests
+          stamp() { python3 -c 'import time; print(time.time())'; }
+          run_tests() {
+            local label="$1" suffix="$2" only="$3"
+            echo "$(stamp) begin $label" >> out/phases.txt
+            TEST_RUNNER_LAB_OUT="$PWD/out" TEST_RUNNER_LAB_SUFFIX="$suffix" xcodebuild test-without-building \
+              -project lab/JitterLab.xcodeproj -scheme JitterLab \
+              -destination "id=$UDID" \
+              -derivedDataPath lab/dd \
+              -parallel-testing-enabled NO \
+              -only-testing:"$T/$only" \
+              CODE_SIGNING_ALLOWED=NO > "out/xcodebuild-$label.log" 2>&1 || echo "$label: tests exited $?"
+            echo "$(stamp) end $label" >> out/phases.txt
+            xcrun simctl terminate "$UDID" com.local.ammy > /dev/null 2>&1 || true
+            echo "== $label"
+            grep -E "Test Case|error:|failed" "out/xcodebuild-$label.log" | tail -12 || true
+          }
+          stamp > out/record-start.txt
           xcrun simctl io "$UDID" recordVideo --codec=h264 --force out/lab.mp4 > out/record.log 2>&1 &
           REC=$!
           sleep 3
-          TEST_RUNNER_LAB_OUT="$PWD/out" xcodebuild test-without-building \
-            -project lab/JitterLab.xcodeproj -scheme JitterLab \
-            -destination "id=$UDID" \
-            -derivedDataPath lab/dd \
-            -parallel-testing-enabled NO \
-            -only-testing:JitterLabUITests/AmmyUITests \
-            CODE_SIGNING_ALLOWED=NO > out/xcodebuild-test.log 2>&1 || echo "tests exited $?"
+          run_tests scroll-option1 "" test1aScrollOption1
+          run_tests scroll-main156 "" test1bScrollMain156
+          run_tests scroll-largeForm "" test1cScrollLargeForm
+          run_tests scroll-option1Margins "" test1dScrollOption1Margins
+          run_tests bottom "" test2Bottom
+          run_tests history-option1 "" test3aHistoryOption1
+          run_tests history-main156 "" test3bHistoryMain156
+          run_tests keyboard "" test4Keyboard
+          run_tests rest-light "-light" test5Rest
+          xcrun simctl ui "$UDID" appearance dark || echo "dark failed"
+          echo "$(stamp) appearance dark" >> out/phases.txt
+          run_tests rest-dark "-dark" test5Rest
+          xcrun simctl privacy "$UDID" revoke media-library com.local.ammy || echo "revoke failed"
+          echo "$(stamp) media access revoked" >> out/phases.txt
+          run_tests prompt-dark "-dark" test6Prompt
+          xcrun simctl ui "$UDID" appearance light || echo "light failed"
+          echo "$(stamp) appearance light" >> out/phases.txt
+          run_tests prompt-light "-light" test6Prompt
+          xcrun simctl privacy "$UDID" grant media-library com.local.ammy || true
           kill -INT $REC || true
           wait $REC || true
-          grep -E "Test Case|error|passed|failed" out/xcodebuild-test.log | tail -30
-          ls -la out | head -80
+          ls -la out | head -40
+          ls out | wc -l
 
       - name: Demangle stacks
         run: |
@@ -154,5 +239,5 @@ jobs:
       - uses: actions/upload-artifact@v7
         if: always()
         with:
-          name: lab-ios27-sdk26
+          name: lab-${{ matrix.name }}
           path: out
