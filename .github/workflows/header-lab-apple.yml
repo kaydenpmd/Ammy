@@ -16,7 +16,7 @@ on:
 env:
   # Comma-separated app slugs (settings, files, contacts, ...) to run; blank
   # runs every app.
-  LAB_ONLY: ''
+  LAB_ONLY: 'settings-search,health,watch'
 
 jobs:
   lab:

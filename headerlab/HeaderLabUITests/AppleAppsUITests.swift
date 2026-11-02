@@ -15,13 +15,17 @@ final class AppleAppsUITests: XCTestCase {
     }
 
     @MainActor func test01Settings() { Lab.shared.settings() }
+    @MainActor func test01SettingsSearch() { Lab.shared.settingsSearch() }
     @MainActor func test02Files() { Lab.shared.generic("files", "com.apple.DocumentsApp") }
     @MainActor func test03Contacts() { Lab.shared.generic("contacts", "com.apple.MobileAddressBook") }
-    @MainActor func test04Health() { Lab.shared.generic("health", "com.apple.Health") }
+    // Summary's own "Get Started" (a card on the page) opened Sharing in run
+    // 41416881668, so it isn't a blocker here.
+    @MainActor func test04Health() { Lab.shared.generic("health", "com.apple.Health", ignore: ["Get Started"]) }
     @MainActor func test05Reminders() { Lab.shared.generic("reminders", "com.apple.reminders") }
     @MainActor func test06Shortcuts() { Lab.shared.generic("shortcuts", "com.apple.shortcuts") }
     @MainActor func test07Passwords() { Lab.shared.generic("passwords", "com.apple.Passwords") }
-    @MainActor func test08Watch() { Lab.shared.generic("watch", "com.apple.Bridge") }
+    // Face Gallery was still a spinner at capture in run 41416881668.
+    @MainActor func test08Watch() { Lab.shared.generic("watch", "com.apple.Bridge", settle: 40) }
     @MainActor func test09News() { Lab.shared.generic("news", "com.apple.news") }
     @MainActor func test10Photos() { Lab.shared.generic("photos", "com.apple.mobileslideshow") }
     @MainActor func test11Messages() { Lab.shared.generic("messages", "com.apple.MobileSMS") }
@@ -66,6 +70,8 @@ final class Lab {
     let only: Set<String>
     let springboard = XCUIApplication(bundleIdentifier: "com.apple.springboard")
     var screen = CGRect(x: 0, y: 0, width: 375, height: 667)
+    /// In-page buttons that look like first-run buttons but are the page's own.
+    var ignoredBlockers: Set<String> = []
     private var logHandle: FileHandle?
 
     init() {
@@ -230,6 +236,7 @@ final class Lab {
         let buttons = all.filter { n in
             n.type == .button && n.enabled && onScreen(n.frame) && !n.under(.tabBar) && !n.under(.keyboard)
                 && ((!n.under(.navigationBar) && !n.under(.toolbar)) || Lab.barAllowed.contains(n.label))
+                && !ignoredBlockers.contains(n.label)
         }
         if let n = pick(buttons, Lab.screenOrder) { return (n.center, "button '\(n.label)'") }
         return nil
@@ -303,13 +310,17 @@ final class Lab {
 
     /// Launch, get past first-run screens, then capture every tab, or the
     /// root where there are none, and the screen above each.
-    func generic(_ slug: String, _ bundle: String, extras: ((Lab, XCUIApplication) -> Void)? = nil) {
+    func generic(_ slug: String, _ bundle: String, ignore: Set<String> = [], settle: Double = 0,
+                 extras: ((Lab, XCUIApplication) -> Void)? = nil) {
         guard shouldRun(slug, bundle) else { return }
+        ignoredBlockers = ignore
+        defer { ignoredBlockers = [] }
         let app = launch(slug, bundle)
         clearBlockers(app, slug)
         let tabList = tabs(app)
         log("\(slug): tabs \(tabList.map { $0.label })")
         if tabList.isEmpty {
+            waitForSpinners(app, slug, settle)
             capture(app, slug, "root")
             climb(app, slug, "root")
         } else {
@@ -324,12 +335,28 @@ final class Lab {
                 pause(2)
                 let name = "tab-" + slugify(tab.label)
                 clearBlockers(app, "\(slug)-\(name)")
+                waitForSpinners(app, "\(slug)-\(name)", settle)
                 capture(app, slug, name)
                 climb(app, slug, name)
             }
         }
         extras?(self, app)
         app.terminate()
+    }
+
+    /// Waits, up to `seconds`, for every on-screen activity indicator to go.
+    func waitForSpinners(_ app: XCUIApplication, _ tag: String, _ seconds: Double) {
+        guard seconds > 0 else { return }
+        let start = Date()
+        while Date().timeIntervalSince(start) < seconds {
+            let busy = nodes(app).contains { $0.type == .activityIndicator && onScreen($0.frame) }
+            if !busy {
+                log("\(tag): settled after \(Int(Date().timeIntervalSince(start))) s")
+                return
+            }
+            pause(1)
+        }
+        log("\(tag): still loading after \(Int(seconds)) s")
     }
 
     /// Opens a sheet or page from a button on the current screen, captures
@@ -494,6 +521,55 @@ final class Lab {
                 }
             }
             if reached { capture(app, slug, path.map { slugify($0) }.joined(separator: "-")) }
+        }
+        app.terminate()
+    }
+
+    /// A short drag held still at the end, so the list moves by about the
+    /// drag and doesn't fling (the general drag flung the top level about
+    /// 670 pt for 267, past Search and Home Screen & App Library).
+    func nudge(_ app: XCUIApplication, from: CGFloat, to: CGFloat) {
+        let a = app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: from))
+        let b = app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: to))
+        a.press(forDuration: 0.3, thenDragTo: b, withVelocity: .slow, thenHoldForDuration: 1.0)
+        pause(1)
+    }
+
+    /// Settings > Search alone: the page the owner compared against, an
+    /// inline title over section headers. At the top level its row sits
+    /// behind the floating search field, so this nudges the list until the
+    /// row is clear and taps it by its identifier.
+    func settingsSearch() {
+        let slug = "settings-search"
+        let bundle = "com.apple.Preferences"
+        guard shouldRun(slug, bundle) else { return }
+        let app = launch(slug, bundle)
+        goRoot(app)
+        toTop(app)
+        var reached = false
+        for attempt in 0..<12 {
+            guard let row = nodes(app).first(where: { $0.identifier == "com.apple.settings.search" }) else {
+                log("\(slug): no row with identifier com.apple.settings.search")
+                break
+            }
+            let f = row.frame
+            log("\(slug): attempt \(attempt), row at y=\(Int(f.minY))")
+            if f.minY > 110 && f.maxY < screen.maxY - 100 {
+                tap(app, row.center)
+                pause(2)
+                reached = true
+                break
+            }
+            if f.minY > 110 {
+                nudge(app, from: 0.62, to: 0.52)
+            } else {
+                nudge(app, from: 0.45, to: 0.55)
+            }
+        }
+        if reached {
+            capture(app, "settings", "search")
+        } else {
+            log("\(slug): couldn't reach Search")
         }
         app.terminate()
     }
