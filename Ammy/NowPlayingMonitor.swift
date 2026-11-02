@@ -336,6 +336,36 @@ final class NowPlayingMonitor: ObservableObject {
         value.isFinite ? value : 0
     }
 
+    /// Header lab only: a track playing, as on the owner's screen, without
+    /// asking for access or reading the player (the simulator has no Music
+    /// app, so the player would report nothing). The cover is a plain
+    /// coloured square drawn here, so nothing is fetched.
+    func headerLabDemo() {
+        let size = CGSize(width: 600, height: 600)
+        let format = UIGraphicsImageRendererFormat()
+        format.scale = 1
+        let cover = UIGraphicsImageRenderer(size: size, format: format).image { context in
+            UIColor(red: 0.93, green: 0.55, blue: 0.22, alpha: 1).setFill()
+            context.fill(CGRect(origin: .zero, size: size))
+            UIColor(red: 0.80, green: 0.27, blue: 0.36, alpha: 1).setFill()
+            context.fill(CGRect(x: 0, y: size.height * 0.62, width: size.width, height: size.height * 0.38))
+        }
+        let jpeg = cover.jpegData(compressionQuality: 0.9)
+        access = .authorized
+        authorized = true
+        isPlaying = true
+        artworkImage = cover
+        track = Track(
+            title: "Prime Time Golden Hour Show",
+            artist: "Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC",
+            album: "",
+            duration: 0,
+            elapsed: 0,
+            storeID: "0",
+            artworkJPEG: jpeg
+        )
+    }
+
     deinit {
         player.endGeneratingPlaybackNotifications()
     }

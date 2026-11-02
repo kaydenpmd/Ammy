@@ -1,0 +1,163 @@
+name: Header lab (Ammy)
+
+# Runs only on the header-lab-ammy branch, never on main, and releases
+# nothing. It builds the real Ammy from this branch and photographs its one
+# screen three ways on iOS 27: -HeaderLab current (build 156), noHeaders
+# (the large title, no section headers) and inline (the headers, an inline
+# title), each with -HeaderLabDemo, the owner's screen while a session runs.
+# An iPhone SE in dark and in light, and a Face ID iPhone in dark. The
+# pictures are the artifact; headerlab/HeaderLabUITests says what each is.
+
+on:
+  push:
+    branches: [header-lab-ammy]
+  workflow_dispatch:
+
+jobs:
+  lab:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: se-dark
+            devices: iPhone-SE-3rd-generation
+            appearance: dark
+          - name: faceid-dark
+            devices: iPhone-17e iPhone-17
+            appearance: dark
+          - name: se-light
+            devices: iPhone-SE-3rd-generation
+            appearance: light
+    runs-on: xcode-27
+    timeout-minutes: 60
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Select Xcode
+        run: |
+          X=/Applications/Xcode_27.2_Release_Candidate.app
+          [ -d "$X" ] || X=/Applications/Xcode.app
+          sudo xcode-select -s "$X"
+          xcodebuild -version
+          xcrun simctl list runtimes
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Generate projects
+        run: |
+          (cd headerlab && xcodegen generate)
+          xcodegen generate
+
+      - name: Create and boot the simulator
+        id: sim
+        run: |
+          set -euo pipefail
+          # iOS 27 only, newest first. A runtime made for one device (27.1 on
+          # this image is iPhone Duo's) refuses the others, so fall back.
+          UDID=""
+          for RUNTIME in $(xcrun simctl list runtimes -j | python3 -c '
+          import json, sys
+          rs = [r for r in json.load(sys.stdin)["runtimes"]
+                if r["platform"] == "iOS" and r["isAvailable"] and r["version"].startswith("27.")]
+          rs.sort(key=lambda r: [int(x) for x in r["version"].split(".")], reverse=True)
+          print(" ".join(r["identifier"] for r in rs))'); do
+            for TYPE in ${{ matrix.devices }}; do
+              if UDID=$(xcrun simctl create "Lab $TYPE" "com.apple.CoreSimulator.SimDeviceType.$TYPE" "$RUNTIME" 2>/dev/null); then
+                echo "device: $TYPE on $RUNTIME"
+                echo "device=$TYPE" >> "$GITHUB_OUTPUT"
+                echo "runtime=$RUNTIME" >> "$GITHUB_OUTPUT"
+                break 2
+              fi
+              UDID=""
+            done
+          done
+          [ -n "$UDID" ] || { echo "no usable iOS 27 simulator"; exit 1; }
+          echo "udid=$UDID" >> "$GITHUB_OUTPUT"
+          xcrun simctl boot "$UDID"
+          xcrun simctl bootstatus "$UDID" -b
+
+      - name: Appearance and status bar
+        run: |
+          UDID="${{ steps.sim.outputs.udid }}"
+          xcrun simctl ui "$UDID" appearance ${{ matrix.appearance }}
+          echo "appearance now: $(xcrun simctl ui "$UDID" appearance)"
+          # A fixed status bar, so the pictures differ only where Ammy does.
+          xcrun simctl status_bar "$UDID" override --time "9:41" \
+            --dataNetwork wifi --wifiMode active --wifiBars 3 \
+            --cellularMode active --cellularBars 4 \
+            --batteryState charged --batteryLevel 100 || echo "status bar override refused"
+
+      - name: Build for testing
+        run: |
+          set -o pipefail
+          cd headerlab
+          xcodebuild build-for-testing \
+            -project HeaderLab.xcodeproj -scheme HeaderLabHost \
+            -destination "id=${{ steps.sim.outputs.udid }}" \
+            -derivedDataPath dd \
+            CODE_SIGNING_ALLOWED=NO 2>&1 | tail -40
+
+      - name: Build and install Ammy
+        run: |
+          set -eo pipefail
+          UDID="${{ steps.sim.outputs.udid }}"
+          # Build 156's number, so the Version row reads as it does on the
+          # owner's phone.
+          xcodebuild build \
+            -project Ammy.xcodeproj -scheme Ammy -configuration Release \
+            -destination "id=$UDID" \
+            -derivedDataPath build-ammy \
+            MARKETING_VERSION=1.0 CURRENT_PROJECT_VERSION=156 \
+            CODE_SIGNING_ALLOWED=NO 2>&1 | grep -E "error|warning: .*(AmmyApp|HeaderLab|PresenceController|NowPlayingMonitor)|BUILD" | tail -40
+          xcrun simctl install "$UDID" build-ammy/Build/Products/Release-iphonesimulator/Ammy.app
+          xcrun simctl privacy "$UDID" grant media-library com.local.ammy
+          # The services simctl can grant. Notifications isn't expected among
+          # them; it's tried anyway, and the log says which way it went. The
+          # demo never asks for it either way.
+          xcrun simctl help privacy 2>&1 | sed -n '1,45p' || true
+          if xcrun simctl privacy "$UDID" grant notifications com.local.ammy; then
+            echo "notifications: granted"
+          else
+            echo "notifications: simctl can't grant them"
+          fi
+
+      - name: Run
+        run: |
+          UDID="${{ steps.sim.outputs.udid }}"
+          OUT="$PWD/out"
+          mkdir -p "$OUT"
+          echo "${{ steps.sim.outputs.device }} on ${{ steps.sim.outputs.runtime }}, ${{ matrix.appearance }}" > "$OUT/device.txt"
+          # Pictures taken from outside while a finger is still down, which
+          # the test can't take itself: it asks by writing <name>.request,
+          # holding a delay in seconds, and waits for <name>.done.
+          (
+            while :; do
+              for REQ in "$OUT"/*.request; do
+                [ -e "$REQ" ] || continue
+                NAME=$(basename "$REQ" .request)
+                sleep "$(cat "$REQ")"
+                xcrun simctl io "$UDID" screenshot "$OUT/$NAME.png" > /dev/null 2>&1 || echo "helper: $NAME failed"
+                mv "$REQ" "$OUT/$NAME.done"
+              done
+              sleep 0.1
+            done
+          ) &
+          HELPER=$!
+          TEST_RUNNER_LAB_OUT="$OUT" xcodebuild test-without-building \
+            -project headerlab/HeaderLab.xcodeproj -scheme HeaderLabHost \
+            -destination "id=$UDID" \
+            -derivedDataPath headerlab/dd \
+            -parallel-testing-enabled NO \
+            CODE_SIGNING_ALLOWED=NO > "$OUT/xcodebuild-test.log" 2>&1 || echo "tests exited $?"
+          kill $HELPER || true
+          tail -40 "$OUT/xcodebuild-test.log"
+          ls -la "$OUT"
+          cat "$OUT/notes.txt" 2>/dev/null || true
+
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: header-lab-${{ matrix.name }}
+          path: out

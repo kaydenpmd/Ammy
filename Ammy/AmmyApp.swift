@@ -113,7 +113,10 @@ private struct MarqueeLine: View {
                 if scrolls {
                     // Paused in the background: the keepalive keeps this
                     // process running there, and nobody can see the line.
-                    TimelineView(.animation(paused: scenePhase == .background)) { timeline in
+                    // Header lab: also paused in the demo, which draws the
+                    // line at rest (see offset), so every screenshot catches
+                    // it in the same place and the UI tests find Ammy idle.
+                    TimelineView(.animation(paused: scenePhase == .background || HeaderLab.demo)) { timeline in
                         let travel = textWidth + Self.gap
                         let x = offset(at: timeline.date, travel: travel)
                         HStack(spacing: Self.gap) {
@@ -140,6 +143,10 @@ private struct MarqueeLine: View {
     /// loop's eased time, held where this line runs out. Each loop starts with
     /// its hold, as Music's does after a song changes.
     private func offset(at date: Date, travel: CGFloat) -> CGFloat {
+        // Header lab: the demo holds the line where every loop starts and
+        // ends, at rest, its trailing edge faded, as the phone shows it for
+        // the first four seconds or so of each loop.
+        if HeaderLab.demo { return 0 }
         let loop = Self.hold + Double(max(travel, loopTravel) / Self.pointsPerSecond)
         let t = date.timeIntervalSince(since).truncatingRemainder(dividingBy: loop)
         let eased = loop * UnitCurve.easeInOut.value(at: t / loop)
@@ -761,6 +768,10 @@ struct ContentView: View {
             proxy.safeAreaInsets.bottom
         } action: { bottomSafeArea = $0 }
         .task {
+            // Header lab: the demo's state was set when the controller was
+            // made, and nothing here may replace it: no monitor reading the
+            // simulator's empty player, no autostart, no session.
+            guard !HeaderLab.demo else { return }
             // The monitor reads the device, not the relay, so it runs whether
             // or not a session does. That is what lets Now Playing and the
             // access prompt say something true before anything has started.
@@ -773,6 +784,8 @@ struct ContentView: View {
         // that has already fired. onChange never sees the initial value, so
         // both are needed.
         .onChange(of: scenePhase) { _, phase in
+            // Header lab: as in .task, the demo starts nothing.
+            guard !HeaderLab.demo else { return }
             if phase == .active {
                 controller.appDidBecomeActive()
                 // Coming back from Settings with access newly granted: the
@@ -827,75 +840,82 @@ struct ContentView: View {
                 MediaAccessPrompt(monitor: controller.monitor)
             }
 
-            Section("Now Playing") {
-                NowPlayingRow(monitor: controller.monitor)
-            }
-
-            // "Endpoint", not "Relay": a relay forwards what it receives,
-            // and nothing here requires that. Ammy posts JSON to an address;
-            // whether that address passes it on, renders it, or files it
-            // away is none of the app's business. The same reasoning keeps
-            // the relay's /now-playing path out of the placeholder — that is
-            // one receiver's convention, not a rule of the app.
-            //
-            // Labels persist where placeholders vanish, so the row names
-            // live on the left and the value column carries only whether the
-            // field must be filled in.
-            // Label above a full-width field, rather than Mail's two-column
-            // row. Both values here are long enough to overflow a shared
-            // row, and LabeledContent's response to that is to stack them
-            // anyway — so the layout would silently change shape depending
-            // on how long someone's address happened to be. Doing it on
-            // purpose keeps it fixed, and gives the value the whole width.
-            //
-            // Both rows get the same treatment even though "Optional" would
-            // fit on one line: matching rows read as one thing, and the key
-            // is as long as the URL in practice.
-            //
-            // The visible label is hidden from VoiceOver and applied to the
-            // field instead, so it is announced once as a labelled control
-            // rather than twice as loose text.
-            // GUESS: spacing 4 between a field's label and its value. No
-            // source; it was picked to look right when these rows were
-            // stacked and has never been checked against anything.
-            Section {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("URL")
-                        .accessibilityHidden(true)
-                    TextField("Required", text: $controller.endpoint)
-                        .textInputAutocapitalization(.never)
-                        .autocorrectionDisabled()
-                        .keyboardType(.URL)
-                        .accessibilityLabel("URL")
+            // Header lab: option 1 drops the three headers and keeps the
+            // rest (headerlessSections, below). Every other variant has
+            // build 156's sections, unchanged.
+            if HeaderLab.variant == .noHeaders {
+                headerlessSections
+            } else {
+                Section("Now Playing") {
+                    NowPlayingRow(monitor: controller.monitor)
                 }
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("Key")
-                        .accessibilityHidden(true)
-                    SecureField("Optional", text: $controller.key)
-                        .textInputAutocapitalization(.never)
-                        .autocorrectionDisabled()
-                        .accessibilityLabel("Key")
-                }
-            } header: {
-                Text("Endpoint")
-            } footer: {
-                Text("Ammy sends your now-playing details to this address. "
-                     + "If you set a key, it's sent as a header.")
-            }
 
-            Section("Status") {
-                // A spinner rather than a word until the first push comes
-                // back, because until then there is no answer to show —
-                // only the wait for one.
-                LabeledContent("Endpoint") {
-                    if controller.resolving {
-                        ProgressView()
-                    } else {
-                        Text(controller.linkStatus)
+                // "Endpoint", not "Relay": a relay forwards what it receives,
+                // and nothing here requires that. Ammy posts JSON to an address;
+                // whether that address passes it on, renders it, or files it
+                // away is none of the app's business. The same reasoning keeps
+                // the relay's /now-playing path out of the placeholder — that is
+                // one receiver's convention, not a rule of the app.
+                //
+                // Labels persist where placeholders vanish, so the row names
+                // live on the left and the value column carries only whether the
+                // field must be filled in.
+                // Label above a full-width field, rather than Mail's two-column
+                // row. Both values here are long enough to overflow a shared
+                // row, and LabeledContent's response to that is to stack them
+                // anyway — so the layout would silently change shape depending
+                // on how long someone's address happened to be. Doing it on
+                // purpose keeps it fixed, and gives the value the whole width.
+                //
+                // Both rows get the same treatment even though "Optional" would
+                // fit on one line: matching rows read as one thing, and the key
+                // is as long as the URL in practice.
+                //
+                // The visible label is hidden from VoiceOver and applied to the
+                // field instead, so it is announced once as a labelled control
+                // rather than twice as loose text.
+                // GUESS: spacing 4 between a field's label and its value. No
+                // source; it was picked to look right when these rows were
+                // stacked and has never been checked against anything.
+                Section {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("URL")
+                            .accessibilityHidden(true)
+                        TextField("Required", text: $controller.endpoint)
+                            .textInputAutocapitalization(.never)
+                            .autocorrectionDisabled()
+                            .keyboardType(.URL)
+                            .accessibilityLabel("URL")
                     }
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Key")
+                            .accessibilityHidden(true)
+                        SecureField("Optional", text: $controller.key)
+                            .textInputAutocapitalization(.never)
+                            .autocorrectionDisabled()
+                            .accessibilityLabel("Key")
+                    }
+                } header: {
+                    Text("Endpoint")
+                } footer: {
+                    Text("Ammy sends your now-playing details to this address. "
+                         + "If you set a key, it's sent as a header.")
                 }
-                .animation(.default, value: controller.resolving)
-                LabeledContent("Version", value: Bundle.main.displayVersion)
+
+                Section("Status") {
+                    // A spinner rather than a word until the first push comes
+                    // back, because until then there is no answer to show —
+                    // only the wait for one.
+                    LabeledContent("Endpoint") {
+                        if controller.resolving {
+                            ProgressView()
+                        } else {
+                            Text(controller.linkStatus)
+                        }
+                    }
+                    .animation(.default, value: controller.resolving)
+                    LabeledContent("Version", value: Bundle.main.displayVersion)
+                }
             }
 
             // Unlabeled on purpose: it is a way out of this screen rather
@@ -913,6 +933,8 @@ struct ContentView: View {
 
         }
         .navigationTitle("Ammy")
+        // Header lab: inline for option 2, build 156's large title otherwise.
+        .headerLabTitleMode()
         .alert("Use HTTPS?", isPresented: Binding(
             get: { schemeToConfirm != nil },
             set: { if !$0 { schemeToConfirm = nil } }
@@ -948,6 +970,51 @@ struct ContentView: View {
             // rather than a word in a sentence.
             Text("Ammy will send to \(resolved). Almost every endpoint needs "
                  + "HTTPS, and iOS blocks plain HTTP.")
+        }
+    }
+
+    /// Header lab, option 1: build 156's three sections without their
+    /// headers, as Settings' top level has its groups. The rows are copied
+    /// from the sections above, unchanged, and the Endpoint footer stays.
+    @ViewBuilder
+    private var headerlessSections: some View {
+        Section {
+            NowPlayingRow(monitor: controller.monitor)
+        }
+
+        Section {
+            VStack(alignment: .leading, spacing: 4) {
+                Text("URL")
+                    .accessibilityHidden(true)
+                TextField("Required", text: $controller.endpoint)
+                    .textInputAutocapitalization(.never)
+                    .autocorrectionDisabled()
+                    .keyboardType(.URL)
+                    .accessibilityLabel("URL")
+            }
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Key")
+                    .accessibilityHidden(true)
+                SecureField("Optional", text: $controller.key)
+                    .textInputAutocapitalization(.never)
+                    .autocorrectionDisabled()
+                    .accessibilityLabel("Key")
+            }
+        } footer: {
+            Text("Ammy sends your now-playing details to this address. "
+                 + "If you set a key, it's sent as a header.")
+        }
+
+        Section {
+            LabeledContent("Endpoint") {
+                if controller.resolving {
+                    ProgressView()
+                } else {
+                    Text(controller.linkStatus)
+                }
+            }
+            .animation(.default, value: controller.resolving)
+            LabeledContent("Version", value: Bundle.main.displayVersion)
         }
     }
 

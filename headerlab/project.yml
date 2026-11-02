@@ -1,0 +1,50 @@
+name: HeaderLab
+
+# A throwaway lab for the section-header question: does Ammy's screen pair
+# its large title with section headers when Apple's own screens don't? It
+# lives on the header-lab-ammy branch only and is never released. The host
+# app is empty; the UI tests drive the real Ammy, built from this branch and
+# installed beside it, through each -HeaderLab variant with -HeaderLabDemo,
+# and save screenshots (.github/workflows/header-lab-ammy.yml).
+
+options:
+  bundleIdPrefix: com.local
+  deploymentTarget:
+    iOS: "26.0"
+
+targets:
+  HeaderLabHost:
+    type: application
+    platform: iOS
+    sources:
+      - path: HeaderLabHost
+    info:
+      path: HeaderLabHost/Info.plist
+      properties:
+        CFBundleDisplayName: HeaderLabHost
+        UILaunchScreen: {}
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.local.headerlabhost
+        SWIFT_VERSION: "5.0"
+        GENERATE_INFOPLIST_FILE: NO
+        TARGETED_DEVICE_FAMILY: "1"
+    scheme:
+      testTargets:
+        - HeaderLabUITests
+
+  HeaderLabUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources:
+      - path: HeaderLabUITests
+    dependencies:
+      - target: HeaderLabHost
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.local.headerlabhost.uitests
+        SWIFT_VERSION: "5.0"
+        GENERATE_INFOPLIST_FILE: YES
+        TEST_TARGET_NAME: HeaderLabHost

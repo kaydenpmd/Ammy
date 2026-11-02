@@ -279,6 +279,25 @@ final class PresenceController: ObservableObject {
                 self?.handleChange()
             }
             .store(in: &bag)
+
+        if HeaderLab.demo { headerLabDemo() }
+    }
+
+    /// Header lab only: the owner's screen while a session runs, set by hand
+    /// before the first frame. The address, an empty key, Connected and Stop
+    /// (a session with nothing edited), and a track with a cover. Nothing is
+    /// started, saved or sent: there is no relay, so the push the new track
+    /// asks for stops at sendNow's first guard; the address is never written
+    /// to UserDefaults; and the watchdog never asks for notifications.
+    private func headerLabDemo() {
+        endpoint = "https://example.ts.net/now-playing"
+        key = ""
+        activeEndpoint = endpoint
+        activeKey = key
+        linkStatus = "Connected"
+        resolving = false
+        isRunning = true
+        monitor.headerLabDemo()
     }
 
     /// Starts a session. Whether one began is readable from `isRunning`,
