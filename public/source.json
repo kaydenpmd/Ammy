@@ -9,12 +9,12 @@
       "versions": [
         {
           "version": "1.0",
-          "date": "2026-11-02T06:50:32+00:00",
-          "localizedDescription": "Keep the large title from snapping shut as you scroll\n\nScrolling down from the top now collapses the large title as you go,\ninstead of snapping it shut and jumping the page ahead of your finger. The\nStart and Stop buttons look the same, but they fade out while History is\nopen rather than sliding away with the page. The temporary Title Fix switch\nis gone.",
-          "downloadURL": "https://github.com/kaydenpmd/Ammy/releases/download/v1.0-b152/Ammy-1.0-b152-f7e2176.ipa",
-          "size": 531925,
-          "sha256": "6e17f6fb9e05835bf38ee25f9357cbcac922581144c260b48ef7124cca87cf72",
-          "buildVersion": "152",
+          "date": "2026-11-02T07:23:51+00:00",
+          "localizedDescription": "Fade the Start button in step with History\n\nOpening History now fades the Start and Stop buttons out as the page\nslides in, and going back fades them in as it slides away, instead of\nleaving them over History for a moment and bringing them back late.\nSwiping back brings them back as you let go, and a swipe you call off\nleaves them hidden.",
+          "downloadURL": "https://github.com/kaydenpmd/Ammy/releases/download/v1.0-b154/Ammy-1.0-b154-57bc52e.ipa",
+          "size": 540261,
+          "sha256": "27b9a055c5c7ff10ff1560f3084557083078263489f280bfdbc22dc18b6359e8",
+          "buildVersion": "154",
           "minOSVersion": "26.0"
         }
       ],
