@@ -174,30 +174,95 @@ a human sets; the build number climbs on its own.
 
 ## Gotchas already paid for — don't rediscover these
 
-**The large title jitters on collapse, and the code is not wrong.** Scrolling
-down far enough to collapse the navigation title renders one frame at the wrong
-scroll offset — measured at up to 29px in the wrong direction, then a crawl of
-1px per frame for about 13 frames. Scrolling *up* to expand is clean every time;
-the defect is direction-specific. It appeared in build 39, the commit that first
-put the Start button in a bottom safe-area bar, and it shows on a 60Hz
-home-button device.
+**The large title jumped on collapse because the bar was the Form's. It's the
+stack's since 2 Nov 2026.** Scrolling down from the top, the title snapped shut
+as the scroll began and the content leapt ahead of the finger, then followed
+it. In the owner's recording of 11 Sept 2026 (build 45,
+`ScreenRecording_09-11-2026 04-20-52_1.mp4`), each of twelve scrolls down
+starts from rest with a jump: eight of 49.5–57 pt in a single frame, about the
+whole 52 pt collapse at once, and four of 15–47 pt. The "crawl of 1px per
+frame" this entry used to describe after it is the finger itself, dragging
+slowly. Measure a jump like this with a search wider than it: a ±90 px one
+first read the same frames as 37–45 pt. The simulator gives 52 pt in one frame
+on iOS 26.5 and about 34 pt over three frames on 27.0. Expanding was clean.
 
-Everything involved is the sanctioned path. `safeAreaBar(edge: .bottom)` is what
-iOS 26 added for bottom content without a tab bar or toolbar; `.glassProminent`
-and `.buttonSizing(.flexible)` are stock; a large title on a `Form` is the
-default. No published report matches the combination.
+**Why.** `safeAreaBar` wraps the view it modifies in
+`_UIInteractionView<_UIScrollPocketCollectorInteraction, …>`, the view that
+collects the scroll edge effect. Between the page and the Form's
+`UICollectionView`, that view keeps UIKit's eager update of the collapsing
+title's insets
+(`-[UIViewController _updateViewSafeAreaInsetsAndEagerlyUpdateContentScrollView:]`)
+from reaching the Form, so the new top inset arrives only when SwiftUI's next
+render sets the host's geometry (`DisplayList.ViewUpdater` → `setCenter:` →
+`setSafeAreaInsets:`). Each late inset re-pins the content offset, which
+collapses the title further, which asks for another render: on iOS 26.5, 35
+inset updates in one frame from a 0.5 pt finger move. Every API here is the
+sanctioned one, so "the code is not wrong" held for each piece but not for the
+whole: the combination is a SwiftUI defect, and it has a workaround. No
+published report matched it (searched 1 Nov 2026).
 
-**Decided 11 Sept 2026: leave it, and let a future iOS fix it.** Working around
-an OS defect means carrying the workaround long after the defect is gone, and
-every alternative costs something real — dropping the large title, or taking the
-button out of the safe area and losing the scroll edge blur beneath it. The
-trade accepted here is a visible cosmetic glitch on older hardware.
+**The 11 Sept decision was to leave it** for a future iOS to fix: a workaround
+outlives the defect, and every alternative cost something real, the large title
+or the scroll edge effect beneath the button. The one below costs neither, and
+what it carries is small, two margins and a fade. On 1 Nov 2026 the owner asked
+for another look: "i want to really make sure it's not something we can fix
+cause it's still present on ios 27".
 
-Ruled out, so none of it is worth re-testing: the bar itself does not move (zero
-pixel difference across a collapse); the content never reverses direction
-mid-gesture across 32 gestures; the title never animates while the content is
-still. Frame drops measured ~48fps effective during scrolling, but that is partly
-the screen recording itself and is not the cause.
+**How it was found**, so it isn't redone: a lab on the `jitter-lab` branch,
+never merged. Ammy's screen with one bottom bar at a time, driven in CI on an
+iPhone SE simulator (iOS 26.5 with Xcode 26.6, 27.0 with Xcode 27.2) by
+scripted drags, logging every display frame: the content against the finger,
+the insets, the navigation bar, and the call stack of every inset change.
+Every variant with `safeAreaBar` on the Form jumped: Ammy's bar, a zero-height
+bar, a 1 pt one, a 143 pt one (so the inset's height isn't the trigger, which
+answers the experiment this entry used to leave untried), a `List`, `.hard`
+and hidden edge effects, and partly a `ScrollView`. None without it did; all
+stayed within 2.5 pt of the finger: no bar, `safeAreaInset` (build 39's bar
+too), `contentMargins` or `safeAreaPadding` with an overlay, a `.bottomBar`
+toolbar, and `safeAreaBar` on the `NavigationStack`. The real Ammy, built from
+the branch and scrolled the same way on iOS 27.0, agreed: −12, −30, −30 and
+−29 px over four frames with the bar on the Form, a steady 5–6 px a frame with
+it on the stack.
+
+**A correction: build 39 was `safeAreaInset`, not `safeAreaBar`.** Build
+numbers were CI run numbers then. Run 39 built d6516a6, whose bar is a
+`safeAreaInset`; the `safeAreaBar` arrived in run 40, 4f200f9. The lab finds
+`safeAreaInset` clean, and the earliest recording of the jump is build 45's,
+so "it appeared in build 39" was most likely inferred, not seen.
+
+**The fix: the bar belongs to the stack.** `ContentView` attaches the same bar
+to the `NavigationStack`, so the effect's collector sits outside the page and
+UIKit updates the Form directly. In the simulator it is pixel-identical at
+rest to the bar on the Form, edge effect included, on an SE (26.5 and 27.0)
+and a Face ID iPhone 17e (27.0). Two things come with it:
+- A stack doesn't pass its bar's inset down to the lists inside it
+  (FB23732628, forums thread 837946), so the Form takes the bar's measured
+  height as `contentMargins` for its content and scroll indicators: the same
+  scroll room as before, 87.5 pt on the SE and 34 + 53.3 on the 17e. If a
+  later iOS starts passing it down, the Form gets that room twice, and the
+  margins go.
+- A stack's bar outlives its pages, so it would sit over History. It fades out
+  as History arrives and back in as it leaves, the way a toolbar's items
+  change between pages, where it used to slide away with the page.
+
+**Rejected, so not worth retrying:** `safeAreaInset`, or `contentMargins` with
+an overlay (no edge effect: rows show crisp behind the button); UIKit's
+`UIScrollEdgeElementContainerInteraction` on an empty view behind a
+`safeAreaInset` bar (no visible effect in the simulator); a `.bottomBar`
+toolbar (the button shrinks to a capsule whatever `.buttonSizing(.flexible)` or
+`.frame(maxWidth:)` asks, `.sharedBackgroundVisibility(.hidden)` leaves it
+almost invisible, and full-width toolbar buttons have their own hit-area bug,
+forums thread 836076).
+
+**Not yet seen on a device.** Build 150 carries a temporary **Title Fix**
+switch at the foot of the page: on, the default, the bar is the stack's; off,
+it's the Form's, as in build 148. It's there to compare the two on the owner's
+SE, and goes once they have been compared. The simulator never ran this
+combination: an app built with the iOS 26.5 SDK, as CI builds Ammy, on iOS 27,
+which handles bars and edge effects differently for such apps (forums thread
+834059). A Feedback report is drafted with a minimal reproduction
+(`lab/FEEDBACK.md` and `lab/Repro` on the `jitter-lab` branch) and waits to be
+filed from the owner's account.
 
 **16 Sept 2026: iOS 27 removed the tint behind the bar, and Ammy followed for
 free.** `safeAreaBar` does not draw a background — it applies the system's scroll
@@ -217,11 +282,6 @@ not worth changing on that evidence. Note the tempting fix does not work:
 `.padding(.horizontal)` with no argument resolves to SwiftUI's 16pt default,
 visibly narrower than either. **The system does not expose the tab bar's inset
 anywhere reachable**, which is why this is a measured number with a flag on it.
-
-The untried experiment, if this is ever picked up again: enlarge the bottom inset
-*without moving the button* — `.padding(.top, 72)` on the bar's content — and
-re-measure. If the jump scales with the inset, the inset height is the trigger,
-and that is the finding worth putting in a Feedback report.
 
 **Glass button styles are already interactive.** `.buttonStyle(.glassProminent)`
 scales, shimmers and lights up at the touch point on its own — verified on
@@ -1238,8 +1298,9 @@ failure, and what fixed that was a reboot.
 **9. The bottom bar's distance from the screen edge is unconfirmed by touch.** A
 home-button phone has a bottom safe area of zero and a Face ID phone 34pt, so a
 constant pad is wrong on one of them. `AmmyApp.swift` reads `bottomSafeArea`
-from an `onGeometryChange` on the `NavigationStack`. That is outside the bar
-because reading the safe area inside a `safeAreaBar` is circular; it is
+from an `onGeometryChange` on the `NavigationStack`, attached after the stack's
+own bar. That puts it outside the bar, because reading the safe area inside a
+`safeAreaBar` is circular; it is
 `onGeometryChange` rather than a key-window read because iPad rotates and
 resizes, and rather than a `GeometryReader` because that would take over the
 layout beneath it. The bar pads `.padding(.bottom, edgeGap - bottomSafeArea)`
