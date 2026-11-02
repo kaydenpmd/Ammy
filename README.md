@@ -206,9 +206,9 @@ hit "The provided anisette data is invalid" and there is no clean way back.
 
 ## 6. Run it
 
-Issun's **Connect a source** section shows the two values Ammy needs. In Ammy's
-**Endpoint** section, put Issun's **Endpoint** into **URL** — your Funnel URL
-with `/now-playing` on the end — and Issun's **Key** into **Key**:
+Issun's **Connect a source** section shows the two values Ammy needs. In Ammy,
+put Issun's **Endpoint** into **URL** — your Funnel URL with `/now-playing` on
+the end — and Issun's **Key** into **Key**:
 
 ```
 your-pc.your-tailnet.ts.net/now-playing

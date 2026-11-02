@@ -82,7 +82,8 @@ requirement that does not exist, and it has already had to be undone once —
 18 Sept 2026, after the first listing pitched Discord Rich Presence, a Windows
 relay and a Discord application of your own, which is one receiver's setup
 rather than a description of this app. The UI has always had this right on
-purpose: the field is called **Endpoint**, not Relay, because whether the
+purpose: it says **Endpoint**, not Relay (the status row's name, and until
+2 Nov 2026 the header over the URL and Key fields), because whether the
 address forwards, renders or files what it receives is none of the app's
 business.
 
@@ -165,7 +166,7 @@ issue outbound traffic. `/diag` is the phone's last self-report, `/status`
 answers `alive`/`stale` for Shortcuts, and `/art/<hash>.jpg` is open because
 Discord's CDN fetches it and cannot send our header.
 
-**iOS app** — the Status section shows a **Version** row, e.g. `1.0 (7)`. The
+**iOS app** — the **Version** row, under Endpoint, shows e.g. `1.0 (7)`. The
 build number is the count of commits reachable from the built commit (`git
 rev-list --count HEAD` in `build-ipa.yml`), and the artifact is named to match:
 `Ammy-1.0-b7-a1b2c3d.ipa`. Matching numbers means the phone is running the build
@@ -204,9 +205,10 @@ published report matched it (searched 1 Nov 2026).
 **The 11 Sept decision was to leave it** for a future iOS to fix: a workaround
 outlives the defect, and every alternative cost something real, the large title
 or the scroll edge effect beneath the button. The one below costs neither, and
-what it carries is small, two margins and a fade. On 1 Nov 2026 the owner asked
-for another look: "i want to really make sure it's not something we can fix
-cause it's still present on ios 27".
+what it carries is small: a padding on the Form, and a copy of the bar for the
+page's slides to History. On 1 Nov 2026 the owner asked for another look: "i
+want to really make sure it's not something we can fix cause it's still present
+on ios 27".
 
 **How it was found**, so it isn't redone: a lab on the `jitter-lab` branch,
 never merged. Ammy's screen with one bottom bar at a time, driven in CI on an
@@ -233,38 +235,59 @@ so "it appeared in build 39" was most likely inferred, not seen.
 **The fix: the bar belongs to the stack.** `ContentView` attaches the same bar
 to the `NavigationStack`, so the effect's collector sits outside the page and
 UIKit updates the Form directly. In the simulator it is pixel-identical at
-rest to the bar on the Form, edge effect included, on an SE (26.5 and 27.0)
-and a Face ID iPhone 17e (27.0). Two things come with it:
+rest to the bar on the Form, edge effect included, at the top of the page
+and, since build 158, at its foot, on an SE (26.5 and 27.0) and a Face ID
+iPhone 17e (27.0). Two things come with it:
 - A stack doesn't pass its bar's inset down to the lists inside it
-  (FB23732628, forums thread 837946), so the Form takes the bar's measured
-  height as `contentMargins` for its content and scroll indicators: the same
-  scroll room as before, 87.5 pt on the SE and 34 + 53.3 on the 17e. If a
-  later iOS starts passing it down, the Form gets that room twice, and the
-  margins go.
-- A stack's bar outlives its pages, so it would sit over History. Since
-  build 156 the page carries an identical copy of the bar while it slides to
-  History and back, from its `viewWillDisappear` to its `viewDidAppear`
-  (`PageTransitions`, a view controller in the page; History's `onAppear`
-  and `onDisappear` arrive after the slides and stay only as a backstop).
-  The stack's bar steps aside without animating, and the copy goes with the
-  page and under History, as the bar did when it was the Form's. Fading the
-  stack's bar instead was tried twice. Builds 150 and 152 faded it after the
-  slide, from History's callbacks: "Stop" lingered over History for about
-  0.1 s and came back about 0.4 s after the page. Build 154 faded it during
-  the slide, from the page's transitions, and the owner found that "bottom
-  looks worse now on page transitions": a fading glass button is a murky
-  half-transparent capsule, navy for the blue Start, over History's rows for
-  about 0.4 s, and the edge effect's band then switched off in one frame.
-  In the lab (SE and Face ID simulators, iOS 26.5 and 27.0) the copy lands on
-  the stack bar's pixels at both handovers, the capsule's edges within
-  0.02 px; History has neither bar nor band; and a swipe back that's called
-  off leaves the page carrying it. iOS 26 still tints the strip behind the
-  bar, so there the tint goes as the slide away starts and returns once the
-  page has settled back. Not yet seen on a device. The lab's recordings carry
-  wall-clock `pts_time` beside a `dts` that drifts behind it, and ffmpeg's
-  default timestamps follow the `dts`, so read `pts_time`: the default made
-  the History test look unrecorded. The macos-26 runner's recorder also drops
-  most frames while anything moves, so time slides on the xcode-27 runner's.
+  (FB23732628, forums thread 837946), so the Form adds the bar's measured
+  height to its own safe area, `.safeAreaPadding(.bottom, barHeight)`, as
+  the bar did when it was the Form's: 87.5 pt on the SE and 34 + 53.3 on the
+  17e. The list keeps its own 20 pt below the last row on top of that, and
+  the scroll indicators, which follow the safe area, end at the bar's top.
+  Builds 150 to 156 gave the height to `contentMargins` for the content and
+  the indicators instead, and a margin there replaces the list's 20 pt
+  rather than adding to it: History ended 16 pt above the button. In the
+  `header-lab-option1` lab (2 Nov 2026; SE on 26.5 and 27.0, and 27.0 with
+  the iOS 26.5 SDK, as CI builds), History ends 36.0 pt above Start with the
+  padding or the bar on the Form and 16.0 with the margins, at XXXL text and
+  with the media prompt up as well. The padding doesn't bring the jump back:
+  every inset update during a drag took UIKit's direct path, and the content
+  never got ahead of the finger. **The 36 isn't seen on a device.** Build
+  154's recording (01:34, 2 Nov) shows the margins' 16 on the owner's SE.
+  But build 150's page, which ended in the Title Fix switch's footer, ended
+  in the same place there with the bar on the Form and on the stack, and no
+  lab has tried a page that ends in a footer. Either the room below a footer
+  isn't one the margins replace, or iOS 27.2 leaves no room below the last
+  group at all, and then build 158 looks like 156 at the foot of the page.
+  A screenshot of build 158 there settles it. If a later iOS starts passing
+  the inset down, the Form gets that room twice, and the padding goes.
+- A stack's bar outlives its pages, so it would sit over History. Since build
+  156 the page carries an identical copy of the bar while it slides to History
+  and back, from its `viewWillDisappear` to its `viewDidAppear`
+  (`PageTransitions`, a view controller in the page; History's `onAppear` and
+  `onDisappear` arrive after the slides and stay only as a backstop). The
+  stack's bar steps aside without animating, and the copy goes with the page and
+  under History, as the bar did when it was the Form's. Fading the stack's bar
+  instead was tried twice. Builds 150 and 152 faded it after the slide, from
+  History's callbacks: "Stop" lingered over History for about 0.1 s and came
+  back about 0.4 s after the page. Build 154 faded it during the slide, from the
+  page's transitions, and the owner found that "bottom looks worse now on page
+  transitions": a fading glass button is a murky half-transparent capsule, navy
+  for the blue Start, over History's rows for about 0.4 s, and the edge effect's
+  band then switched off in one frame. In the lab (SE and Face ID simulators,
+  iOS 26.5 and 27.0) the copy lands on the stack bar's pixels at both handovers,
+  the capsule's edges within 0.02 px; History has neither bar nor band; and a
+  swipe back that's called off leaves the page carrying it. Build 158's padding
+  sits beneath the copy's overlay, so `header-lab-option1` measured it again:
+  the copy exactly on the stack bar's frame at every handover, and the capsule's
+  edges within 0.04 px through every slide on iOS 27. iOS 26 still tints the
+  strip behind the bar, so there the tint goes as the slide away starts and
+  returns once the page has settled back. Not yet seen on a device. The lab's
+  recordings carry wall-clock `pts_time` beside a `dts` that drifts behind it,
+  and ffmpeg's default timestamps follow the `dts`, so read `pts_time`: the
+  default made the History test look unrecorded. The macos-26 runner's recorder
+  also drops most frames while anything moves, so time slides on the xcode-27
+  runner's.
 
 **Rejected, so not worth retrying:** `safeAreaInset`, or `contentMargins` with
 an overlay (no edge effect: rows show crisp behind the button); UIKit's
@@ -283,16 +306,57 @@ good now". Their screen recording agrees: the title rises with the content and
 the inline title fades in, and the two scrolls down from the top start at no
 more than 2.5 pt a frame, where September's leapt up to 57 pt in one. The foot
 of the page is the same to the pixel in either position: two screenshots there
-differ only in the clock and the switch. What the recording couldn't show is
-the other position jumping. Flipping the switch rebuilt the list, which landed
-back at the top, and after a flip neither position jumped, in six scrolls with
-the bar on the Form and two with it on the stack. So the evidence is build
-against build, 148 against 150, and the next test of this kind should compare
-launches, not flips. It was also the fix's first run as CI builds it, with the
-iOS 26.5 SDK, on iOS 27, a combination the simulator never covered. The switch
-went in build 152. A Feedback report is drafted with a minimal
-reproduction (`lab/FEEDBACK.md` and `lab/Repro` on the `jitter-lab` branch)
-and waits to be filed from the owner's account.
+differ only in the clock and the switch. That page ended in the switch's footer,
+though, and one that ends in a row is another matter (the fix's first bullet,
+above). What the recording couldn't show is the other position jumping. Flipping
+the switch rebuilt the list, which landed back at the top, and after a flip
+neither position jumped, in six scrolls with the bar on the Form and two with it
+on the stack. So the evidence is build against build, 148 against 150, and the
+next test of this kind should compare launches, not flips. It was also the fix's
+first run as CI builds it, with the iOS 26.5 SDK, on iOS 27, a combination the
+simulator never covered. The switch went in build 152. A Feedback report is
+drafted with a minimal reproduction (`lab/FEEDBACK.md` and `lab/Repro` on the
+`jitter-lab` branch) and waits to be filed from the owner's account.
+
+**No section headers on the main screen, since 2 Nov 2026 (build 158).** With
+the jump fixed, the owner looked again: "i don't see apple using the Big Title
+with Section Headers pattern anywhere". A survey the same day, on the iOS 27.0
+and 26.5 simulators (`header-lab-apple`, never merged), Apple's iOS 27 guide
+images and the owner's 27.2 screenshots, found them right:
+- **Settings never pairs them.** Its top level, the Apple screen most like
+  Ammy's (a root of grouped rows under a picture card, titled with the app's
+  own name), is a large title over groups that space alone separates. Every
+  Settings page with headers has an inline title (Search, Camera, Safari,
+  Notifications) or a header card (Accessibility, Screen Time, Wi-Fi).
+- **Other apps do, with a bolder kind.** Files' Browse, Notes' Folders,
+  Health, Podcasts and Home put headers under a large title, almost always
+  bold, in the primary colour, about 20–22 pt, often collapsible or with an
+  action. Ammy's were the kind Settings uses on its pages: grey, semibold,
+  body size. The one clean match for Ammy's old combination is Passwords'
+  root in Apple's iOS 27 guide, a single grey "Shared Groups" below a grid of
+  tiles, shown only to people who have shared groups. Contacts, the HIG's old
+  example of a large title, is inline on 27.
+- **Apple's written guidance doesn't decide it.** The HIG allows a large title
+  without requiring one, counts headers as one of three ways to separate
+  groups, with footers and space, and says nothing about the pairing.
+
+Two options went to the owner, rendered in the `header-lab-ammy` lab (never
+merged): the large title without headers, as on Settings' top level; or the
+headers under an inline title, as on Settings' pages, which would also have let
+the bar go back on the Form and retired the workaround above, since an inline
+title has no collapse to jump (`jitter-lab-inline`, never merged, found it clean
+in the simulator). The owner chose "Option 1". Without the Now Playing, Endpoint
+and Status headers an SE shows 86.5 pt more when the screen opens, everything
+but History above the button, and a 17e fits the whole page at the default text
+size, with nothing to scroll. The footer stays under the URL and Key fields, and
+"Endpoint" stays as the status row's name. The costs: the URL and Key card has
+no title, and in VoiceOver the song card is now just its title and artist, with
+no "Now Playing" before it (from the lab's accessibility tree; VoiceOver itself
+not tried). Build 158 also gave History back its room at the foot of the page,
+in the simulator at least (the fix's first bullet, above), and
+`header-lab-option1` (never merged) checked both before release: no jump, the
+copy of the bar on the stack bar's pixels through History's slides, and the
+keyboard and the media prompt as in build 156. Not yet seen on a device.
 
 **16 Sept 2026: iOS 27 removed the tint behind the bar, and Ammy followed for
 free.** `safeAreaBar` does not draw a background — it applies the system's scroll
@@ -691,22 +755,22 @@ The short version:
   were set equal to the side to match the Lock Screen, with the text 14 pt
   along. iOS 27.2 then widened the list's side margin: on the owner's SE 16 pt
   in a 26 Sept screenshot (iOS 27.0, the owner thinks) and 20 on 27.2, where
-  the whole list moved 4 pt in, headers and the Endpoint rows too, and Settings
-  shows the same. Settings' Apple Account row measures a 60 pt picture 20 pt
-  from the side and 15 from the top and bottom on 27.2, with the name about
-  9 pt after it. On 29 Oct the owner first said "lock screen player has its
-  own standard. all i want to copy from it is the fact that its corners are
-  concentric. in-app clearly needs much wider margins than this", then chose
-  the system's own gaps (build 137), suspecting 27.2's spacing was Apple's
-  mistake and matching it anyway: "wanna match here for better or worse /
-  and if they fix it in a future update it should make ammy look better".
-  Then they asked for the Lock Screen's margins "from first principles"
-  behind a temporary switch
-  (builds 139 and 141), compared the two on the device, and chose the Lock
-  Screen's: "i do like the lock screen spacing vastly more". The switch was
-  removed on 31 Oct 2026. So the artwork's size, the type, the fitted covers
-  and now the spacing all come from the Lock Screen; the corner rule is the
-  row's own.
+  everything inside the cards moved 4 pt in, the section headers it had then and
+  the Endpoint rows too, while the cards stayed 16 pt from the screen's edge;
+  Settings shows the same. Settings' Apple Account row measures a 60 pt picture
+  20 pt from the side and 15 from the top and bottom on 27.2, with the name
+  about 9 pt after it. On 29 Oct the owner first said "lock screen player has
+  its own standard. all i want to copy from it is the fact that its corners are
+  concentric. in-app clearly needs much wider margins than this", then chose the
+  system's own gaps (build 137), suspecting 27.2's spacing was Apple's mistake
+  and matching it anyway: "wanna match here for better or worse / and if they
+  fix it in a future update it should make ammy look better". Then they asked
+  for the Lock Screen's margins "from first principles" behind a temporary
+  switch (builds 139 and 141), compared the two on the device, and chose the
+  Lock Screen's: "i do like the lock screen spacing vastly more". The switch was
+  removed on 31 Oct 2026. So the artwork's size, the type, the fitted covers and
+  now the spacing all come from the Lock Screen; the corner rule is the row's
+  own.
 - **Concentric corner, as close as the gaps allow**: the section's radius
   (26 pt, measured on two phones; no API) less the average of the artwork's
   measured side and top gaps, never below 6. With equal gaps that is exactly

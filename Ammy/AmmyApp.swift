@@ -657,8 +657,11 @@ struct ContentView: View {
 
     /// The bar's own height. A stack doesn't pass its bar's inset down to the
     /// lists inside it (FB23732628, Apple Developer Forums thread 837946), so
-    /// the Form takes it as content margins instead: the same scroll room the
-    /// bar gave it from the Form, so the last row still clears the button.
+    /// the Form adds it to its own safe area instead, as the bar did when it
+    /// was the Form's, and the list keeps its own room below the last row on
+    /// top of that. Content margins (builds 150 to 156) replaced that room
+    /// instead of adding to it: History ended 16 pt above the button, where
+    /// the bar on the Form leaves 36 in the simulator.
     @State private var barHeight: CGFloat = 0
 
     /// SwiftUI's own `.padding()` amount, spelled out because the bar subtracts
@@ -697,8 +700,7 @@ struct ContentView: View {
     var body: some View {
         NavigationStack {
             form
-                .contentMargins(.bottom, barHeight, for: .scrollContent)
-                .contentMargins(.bottom, barHeight, for: .scrollIndicators)
+                .safeAreaPadding(.bottom, barHeight)
                 // The page's own copy of the bar, for its slides to History
                 // and back: it goes with the page and under History, as the
                 // bar did when it was the Form's. Fading the stack's bar
@@ -726,7 +728,9 @@ struct ContentView: View {
         // passes underneath. That is the whole reason no background is set
         // here: a hard fill would be doing badly what the system already
         // does properly, and it is what made the first attempt look stuck
-        // on rather than floating.
+        // on rather than floating. On the stack, the space it reserves
+        // doesn't reach the Form, so the Form reserves it again for itself:
+        // the safeAreaPadding above.
         //
         // Start/Stop lives here because it is the only control on this
         // screen anyone touches twice, and the only one that used to
@@ -821,26 +825,33 @@ struct ContentView: View {
     }
 
     /// What you set up once, under the large title.
+    ///
+    /// No section headers, since 2 Nov 2026, as on Settings' own top level: a
+    /// large title over groups that space alone separates, the first of them
+    /// a picture card. Settings keeps its small grey headers for the pages
+    /// beneath it, under an inline title or a header card, and the apps that
+    /// do put headers under a large title, such as Files, Notes and Health,
+    /// almost always use a bolder, larger kind. The rows here name
+    /// themselves: the cover and song, the URL and Key labels with the
+    /// footer beneath them, and the status rows. CLAUDE.md, "No section
+    /// headers", has the survey.
     private var form: some View {
         Form {
             if !controller.monitor.authorized {
                 MediaAccessPrompt(monitor: controller.monitor)
             }
 
-            Section("Now Playing") {
+            Section {
                 NowPlayingRow(monitor: controller.monitor)
             }
 
-            // "Endpoint", not "Relay": a relay forwards what it receives,
-            // and nothing here requires that. Ammy posts JSON to an address;
-            // whether that address passes it on, renders it, or files it
-            // away is none of the app's business. The same reasoning keeps
-            // the relay's /now-playing path out of the placeholder — that is
-            // one receiver's convention, not a rule of the app.
+            // The relay's /now-playing path stays out of the placeholder, for
+            // the reason the status row says Endpoint and not Relay: that
+            // path is one receiver's convention, not a rule of the app.
             //
-            // Labels persist where placeholders vanish, so the row names
-            // live on the left and the value column carries only whether the
-            // field must be filled in.
+            // Labels persist where placeholders vanish, so the rows' names
+            // sit above their fields and each placeholder carries only
+            // whether its field must be filled in.
             // Label above a full-width field, rather than Mail's two-column
             // row. Both values here are long enough to overflow a shared
             // row, and LabeledContent's response to that is to stack them
@@ -876,14 +887,17 @@ struct ContentView: View {
                         .autocorrectionDisabled()
                         .accessibilityLabel("Key")
                 }
-            } header: {
-                Text("Endpoint")
             } footer: {
                 Text("Ammy sends your now-playing details to this address. "
                      + "If you set a key, it's sent as a header.")
             }
 
-            Section("Status") {
+            Section {
+                // "Endpoint", not "Relay": a relay forwards what it receives,
+                // and nothing here requires that. Ammy posts JSON to an
+                // address; whether that address passes it on, renders it, or
+                // files it away is none of the app's business.
+                //
                 // A spinner rather than a word until the first push comes
                 // back, because until then there is no answer to show —
                 // only the wait for one.
@@ -898,9 +912,8 @@ struct ContentView: View {
                 LabeledContent("Version", value: Bundle.main.displayVersion)
             }
 
-            // Unlabeled on purpose: it is a way out of this screen rather
-            // than another fact about the current one, so a header would
-            // group it with things it has nothing to do with.
+            // A group of its own: it is a way out of this screen rather than
+            // another fact about the current one.
             Section {
                 NavigationLink("History") {
                     LinkHistoryView()
