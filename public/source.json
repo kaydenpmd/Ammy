@@ -32,17 +32,17 @@
       "name": "Albums",
       "bundleIdentifier": "com.local.albums",
       "developerName": "kaydenpmd",
-      "localizedDescription": "Albums is a place to stash Apple Music albums you want to listen to later. It looks like Apple Music's own Library: a two-column grid of artwork.\n\nSAVE FROM APPLE MUSIC. On an album or a song, tap Share, then Albums. Or paste a link.\n\nLISTEN WHEN YOU'RE READY. Tap an album to open it in Apple Music. Mark albums as listened, and filter the grid to what you haven't heard yet.\n\nAlbum details come from Apple's own catalog, looked up by the album's ID, never guessed.\n\nIF SIDESTORE ASKS ABOUT APP EXTENSIONS, KEEP THEM. The share extension is what puts Albums in the Share menu; without it, albums can only be added by pasting a link.\n\nRequires iOS 26 or later.",
+      "localizedDescription": "Albums is a place to stash Apple Music albums you want to listen to later. It looks like Apple Music's own Library: a two-column grid of artwork.\n\nSAVE FROM APPLE MUSIC. On an album or a song, tap Share, then Albums. Or paste a link.\n\nLISTEN WHEN YOU'RE READY. Tap an album to open it in Apple Music.\n\nAlbum details come from Apple's own catalog, looked up by the album's ID, never guessed.\n\nIF SIDESTORE ASKS ABOUT APP EXTENSIONS, KEEP THEM. The share extension is what puts Albums in the Share menu; without it, albums can only be added by pasting a link.\n\nRequires iOS 26 or later.",
       "iconURL": "https://apps.kaydenpmd.net/albums-icon.png",
       "versions": [
         {
           "version": "1.0",
-          "date": "2026-11-02T00:25:46+00:00",
-          "localizedDescription": "Long-press an album for a menu like Music's\n\nLong-pressing an album now shows a card with its cover, title and artist,\nlike Apple Music's. Tap the card to open the album in Apple Music. Below\nit: Listened, Copy Link and Share in a row, then Delete from Library.",
-          "downloadURL": "https://github.com/kaydenpmd/Albums/releases/download/v1.0-b5/Albums-1.0-b5-d38249b.ipa",
-          "size": 640006,
-          "sha256": "a79c105011c412fa37569d10239f4d771d6b62a26fc197fbd5f0bb3cd9f17298",
-          "buildVersion": "5",
+          "date": "2026-11-03T01:21:40+00:00",
+          "localizedDescription": "Remove marking albums as listened\n\nAlbums is just one list now. The Listened button is gone from the\nlong-press menu, and so are the checkmarks and the filter button. The\nmenu keeps Copy Link and Share in a row, then Delete from Library.",
+          "downloadURL": "https://github.com/kaydenpmd/Albums/releases/download/v1.0-b6/Albums-1.0-b6-c33d373.ipa",
+          "size": 622106,
+          "sha256": "cf33f459d1ddc83320f7bbf45aa5385bc29f754461ba8a4051969913b1aca7d1",
+          "buildVersion": "6",
           "minOSVersion": "26.0"
         }
       ],
