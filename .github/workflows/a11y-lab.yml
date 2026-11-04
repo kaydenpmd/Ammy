@@ -41,10 +41,20 @@ name: A11y lab (Now Playing label)
 on:
   push:
     branches: [a11y-lab-nowplaying]
+  # By hand: a suite, and one setup's name to run only that one (run
+  # 41812135441's 17e-ios27-sdk26 runner timed out launching Ammy in every
+  # test and was cancelled, so it gets the first suite again on its own).
   workflow_dispatch:
+    inputs:
+      suite:
+        description: "first or second"
+        default: second
+      only:
+        description: "one setup's name, or empty for all of them"
+        default: ""
 
 env:
-  SUITE: second
+  SUITE: ${{ inputs.suite || 'second' }}
 
 jobs:
   compile:
@@ -129,11 +139,24 @@ jobs:
     timeout-minutes: 100
 
     steps:
+      - name: Pick this setup, or skip it
+        id: pick
+        run: |
+          ONLY="${{ inputs.only }}"
+          if [ -z "$ONLY" ] || [ "$ONLY" = "${{ matrix.name }}" ]; then
+            echo "go=yes" >> "$GITHUB_OUTPUT"
+          else
+            echo "go=no" >> "$GITHUB_OUTPUT"
+            echo "skipped: this run is only for $ONLY"
+          fi
+
       - uses: actions/checkout@v4
+        if: steps.pick.outputs.go == 'yes'
         with:
           fetch-depth: 0
 
       - name: Select Xcode
+        if: steps.pick.outputs.go == 'yes'
         run: |
           X="${{ matrix.xcode }}"
           [ -d "$X" ] || X=/Applications/Xcode.app
@@ -142,13 +165,16 @@ jobs:
           xcrun simctl list runtimes
 
       - name: Install XcodeGen
+        if: steps.pick.outputs.go == 'yes'
         run: brew install xcodegen
 
       - name: Generate the test project
+        if: steps.pick.outputs.go == 'yes'
         run: cd a11ylab && xcodegen generate
 
       - name: Create and boot the simulator
         id: sim
+        if: steps.pick.outputs.go == 'yes'
         run: |
           set -euo pipefail
           TYPE="${{ matrix.device }}"
@@ -179,6 +205,7 @@ jobs:
           { echo "setup: ${{ matrix.name }}"; echo "device: $TYPE"; echo "runtime: $RUNTIME"; echo "test runner:"; xcodebuild -version; } > out/device.txt
 
       - name: Build the UI tests
+        if: steps.pick.outputs.go == 'yes'
         run: |
           set -o pipefail
           cd a11ylab
@@ -189,7 +216,7 @@ jobs:
             CODE_SIGNING_ALLOWED=NO 2>&1 | tail -30
 
       - name: Build the change and the control with this Xcode
-        if: matrix.ammy == 'native'
+        if: steps.pick.outputs.go == 'yes' && matrix.ammy == 'native'
         run: |
           bash a11ylab/make-trees.sh 2>&1 | tee out/trees.txt
           bash a11ylab/build-sim.sh "${{ matrix.name }}" "id=${{ steps.sim.outputs.udid }}"
@@ -198,17 +225,18 @@ jobs:
           fi
 
       - uses: actions/download-artifact@v4
-        if: matrix.ammy == 'sdk26'
+        if: steps.pick.outputs.go == 'yes' && matrix.ammy == 'sdk26'
         with:
           name: ammy-sdk26
 
       - name: Unpack the iOS 26.5 SDK builds
-        if: matrix.ammy == 'sdk26'
+        if: steps.pick.outputs.go == 'yes' && matrix.ammy == 'sdk26'
         run: |
           tar -xzf Ammy-sdk26.tgz
           ls -la apps/*
 
       - name: Run
+        if: steps.pick.outputs.go == 'yes'
         run: |
           set +e
           UDID="${{ steps.sim.outputs.udid }}"
@@ -243,6 +271,18 @@ jobs:
               xcrun simctl terminate "$UDID" com.local.ammy > /dev/null 2>&1
               echo "== $label (attempt $attempt)"
               grep -E "Test Case|error:|failed" "out/xcodebuild-$label-$attempt.log" | tail -24
+              # Run 41812135441's 17e-ios27-sdk26 simulator stopped launching
+              # apps: every test timed out "launching application via
+              # platform mechanisms". A fresh boot, then one more try.
+              if [ "$attempt" = 1 ] && grep -q "Failed to launch com.local.ammy" "out/xcodebuild-$label-$attempt.log"; then
+                echo "$(stamp) launches timed out: rebooting the simulator" >> out/phases.txt
+                xcrun simctl shutdown "$UDID"
+                xcrun simctl boot "$UDID"
+                xcrun simctl bootstatus "$UDID" -b
+                xcrun simctl ui "$UDID" appearance "$APPEARANCE"
+                statusbar
+                continue
+              fi
               if grep -q "Test Case '-\[" "out/xcodebuild-$label-$attempt.log"; then break; fi
             done
           }
@@ -291,7 +331,7 @@ jobs:
           exit 0
 
       - uses: actions/upload-artifact@v7
-        if: always()
+        if: always() && steps.pick.outputs.go == 'yes'
         with:
           name: lab-${{ matrix.name }}
           path: out
