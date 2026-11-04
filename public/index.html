@@ -4,7 +4,6 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Ammy</title>
-<meta name="description" content="Add this source to AltStore or SideStore to install Ammy.">
 <link rel="icon" href="/source-icon.jpg">
 <link rel="apple-touch-icon" href="/source-icon.jpg">
 <style>
@@ -115,24 +114,9 @@
   </section>
 
   <section>
-    <h2>If the buttons do nothing</h2>
-    <div class="panel">
-      <ol class="steps">
-        <li>They use the <code>sidestore://</code> and <code>altstore://</code> URL schemes. If you don't have that app installed, iOS has nothing to hand the link to and shows an error.</li>
-        <li>Copy the URL above instead.</li>
-        <li>In SideStore or AltStore: the <strong>Sources</strong> tab → <strong>+</strong> → paste.</li>
-      </ol>
-    </div>
-  </section>
-
-  <section>
     <h2>Before you install</h2>
     <div class="panel">
       <ul class="steps">
-        <li><strong>Ammy is a sender, not a destination.</strong> It reads your now-playing track and POSTs it as JSON to an HTTPS endpoint you set — so you need something running at the other end to receive it. It is built to pair with <strong>Issun</strong>, and is not limited to it: anything that accepts an HTTPS POST works.</li>
-        <li>Setup on the phone is an address and an optional key, and nothing else. Standing something up to receive it is the part that takes a moment — read the repo before installing, or the app will sit there doing nothing.</li>
-        <li>You need <strong>SideStore</strong> (or AltStore) already set up with your own Apple ID.</li>
-        <li>On a free Apple ID, sideloaded apps <strong>stop working after 7 days</strong> until refreshed, and count against a <strong>3-app limit</strong>. That's an Apple restriction, not something this app can opt out of.</li>
         <li id="minosLi" hidden></li>
       </ul>
     </div>
@@ -142,7 +126,7 @@
     <h2>Manual install</h2>
     <div class="panel">
       <ul class="steps">
-        <li>Download the <a id="ipa" href="#">.ipa</a> and add it through your sideloader's <strong>+</strong> button under My Apps.</li>
+        <li><a id="ipa" href="#">.ipa</a></li>
         <li id="hashLi" hidden>SHA-256: <code id="hash" style="word-break:break-all"></code></li>
       </ul>
     </div>
