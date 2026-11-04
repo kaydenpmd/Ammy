@@ -54,8 +54,9 @@ The publish job commits `source.json` back to `main`, and can't without this.
 
 ### 3. Fill in `source.config.json`
 
-The description and subtitle in there are a first pass written from your
-`Info.plist` strings — rewrite them. The app's `iconURL` is
+The description and subtitle are yours to write. Until you do, the description
+is empty and there's no subtitle; add a `"subtitle"` to the `app` block when you
+have one. The app's `iconURL` is
 `https://apps.kaydenpmd.net/ammy-icon.png?v=2`. `public/ammy-icon.png` is a copy
 of the app icon's `AppIcon.png`, which `scripts/make_icon.py` draws, so copy it
 again whenever the icon is redrawn, and bump the `?v=`: SideStore can keep
@@ -166,8 +167,7 @@ SideStore sign on the user's device with the user's own Apple ID, so an IPA
 signed by you would only get re-signed, and shipping signing secrets to CI would
 be a liability for nothing.
 
-The consequence, which the landing page states outright: on a free Apple ID, the
-app dies after **7 days** without a refresh and counts against a **3-app limit**.
+The consequence: on a free Apple ID, the app dies after **7 days** without a refresh and counts against a **3-app limit**.
 A paid Developer account extends that to a year for whoever owns the account and
 does not transfer to anyone installing your app. There's no route around it short
 of the App Store or TestFlight.

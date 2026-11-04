@@ -75,10 +75,10 @@ owner's Windows desktop application (github.com/kaydenpmd/Issun) that completes
 the bridge to Discord — and it works with anything else that accepts an HTTPS
 POST.
 
-So the subtitle and description in `source.config.json`, the landing page in
-`public/index.html`, `NSAppleMusicUsageDescription` in `project.yml`, and the
-app's own UI all stay receiver-agnostic. Naming Discord in those places states a
-requirement that does not exist, and it has already had to be undone once —
+So the landing page in `public/index.html`, `NSAppleMusicUsageDescription` in
+`project.yml`, and the app's own UI all stay receiver-agnostic. Naming Discord
+in those places states a requirement that does not exist, and it has already
+had to be undone once —
 18 Sept 2026, after the first listing pitched Discord Rich Presence, a Windows
 relay and a Discord application of your own, which is one receiver's setup
 rather than a description of this app. The UI has always had this right on
@@ -87,10 +87,16 @@ purpose: it says **Endpoint**, not Relay (the status row's name, and until
 address forwards, renders or files what it receives is none of the app's
 business.
 
-`README.md` and this file are the other half of the rule. They document the
-Discord receiver, which is genuinely what they are about, and they go on saying
-so — the fix is never to strip accurate Discord information, only to move it
-from "what Ammy is" to "what the receiver does".
+The listing's subtitle and description, the README and the landing page's
+prose are the owner's to write (3 Nov 2026). Until the owner writes them the
+listing has no subtitle and an empty `localizedDescription`, the README is only
+the name, and the landing page has just its buttons and the facts it reads from
+`source.json`. Don't fill them in.
+
+This file is the other half of the rule. It documents the Discord receiver,
+which is genuinely what it is about, and it goes on saying so — the fix is
+never to strip accurate Discord information, only to move it from "what Ammy
+is" to "what the receiver does".
 
 **The trap that isn't text:** the listing's accent colour was `#5865f2`, which
 is Discord's blurple, so the old framing outlived the words that carried it.
