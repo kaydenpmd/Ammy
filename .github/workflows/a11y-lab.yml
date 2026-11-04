@@ -26,14 +26,25 @@ name: A11y lab (Now Playing label)
 #                    owner's phone runs a release
 #   17e-ios27-sdk26  iPhone 17e, iOS 27.0, the same
 #
-# Each lab job installs the change, runs every state in dark and in light
-# (a11ylab/A11yLabUITests says what each records), runs the accessibility
-# audit, then uninstalls it and does the same with the control.
+# Each lab job installs the change, runs the tests SUITE names, then
+# uninstalls it and does the same with the control (a11ylab/A11yLabUITests
+# says what each test records):
+#   first   every state in dark and in light, then the accessibility audit
+#           in the short and long states (run 41812135441)
+#   second  the long title again in dark, read at rest as well (straight
+#           after the card shows, and in its second loop's rest), and the
+#           audit timed against the song: at once and 8 s in for the long
+#           title, twice each, once more for the short and explicit songs.
+#           Run 41812135441's audits differed once, in the long state only,
+#           by a contrast issue on the scrolling title.
 
 on:
   push:
     branches: [a11y-lab-nowplaying]
   workflow_dispatch:
+
+env:
+  SUITE: second
 
 jobs:
   compile:
@@ -249,6 +260,15 @@ jobs:
             xcrun simctl launch "$UDID" com.local.ammy > /dev/null 2>&1
             sleep 8
             xcrun simctl terminate "$UDID" com.local.ammy > /dev/null 2>&1
+            if [ "$SUITE" = "second" ]; then
+              APPEARANCE=dark
+              xcrun simctl ui "$UDID" appearance dark
+              statusbar
+              echo "$(stamp) $B dark (second)" >> out/phases.txt
+              run_tests "$B-dark-long" test4Long
+              run_tests "$B-audit-timed" test8AuditTimed
+              continue
+            fi
             for APPEARANCE in dark light; do
               xcrun simctl ui "$UDID" appearance "$APPEARANCE" || echo "appearance $APPEARANCE failed"
               statusbar

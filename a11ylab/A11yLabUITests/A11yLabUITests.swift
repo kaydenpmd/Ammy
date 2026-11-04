@@ -58,14 +58,26 @@ final class A11yLabUITests: XCTestCase {
         // covers both, and leaves a long line well inside its first rest.
         Thread.sleep(forTimeInterval: 1.0)
         shot(name + "-top")
+        // The app's own account straight away: it takes a few milliseconds,
+        // where XCUITest's reads below take seconds, so for the long title
+        // this one is the one made while the lines are still at rest.
+        requestDump(name, label: "early")
         record(app, expect: expect, name: name, moment: "rest")
         if state == "long" {
+            let song = songShownAt(name) ?? shownAt
             // While both lines move: about 8 s after the song showed, past
             // the first rest, before the loop ends.
-            let wait = shownAt.addingTimeInterval(8).timeIntervalSinceNow
+            let wait = song.addingTimeInterval(8).timeIntervalSinceNow
             if wait > 0 { Thread.sleep(forTimeInterval: wait) }
             shot(name + "-moving")
             record(app, expect: expect, name: name, moment: "moving")
+            // The second loop's rest: the loop is 3 s plus the artist line's
+            // 468.5 pt at 30 pt/s, 18.6 s, and its eased hold keeps the lines
+            // still for about 5 s after that.
+            let rest2 = song.addingTimeInterval(19.4).timeIntervalSinceNow
+            if rest2 > 0 { Thread.sleep(forTimeInterval: rest2) }
+            shot(name + "-loop2")
+            record(app, expect: expect, name: name, moment: "loop2")
             if appearance == "dark" {
                 // Once a second for 16 s: the rest of the loop and the start
                 // of the next, which begins at rest again.
@@ -79,6 +91,54 @@ final class A11yLabUITests: XCTestCase {
 
     @MainActor func test6AuditShort() { audit("short", expect: Self.shortTitle) }
     @MainActor func test7AuditLong() { audit("long", expect: Self.longTitle) }
+
+    /// The audit again, timed against the song: as soon as the card shows,
+    /// while a long title's lines are still, and 8 s in, while they move,
+    /// twice each, and once more for the short and explicit songs. Each
+    /// file says when its audit ran.
+    @MainActor
+    func test8AuditTimed() {
+        let runs: [(String, String, Double, Int)] = [
+            ("long", Self.longTitle, 0, 1), ("long", Self.longTitle, 8, 1),
+            ("long", Self.longTitle, 0, 2), ("long", Self.longTitle, 8, 2),
+            ("short", Self.shortTitle, 0, 2), ("explicit", Self.explicitTitle, 0, 1),
+        ]
+        for (track, expect, delay, round) in runs {
+            auditTimed(track, expect: expect, startAfter: delay, round: round)
+        }
+    }
+
+    @MainActor
+    private func auditTimed(_ track: String, expect: String, startAfter delay: Double, round: Int) {
+        let name = "\(build)-audit-\(track)-at\(Int(delay))-r\(round)-\(appearance)"
+        let app = launch(name, track: track)
+        let shownAt = waitForCard(app, containing: expect, name: name)
+        let song = songShownAt(name) ?? shownAt
+        let wait = song.addingTimeInterval(delay).timeIntervalSinceNow
+        if wait > 0 { Thread.sleep(forTimeInterval: wait) }
+        shot(name + "-before")
+        let issues = Lines()
+        var lines: [String] = []
+        let began = Date()
+        mark(name, "audit begins")
+        do {
+            try app.performAccessibilityAudit(for: .all) { issue in
+                issues.items.append(Self.describe(issue))
+                return true
+            }
+            lines = issues.items
+            lines.append("audit returned; \(issues.items.count) issue(s)")
+        } catch {
+            lines = issues.items
+            lines.append("audit threw: \(error)")
+        }
+        let ended = Date()
+        mark(name, "audit ends")
+        lines.append(String(format: "audit ran from %.2f to %.2f s after the song showed", began.timeIntervalSince(song), ended.timeIntervalSince(song)))
+        write(lines, to: name + ".txt")
+        shot(name + "-after")
+        app.terminate()
+    }
 
     @MainActor
     private func audit(_ track: String, expect: String) {
@@ -161,7 +221,30 @@ final class A11yLabUITests: XCTestCase {
         let found = card.waitForExistence(timeout: 20)
         let at = Date()
         mark(name, "an element containing \(Self.quote(expect)) exists=\(found) after \(String(format: "%.2f", at.timeIntervalSince(started))) s")
+        if found {
+            // One quick read of the first match, the card itself, before
+            // anything else: for the long title, while its lines are still.
+            let label = card.label
+            let frame = card.frame
+            let line = "\(now()) first read: label=\(Self.quote(label)) frame=\(frame)"
+            write([line], to: "\(name)-first-card.txt")
+            mark(name, "first read done")
+        }
         return at
+    }
+
+    /// When Ammy published the lab's song, from the probe's record.
+    private func songShownAt(_ name: String) -> Date? {
+        let url = outDir.appendingPathComponent("\(name).probe.jsonl")
+        guard let text = try? String(contentsOf: url, encoding: .utf8) else { return nil }
+        for line in text.split(separator: "\n") where line.contains("\"k\":\"track\"") {
+            if let data = line.data(using: .utf8),
+               let object = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+               let wall = object["wall"] as? Double {
+                return Date(timeIntervalSince1970: wall)
+            }
+        }
+        return nil
     }
 
     /// Every element whose label contains `expect`: its snapshot's attributes
