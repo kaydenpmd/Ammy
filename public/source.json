@@ -4,7 +4,7 @@
       "name": "Ammy",
       "bundleIdentifier": "com.local.ammy",
       "developerName": "kaydenpmd",
-      "localizedDescription": "Ammy reads what you're playing in Apple Music — title, artist, album, cover art and the live playback position — and POSTs it as JSON to an HTTPS endpoint you choose. It keeps reporting while the screen is off and while other apps are in front: an update on every track change, and a heartbeat every 30 seconds.\n\nBUILT TO PAIR WITH ISSUN, and not limited to it. Ammy has no opinion about what receives the data — anything that accepts an HTTPS POST works.\n\nAMMY IS A SENDER, NOT A DESTINATION. On its own it does nothing: you need something running at the other end to point it at. Setup on the phone is an address and an optional key, and nothing else. Read the repo first.\n\nRequires iOS 26 or later, and permission to read your media library.",
+      "localizedDescription": "",
       "iconURL": "https://apps.kaydenpmd.net/ammy-icon.png?v=2",
       "versions": [
         {
@@ -18,7 +18,6 @@
           "minOSVersion": "26.0"
         }
       ],
-      "subtitle": "Beta · Apple Music now playing, over HTTPS",
       "category": "entertainment",
       "tintColor": "007aff",
       "appPermissions": {
@@ -32,7 +31,7 @@
       "name": "Albums",
       "bundleIdentifier": "com.local.albums",
       "developerName": "kaydenpmd",
-      "localizedDescription": "Albums is a place to stash Apple Music albums you want to listen to later. It looks like Apple Music's own Library: a two-column grid of artwork.\n\nSAVE FROM APPLE MUSIC. On an album or a song, tap Share, then Albums. Or paste a link.\n\nLISTEN WHEN YOU'RE READY. Tap an album to open it in Apple Music.\n\nAlbum details come from Apple's own catalog, looked up by the album's ID, never guessed.\n\nIF SIDESTORE ASKS ABOUT APP EXTENSIONS, KEEP THEM. The share extension is what puts Albums in the Share menu; without it, albums can only be added by pasting a link.\n\nRequires iOS 26 or later.",
+      "localizedDescription": "",
       "iconURL": "https://apps.kaydenpmd.net/albums-icon.png",
       "versions": [
         {
@@ -46,7 +45,6 @@
           "minOSVersion": "26.0"
         }
       ],
-      "subtitle": "Save Apple Music albums for later",
       "category": "entertainment",
       "tintColor": "007aff",
       "appPermissions": {

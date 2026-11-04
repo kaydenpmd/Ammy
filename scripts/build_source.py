@@ -73,9 +73,12 @@ def apply_app_metadata(app, app_cfg):
     app["iconURL"] = app_cfg.get("iconURL", app.get("iconURL", ""))
     app.setdefault("versions", [])
 
+    # Taken out of the config, taken out of the listing.
     for optional in ("subtitle", "category"):
         if app_cfg.get(optional):
             app[optional] = app_cfg[optional]
+        else:
+            app.pop(optional, None)
     if hex_color(app_cfg.get("tintColor")):
         app["tintColor"] = hex_color(app_cfg["tintColor"])
     if app_cfg.get("screenshots"):
