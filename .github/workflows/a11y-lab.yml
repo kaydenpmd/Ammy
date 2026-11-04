@@ -1,0 +1,277 @@
+name: A11y lab (Now Playing label)
+
+# Runs only on the a11y-lab-nowplaying branch, never on main, and releases
+# nothing. The question, 4 Nov 2026: with
+#
+#     .accessibilityLabel { label in
+#         Text("Now Playing")
+#         label
+#     }
+#
+# straight after the Now Playing row's .accessibilityElement(children:
+# .combine) (main's working tree), what does the card's accessibility element
+# say, does anything else on the page move, and does it build as a release
+# is built? "change" is that code; "control" is the same code without the
+# modifier, AmmyApp.swift as 5e63c79 has it (a11ylab/make-trees.sh).
+#
+#   compile          macos-26's default Xcode (26.6, the iOS 26.5 SDK), as
+#                    build-ipa.yml builds a release: the change and the
+#                    control for the device, exactly as released, and both
+#                    lab apps for the simulator, for the sdk26 setups below
+#   se-ios27         iPhone SE, iOS 27.0, both apps built with Xcode 27.2,
+#                    which also builds the change and control for the device
+#   se-ios26         iPhone SE, iOS 26.5, both apps built with Xcode 26.6
+#   17e-ios27        iPhone 17e, iOS 27.0, both apps built with Xcode 27.2
+#   se-ios27-sdk26   iPhone SE, iOS 27.0, the iOS 26.5 SDK builds, as the
+#                    owner's phone runs a release
+#   17e-ios27-sdk26  iPhone 17e, iOS 27.0, the same
+#
+# Each lab job installs the change, runs every state in dark and in light
+# (a11ylab/A11yLabUITests says what each records), runs the accessibility
+# audit, then uninstalls it and does the same with the control.
+
+on:
+  push:
+    branches: [a11y-lab-nowplaying]
+  workflow_dispatch:
+
+jobs:
+  compile:
+    runs-on: macos-26
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Show the default Xcode, as build-ipa.yml uses it
+        run: |
+          xcode-select -p
+          xcodebuild -version
+          echo "iphoneos SDK $(xcrun --sdk iphoneos --show-sdk-version)"
+          echo "iphonesimulator SDK $(xcrun --sdk iphonesimulator --show-sdk-version)"
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Make the trees
+        run: |
+          mkdir -p out
+          bash a11ylab/make-trees.sh 2>&1 | tee out/trees.txt
+
+      - name: The change and the control for the device, as build-ipa.yml builds a release
+        run: bash a11ylab/build-device.sh xcode26
+
+      - name: Both lab apps for the simulator, with the iOS 26.5 SDK
+        run: |
+          bash a11ylab/build-sim.sh xcode26 'generic/platform=iOS Simulator'
+          tar -czf Ammy-sdk26.tgz apps
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: ammy-sdk26
+          path: Ammy-sdk26.tgz
+
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: compile-xcode26
+          path: out
+
+  lab:
+    needs: compile
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: se-ios27
+            runner: xcode-27
+            xcode: /Applications/Xcode_27.2_Release_Candidate.app
+            device: iPhone-SE-3rd-generation
+            runtime: "27.0"
+            ammy: native
+          - name: se-ios26
+            runner: macos-26
+            xcode: /Applications/Xcode_26.6.app
+            device: iPhone-SE-3rd-generation
+            runtime: "26.5"
+            ammy: native
+          - name: 17e-ios27
+            runner: xcode-27
+            xcode: /Applications/Xcode_27.2_Release_Candidate.app
+            device: iPhone-17e
+            runtime: "27.0"
+            ammy: native
+          - name: se-ios27-sdk26
+            runner: xcode-27
+            xcode: /Applications/Xcode_27.2_Release_Candidate.app
+            device: iPhone-SE-3rd-generation
+            runtime: "27.0"
+            ammy: sdk26
+          - name: 17e-ios27-sdk26
+            runner: xcode-27
+            xcode: /Applications/Xcode_27.2_Release_Candidate.app
+            device: iPhone-17e
+            runtime: "27.0"
+            ammy: sdk26
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 100
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Select Xcode
+        run: |
+          X="${{ matrix.xcode }}"
+          [ -d "$X" ] || X=/Applications/Xcode.app
+          sudo xcode-select -s "$X"
+          xcodebuild -version
+          xcrun simctl list runtimes
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Generate the test project
+        run: cd a11ylab && xcodegen generate
+
+      - name: Create and boot the simulator
+        id: sim
+        run: |
+          set -euo pipefail
+          TYPE="${{ matrix.device }}"
+          WANT="${{ matrix.runtime }}"
+          # The runtime asked for first, then the newest that takes the
+          # device: a runtime made for one device (27.1 on the xcode-27 image
+          # is iPhone Duo's) refuses the others.
+          UDID=""
+          for RUNTIME in $(xcrun simctl list runtimes -j | WANT="$WANT" python3 -c '
+          import json, os, sys
+          want = os.environ["WANT"]
+          rs = [r for r in json.load(sys.stdin)["runtimes"] if r["platform"] == "iOS" and r["isAvailable"]]
+          rs.sort(key=lambda r: (r["version"] == want or r["version"].startswith(want + "."),
+                                 [int(x) for x in r["version"].split(".")]), reverse=True)
+          print(" ".join(r["identifier"] for r in rs))'); do
+            if UDID=$(xcrun simctl create "Lab $TYPE" "com.apple.CoreSimulator.SimDeviceType.$TYPE" "$RUNTIME" 2>/dev/null); then
+              echo "device: $TYPE on $RUNTIME"
+              echo "runtime=$RUNTIME" >> "$GITHUB_OUTPUT"
+              break
+            fi
+            UDID=""
+          done
+          [ -n "$UDID" ] || { echo "no usable simulator"; exit 1; }
+          echo "udid=$UDID" >> "$GITHUB_OUTPUT"
+          xcrun simctl boot "$UDID"
+          xcrun simctl bootstatus "$UDID" -b
+          mkdir -p out
+          { echo "setup: ${{ matrix.name }}"; echo "device: $TYPE"; echo "runtime: $RUNTIME"; echo "test runner:"; xcodebuild -version; } > out/device.txt
+
+      - name: Build the UI tests
+        run: |
+          set -o pipefail
+          cd a11ylab
+          xcodebuild build-for-testing \
+            -project A11yLab.xcodeproj -scheme A11yLabHost \
+            -destination "id=${{ steps.sim.outputs.udid }}" \
+            -derivedDataPath dd \
+            CODE_SIGNING_ALLOWED=NO 2>&1 | tail -30
+
+      - name: Build the change and the control with this Xcode
+        if: matrix.ammy == 'native'
+        run: |
+          bash a11ylab/make-trees.sh 2>&1 | tee out/trees.txt
+          bash a11ylab/build-sim.sh "${{ matrix.name }}" "id=${{ steps.sim.outputs.udid }}"
+          if [ "${{ matrix.name }}" = "se-ios27" ]; then
+            bash a11ylab/build-device.sh xcode27
+          fi
+
+      - uses: actions/download-artifact@v4
+        if: matrix.ammy == 'sdk26'
+        with:
+          name: ammy-sdk26
+
+      - name: Unpack the iOS 26.5 SDK builds
+        if: matrix.ammy == 'sdk26'
+        run: |
+          tar -xzf Ammy-sdk26.tgz
+          ls -la apps/*
+
+      - name: Run
+        run: |
+          set +e
+          UDID="${{ steps.sim.outputs.udid }}"
+          T=A11yLabUITests/A11yLabUITests
+          stamp() { python3 -c 'import time; print(time.time())'; }
+          statusbar() {
+            xcrun simctl status_bar "$UDID" override --time "9:41" \
+              --dataNetwork wifi --wifiMode active --wifiBars 3 \
+              --cellularMode active --cellularBars 4 \
+              --batteryState charged --batteryLevel 100 > /dev/null 2>&1 || echo "status bar override refused"
+          }
+          run_tests() {
+            local label="$1"
+            shift
+            local only=()
+            local t
+            for t in "$@"; do only+=("-only-testing:$T/$t"); done
+            local attempt
+            # A second try only when the runner never got as far as a test,
+            # as header-lab-option1's first run needed once.
+            for attempt in 1 2; do
+              echo "$(stamp) begin $label (attempt $attempt)" >> out/phases.txt
+              TEST_RUNNER_LAB_OUT="$PWD/out" TEST_RUNNER_LAB_BUILD="$B" TEST_RUNNER_LAB_APPEARANCE="$APPEARANCE" \
+              xcodebuild test-without-building \
+                -project a11ylab/A11yLab.xcodeproj -scheme A11yLabHost \
+                -destination "id=$UDID" \
+                -derivedDataPath a11ylab/dd \
+                -parallel-testing-enabled NO \
+                "${only[@]}" \
+                CODE_SIGNING_ALLOWED=NO > "out/xcodebuild-$label-$attempt.log" 2>&1 || echo "$label: tests exited $?"
+              echo "$(stamp) end $label (attempt $attempt)" >> out/phases.txt
+              xcrun simctl terminate "$UDID" com.local.ammy > /dev/null 2>&1
+              echo "== $label (attempt $attempt)"
+              grep -E "Test Case|error:|failed" "out/xcodebuild-$label-$attempt.log" | tail -24
+              if grep -q "Test Case '-\[" "out/xcodebuild-$label-$attempt.log"; then break; fi
+            done
+          }
+          for B in change control; do
+            echo "$(stamp) install $B" >> out/phases.txt
+            xcrun simctl uninstall "$UDID" com.local.ammy > /dev/null 2>&1
+            xcrun simctl install "$UDID" "apps/$B/Ammy.app" || echo "install $B failed"
+            xcrun simctl privacy "$UDID" grant media-library com.local.ammy || echo "grant failed"
+            {
+              echo "$B, installed from apps/$B/Ammy.app:"
+              plutil -p "apps/$B/Ammy.app/Info.plist" | grep -E "DTSDKName|DTXcode|DTPlatformVersion|MinimumOSVersion|CFBundleVersion"
+              shasum -a 256 "apps/$B/Ammy.app/Ammy"
+            } | tee -a out/device.txt
+            # A first launch, so no test pays for it.
+            xcrun simctl launch "$UDID" com.local.ammy > /dev/null 2>&1
+            sleep 8
+            xcrun simctl terminate "$UDID" com.local.ammy > /dev/null 2>&1
+            for APPEARANCE in dark light; do
+              xcrun simctl ui "$UDID" appearance "$APPEARANCE" || echo "appearance $APPEARANCE failed"
+              statusbar
+              echo "$(stamp) $B $APPEARANCE" >> out/phases.txt
+              run_tests "$B-$APPEARANCE-granted" test1NotPlaying test2Short test3Explicit test4Long
+              xcrun simctl privacy "$UDID" revoke media-library com.local.ammy || echo "revoke failed"
+              echo "$(stamp) media access revoked" >> out/phases.txt
+              run_tests "$B-$APPEARANCE-revoked" test5NotAvailable
+              xcrun simctl privacy "$UDID" grant media-library com.local.ammy || echo "grant failed"
+              echo "$(stamp) media access granted" >> out/phases.txt
+            done
+            APPEARANCE=dark
+            xcrun simctl ui "$UDID" appearance dark
+            statusbar
+            run_tests "$B-audit" test6AuditShort test7AuditLong
+          done
+          xcrun simctl uninstall "$UDID" com.local.ammy > /dev/null 2>&1
+          ls out | wc -l
+          du -sh out
+          exit 0
+
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: lab-${{ matrix.name }}
+          path: out

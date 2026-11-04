@@ -1,0 +1,51 @@
+name: A11yLab
+
+# A throwaway lab for one question (4 Nov 2026): what does VoiceOver get from
+# the Now Playing card with .accessibilityLabel { Text("Now Playing"); label }
+# after the row's .accessibilityElement(children: .combine), against the same
+# code without it? It lives on the a11y-lab-nowplaying branch only and is
+# never released. The host app is empty; the UI tests drive the real Ammy,
+# built twice from this branch (change and control) and installed one at a
+# time (.github/workflows/a11y-lab.yml).
+
+options:
+  bundleIdPrefix: com.local
+  deploymentTarget:
+    iOS: "26.0"
+
+targets:
+  A11yLabHost:
+    type: application
+    platform: iOS
+    sources:
+      - path: A11yLabHost
+    info:
+      path: A11yLabHost/Info.plist
+      properties:
+        CFBundleDisplayName: A11yLabHost
+        UILaunchScreen: {}
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.local.a11ylabhost
+        SWIFT_VERSION: "5.0"
+        GENERATE_INFOPLIST_FILE: NO
+        TARGETED_DEVICE_FAMILY: "1"
+    scheme:
+      testTargets:
+        - A11yLabUITests
+
+  A11yLabUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources:
+      - path: A11yLabUITests
+    dependencies:
+      - target: A11yLabHost
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.local.a11ylabhost.uitests
+        SWIFT_VERSION: "5.0"
+        GENERATE_INFOPLIST_FILE: YES
+        TEST_TARGET_NAME: A11yLabHost

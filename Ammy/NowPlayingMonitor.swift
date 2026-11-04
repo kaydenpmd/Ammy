@@ -69,6 +69,12 @@ final class NowPlayingMonitor: ObservableObject {
     /// joins rather than skips.
     private var starting: Task<Void, Never>?
 
+    init() {
+        // Lab only (a11y-lab-nowplaying): the probe, when the UI test asks
+        // for it (A11yLab.swift).
+        A11yLabProbe.shared.startIfAsked()
+    }
+
     /// Idempotent. The view starts the monitor when it appears and again on
     /// coming to the front, the access prompt starts it, and
     /// PresenceController.start() asks again for every session — including
@@ -118,6 +124,18 @@ final class NowPlayingMonitor: ObservableObject {
     }
 
     @objc func refresh() {
+        // Lab only (a11y-lab-nowplaying): the song -a11yLabTrack names, in
+        // place of the player's, which the simulator never has. Published in
+        // the same order as below, and only when something changes, so the
+        // 5 s poll publishes nothing once it's set.
+        if let demo = A11yLab.demo {
+            if !isPlaying { isPlaying = true }
+            if artworkImage !== demo.cover { artworkImage = demo.cover }
+            if track != demo.track { track = demo.track }
+            A11yLabProbe.shared.trackShown(demo.track)
+            return
+        }
+
         isPlaying = (player.playbackState == .playing)
 
         guard let item = player.nowPlayingItem else {
