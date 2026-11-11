@@ -519,9 +519,12 @@ application, not a typo. Paste values rather than retyping them, and print
 The receiver writes these lines, and Issun keeps relay.py's wording for them
 word for word (even "relay up throughout"), because the history and its summary
 parser depend on it. Issun's log is `%LOCALAPPDATA%\Issun\issun.log`, its
-check-in history is `%LOCALAPPDATA%\Issun\uptime.log` (relay.py's history
-merged in ahead of its own), and its window's Diagnostics section shows the
-summary that `python relay.py --summary` used to print.
+check-in history is `%LOCALAPPDATA%\Issun\uptime.log` (relay.py's history merged
+in ahead of its own), and its window's Diagnostics section shows the summary
+that `python relay.py --summary` used to print. **Read them from PowerShell, not
+Claude Code's Bash shell**, which is sandboxed: on 11 Nov 2026 it still showed
+an `issun.log` of 38 lines from 22 Sept, while PowerShell showed the real one,
+6,164 lines and current (Issun's CLAUDE.md has the same warning).
 
 **The app cannot report its own death.** By the time anyone notices it is gone
 there is nothing left running to ask, and the receiver only ever sees that
@@ -635,6 +638,16 @@ second branch fired. One of the fourteen death verdicts in the log is therefore
 both double-counted and wrong. Issun's `CheckinProcessor` holds one lock around
 the whole check-in, so the second push sees the first as its previous check-in
 and writes nothing. The wrong line stays in the imported history; discount it.
+
+Issun has written one of its own. On 8 Nov 2026 at 16:11:50 it logged `gap
+00:02:13 ... app restarted 6211s -> 6242s — it died`, but uptime went *up*, and
+Issun's own tracker logged no `[keepalive] app restarted` line, as it does for a
+real relaunch. A process started during a 133-second gap can't report 6242 s of
+uptime. The launch times the pushes imply say what happened: 14:26:06 before the
+gap and at 18:46 that evening, but 14:27:48 for the push that ended the gap. So
+that push carried a snapshot about 100 s old, most likely built before iOS froze
+the app and sent when it woke. Discount that line too: build 158 died nine
+times, not ten.
 
 ## Artwork
 
@@ -1131,10 +1144,22 @@ what they are for.
   with `lpm=yes` had made it look causal. It is not.
 - *Thermal.* Deaths have occurred at `nominal`, the coolest state.
 
-**Still unexplained: what ends a run.** Every death recorded since the fix has
-carried `engine=yes want=yes` — a healthy audio engine — with no correlate in any
-signal collected. It is now a roughly once-a-day event rather than an hourly one.
-Whether that is worth chasing further is a judgement call, not an open bug.
+**Still unexplained: what ends a run.** Every death recorded since the fix but
+one (below) has carried `engine=yes want=yes` — a healthy audio engine — with no
+correlate in any signal collected. It is now a roughly once-a-day event rather
+than an hourly one: build 158 (3 to 11 Nov 2026) died nine times in about eight
+and a half days, after runs of 2 to 24 hours. Whether that is worth chasing
+further is a judgement call, not an open bug.
+
+**The one exception, 4 Nov 2026, build 158: the keepalive failed to restart.**
+Interruptions had piled up (eight began, one ended). At 18:50:06 the engine
+stopped (`engine_running True -> False`), the resume failed with `engine.start:
+... (com.apple.coreaudio.avfaudio error 2003329396.)`, whose code spells 'what',
+AVAudioSession's unspecified error, and that was the last push. Ammy stayed
+silent until it was opened at 22:20. The 10-second retry never got its chance,
+most likely because iOS suspends a backgrounded app soon after its audio stops.
+So `engine=no` at a death now has a precedent, and it is the case the retry loop
+can't cover.
 
 ## Open work
 
