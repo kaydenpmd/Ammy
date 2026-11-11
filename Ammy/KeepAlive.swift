@@ -1,5 +1,6 @@
 import AVFoundation
 import Foundation
+import UIKit
 
 /// A snapshot of the keepalive's health, sent to the relay on every push.
 ///
@@ -20,12 +21,45 @@ struct KeepAliveDiagnostics: Sendable {
     var resumeFailures = 0
     var lastError: String?
 
+    /// Which step of `resume()` failed last, its error code, and when. Unlike
+    /// `lastError`, which the next success clears, these stay, so a push after
+    /// a recovery still says what the last failure was. Before Nov 2026 only
+    /// the error's description was sent: 4 Nov's carried its code because
+    /// AVFAudio's description happens to include it, and "Session activation
+    /// failed" never did, so eleven setActive failures can't say which refusal
+    /// they were.
+    var failStage: String?
+    var failCode: Int?
+    var lastFailAt: Date?
+    /// Failed tries since the silence last played, and the most in one run.
+    var failRun = 0
+    var failRunMax = 0
+    /// When the engine was first found down, for as long as it stays down.
+    var downSince: Date?
+
     var interruptionsBegan = 0
     var interruptionsEnded = 0
+    /// `.began` notices marked as delivered late because iOS had suspended the
+    /// app. Each one proves a suspension, and none of them gets an `.ended`, so
+    /// they're counted apart from the rest.
+    var interruptionsOnResume = 0
+    /// AVAudioSessionInterruptionReasonKey of the last `.began`, raw.
+    var lastInterruptionReason: Int?
+    var lastBeganAt: Date?
+    var lastEndedAt: Date?
     var configChanges = 0
     var routeChanges = 0
     var mediaResets = 0
     var selfHeals = 0
+
+    /// The hold (see `holdOpen`): opened; ended because the silence played
+    /// again; ended by iOS's deadline; refused by iOS outright. And the quick
+    /// retries made while one was open.
+    var holds = 0
+    var holdSaves = 0
+    var holdExpiries = 0
+    var holdRefusals = 0
+    var retries = 0
 
     var secondsSinceResume: Double = -1
     var route = "?"
@@ -45,8 +79,25 @@ struct KeepAliveDiagnostics: Sendable {
             "self_heals": selfHeals,
             "secs_since_resume": Int(secondsSinceResume),
             "route": route,
+            "fail_run": failRun,
+            "fail_run_max": failRunMax,
+            "int_on_resume": interruptionsOnResume,
+            "holds": holds,
+            "hold_saves": holdSaves,
+            "hold_expiries": holdExpiries,
+            "hold_refusals": holdRefusals,
+            "retries": retries,
         ]
         if let lastError { d["last_error"] = lastError }
+        if let failStage { d["fail_stage"] = failStage }
+        if let failCode { d["fail_code"] = failCode }
+        if let lastInterruptionReason { d["int_reason"] = lastInterruptionReason }
+        let now = Date()
+        func ago(_ date: Date?) -> Int? { date.map { Int(now.timeIntervalSince($0)) } }
+        if let s = ago(lastFailAt) { d["secs_since_fail"] = s }
+        if let s = ago(downSince) { d["down_s"] = s }
+        if let s = ago(lastBeganAt) { d["secs_since_began"] = s }
+        if let s = ago(lastEndedAt) { d["secs_since_ended"] = s }
         return d
     }
 }
@@ -78,14 +129,27 @@ struct KeepAliveDiagnostics: Sendable {
 ///
 /// The design rule here: **never conclude that the keepalive is off.** Nothing
 /// in this class gives up. `running` means "we want silence playing"; a failure
-/// leaves it true and lets `verify()` try again on the next tick. Before
-/// Sept 2026 a failed `resume()` at startup returned early with `running` still
-/// false, so the observers were never installed and nothing ever retried — the
-/// app then ran with no keepalive at all and nothing anywhere said so.
+/// leaves it true and tries again. Before Sept 2026 a failed `resume()` at
+/// startup returned early with `running` still false, so the observers were
+/// never installed and nothing ever retried — the app then ran with no
+/// keepalive at all and nothing anywhere said so.
+///
+/// **The hold, since Nov 2026.** Every retry here needs a running process, and
+/// a backgrounded app whose silence has stopped is suspended within seconds.
+/// On 4 Nov 2026 an interruption stopped the engine, the push's own `verify()`
+/// found it, `setActive` succeeded, `engine.start()` refused ('what'), and that
+/// one try was the last: iOS suspended Ammy before the 10 s timer or the next
+/// push could run, and nothing ran it again. 17 Sept had the same shape with a
+/// refused `setActive`. So from the first sign the engine is down until the
+/// silence plays again, this holds a background task (about 30 s on current
+/// systems; Apple guarantees no amount) and retries at 1, 2, 3, then every 5 s.
+/// The hold changes nothing about what the class believes: at iOS's deadline
+/// the task ends and `running` stays true, so whatever runs the process next
+/// (`.ended`, the person, a Shortcut) starts the retries again.
 final class KeepAlive {
 
-    // Recreated wholesale after a media services reset or a configuration
-    // change, so these are `var`.
+    // Recreated wholesale after a media services reset, a configuration
+    // change, or an engine that refused to start, so these are `var`.
     private var engine = AVAudioEngine()
     private var node = AVAudioPlayerNode()
 
@@ -97,10 +161,31 @@ final class KeepAlive {
     private var diag = KeepAliveDiagnostics()
     private var lastResumeAt: Date?
 
+    /// The background task held while the silence is down, or `.invalid`.
+    private var hold: UIBackgroundTaskIdentifier = .invalid
+    private var holdSince: Date?
+    /// The next quick retry, while a hold is open.
+    private var retryWork: DispatchWorkItem?
+    /// Set when `engine.start()` refused with the session up. The graph it
+    /// refused with was built before whatever stopped it, so the next try
+    /// builds a new one, as a configuration change already does. A fresh
+    /// engine is the cure usually reported for 'what' after an interruption.
+    private var freshGraphNext = false
+
     /// How often to confirm the engine is still running. The relay's heartbeat
     /// is 30s, so this is deliberately tighter: a stopped engine should be
     /// caught and restarted well inside one push interval.
     private let verifyInterval: TimeInterval = 10
+
+    /// Seconds between quick retries while held: 1, 2, 3, then 5. About eight
+    /// tries fit in the ~30 s iOS gives a background task today.
+    private let retryLadder: [TimeInterval] = [1, 2, 3, 5]
+
+    /// The hold's identifier, boxed for its expiry handler, which must end the
+    /// task even if this object were somehow gone by then.
+    private final class TaskBox {
+        var id = UIBackgroundTaskIdentifier.invalid
+    }
 
     // MARK: - Lifecycle
 
@@ -113,18 +198,26 @@ final class KeepAlive {
         running = true
         observe()
         startHealthTimer()
+        KeepAliveJournal.note("start")
         resume()
     }
 
     func stop() {
         guard running else { return }
         running = false
+        // First: a background task left held gets the app killed by the
+        // watchdog (0x8badf00d), which is worse than anything it was for.
+        letGo(saved: false)
+        freshGraphNext = false
+        diag.failRun = 0
+        diag.downSince = nil
         healthTimer?.invalidate()
         healthTimer = nil
         removeObservers()
         node.stop()
         engine.stop()
         try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
+        KeepAliveJournal.note("stop")
         refreshDiagnostics()
     }
 
@@ -139,16 +232,25 @@ final class KeepAlive {
     /// Cheap "is it still up?" check that callers can invoke opportunistically.
     /// `PresenceController` calls this on every push, so the engine gets
     /// checked at least every 30s even if the timer is throttled while the app
-    /// is in the background.
+    /// is in the background. Finding it down opens the hold before trying, so
+    /// a failed try is followed by more.
     func verify() {
         guard running else { return }
         if !engine.isRunning || !node.isPlaying {
             diag.selfHeals += 1
-            resume()
+            KeepAliveJournal.note("verify: engine \(engine.isRunning ? "running, node silent" : "stopped")")
+            holdOpen("found stopped")
+            attempt()
         }
     }
 
     // MARK: - Recovery
+
+    /// One try: from a new graph if the last one got as far as the engine and
+    /// it refused, otherwise as `resume()` always has.
+    private func attempt() {
+        if freshGraphNext { rebuild() } else { resume() }
+    }
 
     /// Bring session and engine back up. Idempotent, so it serves as the
     /// initial start, the interruption recovery, and the self-heal.
@@ -157,6 +259,7 @@ final class KeepAlive {
         // Already healthy — don't schedule a second looping buffer onto a node
         // that is already playing one.
         if engine.isRunning && node.isPlaying {
+            recovered()
             refreshDiagnostics()
             return true
         }
@@ -169,18 +272,18 @@ final class KeepAlive {
         do {
             try session.setCategory(.playback, mode: .default, options: [.mixWithOthers])
         } catch {
-            return fail("setCategory: \(error.localizedDescription)")
+            return fail("setCategory", error)
         }
         do {
             try session.setActive(true)
         } catch {
-            return fail("setActive: \(error.localizedDescription)")
+            return fail("setActive", error)
         }
 
         guard let format = AVAudioFormat(standardFormatWithSampleRate: 44_100, channels: 2),
               let buffer = AVAudioPCMBuffer(pcmFormat: format, frameCapacity: 44_100)
         else {
-            return fail("could not build silence buffer")
+            return fail("buffer", nil)
         }
         buffer.frameLength = buffer.frameCapacity // zero-filled = one second of silence
 
@@ -196,7 +299,7 @@ final class KeepAlive {
         do {
             try engine.start()
         } catch {
-            return fail("engine.start: \(error.localizedDescription)")
+            return fail("engine.start", error)
         }
 
         node.scheduleBuffer(buffer, at: nil, options: .loops)
@@ -206,31 +309,151 @@ final class KeepAlive {
         diag.resumes += 1
         diag.lastError = nil
         lastResumeAt = Date()
+        if let since = diag.downSince {
+            KeepAliveJournal.note("playing again after \(diag.failRun) failed tries, down \(Int(Date().timeIntervalSince(since)))s")
+        }
+        recovered()
         refreshDiagnostics()
         return true
     }
 
-    /// Record a failure and leave `running` alone. The verify timer will try
-    /// again in a few seconds; the relay will see `resume_failures` climbing
-    /// and `last_error` explaining why.
-    private func fail(_ reason: String) -> Bool {
+    /// The silence is playing: the run of failures is over and the hold goes.
+    private func recovered() {
+        diag.failRun = 0
+        diag.downSince = nil
+        letGo(saved: true)
+    }
+
+    /// Record a failure, hold the process up, and schedule the next try.
+    /// `running` is left alone: never conclude the keepalive is off. The relay
+    /// sees `resume_failures` climbing and `last_error` explaining why.
+    private func fail(_ stage: String, _ error: Error?) -> Bool {
         diag.resumeFailures += 1
-        diag.lastError = reason
+        diag.failRun += 1
+        diag.failRunMax = max(diag.failRunMax, diag.failRun)
+        diag.failStage = stage
+        diag.lastFailAt = Date()
+        if let error {
+            let ns = error as NSError
+            diag.failCode = ns.code
+            // The old wording with the code added, so Issun's "resume failed:"
+            // lines read as they always have and carry the code with no change
+            // on Issun's side.
+            diag.lastError = "\(stage): \(ns.localizedDescription) [\(ns.code)\(Self.fourCC(ns.code))]"
+        } else {
+            diag.failCode = nil
+            diag.lastError = "\(stage): could not build silence buffer"
+        }
+        if stage == "engine.start" { freshGraphNext = true }
+        KeepAliveJournal.note("failed, \(diag.failRun) in a row: \(diag.lastError ?? stage)")
+        holdOpen(stage)
+        scheduleRetry()
         refreshDiagnostics()
         return false
     }
 
     /// Tear the audio graph down and build a fresh one. Required after a media
-    /// services reset (every audio object is invalid) and the safest response
-    /// to a configuration change, where the hardware format may have changed
-    /// underneath an existing connection.
+    /// services reset (every audio object is invalid), the safest response to
+    /// a configuration change, where the hardware format may have changed
+    /// underneath an existing connection, and the next try after an engine
+    /// that refused to start.
     private func rebuild() {
+        freshGraphNext = false
         node.stop()
         engine.stop()
         engine = AVAudioEngine()
         node = AVAudioPlayerNode()
         wired = false
         resume()
+    }
+
+    // MARK: - The hold
+
+    /// Keep the process running while the silence is down. Dormant in the
+    /// foreground (a background task only counts down once the app is in the
+    /// background), so this needs no check of the app's state.
+    ///
+    /// Everything here runs on the main thread: the observers use queue .main,
+    /// the timer is on RunLoop.main, retries go through DispatchQueue.main and
+    /// PresenceController is @MainActor. `assumeIsolated` says so rather than
+    /// hopping, and would trap rather than race if that ever stopped being true.
+    private func holdOpen(_ why: String) {
+        guard running, hold == .invalid else { return }
+        if diag.downSince == nil { diag.downSince = Date() }
+        let box = TaskBox()
+        MainActor.assumeIsolated {
+            box.id = UIApplication.shared.beginBackgroundTask(withName: "Ammy keepalive retry") { [weak self] in
+                // iOS's deadline, on the main thread. The task must end now.
+                if let self { self.timeUp() } else { UIApplication.shared.endBackgroundTask(box.id) }
+            }
+        }
+        guard box.id != .invalid else {
+            // A new failure path, so it is counted: iOS gave no time at all.
+            diag.holdRefusals += 1
+            KeepAliveJournal.note("hold refused (\(why))")
+            return
+        }
+        hold = box.id
+        holdSince = Date()
+        diag.holds += 1
+        KeepAliveJournal.note("hold opened (\(why))")
+    }
+
+    /// End the hold, if one is open, and cancel the pending quick retry.
+    private func letGo(saved: Bool) {
+        retryWork?.cancel()
+        retryWork = nil
+        guard hold != .invalid else { return }
+        let id = hold
+        let held = holdSince.map { Int(Date().timeIntervalSince($0)) } ?? 0
+        hold = .invalid
+        holdSince = nil
+        if saved {
+            diag.holdSaves += 1
+            KeepAliveJournal.note("hold ended: playing again after \(held)s")
+        }
+        MainActor.assumeIsolated { UIApplication.shared.endBackgroundTask(id) }
+    }
+
+    /// iOS's deadline for the hold. Ends the task at once and does nothing
+    /// slow, since the expiry handler has under a second. Not a conclusion that
+    /// the keepalive is off: `running`, the observers and the timer all stay.
+    private func timeUp() {
+        let held = holdSince.map { Int(Date().timeIntervalSince($0)) } ?? 0
+        diag.holdExpiries += 1
+        KeepAliveJournal.note("hold expired after \(held)s, \(diag.failRun) failed tries, last: \(diag.lastError ?? "none")")
+        letGo(saved: false)
+        refreshDiagnostics()
+    }
+
+    /// The next quick try, on the ladder, while held. The 10 s timer carries on
+    /// beside it as before, and a try that finds the silence already playing
+    /// (`.ended` got there first) just lets the hold go.
+    private func scheduleRetry() {
+        guard running, hold != .invalid, retryWork == nil else { return }
+        let step = min(max(diag.failRun, 1), retryLadder.count) - 1
+        let work = DispatchWorkItem { [weak self] in
+            guard let self else { return }
+            self.retryWork = nil
+            guard self.running else { return }
+            if self.engine.isRunning && self.node.isPlaying {
+                self.recovered()
+                return
+            }
+            self.diag.retries += 1
+            self.attempt()
+        }
+        retryWork = work
+        DispatchQueue.main.asyncAfter(deadline: .now() + retryLadder[step], execute: work)
+    }
+
+    /// " '!pri'" for 561017449, " 'what'" for 2003329396, nothing for codes
+    /// that aren't four printable characters.
+    private static func fourCC(_ code: Int) -> String {
+        let n = UInt32(truncatingIfNeeded: code)
+        let bytes = [24, 16, 8, 0].map { UInt8(truncatingIfNeeded: n >> $0) }
+        guard bytes.allSatisfy({ (0x20...0x7E).contains($0) }) else { return "" }
+        return " '\(String(decoding: bytes, as: UTF8.self))'"
     }
 
     // MARK: - Observers
@@ -254,8 +477,22 @@ final class KeepAlive {
                 // guaranteed to arrive — if the interruption finishes while the
                 // app is suspended iOS may never send it. A began count that
                 // outruns the ended count is that happening, and is why
-                // recovery can no longer depend on `.ended` alone.
+                // recovery can no longer depend on `.ended` alone. Not opening
+                // the hold here is deliberate too: it would add activation
+                // attempts during every interruption, and an activation that
+                // succeeds while the engine can't start is the step that went
+                // wrong on 4 Nov 2026.
                 self.diag.interruptionsBegan += 1
+                self.diag.lastBeganAt = Date()
+                if let reason = note.userInfo?[AVAudioSessionInterruptionReasonKey] as? UInt {
+                    self.diag.lastInterruptionReason = Int(reason)
+                }
+                // Read by name: the constant is deprecated, but iOS documents it
+                // as the mark on a late "you were suspended" notice.
+                let onResume = (note.userInfo?["AVAudioSessionInterruptionWasSuspendedKey"] as? Bool) == true
+                if onResume { self.diag.interruptionsOnResume += 1 }
+                KeepAliveJournal.note("interruption began" + (onResume ? " (delivered late: the app had been suspended)" : "")
+                    + ", reason \(self.diag.lastInterruptionReason.map(String.init) ?? "-")")
                 self.refreshDiagnostics()
                 return
             }
@@ -263,7 +500,13 @@ final class KeepAlive {
             // Deliberately ignoring `shouldResume`: that hint is about whether
             // *media* should resume. This is a keepalive, and it always should.
             self.diag.interruptionsEnded += 1
-            self.resume()
+            self.diag.lastEndedAt = Date()
+            let options = (note.userInfo?[AVAudioSessionInterruptionOptionKey] as? UInt)
+                .map(AVAudioSession.InterruptionOptions.init(rawValue:))
+            KeepAliveJournal.note("interruption ended, shouldResume \(options?.contains(.shouldResume) == true)")
+            // A failure here goes through fail(), which opens the hold and
+            // retries on the ladder rather than waiting for the timer.
+            self.attempt()
         })
 
         // Media services can be reset out from under the app. Every audio
@@ -275,6 +518,7 @@ final class KeepAlive {
         ) { [weak self] _ in
             guard let self, self.running else { return }
             self.diag.mediaResets += 1
+            KeepAliveJournal.note("media services reset")
             self.rebuild()
         })
 
@@ -289,6 +533,7 @@ final class KeepAlive {
         ) { [weak self] _ in
             guard let self, self.running else { return }
             self.diag.configChanges += 1
+            KeepAliveJournal.note("configuration change")
             self.rebuild()
         })
 
@@ -311,10 +556,15 @@ final class KeepAlive {
         observers.removeAll()
     }
 
+    /// Each tick also stamps the time and the engine's state on disk. A
+    /// suspended or killed process writes nothing, so the last stamp says when
+    /// it stopped running, to within one tick.
     private func startHealthTimer() {
         healthTimer?.invalidate()
         let timer = Timer(timeInterval: verifyInterval, repeats: true) { [weak self] _ in
-            self?.verify()
+            guard let self else { return }
+            self.verify()
+            KeepAliveJournal.alive("engine=\(self.engine.isRunning ? "yes" : "no") hold=\(self.hold == .invalid ? "no" : "yes")")
         }
         // .common so it keeps firing while the UI is being scrolled.
         RunLoop.main.add(timer, forMode: .common)
@@ -333,6 +583,8 @@ final class KeepAlive {
     }
 
     deinit {
+        // KeepAlive lives as long as PresenceController, which lives as long
+        // as the app, so a hold can't outlive it in practice; stop() ends it.
         healthTimer?.invalidate()
         let nc = NotificationCenter.default
         observers.forEach(nc.removeObserver)

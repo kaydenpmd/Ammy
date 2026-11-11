@@ -1,0 +1,207 @@
+name: Keepalive lab
+
+# Runs only on the keepalive-lab branch, never on main, and releases nothing.
+# The question, 11 Nov 2026: does the keepalive fix (KeepAlive.swift,
+# KeepAliveJournal.swift, Diagnostics.swift, uncommitted on main) build as a
+# release is built, and in the simulator does its hold keep a backgrounded
+# Ammy running after 4 Nov 2026's failure (engine stopped, verify(), setActive
+# fine, engine.start 'what') until the silence plays again, end cleanly when
+# it can't, and leave a journal the next process sends?
+#
+#   compile26     macos-26's default Xcode (26.6, iOS 26.5 SDK), as build-ipa.yml
+#                 builds a release: the pure fix for the device and simulator,
+#                 and the lab app (lab/make-lab-tree.py) for the simulator
+#   compile27     Xcode 27.2: the pure fix for the device and simulator
+#   ios27-sdk26   iPhone SE, iOS 27.0, running the iOS 26.5 SDK lab app: the
+#                 owner's combination
+#   ios26         iPhone SE, iOS 26.5, the same app
+#
+# lab/run-scenarios.sh drives each scenario; lab/analyze.py reads the results.
+
+on:
+  push:
+    branches: [keepalive-lab]
+  workflow_dispatch:
+    inputs:
+      scenarios:
+        description: "scenarios to run (A C-hold C-nohold D-hold F-hold E-hold), empty for all"
+        default: ""
+      only:
+        description: "one lab setup's name, or empty for both"
+        default: ""
+
+jobs:
+  compile26:
+    runs-on: macos-26
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install XcodeGen
+        run: brew install xcodegen
+      - name: Build
+        run: bash lab/compile.sh xcode26 lab
+      - name: Pack the lab app
+        run: tar -czf ammy-lab-sdk26.tgz apps
+      - uses: actions/upload-artifact@v7
+        with:
+          name: ammy-lab-sdk26
+          path: ammy-lab-sdk26.tgz
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: compile-xcode26
+          path: out
+
+  compile27:
+    runs-on: xcode-27
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - name: Select Xcode 27.2
+        run: |
+          X=/Applications/Xcode_27.2_Release_Candidate.app
+          [ -d "$X" ] || X=$(ls -d /Applications/Xcode_27.2*.app | head -1)
+          sudo xcode-select -s "$X"
+      - name: Install XcodeGen
+        run: brew install xcodegen
+      - name: Build
+        run: bash lab/compile.sh xcode27
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: compile-xcode27
+          path: out
+
+  lab:
+    needs: compile26
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: ios27-sdk26
+            runner: xcode-27
+            xcode: /Applications/Xcode_27.2_Release_Candidate.app
+            runtime: "27.0"
+          - name: ios26
+            runner: macos-26
+            xcode: /Applications/Xcode_26.6.app
+            runtime: "26.5"
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 75
+    steps:
+      - name: Pick this setup, or skip it
+        id: pick
+        run: |
+          ONLY="${{ inputs.only }}"
+          if [ -z "$ONLY" ] || [ "$ONLY" = "${{ matrix.name }}" ]; then echo "go=yes" >> "$GITHUB_OUTPUT"; else echo "go=no" >> "$GITHUB_OUTPUT"; fi
+
+      - uses: actions/checkout@v4
+        if: steps.pick.outputs.go == 'yes'
+
+      - name: Select Xcode
+        if: steps.pick.outputs.go == 'yes'
+        run: |
+          X="${{ matrix.xcode }}"; [ -d "$X" ] || X=/Applications/Xcode.app
+          sudo xcode-select -s "$X"; xcodebuild -version
+          mkdir -p out
+
+      # The keepalive needs an output device. GitHub's macOS images sometimes
+      # fail to set up the Null Audio Device (runner-images issue 13668).
+      - name: An audio output device
+        if: steps.pick.outputs.go == 'yes'
+        run: |
+          system_profiler SPAudioDataType > out/audio.txt 2>&1 || true
+          cat out/audio.txt
+          if ! grep -q "Output Channels" out/audio.txt; then
+            echo "no output device: installing BlackHole" | tee -a out/audio.txt
+            brew install --cask blackhole-2ch || true
+            sudo killall coreaudiod || true
+            sleep 5
+            system_profiler SPAudioDataType >> out/audio.txt 2>&1 || true
+          fi
+
+      - name: Create and boot an iPhone SE
+        id: sim
+        if: steps.pick.outputs.go == 'yes'
+        run: |
+          set -euo pipefail
+          WANT="${{ matrix.runtime }}"
+          UDID=""
+          for RUNTIME in $(xcrun simctl list runtimes -j | WANT="$WANT" python3 -c '
+          import json, os, sys
+          want = os.environ["WANT"]
+          rs = [r for r in json.load(sys.stdin)["runtimes"] if r["platform"] == "iOS" and r["isAvailable"]]
+          rs.sort(key=lambda r: (r["version"] == want or r["version"].startswith(want + "."),
+                                 [int(x) for x in r["version"].split(".")]), reverse=True)
+          print(" ".join(r["identifier"] for r in rs))'); do
+            if UDID=$(xcrun simctl create "Lab SE" com.apple.CoreSimulator.SimDeviceType.iPhone-SE-3rd-generation "$RUNTIME" 2>/dev/null); then
+              echo "runtime=$RUNTIME" >> "$GITHUB_OUTPUT"
+              break
+            fi
+            UDID=""
+          done
+          [ -n "$UDID" ] || { echo "no usable simulator"; exit 1; }
+          echo "udid=$UDID" >> "$GITHUB_OUTPUT"
+          xcrun simctl boot "$UDID"
+          xcrun simctl bootstatus "$UDID" -b
+          { echo "setup: ${{ matrix.name }}"; echo "runtime: $RUNTIME"; xcodebuild -version; } | tee out/device.txt
+
+      - uses: actions/download-artifact@v4
+        if: steps.pick.outputs.go == 'yes'
+        with:
+          name: ammy-lab-sdk26
+
+      - name: Install the lab app
+        if: steps.pick.outputs.go == 'yes'
+        run: |
+          UDID="${{ steps.sim.outputs.udid }}"
+          tar -xzf ammy-lab-sdk26.tgz
+          plutil -p apps/lab/Ammy.app/Info.plist | grep -E "DTSDKName|DTXcode|DTPlatformVersion|MinimumOSVersion" | tee -a out/device.txt
+          xcrun simctl install "$UDID" apps/lab/Ammy.app
+          xcrun simctl privacy "$UDID" grant media-library com.local.ammy || echo "grant failed"
+
+      # Ammy only sends over HTTPS: a throwaway CA trusted inside this
+      # simulator only, and a certificate for localhost.
+      - name: Local HTTPS receiver
+        if: steps.pick.outputs.go == 'yes'
+        run: |
+          set -euo pipefail
+          UDID="${{ steps.sim.outputs.udid }}"
+          mkdir -p tls
+          openssl req -x509 -newkey rsa:2048 -sha256 -days 30 -nodes -subj "/CN=Ammy Lab CA" \
+            -addext "basicConstraints=critical,CA:true" -addext "keyUsage=critical,keyCertSign,cRLSign" \
+            -keyout tls/ca.key -out tls/ca.pem
+          openssl req -newkey rsa:2048 -sha256 -nodes -subj "/CN=localhost" -keyout tls/srv.key -out tls/srv.csr
+          printf "subjectAltName=DNS:localhost,IP:127.0.0.1,IP:::1\nextendedKeyUsage=serverAuth\nkeyUsage=critical,digitalSignature,keyEncipherment\nbasicConstraints=CA:false\n" > tls/ext.cnf
+          openssl x509 -req -in tls/srv.csr -CA tls/ca.pem -CAkey tls/ca.key -CAcreateserial \
+            -days 30 -sha256 -extfile tls/ext.cnf -out tls/srv.pem
+          xcrun simctl keychain "$UDID" add-root-cert tls/ca.pem
+          nohup python3 -I lab/receiver.py "$PWD/out/pushes.jsonl" tls/srv.pem tls/srv.key > out/receiver.log 2>&1 &
+          sleep 2
+          curl -sS --cacert tls/ca.pem -X POST -d '{"probe":1}' -o /dev/null -w "receiver check: %{http_code}\n" https://localhost:8443/check || true
+          rm -f out/pushes.jsonl
+
+      - name: Scenarios
+        if: steps.pick.outputs.go == 'yes'
+        run: |
+          UDID="${{ steps.sim.outputs.udid }}"
+          xcrun simctl spawn "$UDID" log stream --style compact --level debug \
+            --predicate '(process == "runningboardd" AND eventMessage CONTAINS[c] "ammy") OR process == "Ammy"' \
+            > out/runningboard.log 2>&1 &
+          LOGPID=$!
+          bash lab/run-scenarios.sh "$UDID" "$PWD/out" ${{ inputs.scenarios }}
+          kill $LOGPID || true
+          mkdir -p out/crash-reports
+          cp ~/Library/Logs/DiagnosticReports/*mmy* out/crash-reports/ 2>/dev/null || true
+          ls -la ~/Library/Logs/DiagnosticReports > out/crash-after.txt 2>/dev/null || true
+          gzip -f out/runningboard.log || true
+
+      - name: Analyze
+        if: always() && steps.pick.outputs.go == 'yes'
+        run: python3 -I lab/analyze.py out | tee out/analysis.txt
+
+      - uses: actions/upload-artifact@v7
+        if: always() && steps.pick.outputs.go == 'yes'
+        with:
+          name: lab-${{ matrix.name }}
+          path: out
