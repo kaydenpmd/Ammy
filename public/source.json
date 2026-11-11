@@ -9,12 +9,12 @@
       "versions": [
         {
           "version": "1.0",
-          "date": "2026-11-02T13:26:13+00:00",
-          "localizedDescription": "Drop the section headings from the main screen\n\nThe main screen no longer has Now Playing, Endpoint and Status headings,\nas Settings' own main page has none: just the large title, then groups\nset apart by space. On an iPhone SE, everything but History now fits\nabove the Start button when Ammy opens. At the end of the page, History\nsits as far above the button as it did before the title fix.",
-          "downloadURL": "https://github.com/kaydenpmd/Ammy/releases/download/v1.0-b158/Ammy-1.0-b158-4e6136f.ipa",
-          "size": 536331,
-          "sha256": "9726ac5eb4474ad7e2d69e33226cdb4361c6b0ada784e93b0d27312b795c113f",
-          "buildVersion": "158",
+          "date": "2026-11-11T21:26:01+00:00",
+          "localizedDescription": "Have VoiceOver say \"Now Playing\" before the song again\n\nVoiceOver now reads the song card as \"Now Playing\", then the title and\nartist, as it did before build 158 took the section headings away.\nNothing changes on screen.",
+          "downloadURL": "https://github.com/kaydenpmd/Ammy/releases/download/v1.0-b164/Ammy-1.0-b164-1823179.ipa",
+          "size": 540452,
+          "sha256": "bbc90bb532376a6e33e0bc6e9dc2c5ec9e9554db77bf2acf5aba18a583b3f8ac",
+          "buildVersion": "164",
           "minOSVersion": "26.0"
         }
       ],
