@@ -101,7 +101,7 @@ jobs:
       - name: Select Xcode
         if: steps.pick.outputs.go == 'yes'
         run: |
-          X="${{ matrix.xcode }}"; [ -d "$X" ] || X=/Applications/Xcode.app
+          X="${{ matrix.xcode }}"; [ -d "$X" ] || X=$(ls -d /Applications/Xcode_27.2*.app 2>/dev/null | head -1); [ -d "$X" ] || X=/Applications/Xcode.app
           sudo xcode-select -s "$X"; xcodebuild -version
           mkdir -p out
 
@@ -189,7 +189,9 @@ jobs:
             --predicate '(process == "runningboardd" AND eventMessage CONTAINS[c] "ammy") OR process == "Ammy"' \
             > out/runningboard.log 2>&1 &
           LOGPID=$!
-          bash lab/run-scenarios.sh "$UDID" "$PWD/out" ${{ inputs.scenarios }}
+          # Run 43113016498 ran A to F: the simulator never suspended Ammy
+          # once its engine had played. This run is the from-launch set.
+          bash lab/run-scenarios.sh "$UDID" "$PWD/out" ${{ inputs.scenarios || 'G-hold G-nohold H-hold H-nohold I-hold' }}
           kill $LOGPID || true
           mkdir -p out/crash-reports
           cp ~/Library/Logs/DiagnosticReports/*mmy* out/crash-reports/ 2>/dev/null || true

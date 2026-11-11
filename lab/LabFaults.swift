@@ -12,6 +12,8 @@
 //   -labFailFor F       that stage throws for F seconds after the stop
 //   -labEndAt E         post a synthetic .ended E seconds after the stop
 //   -labNoHold YES      control arm: holdOpen() returns at once (main's behaviour)
+//   -labFailFromLaunch YES  the failure window starts at launch instead, so
+//                       the engine never runs in this process (see install)
 
 import AVFoundation
 import UIKit
@@ -61,6 +63,17 @@ enum LabFaults {
                         state: @escaping () -> KeepAliveDiagnostics?) {
         guard let dir = defaults.string(forKey: "labOut") else { return }
         openProbe(in: dir)
+
+        // The simulator's in-process audio HAL takes MediaPlayback and
+        // AudioRecording RunningBoard assertions the first time the engine
+        // really starts and keeps them for the life of the process (run
+        // 43113016498), so a stop after that never lets the simulator suspend
+        // the app. Failing from launch means the engine never started in this
+        // process, so nothing but the hold keeps it running once backgrounded.
+        if defaults.bool(forKey: "labFailFromLaunch") {
+            stoppedAt = Date()
+            write("FAULT fail from launch (failStage=\(defaults.string(forKey: "labFailStage") ?? "engine.start") failFor=\(defaults.double(forKey: "labFailFor")) noHold=\(noHold))")
+        }
 
         let timer = Timer(timeInterval: 1, repeats: true) { _ in
             MainActor.assumeIsolated { write(line(state())) }

@@ -65,6 +65,14 @@ for s in "$@"; do
     D-hold)  run D-hold   250 front 50 -labStopAt 30 -labFailStage engine.start -labFailFor 200 ;;
     F-hold)  run F-hold   120 kill  45 -labStopAt 30 -labFailStage engine.start -labFailFor 200 ;;
     E-hold)  run E-hold   100 front 30 -labStopAt 30 -labFailStage setActive -labFailFor 8 -labEndAt 10 ;;
+    # The engine never runs in these processes (LabFaults, -labFailFromLaunch),
+    # so the simulator's audio HAL holds no assertion and only the hold can
+    # keep a backgrounded Ammy running.
+    G-hold)   run G-hold   120 front 30 -labFailFromLaunch YES -labFailStage engine.start -labFailFor 35 ;;
+    G-nohold) run G-nohold 120 front 30 -labFailFromLaunch YES -labFailStage engine.start -labFailFor 35 -labNoHold YES ;;
+    H-hold)   run H-hold   190 front 40 -labFailFromLaunch YES -labFailStage engine.start -labFailFor 170 ;;
+    H-nohold) run H-nohold 190 front 40 -labFailFromLaunch YES -labFailStage engine.start -labFailFor 170 -labNoHold YES ;;
+    I-hold)   run I-hold    90 kill  45 -labFailFromLaunch YES -labFailStage engine.start -labFailFor 600 ;;
     *) echo "unknown scenario $s" ;;
   esac
 done

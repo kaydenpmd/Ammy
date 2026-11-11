@@ -53,8 +53,11 @@ def scenario(d):
             except ValueError:
                 pass
     bg = m.get("background")
-    fault = next((t for t, r in probe if r.startswith("FAULT stop")), None)
-    zero = fault or bg
+    fault = next((t for t, r in probe if r.startswith("FAULT stop") or r.startswith("FAULT fail from launch")), None)
+    # A failure from launch is timed from going to the background, when the
+    # hold's clock starts.
+    from_launch = any(r.startswith("FAULT fail from launch") for t, r in probe)
+    zero = bg if from_launch else (fault or bg)
     front = m.get("foreground") or m.get("terminate")
     end = m.get("end")
     rel = lambda t: None if t is None or zero is None else t - zero
