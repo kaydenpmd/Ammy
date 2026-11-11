@@ -347,6 +347,15 @@ private struct NowPlayingRow: View {
             measureInsets()
         }
         .accessibilityElement(children: .combine)
+        // VoiceOver starts the card with "Now Playing", the words of the
+        // header it had until 2 Nov 2026, now as the start of the card's own
+        // label rather than a heading. Asked whether VoiceOver should read
+        // them again, the owner picked "Leave it", then wrote "no i mean have
+        // it read it" (4 Nov 2026). Nothing on screen changes.
+        .accessibilityLabel { label in
+            Text("Now Playing")
+            label
+        }
         // No listRowInsets here. Build 134 asked for zero on the vertical edges
         // and added 20 pt of padding, and the owner's SE on iOS 27.2 showed
         // 35 pt above and below the artwork: the list's own 15 plus the 20, so

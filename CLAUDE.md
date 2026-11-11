@@ -37,18 +37,20 @@ only, and the old Cloudflare tunnel address is retired as an endpoint. The
 AltStore source stays where it is — "altstore can stay using my site" — on
 `apps.kaydenpmd.net`.
 
-**Leftovers on the PC, unchanged from 9 to 27 Oct 2026.** The old installed relay
-(relay.py, its `.env`, `relay.log` and `ammy-uptime.log` in `C:\Users\links\Python
-Scripts`) and the disabled `Ammy Relay` logon task were still there. They are
-obsolete, not a rollback: never enable the task, which would contend with Issun
-for port 8787, and removing them is the owner's call. The tunnel was still
-live too; see "Funnel is the only endpoint" under Where things stand. The
-installed Issun, build 38 through all of that, is build 43 since 29 Oct 2026
-(`/version`), installed at the owner's yes, with build 38 kept beside it as
-`Issun.exe.b38.bak`. It has the new icon, and its tray hint and new-key notice
-no longer name Ammy. Updating stops the live receiver for a few seconds, so get
-a yes first; the procedure is in Issun's CLAUDE.md, "Updating the installed
-copy".
+**Leftovers on the PC, unchanged from 9 Oct to 4 Nov 2026.** The old installed
+relay (relay.py, its `.env`, `relay.log` and `ammy-uptime.log` in
+`C:\Users\links\Python Scripts`) and the disabled `Ammy Relay` logon task were
+still there. They are obsolete, not a rollback: never enable the task, which
+would contend with Issun for port 8787, and removing them is the owner's call.
+The tunnel's service was still running too; see "Funnel is the only endpoint"
+under Where things stand. The installed Issun, build 38 through all of that, has
+been updated twice since, each time at the owner's yes, with the build it
+replaced kept beside it as `Issun.exe.b<build>.bak`: to build 43 on 29 Oct 2026,
+with the new icon and a tray hint and new-key notice that no longer name Ammy,
+and to build 46 on 3 Nov 2026 (`/version` answered `issun 0.1.0 (46)` on 4 Nov).
+Issun's CLAUDE.md records each update; ask `/version` for the current one.
+Updating stops the live receiver for a few seconds, so get a yes first; the
+procedure is in Issun's CLAUDE.md, "Updating the installed copy".
 
 ## Why it's built this way
 
@@ -356,13 +358,32 @@ and Status headers an SE shows 86.5 pt more when the screen opens, everything
 but History above the button, and a 17e fits the whole page at the default text
 size, with nothing to scroll. The footer stays under the URL and Key fields, and
 "Endpoint" stays as the status row's name. The costs: the URL and Key card has
-no title, and in VoiceOver the song card is now just its title and artist, with
-no "Now Playing" before it (from the lab's accessibility tree; VoiceOver itself
-not tried). Build 158 also gave History back its room at the foot of the page,
-in the simulator at least (the fix's first bullet, above), and
+no title, and VoiceOver lost the "Now Playing" it read before the song card,
+until build 164 (next entry). Build 158 also gave History back its room at the
+foot of the page, in the simulator at least (the fix's first bullet, above), and
 `header-lab-option1` (never merged) checked both before release: no jump, the
 copy of the bar on the stack bar's pixels through History's slides, and the
 keyboard and the media prompt as in build 156. Not yet seen on a device.
+
+**VoiceOver reads "Now Playing" before the song again, since build 164.** Asked
+on 4 Nov 2026 whether it should, the owner picked "Leave it", then wrote "no i
+mean have it read it". The words came back as the start of the card's own label,
+not as a header: `accessibilityLabel(content:)` straight after the row's
+`.accessibilityElement(children: .combine)`, the same pair in the same order as
+Apple's sample code for WWDC24 session 10073 (`BeachesView.swift`). The
+`a11y-lab-nowplaying` lab (never merged; three runs on 4 Nov 2026, read on 11
+Nov) read the card with and without it in five states, light and dark, on an SE
+(iOS 27.0 and 26.5) and a 17e (27.0), and on both again with the iOS 26.5 SDK,
+as CI builds: 50 cases, and in every one the label is "Now Playing", a comma and
+a space, then exactly what build 158 reads ("Now Playing, Blue, Joni Mitchell",
+"Now Playing, Not Playing", "Now Playing, Not Available"), with no traits, so it
+is one stop and no heading, where build 156 stopped on the header first. A long
+title is read once and whole, and the explicit E comes through as an attachment
+character (U+FFFC), as in 158. Nothing else moved: the same stops in the same
+order, no pixel different outside the status bar, the card still 85 pt with the
+artwork 14 pt from its edges, and Apple's accessibility audit found the same
+single issue in both builds, the disabled Start button's contrast. VoiceOver
+itself can't run in CI, so it isn't heard yet.
 
 **16 Sept 2026: iOS 27 removed the tint behind the bar, and Ammy followed for
 free.** `safeAreaBar` does not draw a background — it applies the system's scroll
@@ -1036,17 +1057,21 @@ except worse: a fresh hostname on every restart.
 fact.** The Cloudflare tunnel that fronted the relay before Funnel is retired,
 by the owner's choice to run the same setup everyone else gets (see the top of
 this file). Don't put it in the app or offer it as a way to reach or test the
-receiver. On 9 Oct 2026, and again on 27 Oct, it was still live in two places: the `cloudflared`
-Windows service was running and its address still answered with Issun's
-`X-Ammy-Relay` header, and Issun's **Public address** setting still held it
-(imported from relay.py's `.env` on 22 Sept), which overrides the Tailscale
-name for the window's endpoint and for cover URLs sent to Discord. Finishing it
-is the owner's: clear Public address in Issun's Settings, remove the
-`cloudflared` service from an elevated shell, and delete the tunnel's public
-hostname and DNS record in the Cloudflare dashboard. The token lives in the
-service's registry `ImagePath` (token installs have no `config.yml`), and
-refreshing it in the dashboard does *not* drop a connector that is already
-connected; removing the service does.
+receiver. On 9 Oct 2026, and again on 27 Oct, it was still live in two places:
+the `cloudflared` Windows service was running and its address still answered
+with Issun's `X-Ammy-Relay` header, and Issun's **Public address** setting still
+held it (imported from relay.py's `.env` on 22 Sept), which overrides the
+Tailscale name for the window's endpoint and for cover URLs sent to Discord. By
+4 Nov the address itself was gone: Google's and Cloudflare's resolvers answered
+NXDOMAIN for `ammy.kaydenpmd.net`, so its DNS record has been deleted. The
+service was still running, though, and Public address still held the dead
+address, so the window's endpoint and any cover URL built from it point nowhere.
+Finishing it is the owner's: clear Public address in Issun's Settings, remove
+the `cloudflared` service from an elevated shell, and, if the tunnel's public
+hostname is still listed in the Cloudflare dashboard, delete it there. The token
+lives in the service's registry `ImagePath` (token installs have no
+`config.yml`), and refreshing it in the dashboard does *not* drop a connector
+that is already connected; removing the service does.
 
 **Done — playhead fixed (Sept 2 2026).** Cause was the arrival-time bug (Issun's
 CLAUDE.md has it), not staleness in `currentPlaybackTime` as long assumed. After
