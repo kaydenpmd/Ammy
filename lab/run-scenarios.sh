@@ -73,6 +73,13 @@ for s in "$@"; do
     H-hold)   run H-hold   190 front 40 -labFailFromLaunch YES -labFailStage engine.start -labFailFor 170 ;;
     H-nohold) run H-nohold 190 front 40 -labFailFromLaunch YES -labFailStage engine.start -labFailFor 170 -labNoHold YES ;;
     I-hold)   run I-hold    90 kill  45 -labFailFromLaunch YES -labFailStage engine.start -labFailFor 600 ;;
+    # Run 43119011272: the HAL took its assertions on the first resume even
+    # with engine.start refused, so the setActive stage, which returns before
+    # the graph is touched, is the one that leaves the audio stack untouched.
+    J-hold)   run J-hold   120 front 30 -labFailFromLaunch YES -labFailStage setActive -labFailFor 35 ;;
+    J-nohold) run J-nohold 120 front 30 -labFailFromLaunch YES -labFailStage setActive -labFailFor 35 -labNoHold YES ;;
+    K-hold)   run K-hold   190 front 40 -labFailFromLaunch YES -labFailStage setActive -labFailFor 170 ;;
+    L-hold)   run L-hold    90 kill  45 -labFailFromLaunch YES -labFailStage setActive -labFailFor 600 ;;
     *) echo "unknown scenario $s" ;;
   esac
 done

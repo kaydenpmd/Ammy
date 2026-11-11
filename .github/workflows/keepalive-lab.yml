@@ -190,8 +190,9 @@ jobs:
             > out/runningboard.log 2>&1 &
           LOGPID=$!
           # Run 43113016498 ran A to F: the simulator never suspended Ammy
-          # once its engine had played. This run is the from-launch set.
-          bash lab/run-scenarios.sh "$UDID" "$PWD/out" ${{ inputs.scenarios || 'G-hold G-nohold H-hold H-nohold I-hold' }}
+          # once its engine had played; 43119011272, nor once it had touched the
+          # audio session. This run fails setActive from launch.
+          bash lab/run-scenarios.sh "$UDID" "$PWD/out" ${{ inputs.scenarios || 'J-hold J-nohold K-hold L-hold' }}
           kill $LOGPID || true
           mkdir -p out/crash-reports
           cp ~/Library/Logs/DiagnosticReports/*mmy* out/crash-reports/ 2>/dev/null || true
