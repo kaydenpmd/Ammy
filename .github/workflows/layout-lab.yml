@@ -14,6 +14,7 @@ on:
 
 jobs:
   ipad:
+    if: ${{ !contains(github.event.head_commit.message, '[mac only]') }}
     runs-on: xcode-27
     timeout-minutes: 60
     steps:
@@ -144,10 +145,15 @@ jobs:
       - name: Build and run the UI tests
         run: |
           cd layoutlab/mac
-          TEST_RUNNER_LAB_OUT="$GITHUB_WORKSPACE/out" xcodebuild test \
+          # macOS UI test runners are sandboxed: they write into their own
+          # container's tmp folder, copied out below, and the result bundle
+          # keeps their attachments as a second copy.
+          xcodebuild test \
             -project MacLab.xcodeproj -scheme MacLab -destination "platform=macOS" \
-            -derivedDataPath dd CODE_SIGN_IDENTITY="-" > "$GITHUB_WORKSPACE/out/xcodebuild-test.log" 2>&1 || echo "tests exited $?"
-          tail -40 "$GITHUB_WORKSPACE/out/xcodebuild-test.log"
+            -derivedDataPath dd -resultBundlePath "$GITHUB_WORKSPACE/out/mac.xcresult" \
+            CODE_SIGN_IDENTITY="-" > "$GITHUB_WORKSPACE/out/xcodebuild-test.log" 2>&1 || echo "tests exited $?"
+          tail -15 "$GITHUB_WORKSPACE/out/xcodebuild-test.log"
+          for d in ~/Library/Containers/*maclab*/Data/tmp; do echo "copying from $d"; cp -R "$d"/. "$GITHUB_WORKSPACE/out/" || true; done
           ls "$GITHUB_WORKSPACE/out"
 
       - uses: actions/upload-artifact@v7

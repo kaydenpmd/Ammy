@@ -3,7 +3,8 @@ import XCTest
 /// Drives System Settings and saves, for each page, the window's picture, the
 /// whole screen, and the accessibility tree (every element's frame, in points).
 final class MacSettingsUITests: XCTestCase {
-    private let out = ProcessInfo.processInfo.environment["LAB_OUT"] ?? NSTemporaryDirectory()
+    // The runner is sandboxed; its own tmp folder is the one place it can write.
+    private let out = NSTemporaryDirectory()
     private let settings = XCUIApplication(bundleIdentifier: "com.apple.systempreferences")
 
     private func log(_ text: String) {
@@ -16,8 +17,18 @@ final class MacSettingsUITests: XCTestCase {
         }
     }
 
+    private func attach(_ data: Data, _ name: String, _ type: String) {
+        let a = XCTAttachment(data: data, uniformTypeIdentifier: type)
+        a.name = name
+        a.lifetime = .keepAlways
+        add(a)
+    }
+
     private func save(_ name: String) {
         let dir = URL(fileURLWithPath: out)
+        let w = settings.windows.firstMatch
+        if w.exists { attach(w.screenshot().pngRepresentation, name + "-window.png", "public.png") }
+        attach(Data(settings.debugDescription.utf8), name + ".txt", "public.plain-text")
         let window = settings.windows.firstMatch
         if window.exists {
             try? window.screenshot().pngRepresentation.write(to: dir.appendingPathComponent(name + "-window.png"))
