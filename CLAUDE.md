@@ -44,10 +44,12 @@ still there. They are obsolete, not a rollback: never enable the task, which
 would contend with Issun for port 8787, and removing them is the owner's call.
 The tunnel's service was still running too; see "Funnel is the only endpoint"
 under Where things stand. The installed Issun, build 38 through all of that, has
-been updated twice since, each time at the owner's yes, with the build it
+been updated three times since, each time at the owner's yes, with the build it
 replaced kept beside it as `Issun.exe.b<build>.bak`: to build 43 on 29 Oct 2026,
-with the new icon and a tray hint and new-key notice that no longer name Ammy,
-and to build 46 on 3 Nov 2026 (`/version` answered `issun 0.1.0 (46)` on 4 Nov).
+with the new icon and a tray hint and new-key notice that no longer name Ammy;
+to build 46 on 3 Nov 2026 (`/version` answered `issun 0.1.0 (46)` on 4 Nov);
+and to build 48 on 11 Nov 2026, which logs the keepalive journal (see
+Diagnostics).
 Issun's CLAUDE.md records each update; ask `/version` for the current one.
 Updating stops the live receiver for a few seconds, so get a yes first; the
 procedure is in Issun's CLAUDE.md, "Updating the installed copy".
@@ -594,8 +596,11 @@ Diagnostics line beside the counts they explain (`failrun=`, `failstage=`,
 `failcode=`, `sincefail=` and `down=` after `fails=`; `intlate=`,
 `intreason=`, `sincebegan=` and `sinceended=` after `int=`), and
 `int_on_resume` and `int_reason` are logged as they change. Issun's CLAUDE.md
-has the details. Until build 48 is installed, they reach `GET /diag` only
-until the next push replaces them.
+has the details. Both are on the owner's devices since 11 Nov 2026: Ammy 167
+from 18:50:38, the first launch with a journal, so it had no earlier run to
+report, and Issun 48 from 18:56:22, whose first report from the phone already
+carried `failrun=0/0` and `intlate=0`. The first `[keepalive] previous run`
+lines come with Ammy's next launch.
 
 ### Was it killed, or just unreachable?
 
