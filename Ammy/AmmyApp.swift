@@ -655,10 +655,23 @@ struct ContentView: View {
     @Namespace private var glass
 
     /// What the window already reserves at the bottom edge — 34pt for a home
-    /// indicator, 0 on a home-button phone. Measured from outside the bottom
-    /// bar, because the bar extends the safe area it sits in and so cannot
-    /// measure it from within itself. See the padding at the foot of the bar.
+    /// indicator, 0 on a home-button phone — and never the keyboard. Measured
+    /// from outside the bottom bar, because the bar extends the safe area it
+    /// sits in and so cannot measure it from within itself. See the padding at
+    /// the foot of the bar.
     @State private var bottomSafeArea: CGFloat = 0
+
+    /// The same edge with the keyboard counted: the keyboard's height while
+    /// it is up, otherwise the same as `bottomSafeArea`. Only compared with
+    /// it, to know whether the keyboard is up.
+    @State private var bottomWithKeyboard: CGFloat = 0
+
+    /// The on-screen keyboard (or a hardware keyboard's bar) is raising the
+    /// bottom of the safe area, so the bar sits on the keyboard's top edge,
+    /// with no home-indicator zone beneath it to reach into.
+    private var keyboardUp: Bool { bottomWithKeyboard > bottomSafeArea + 1 }
+
+    private static let barLog = Logger(subsystem: "com.local.ammy", category: "bar")
 
     /// The page is carrying the bar itself, from the moment it starts to give
     /// way to History until it is back and settled. A bar on the stack
@@ -770,12 +783,35 @@ struct ContentView: View {
         // inside the bar, or on the stack beneath it, is measuring the bar.
         // Out here it reports what the window reserves.
         //
+        // Two readings, because out here the keyboard counts too. From build
+        // 150, when the bar moved to the stack and this reading moved out
+        // past it, it read the keyboard's whole height while the keyboard was
+        // up, and the bar's padding (edgeGap minus this) took the bar down
+        // behind the keyboard: Stop and Restart vanished while the URL or Key
+        // was being edited. So this one counts the keyboard and only says
+        // whether it is up; the background below ignores it and gives the
+        // home indicator's inset alone. CLAUDE.md, "The bar went behind the
+        // keyboard", has the measurements.
+        //
         // onGeometryChange rather than a one-shot read of the key window, since
         // iPad rotates and Split View resizes; and rather than a GeometryReader,
         // which would take over the layout of everything inside it.
         .onGeometryChange(for: CGFloat.self) { proxy in
             proxy.safeAreaInsets.bottom
-        } action: { bottomSafeArea = $0 }
+        } action: { inset in
+            bottomWithKeyboard = inset
+            Self.barLog.notice("bottom edge with the keyboard: \(inset, privacy: .public) pt, keyboard \(keyboardUp ? "up" : "down", privacy: .public)")
+        }
+        .background {
+            Color.clear
+                .onGeometryChange(for: CGFloat.self) { proxy in
+                    proxy.safeAreaInsets.bottom
+                } action: { inset in
+                    bottomSafeArea = inset
+                    Self.barLog.notice("bottom edge without the keyboard: \(inset, privacy: .public) pt")
+                }
+                .ignoresSafeArea(.keyboard)
+        }
         .task {
             // The monitor reads the device, not the relay, so it runs whether
             // or not a session does. That is what lets Now Playing and the
@@ -1088,8 +1124,12 @@ struct ContentView: View {
         // ID phone to pull the button into part of the reserved zone;
         // no clamp needed, since the two `bottomSafeArea` terms cancel
         // and the total is pinned at `edgeGap` no matter what it reads.
+        //
+        // With the keyboard up the bar sits on the keyboard's top edge, which
+        // has no reserved zone beneath it, so the gap is `edgeGap` from that
+        // edge on every phone, as it always was on a home-button one.
         .padding(.top, Self.barGap)
-        .padding(.bottom, Self.edgeGap - bottomSafeArea)
+        .padding(.bottom, keyboardUp ? Self.edgeGap : Self.edgeGap - bottomSafeArea)
         .padding(.horizontal, 21)
     }
 
