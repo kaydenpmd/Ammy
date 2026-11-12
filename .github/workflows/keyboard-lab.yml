@@ -1,0 +1,198 @@
+name: Keyboard lab (the bar over the keyboard)
+
+# Runs only on the keyboard-lab branch, never on main, and releases nothing.
+# The question, 12 Nov 2026: editing the URL or Key mid-session splits the
+# bottom bar into Stop + Restart, and the owner reports it no longer sits
+# above the keyboard. The real Ammy is built once, as build-ipa.yml builds a
+# release (macos-26's default Xcode, the iOS 26.5 SDK), with the probe in it
+# and the bar picked at launch (fix, main, form148, ignore; Ammy/LabProbe.swift),
+# then given the keyboard for the URL and Key fields and scrolled from the
+# top, in dark mode, on:
+#   se-ios27   an iPhone SE on iOS 27.0
+#   17e-ios27  a Face ID iPhone 17e on iOS 27.0
+#   se-ios26   an iPhone SE on iOS 26.5
+#   17e-ios26  a Face ID iPhone 17e on iOS 26.5
+
+on:
+  push:
+    branches: [keyboard-lab]
+  workflow_dispatch:
+
+jobs:
+  compile:
+    runs-on: macos-26
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Show the default Xcode, as build-ipa.yml uses it
+        run: |
+          xcode-select -p
+          xcodebuild -version
+          xcrun --sdk iphonesimulator --show-sdk-version
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Build Ammy for the simulator
+        run: |
+          set -o pipefail
+          xcodegen generate
+          xcodebuild build \
+            -project Ammy.xcodeproj -scheme Ammy -configuration Release \
+            -destination 'generic/platform=iOS Simulator' \
+            -derivedDataPath build-ammy \
+            CODE_SIGNING_ALLOWED=NO 2>&1 | grep -E "error|warning: .*(AmmyApp|LabProbe|PresenceController)|BUILD" | tail -40
+          P=build-ammy/Build/Products/Release-iphonesimulator/Ammy.app
+          plutil -p "$P/Info.plist" | grep -E "DTSDKName|DTXcode|DTPlatformVersion|MinimumOSVersion|CFBundleIdentifier"
+          tar -czf Ammy-sdk26.tgz -C build-ammy/Build/Products/Release-iphonesimulator Ammy.app
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: ammy-sdk26
+          path: Ammy-sdk26.tgz
+
+  lab:
+    needs: compile
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: se-ios27
+            runner: xcode-27
+            xcode: /Applications/Xcode_27.2_Release_Candidate.app
+            device: iPhone-SE-3rd-generation
+            runtime: "27.0"
+          - name: 17e-ios27
+            runner: xcode-27
+            xcode: /Applications/Xcode_27.2_Release_Candidate.app
+            device: iPhone-17e
+            runtime: "27.0"
+          - name: se-ios26
+            runner: macos-26
+            xcode: /Applications/Xcode_26.6.app
+            device: iPhone-SE-3rd-generation
+            runtime: "26.5"
+          - name: 17e-ios26
+            runner: macos-26
+            xcode: /Applications/Xcode_26.6.app
+            device: iPhone-17e
+            runtime: "26.5"
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 80
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Select Xcode
+        run: |
+          X="${{ matrix.xcode }}"
+          [ -d "$X" ] || X=/Applications/Xcode.app
+          sudo xcode-select -s "$X"
+          xcodebuild -version
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Generate the lab project
+        run: cd lab && xcodegen generate
+
+      - name: Create and boot the simulator
+        id: sim
+        run: |
+          set -euo pipefail
+          # The software keyboard, not a hardware one.
+          defaults write com.apple.iphonesimulator ConnectHardwareKeyboard -bool false || true
+          TYPE="${{ matrix.device }}"
+          WANT="${{ matrix.runtime }}"
+          UDID=""
+          for RUNTIME in $(xcrun simctl list runtimes -j | WANT="$WANT" python3 -c '
+          import json, os, sys
+          want = os.environ["WANT"]
+          rs = [r for r in json.load(sys.stdin)["runtimes"] if r["platform"] == "iOS" and r["isAvailable"]]
+          rs.sort(key=lambda r: (r["version"] == want or r["version"].startswith(want + "."),
+                                 [int(x) for x in r["version"].split(".")]), reverse=True)
+          print(" ".join(r["identifier"] for r in rs))'); do
+            if UDID=$(xcrun simctl create "Lab $TYPE" "com.apple.CoreSimulator.SimDeviceType.$TYPE" "$RUNTIME" 2>/dev/null); then
+              echo "device: $TYPE on $RUNTIME"
+              echo "runtime=$RUNTIME" >> "$GITHUB_OUTPUT"
+              break
+            fi
+            UDID=""
+          done
+          [ -n "$UDID" ] || { echo "no usable simulator"; exit 1; }
+          echo "udid=$UDID" >> "$GITHUB_OUTPUT"
+          xcrun simctl boot "$UDID"
+          xcrun simctl bootstatus "$UDID" -b
+          xcrun simctl ui "$UDID" appearance dark
+          mkdir -p out
+          { echo "device: $TYPE"; echo "runtime: $RUNTIME"; echo "test runner:"; xcodebuild -version; } > out/device.txt
+
+      - name: Build the UI tests
+        run: |
+          set -o pipefail
+          cd lab
+          xcodebuild build-for-testing \
+            -project KBLab.xcodeproj -scheme KBLab \
+            -destination "id=${{ steps.sim.outputs.udid }}" \
+            -derivedDataPath dd \
+            CODE_SIGNING_ALLOWED=NO 2>&1 | tail -30
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: ammy-sdk26
+
+      - name: Install Ammy
+        run: |
+          UDID="${{ steps.sim.outputs.udid }}"
+          mkdir -p ammy-app && tar -xzf Ammy-sdk26.tgz -C ammy-app
+          { echo "Ammy built with:"; plutil -p ammy-app/Ammy.app/Info.plist | grep -E "DTSDKName|DTXcode|DTPlatformVersion|MinimumOSVersion"; } | tee -a out/device.txt
+          xcrun simctl install "$UDID" ammy-app/Ammy.app
+          xcrun simctl privacy "$UDID" grant media-library com.local.ammy || true
+
+      - name: Run
+        run: |
+          UDID="${{ steps.sim.outputs.udid }}"
+          T=KBLabUITests/KBLabUITests
+          stamp() { python3 -c 'import time; print(time.time())'; }
+          run_tests() {
+            local label="$1" only="$2"
+            for attempt in 1 2; do
+              echo "$(stamp) begin $label (attempt $attempt)" >> out/phases.txt
+              TEST_RUNNER_LAB_OUT="$PWD/out" xcodebuild test-without-building \
+                -project lab/KBLab.xcodeproj -scheme KBLab \
+                -destination "id=$UDID" \
+                -derivedDataPath lab/dd \
+                -parallel-testing-enabled NO \
+                -only-testing:"$T/$only" \
+                CODE_SIGNING_ALLOWED=NO > "out/xcodebuild-$label-$attempt.log" 2>&1 || echo "$label: tests exited $?"
+              echo "$(stamp) end $label (attempt $attempt)" >> out/phases.txt
+              xcrun simctl terminate "$UDID" com.local.ammy > /dev/null 2>&1 || true
+              echo "== $label (attempt $attempt)"
+              grep -E "Test Case|error:|failed" "out/xcodebuild-$label-$attempt.log" | tail -12 || true
+              if grep -q "Test Case '-\[" "out/xcodebuild-$label-$attempt.log"; then break; fi
+            done
+          }
+          xcrun simctl launch "$UDID" com.local.ammy > /dev/null 2>&1 || true
+          sleep 8
+          xcrun simctl terminate "$UDID" com.local.ammy > /dev/null 2>&1 || true
+          # The app's own log lines ("bar" category), for the two readings.
+          xcrun simctl spawn "$UDID" log stream --style compact --level info \
+            --predicate 'subsystem == "com.local.ammy" AND category == "bar"' > out/bar-log.txt 2>&1 &
+          LOG=$!
+          stamp > out/record-start.txt
+          xcrun simctl io "$UDID" recordVideo --codec=h264 --force out/lab.mp4 > out/record.log 2>&1 &
+          REC=$!
+          sleep 3
+          run_tests keyboard test1Keyboard
+          run_tests scroll test2Scroll
+          kill -INT $REC || true
+          wait $REC || true
+          kill $LOG || true
+          ls out | wc -l
+
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: lab-${{ matrix.name }}
+          path: out

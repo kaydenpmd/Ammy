@@ -26,6 +26,14 @@ extension Bundle {
 struct AmmyApp: App {
     @StateObject private var controller = PresenceController()
 
+    init() {
+        // Lab only (keyboard-lab): the per-frame probe, when the UI test asks.
+        let env = ProcessInfo.processInfo.environment
+        if let dir = env["LAB_OUT"], let tag = env["LAB_TAG"] {
+            Probe.shared.start(directory: dir, tag: tag)
+        }
+    }
+
     var body: some Scene {
         WindowGroup {
             ContentView().environmentObject(controller)
@@ -723,6 +731,31 @@ struct ContentView: View {
     }
 
     var body: some View {
+        labStack
+        .onGeometryChange(for: CGFloat.self) { proxy in
+            proxy.safeAreaInsets.bottom
+        } action: { inset in
+            bottomWithKeyboard = inset
+            Self.barLog.notice("bottom edge with the keyboard: \(inset, privacy: .public) pt, keyboard \(keyboardUp ? "up" : "down", privacy: .public)")
+            Probe.shared.note(["k": "inset", "with": Double(inset)])
+        }
+        .background {
+            Color.clear
+                .onGeometryChange(for: CGFloat.self) { proxy in
+                    proxy.safeAreaInsets.bottom
+                } action: { inset in
+                    bottomSafeArea = inset
+                    Self.barLog.notice("bottom edge without the keyboard: \(inset, privacy: .public) pt")
+                    Probe.shared.note(["k": "inset", "without": Double(inset)])
+                }
+                .ignoresSafeArea(.keyboard)
+        }
+        .task {
+            if UserDefaults.standard.bool(forKey: "labRunning") { controller.labPretendRunning() }
+        }
+    }
+
+    @ViewBuilder private var mainStack: some View {
         NavigationStack {
             form
                 .safeAreaPadding(.bottom, barHeight)
@@ -732,7 +765,7 @@ struct ContentView: View {
                 // instead (builds 150 to 154) left a murky half-transparent
                 // capsule over History, then the edge effect switching off.
                 .overlay(alignment: .bottom) {
-                    if barOnPage { bar }
+                    if barOnPage { bar.labFrame("page") }
                 }
                 // UIKit says when this page starts to give way to History and
                 // when it has settled back. SwiftUI's onAppear and onDisappear
@@ -775,43 +808,12 @@ struct ContentView: View {
         .safeAreaBar(edge: .bottom) {
             if !barOnPage {
                 bar
+                    .labIgnoreHomeIndicator(Lab.variant == "ignore")
+                    .labFrame("stack")
                     .onGeometryChange(for: CGFloat.self) { $0.size.height } action: { barHeight = $0 }
             }
         }
-        // Attached after the stack's bottom bar, deliberately: `safeAreaBar`
-        // extends the safe area of whatever it modifies, so a reading taken
-        // inside the bar, or on the stack beneath it, is measuring the bar.
-        // Out here it reports what the window reserves.
-        //
-        // Two readings, because out here the keyboard counts too. From build
-        // 150, when the bar moved to the stack and this reading moved out
-        // past it, it read the keyboard's whole height while the keyboard was
-        // up, and the bar's padding (edgeGap minus this) took the bar down
-        // behind the keyboard: Stop and Restart vanished while the URL or Key
-        // was being edited. So this one counts the keyboard and only says
-        // whether it is up; the background below ignores it and gives the
-        // home indicator's inset alone. CLAUDE.md, "The bar went behind the
-        // keyboard", has the measurements.
-        //
-        // onGeometryChange rather than a one-shot read of the key window, since
-        // iPad rotates and Split View resizes; and rather than a GeometryReader,
-        // which would take over the layout of everything inside it.
-        .onGeometryChange(for: CGFloat.self) { proxy in
-            proxy.safeAreaInsets.bottom
-        } action: { inset in
-            bottomWithKeyboard = inset
-            Self.barLog.notice("bottom edge with the keyboard: \(inset, privacy: .public) pt, keyboard \(keyboardUp ? "up" : "down", privacy: .public)")
-        }
-        .background {
-            Color.clear
-                .onGeometryChange(for: CGFloat.self) { proxy in
-                    proxy.safeAreaInsets.bottom
-                } action: { inset in
-                    bottomSafeArea = inset
-                    Self.barLog.notice("bottom edge without the keyboard: \(inset, privacy: .public) pt")
-                }
-                .ignoresSafeArea(.keyboard)
-        }
+        // Lab: the readings are on the body, outside every variant.
         .task {
             // The monitor reads the device, not the relay, so it runs whether
             // or not a session does. That is what lets Now Playing and the
@@ -1129,8 +1131,37 @@ struct ContentView: View {
         // has no reserved zone beneath it, so the gap is `edgeGap` from that
         // edge on every phone, as it always was on a home-button one.
         .padding(.top, Self.barGap)
-        .padding(.bottom, keyboardUp ? Self.edgeGap : Self.edgeGap - bottomSafeArea)
+        .padding(.bottom, labBottomPadding)
         .padding(.horizontal, 21)
+    }
+
+    /// Lab only: the bar's bottom padding as each variant has it. "main" and
+    /// "form148" subtract the one reading that counts the keyboard, as
+    /// builds 148 to 172 did; "ignore" lets the bar ignore the home
+    /// indicator's inset instead of reading it.
+    private var labBottomPadding: CGFloat {
+        switch Lab.variant {
+        case "main", "form148": return Self.edgeGap - bottomWithKeyboard
+        case "ignore": return Self.edgeGap
+        default: return keyboardUp ? Self.edgeGap : Self.edgeGap - bottomSafeArea
+        }
+    }
+
+    /// Lab only: build 148's arrangement, the bar on the Form and nothing
+    /// reserved by hand, for "form148"; otherwise main's.
+    @ViewBuilder private var labStack: some View {
+        if Lab.variant == "form148" {
+            NavigationStack {
+                form
+                    .safeAreaBar(edge: .bottom) { bar.labFrame("form") }
+            }
+            .task {
+                controller.appDidBecomeActive()
+                await controller.monitor.start()
+            }
+        } else {
+            mainStack
+        }
     }
 
     @MainActor
@@ -1173,6 +1204,8 @@ struct ContentView: View {
     /// stored address has already been resolved by an interactive start.
     @MainActor
     private func autoStartIfPossible() async {
+        // Lab: never start a real session; the tests pretend one.
+        if UserDefaults.standard.string(forKey: "labBar") != nil { return }
         guard !stoppedByUser, !controller.isRunning, canAutoStart else { return }
         await controller.start()
     }

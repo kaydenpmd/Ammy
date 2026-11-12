@@ -1,0 +1,44 @@
+name: KBLab
+
+# keyboard-lab only, never merged. An empty host app for the UI tests, which
+# drive the real Ammy (com.local.ammy) by bundle identifier.
+
+options:
+  bundleIdPrefix: com.local
+  deploymentTarget:
+    iOS: "26.0"
+
+targets:
+  KBLab:
+    type: application
+    platform: iOS
+    sources:
+      - path: KBLab
+    info:
+      path: KBLab/Info.plist
+      properties:
+        CFBundleDisplayName: KBLab
+        UILaunchScreen: {}
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.local.kblab
+        SWIFT_VERSION: "5.0"
+        GENERATE_INFOPLIST_FILE: NO
+        TARGETED_DEVICE_FAMILY: "1"
+    scheme:
+      testTargets:
+        - KBLabUITests
+
+  KBLabUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources:
+      - path: KBLabUITests
+    dependencies:
+      - target: KBLab
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.local.kblab.uitests
+        SWIFT_VERSION: "5.0"
+        GENERATE_INFOPLIST_FILE: YES
+        TEST_TARGET_NAME: KBLab

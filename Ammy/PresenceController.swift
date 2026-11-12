@@ -370,6 +370,15 @@ final class PresenceController: ObservableObject {
         handleChange()
     }
 
+    /// Lab only (keyboard-lab): a session as the screen shows one, with
+    /// nothing sent, so Stop shows and an edit brings Restart beside it.
+    func labPretendRunning() {
+        activeEndpoint = endpoint
+        activeKey = key
+        isRunning = true
+        linkStatus = "Connected"
+    }
+
     func stop() async {
         // Clear the presence on the way out, but don't make stopping wait for
         // it. Stopping is a local decision and should take effect the moment
