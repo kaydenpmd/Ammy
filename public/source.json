@@ -9,12 +9,12 @@
       "versions": [
         {
           "version": "1.0",
-          "date": "2026-11-11T21:26:01+00:00",
-          "localizedDescription": "Have VoiceOver say \"Now Playing\" before the song again\n\nVoiceOver now reads the song card as \"Now Playing\", then the title and\nartist, as it did before build 158 took the section headings away.\nNothing changes on screen.",
-          "downloadURL": "https://github.com/kaydenpmd/Ammy/releases/download/v1.0-b164/Ammy-1.0-b164-1823179.ipa",
-          "size": 540452,
-          "sha256": "bbc90bb532376a6e33e0bc6e9dc2c5ec9e9554db77bf2acf5aba18a583b3f8ac",
-          "buildVersion": "164",
+          "date": "2026-11-12T00:31:56+00:00",
+          "localizedDescription": "Keep a record of what keeps Ammy running in the background\n\nAmmy now logs every step of the silent audio that keeps it running in\nthe background, and after it has been stopped, its first check-ins send\nthe last of that log, so a stop it couldn't report at the time can be\nexplained afterwards. When the audio engine refuses to start, Ammy now\nbuilds a fresh one for its next try instead of reusing the old one.",
+          "downloadURL": "https://github.com/kaydenpmd/Ammy/releases/download/v1.0-b167/Ammy-1.0-b167-8f77b3f.ipa",
+          "size": 562528,
+          "sha256": "73d8ef193bf2b89c057271708f267a3e01639c6789e08387abe2b959a14b5f0e",
+          "buildVersion": "167",
           "minOSVersion": "26.0"
         }
       ],
