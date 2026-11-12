@@ -1,0 +1,87 @@
+=== 1. The jump
+   layout: option1 vs largeForm and others
+   device: iPhone 17e | ios: 27.0, iOS 26.5 SDK build (runs 41439442116 and 41444622827)
+   result: At the default text size, option 1's page is shorter than the screen (scroll range −57.8 pt at launch), so there is nothing to scroll. largeForm's drags were measured for at most a frame and showed no jump; option 1 stayed within 0.7 pt ahead and 5.3 pt behind while rubber-banding. At XXXL text, option 1 was 0 ahead and trailed by at most 2.3 pt (slow) and 3 pt (drag). largeForm was 18 pt ahead on the slow drag.
+   verdict: pass at XXXL; the jump can't occur at the default size because the page doesn't scroll
+
+=== 2. Room at the end of the page (History's bottom to Start's top at maximum scroll)
+   layout: option1 / largeForm / option1Margins / main156
+   device: iPhone SE (3rd generation) | ios: 27.0 (Xcode 27.2), 26.5, and 27.0 with the iOS 26.5 SDK build
+   result: 36.00 / 36.00 / 16.00 / 16.00 pt on all three setups, each at the probe-confirmed maximum offset. History ends at 559.5 pt in option 1 and largeForm, and at 579.5 pt in the other two; Start's top is at 595.5. Option 1's Form takes the bar's 87.5 pt into its safe area (adjusted bottom inset 87.5, content inset 0), exactly like largeForm, and keeps the list's own 20 pt below History. The other two layouts have a 0 inset and the 87.5 pt as content margin. The same 36/36/16/16 at XXXL text (bar 94.5 pt) and with the media prompt up.
+   verdict: pass
+
+=== 2. Room at the end of the page
+   layout: option1 / largeForm / option1Margins / main156
+   device: iPhone 17e | ios: 27.0, iOS 26.5 SDK build
+   result: At the default size and at XXXL, option 1's page is shorter than the screen and never reaches a scroll limit: History ends 93.67 pt above Start at the default size (54 pt at XXXL), the same in largeForm and option1Margins. With media access revoked (run 41448280842), the prompt section lengthens the page enough to reach its end: 36.00 / 36.00 / 16.00 / 16.00 pt at maximum offset. Option 1's adjusted bottom inset is 87.33 (34 + 53.33); main156 has 34 plus a 53.33 margin.
+   verdict: pass (shown with the prompt up; at the default size the page has no end to scroll to)
+
+=== 3. Scroll indicator at the end of the page
+   layout: all four
+   device: iPhone SE and iPhone 17e | ios: 26.5 and 27.0, both builds
+   result: The scroll bar's track ends at 579.5 pt on the SE and 756.7 pt on the 17e, which is the bar's top, in every layout. The probe saw the indicator's lowest edge at 576.5 pt (SE) and 753.67 pt (17e, prompt state) at maximum offset in every layout. Option 1 gets this from automatic indicator insets plus its 87.5 pt safe area; main156 sets an explicit 87.5 pt indicator inset. At XXXL the track ends at 572.5 and the indicator at 569.5 in all layouts. Screenshots taken right after the swipe show the indicator stopping above the bar in both option 1 and main156.
+   verdict: pass
+
+=== 4. History: Back, a full swipe back, and a swipe let go that UIKit cancels
+   layout: option1 (main156 as reference)
+   device: iPhone SE, all three setups; iPhone 17e | ios: 26.5 and 27.0, both builds
+   result: The copy is not lifted. At all 6 handovers per test, on 4 setups for both layouts, the probe logged the page's copy at exactly the stack bar's frame (dx = dy = dw = dh = 0.00): (0, 579.5, 375 × 87.5) on the SE and (0, 756.67, 390 × 53.33) on the 17e. While sliding, the copy's x tracked the page (−112 to 0) with y unchanged. In the iOS 27 SE recordings (both builds), the capsule's edges stayed on rows 1189.84–1189.89 and 1292.09–1292.15 px in every slide, against 1189.85 and 1292.12 px for the stack bar at rest. After all three slides back, no frame shows the bar changing while the page above it doesn't; the last settle frames are pixel-identical to the settled frame. On the 17e the capsule rows stayed at 2317.35–2317.44 and 2468.55–2468.66 px. Start was absent in all 8 History-up checks per test, including after the cancelled swipe, and came back hittable at (21, 595.5, 333 × 50.5).
+   verdict: pass
+
+=== 5. At rest, dark mode, top and end of the page
+   layout: option1 vs main156 (and largeForm, option1Margins)
+   device: iPhone SE, all three setups; iPhone 17e | ios: 26.5 and 27.0, both builds
+   result: Option 1 vs largeForm: 0 differing pixels below the status bar, at the top and the end, on every setup, at default and XXXL text and with the prompt up. At the top it also matches option1Margins with 0 differing pixels. At the end, option 1's bar strip (579.5–667 pt on the SE; 756.7–844 pt on the 17e) matches main156 and option1Margins with 0 differing pixels. At the top, main156 differs because its headers put different rows behind the bar. Against the header lab's render (noHeaders-top.png), the title, every row frame (126, 246, 322.5, 398, 461.5, 513.5 and 600.5 pt), the scroll track and the button are identical. Pixels differ only in the demo-state areas: status bar, song card, URL text, Connected versus Disconnected, version, and Stop versus Start. Light mode gave the same results.
+   verdict: pass
+
+=== 6. The keyboard (URL field, also Key field, tapped from the top)
+   layout: option1 vs main156
+   device: iPhone SE, all three setups; iPhone 17e | ios: 26.5 and 27.0
+   result: The two behave the same. On the SE the keyboard top, Passwords bar included, is at 407 pt. URL field: option 1 307.5 pt (99.5 pt clear), main156 371 pt (36 pt clear). Key field: option 1 383 pt (24 pt clear, no scroll), main156 scrolled 39.5 pt so the field ends exactly at 407. In both layouts the bar shrinks to zero height at the keyboard's top, the Form's bottom inset becomes the keyboard's 260 pt alone, and Start sits under the keyboard at (21, 423, 333 × 50.5). The 17e behaves the same, with the keyboard at 516 pt and Start at y 532. The secure Key field's keyboard is left out of screenshots by iOS.
+   verdict: pass (same as build 156)
+
+=== 7. Media-access prompt at the top (access revoked)
+   layout: option1 vs main156
+   device: iPhone SE; iPhone 17e | ios: 26.5 and 27.0
+   result: In option 1 the prompt card sits directly under the large title (126–254.5 pt on the SE, 153–281.3 on the 17e), and the Now Playing card follows 35 pt below (289.5 pt) with no header. main156 puts its 'Now Playing' header there (272–312.5). With the prompt up, option 1 is pixel-identical to largeForm and option1Margins at the top and the end on every setup. On iOS 27, content below the capsule shows crisp the same way in both, so that is iOS 27's normal look, not a missing effect.
+   verdict: pass
+
+IMAGES
+[
+ "C:/Users/links/AppData/Local/Temp/claude/C--Users-links-Repos-Ammy/32efb08c-7c8f-44e2-bdaf-fbd9b99d86d4/scratchpad/headers/option1/sheet-se-ios27-sdk26-dark-top.png",
+ "C:/Users/links/AppData/Local/Temp/claude/C--Users-links-Repos-Ammy/32efb08c-7c8f-44e2-bdaf-fbd9b99d86d4/scratchpad/headers/option1/sheet-se-ios27-sdk26-dark-end.png",
+ "C:/Users/links/AppData/Local/Temp/claude/C--Users-links-Repos-Ammy/32efb08c-7c8f-44e2-bdaf-fbd9b99d86d4/scratchpad/headers/option1/sheet-se-ios27-dark-top.png",
+ "C:/Users/links/AppData/Local/Temp/claude/C--Users-links-Repos-Ammy/32efb08c-7c8f-44e2-bdaf-fbd9b99d86d4/scratchpad/headers/option1/sheet-se-ios27-dark-end.png",
+ "C:/Users/links/AppData/Local/Temp/claude/C--Users-links-Repos-Ammy/32efb08c-7c8f-44e2-bdaf-fbd9b99d86d4/scratchpad/headers/option1/sheet-se-ios26-dark-top.png",
+ "C:/Users/links/AppData/Local/Temp/claude/C--Users-links-Repos-Ammy/32efb08c-7c8f-44e2-bdaf-fbd9b99d86d4/scratchpad/headers/option1/sheet-se-ios26-dark-end.png",
+ "C:/Users/links/AppData/Local/Temp/claude/C--Users-links-Repos-Ammy/32efb08c-7c8f-44e2-bdaf-fbd9b99d86d4/scratchpad/headers/option1/sheet-se-ios27-top-vs-header-lab.png",
+ "C:/Users/links/AppData/Local/Temp/claude/C--Users-links-Repos-Ammy/32efb08c-7c8f-44e2-bdaf-fbd9b99d86d4/scratchpad/headers/option1/sheet-se-ios27-sdk26-end-four-layouts.png",
+ "C:/Users/links/AppData/Local/Temp/claude/C--Users-links-Repos-Ammy/32efb08c-7c8f-44e2-bdaf-fbd9b99d86d4/scratchpad/headers/option1/sheet-se-ios27-indicator-moving.png",
+ "C:/Users/links/AppData/Local/Temp/claude/C--Users-links-Repos-Ammy/32efb08c-7c8f-44e2-bdaf-fbd9b99d86d4/scratchpad/headers/option1/sheet-se-ios27-option1-history.png",
+ "C:/Users/links/AppData/Local/Temp/claude/C--Users-links-Repos-Ammy/32efb08c-7c8f-44e2-bdaf-fbd9b99d86d4/scratchpad/headers/option1/sheet-se-ios27-keyboard.png",
+ "C:/Users/links/AppData/Local/Temp/claude/C--Users-links-Repos-Ammy/32efb08c-7c8f-44e2-bdaf-fbd9b99d86d4/scratchpad/headers/option1/sheet-se-ios27-prompt-dark.png",
+ "C:/Users/links/AppData/Local/Temp/claude/C--Users-links-Repos-Ammy/32efb08c-7c8f-44e2-bdaf-fbd9b99d86d4/scratchpad/headers/option1/sheet-17e-ios27-sdk26-dark-top.png",
+ "C:/Users/links/AppData/Local/Temp/claude/C--Users-links-Repos-Ammy/32efb08c-7c8f-44e2-bdaf-fbd9b99d86d4/scratchpad/headers/option1/sheet-17e-prompt-dark.png",
+ "C:/Users/links/AppData/Local/Temp/claude/C--Users-links-Repos-Ammy/32efb08c-7c8f-44e2-bdaf-fbd9b99d86d4/scratchpad/headers/option1/sheet-17e-prompt-dark-end.png",
+ "C:/Users/links/AppData/Local/Temp/claude/C--Users-links-Repos-Ammy/32efb08c-7c8f-44e2-bdaf-fbd9b99d86d4/scratchpad/headers/option1/shots"
+]
+RUNS
+[
+ "41439442116 (commit 1a455eb): every check on the 4 setups (SE iOS 27.0 with an Xcode 27.2 build; SE iOS 26.5 with Xcode 26.6; SE iOS 27.0 with the iOS 26.5 SDK build; 17e iOS 27.0 with the same build). All tests passed except option 1's scroll test on the SDK-build SE, whose test runner stalled before running anything. Downloaded to C:/Users/links/AppData/Local/Temp/claude/C--Users-links-Repos-Ammy/32efb08c-7c8f-44e2-bdaf-fbd9b99d86d4/scratchpad/headers/option1/runs/41439442116",
+ "41444622827 (commit 181bd36): the default-size scrolls again on the SDK-build SE, with option 1 included; three more flicks of option 1 and build 156 on each SE; and every layout at XXXL text: scrolled, taken to the end of the page, and photographed at rest in dark. All passed with no retries. Downloaded to C:/Users/links/AppData/Local/Temp/claude/C--Users-links-Repos-Ammy/32efb08c-7c8f-44e2-bdaf-fbd9b99d86d4/scratchpad/headers/option1/runs/41444622827",
+ "41448280842 (commit 4f24677): every layout with media access revoked, taken to the end of the page and photographed at rest in dark, on all 4 setups. This is the only state in which the 17e's page has an end to scroll to. All passed. Downloaded to C:/Users/links/AppData/Local/Temp/claude/C--Users-links-Repos-Ammy/32efb08c-7c8f-44e2-bdaf-fbd9b99d86d4/scratchpad/headers/option1/runs/41448280842"
+]
+BRANCH header-lab-option1, on origin at 4f24677. It is a lab branch, never merged, and no PR was opened. Worktree: C:/Users/links/AppData/Local/Temp/claude/C--Users-links-Repos-Ammy/32efb08c-7c8f-44e2-bdaf-fbd9b99d86d4/scratchpad/headers/option1/wt. The main checkout is untouched: still on main at 7545cd7, with Ammy/AmmyApp.swift uncommitted and unchanged.
+UNVERIFIED
+[
+ "Any real device. The newest simulator runtime is iOS 27.0; the owner's SE runs 27.2.",
+ "The push-start handover in pixels. Each push's first recorded frame is already 18–157 ms in, so the frame with the copy sitting still in place of the stack bar was never captured. The probe (identical frame) and the capsule rows in the first moving frames (within 0.02 px) cover it instead. The end of each slide back is shown in pixels.",
+ "The handover in the iOS 26.5 recording. That runner's recorder drops frames while things move, and iOS 26's tint behind the bar changes at the handover, so 26.5 rests on the probe's frames alone.",
+ "On the 17e, the bar strip keeps changing for 0.1–0.3 s after each slide back in both option 1 and build 156. That is the transition's rounded page corners and the home indicator, so the handover itself wasn't isolated pixel for pixel there; capsule rows and the probe agree.",
+ "Start, Stop and Restart enabled, and the split bar. No endpoint was set, so Start was the disabled grey capsule throughout.",
+ "The jump on the 17e at the default text size. Option 1's page doesn't scroll there, so it can't jump; it was measured only at XXXL.",
+ "Build 156's XXXL drags on the SEs. The touch landed on a field and no pan registered. Its first flick in run 2 on the SDK-build SE also registered no pan.",
+ "On iOS 26.5, largeForm's flick showed no lead in the 3 frames the finger was down.",
+ "History in dark mode, iPad, landscape, text sizes other than default and XXXL, and VoiceOver.",
+ "Whether Start being hidden under the keyboard is wanted. It is build 156's behaviour too, so this change doesn't affect it."
+]
