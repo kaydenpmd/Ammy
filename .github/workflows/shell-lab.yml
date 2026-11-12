@@ -73,23 +73,21 @@ jobs:
                       print(f"{int(x + w / 2)},{int(y + h / 2)}"); break
           PY
           }
-          osascript out/dump.applescript > out/dump.txt 2>&1 || true
-          XY=$(center AXTextField "") ; echo "search field at $XY" | tee -a out/make.log
-          [ -n "$XY" ] && cliclick c:"$XY" && sleep 1
+          # Positions read off the first runs' screenshots (1x, 1024 x 768 screen):
+          # the search field at 260,111 and its first result at 245,144.
+          cliclick c:260,111; sleep 1
           osascript -e 'tell application "System Events" to keystroke "Run Shell Script"' || true
           sleep 3
-          osascript out/dump.applescript > out/dump.txt 2>&1 || true
-          XY=$(center AXStaticText "Run Shell Script"); echo "action row at $XY" | tee -a out/make.log
-          [ -n "$XY" ] && cliclick dc:"$XY" && sleep 4
-          osascript out/dump.applescript > out/dump.txt 2>&1 || true
-          XY=$(center AXTextArea ""); echo "command box at $XY" | tee -a out/make.log
-          if [ -n "$XY" ]; then
-            cliclick c:"$XY"; sleep 1
-            osascript -e 'tell application "System Events" to keystroke "a" using command down' || true
-            osascript -e 'tell application "System Events" to keystroke "winget install --id Tailscale.Tailscale --exact"' || true
-            sleep 1
-          fi
-          # Click away from the box so it shows at rest.
+          cliclick dc:245,144; sleep 4
+          screencapture -x out/step-added.png || true
+          # The added action's command box: try a column of points down the
+          # workflow pane until one gives the box focus, then type.
+          for Y in 190 210 230 250 270; do cliclick c:690,$Y; sleep 0.5; done
+          cliclick c:690,215; sleep 1
+          osascript -e 'tell application "System Events" to keystroke "a" using command down' || true
+          osascript -e 'tell application "System Events" to keystroke "winget install --id Tailscale.Tailscale --exact"' || true
+          sleep 1
+          screencapture -x out/step-typed.png || true          # Click away from the box so it shows at rest.
           cliclick c:700,450 || true
           sleep 2
       - name: Capture the window and its elements, then run it and capture again
