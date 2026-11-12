@@ -1,0 +1,26 @@
+1794469959.487733 launched
+Stop exists=true hittable=true frame=(21.0, 772.6666666666666, 348.0, 50.33333333333337)
+Restart exists=false hittable=false frame=-
+Start exists=false hittable=false frame=-
+keyboard exists=false hittable=false frame=-
+URL exists=true hittable=true frame=(32.0, 312.3333333333333, 326.0, 22.0)
+Key exists=true hittable=true frame=(32.0, 388.6666666666667, 326.0, 21.0)
+window frame=(0.0, 0.0, 390.0, 844.0)
+1794469960.097759 tap URL
+1794469963.8945441 keyboard shown=true
+Stop exists=true hittable=true frame=(21.0, 444.6666666666667, 348.0, 50.33333333333326)
+Restart exists=false hittable=false frame=-
+Start exists=false hittable=false frame=-
+keyboard exists=true hittable=true frame=(0.0, 560.0, 390.0, 226.0)
+URL exists=true hittable=true frame=(32.0, 312.3333333333333, 326.0, 22.0)
+Key exists=true hittable=true frame=(32.0, 388.6666666666667, 326.0, 21.0)
+window frame=(0.0, 0.0, 390.0, 844.0)
+1794469965.5935469 type x
+1794469967.4528608 typed
+Stop exists=true hittable=true frame=(21.0, 444.6666666666667, 170.0, 50.33333333333326)
+Restart exists=true hittable=true frame=(199.0, 444.6666666666667, 170.0, 50.33333333333326)
+Start exists=false hittable=false frame=-
+keyboard exists=true hittable=true frame=(0.0, 560.0, 390.0, 226.0)
+URL exists=true hittable=true frame=(32.0, 312.3333333333333, 326.0, 22.0)
+Key exists=true hittable=true frame=(32.0, 388.6666666666667, 326.0, 21.0)
+window frame=(0.0, 0.0, 390.0, 844.0)

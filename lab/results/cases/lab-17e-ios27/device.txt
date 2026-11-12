@@ -1,0 +1,11 @@
+device: iPhone-17e
+runtime: com.apple.CoreSimulator.SimRuntime.iOS-27-0
+test runner:
+Xcode 27.1
+Build version 27A9275
+Ammy built with:
+  "DTPlatformVersion" => "26.5"
+  "DTSDKName" => "iphonesimulator26.5"
+  "DTXcode" => "2660"
+  "DTXcodeBuild" => "17F113"
+  "MinimumOSVersion" => "26.0"

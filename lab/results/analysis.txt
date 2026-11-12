@@ -1,0 +1,340 @@
+=== 17e-ios26
+  device: iPhone-17e | runtime: com.apple.CoreSimulator.SimRuntime.iOS-26-5 | test runner: | Xcode 26.6 | Build version 17F113 | Ammy built with: | "DTPlatformVersion" => "26.5" | "DTSDKName" => "iphonesimulator26.5" | "DTXcode" => "2660" | "DTXcodeBuild" => "17F113" | "MinimumOSVersion" => "26.0"
+keyboard cases:
+  fix__idle__kbKey
+    rest Start y=772.7-823.0 (21.0 from the edge)
+    focused: kb top 509.0, Start 437.7-488.0 gap +21.0 hit=y
+    typed: kb top 509.0, Start 437.7-488.0 gap +21.0 hit=y
+  fix__idle__kbURL
+    rest Start y=772.7-823.0 (21.0 from the edge)
+    focused: kb top 509.0, Start 437.7-488.0 gap +21.0 hit=y
+    typed: kb top 509.0, Start 437.7-488.0 gap +21.0 hit=y
+  fix__running__kbKey
+    rest Stop y=772.7-823.0 (21.0 from the edge)
+    focused: kb top 509.0, Stop 437.7-488.0 gap +21.0 hit=y
+    typed: kb top 509.0, Stop 437.7-488.0 gap +21.0 hit=y, Restart 437.7-488.0 gap +21.0 hit=y
+  fix__running__kbURL
+    rest Stop y=772.7-823.0 (21.0 from the edge)
+    focused: kb top 509.0, Stop 437.7-488.0 gap +21.0 hit=y
+    typed: kb top 509.0, Stop 437.7-488.0 gap +21.0 hit=y, Restart 437.7-488.0 gap +21.0 hit=y
+  form148__running__kbKey
+    rest Stop y=772.7-823.0 (21.0 from the edge)
+    focused: kb top 509.0, Stop 525.0-575.3 gap -66.3 hit=n
+    typed: kb top 509.0, Stop 525.0-575.3 gap -66.3 hit=n, Restart 525.0-575.3 gap -66.3 hit=n
+  form148__running__kbURL
+    rest Stop y=772.7-823.0 (21.0 from the edge)
+    focused: kb top 509.0, Stop 525.0-575.3 gap -66.3 hit=n
+    typed: kb top 509.0, Stop 525.0-575.3 gap -66.3 hit=n, Restart 525.0-575.3 gap -66.3 hit=n
+  ignore__running__kbKey
+    rest Stop y=738.7-789.0 (55.0 from the edge)
+    focused: kb top 509.0, Stop 437.7-488.0 gap +21.0 hit=y
+    typed: kb top 509.0, Stop 437.7-488.0 gap +21.0 hit=y, Restart 437.7-488.0 gap +21.0 hit=y
+  ignore__running__kbURL
+    rest Stop y=738.7-789.0 (55.0 from the edge)
+    focused: kb top 509.0, Stop 437.7-488.0 gap +21.0 hit=y
+    typed: kb top 509.0, Stop 437.7-488.0 gap +21.0 hit=y, Restart 437.7-488.0 gap +21.0 hit=y
+  main__idle__kbKey
+    rest Start y=772.7-823.0 (21.0 from the edge)
+    focused: kb top 509.0, Start 525.0-575.3 gap -66.3 hit=n
+    typed: kb top 509.0, Start 525.0-575.3 gap -66.3 hit=n
+  main__idle__kbURL
+    rest Start y=772.7-823.0 (21.0 from the edge)
+    focused: kb top 509.0, Start 525.0-575.3 gap -66.3 hit=n
+    typed: kb top 509.0, Start 525.0-575.3 gap -66.3 hit=n
+  main__running__kbKey
+    rest Stop y=772.7-823.0 (21.0 from the edge)
+    focused: kb top 509.0, Stop 525.0-575.3 gap -66.3 hit=n
+    typed: kb top 509.0, Stop 525.0-575.3 gap -66.3 hit=n, Restart 525.0-575.3 gap -66.3 hit=n
+  main__running__kbURL
+    rest Stop y=772.7-823.0 (21.0 from the edge)
+    focused: kb top 509.0, Stop 525.0-575.3 gap -66.3 hit=n
+    typed: kb top 509.0, Stop 525.0-575.3 gap -66.3 hit=n, Restart 525.0-575.3 gap -66.3 hit=n
+readings (probe):
+  fix__idle__kbKey: without=34 with=34 with=308 [kb 536+308] with=335 [kb 509+335] [kb 509+335]
+  fix__idle__kbURL: without=34 with=34 with=308 [kb 536+308] with=335 [kb 509+335] [kb 509+335]
+  fix__running__kbKey: without=34 with=34 with=308 [kb 536+308] with=335 [kb 509+335] [kb 509+335]
+  fix__running__kbURL: without=34 with=34 with=308 [kb 536+308] with=335 [kb 509+335] [kb 509+335]
+  form148__running__kbKey: without=34 with=34 with=308 [kb 536+308] with=335 [kb 509+335] [kb 509+335]
+  form148__running__kbURL: without=34 with=34 with=308 [kb 536+308] with=335 [kb 509+335] [kb 509+335]
+  ignore__running__kbKey: without=34 with=34 with=308 [kb 536+308] with=335 [kb 509+335] [kb 509+335]
+  ignore__running__kbURL: without=34 with=34 with=308 [kb 536+308] with=335 [kb 509+335] [kb 509+335]
+  main__idle__kbKey: without=34 with=34 with=308 [kb 536+308] with=335 [kb 509+335] [kb 509+335]
+  main__idle__kbURL: without=34 with=34 with=308 [kb 536+308] with=335 [kb 509+335] [kb 509+335]
+  main__running__kbKey: without=34 with=34 with=308 [kb 536+308] with=335 [kb 509+335] [kb 509+335]
+  main__running__kbURL: without=34 with=34 with=308 [kb 536+308] with=335 [kb 509+335] [kb 509+335]
+at rest, fix against build 172:
+  running: 11 differing pixels below the status bar, rows 2321-2467 px
+  idle: 0 differing pixels below the status bar
+  ignore vs main, running: 216900 differing pixels below the status bar
+  form148 vs main, running: 0 differing pixels below the status bar
+scrolls:
+  scroll-fix__drag: 63 frames, finger -355.7 pt, content ahead of the finger by at most +164.7 pt, biggest one-frame change 23.0 pt
+  scroll-fix__dragXXXL: 62 frames, finger -364.3 pt, content ahead of the finger by at most +171.7 pt, biggest one-frame change 21.3 pt
+  scroll-fix__flick: 7 frames, finger -143.7 pt, content ahead of the finger by at most +58.7 pt, biggest one-frame change 13.7 pt
+  scroll-fix__slow: 84 frames, finger -154.3 pt, content ahead of the finger by at most +50.0 pt, biggest one-frame change 5.7 pt
+  scroll-fix__slowXXXL: 78 frames, finger -156.7 pt, content ahead of the finger by at most +51.3 pt, biggest one-frame change 8.0 pt
+  scroll-form148__drag: 62 frames, finger -364.3 pt, content ahead of the finger by at most +159.0 pt, biggest one-frame change 18.3 pt
+  scroll-form148__dragXXXL: 61 frames, finger -364.3 pt, content ahead of the finger by at most +158.0 pt, biggest one-frame change 26.3 pt
+  scroll-form148__flick: 9 frames, finger -131.0 pt, content ahead of the finger by at most +26.0 pt, biggest one-frame change 27.0 pt
+  scroll-form148__slow: 82 frames, finger -156.7 pt, content ahead of the finger by at most +36.0 pt, biggest one-frame change 15.0 pt
+  scroll-form148__slowXXXL: 85 frames, finger -156.7 pt, content ahead of the finger by at most -40.0 pt, biggest one-frame change 33.0 pt
+  scroll-main__drag: 66 frames, finger -364.3 pt, content ahead of the finger by at most +170.7 pt, biggest one-frame change 18.7 pt
+  scroll-main__dragXXXL: 57 frames, finger -317.0 pt, content ahead of the finger by at most +154.0 pt, biggest one-frame change 11.0 pt
+  scroll-main__flick: 7 frames, finger -131.0 pt, content ahead of the finger by at most +46.0 pt, biggest one-frame change 13.7 pt
+  scroll-main__slow: 89 frames, finger -154.3 pt, content ahead of the finger by at most +48.7 pt, biggest one-frame change 5.7 pt
+  scroll-main__slowXXXL: 78 frames, finger -156.7 pt, content ahead of the finger by at most +50.7 pt, biggest one-frame change 5.7 pt
+=== 17e-ios27
+  device: iPhone-17e | runtime: com.apple.CoreSimulator.SimRuntime.iOS-27-0 | test runner: | Xcode 27.1 | Build version 27A9275 | Ammy built with: | "DTPlatformVersion" => "26.5" | "DTSDKName" => "iphonesimulator26.5" | "DTXcode" => "2660" | "DTXcodeBuild" => "17F113" | "MinimumOSVersion" => "26.0"
+keyboard cases:
+  fix__idle__kbKey
+    rest Start y=772.7-823.0 (21.0 from the edge)
+    focused: kb top 516.0, Start 444.7-495.0 gap +21.0 hit=y
+    typed: kb top 516.0, Start 444.7-495.0 gap +21.0 hit=y
+  fix__idle__kbURL
+    rest Start y=772.7-823.0 (21.0 from the edge)
+    focused: kb top 516.0, Start 444.7-495.0 gap +21.0 hit=y
+    typed: kb top 516.0, Start 444.7-495.0 gap +21.0 hit=y
+  fix__running__kbKey
+    rest Stop y=772.7-823.0 (21.0 from the edge)
+    focused: kb top 516.0, Stop 444.7-495.0 gap +21.0 hit=y
+    typed: kb top 516.0, Stop 444.7-495.0 gap +21.0 hit=y, Restart 444.7-495.0 gap +21.0 hit=y
+  fix__running__kbURL
+    rest Stop y=772.7-823.0 (21.0 from the edge)
+    focused: kb top 516.0, Stop 444.7-495.0 gap +21.0 hit=y
+    typed: kb top 516.0, Stop 444.7-495.0 gap +21.0 hit=y, Restart 444.7-495.0 gap +21.0 hit=y
+  form148__running__kbKey
+    rest Stop y=772.7-823.0 (21.0 from the edge)
+    focused: kb top 516.0, Stop 532.0-582.3 gap -66.3 hit=n
+    typed: kb top 516.0, Stop 532.0-582.3 gap -66.3 hit=n, Restart 532.0-582.3 gap -66.3 hit=n
+  form148__running__kbURL
+    rest Stop y=772.7-823.0 (21.0 from the edge)
+    focused: kb top 516.0, Stop 532.0-582.3 gap -66.3 hit=n
+    typed: kb top 516.0, Stop 532.0-582.3 gap -66.3 hit=n, Restart 532.0-582.3 gap -66.3 hit=n
+  ignore__running__kbKey
+    rest Stop y=738.7-789.0 (55.0 from the edge)
+    focused: kb top 516.0, Stop 444.7-495.0 gap +21.0 hit=y
+    typed: kb top 516.0, Stop 444.7-495.0 gap +21.0 hit=y, Restart 444.7-495.0 gap +21.0 hit=y
+  ignore__running__kbURL
+    rest Stop y=738.7-789.0 (55.0 from the edge)
+    focused: kb top 516.0, Stop 444.7-495.0 gap +21.0 hit=y
+    typed: kb top 516.0, Stop 444.7-495.0 gap +21.0 hit=y, Restart 444.7-495.0 gap +21.0 hit=y
+  main__idle__kbKey
+    rest Start y=772.7-823.0 (21.0 from the edge)
+    focused: kb top 516.0, Start 532.0-582.3 gap -66.3 hit=n
+    typed: kb top 516.0, Start 532.0-582.3 gap -66.3 hit=n
+  main__idle__kbURL
+    rest Start y=772.7-823.0 (21.0 from the edge)
+    focused: kb top 516.0, Start 532.0-582.3 gap -66.3 hit=n
+    typed: kb top 516.0, Start 532.0-582.3 gap -66.3 hit=n
+  main__running__kbKey
+    rest Stop y=772.7-823.0 (21.0 from the edge)
+    focused: kb top 516.0, Stop 532.0-582.3 gap -66.3 hit=n
+    typed: kb top 516.0, Stop 532.0-582.3 gap -66.3 hit=n, Restart 532.0-582.3 gap -66.3 hit=n
+  main__running__kbURL
+    rest Stop y=772.7-823.0 (21.0 from the edge)
+    focused: kb top 516.0, Stop 532.0-582.3 gap -66.3 hit=n
+    typed: kb top 516.0, Stop 532.0-582.3 gap -66.3 hit=n, Restart 532.0-582.3 gap -66.3 hit=n
+readings (probe):
+  fix__idle__kbKey: without=34 with=34 with=301 [kb 516+328] with=328 [kb 516+328]
+  fix__idle__kbURL: without=34 with=34 with=301 [kb 516+328] with=328 [kb 516+328]
+  fix__running__kbKey: without=34 with=34 with=301 [kb 516+328] with=328 [kb 516+328]
+  fix__running__kbURL: without=34 with=34 with=301 [kb 516+328] with=328 [kb 516+328]
+  form148__running__kbKey: without=34 with=34 with=301 [kb 516+328] with=328 [kb 516+328]
+  form148__running__kbURL: without=34 with=34 with=301 [kb 516+328] with=328 [kb 516+328]
+  ignore__running__kbKey: without=34 with=34 with=301 [kb 516+328] with=328 [kb 516+328]
+  ignore__running__kbURL: without=34 with=34 with=301 [kb 516+328] with=328 [kb 516+328]
+  main__idle__kbKey: without=34 with=34 with=301 [kb 516+328] with=328 [kb 516+328]
+  main__idle__kbURL: without=34 with=34 with=301 [kb 516+328] with=328 [kb 516+328]
+  main__running__kbKey: without=34 with=34 with=301 [kb 516+328] with=328 [kb 516+328]
+  main__running__kbURL: without=34 with=34 with=301 [kb 516+328] with=328 [kb 516+328]
+at rest, fix against build 172:
+  running: 0 differing pixels below the status bar
+  idle: 0 differing pixels below the status bar
+  ignore vs main, running: 253322 differing pixels below the status bar
+  form148 vs main, running: 0 differing pixels below the status bar
+scrolls:
+  scroll-fix__drag: 64 frames, finger -364.3 pt, content ahead of the finger by at most +170.3 pt, biggest one-frame change 14.0 pt
+  scroll-fix__dragXXXL: 64 frames, finger -364.3 pt, content ahead of the finger by at most +168.3 pt, biggest one-frame change 24.0 pt
+  scroll-fix__flick: 8 frames, finger -143.7 pt, content ahead of the finger by at most +58.3 pt, biggest one-frame change 24.0 pt
+  scroll-fix__slow: 89 frames, finger -156.7 pt, content ahead of the finger by at most +50.0 pt, biggest one-frame change 3.0 pt
+  scroll-fix__slowXXXL: 88 frames, finger -156.7 pt, content ahead of the finger by at most +50.0 pt, biggest one-frame change 7.0 pt
+  scroll-form148__drag: 64 frames, finger -364.3 pt, content ahead of the finger by at most +161.3 pt, biggest one-frame change 32.0 pt
+  scroll-form148__dragXXXL: 65 frames, finger -364.3 pt, content ahead of the finger by at most +155.3 pt, biggest one-frame change 17.0 pt
+  scroll-form148__flick: 10 frames, finger -143.7 pt, content ahead of the finger by at most +38.7 pt, biggest one-frame change 13.7 pt
+  scroll-form148__slow: 88 frames, finger -154.3 pt, content ahead of the finger by at most +32.0 pt, biggest one-frame change 11.7 pt
+  scroll-form148__slowXXXL: 90 frames, finger -156.7 pt, content ahead of the finger by at most -33.0 pt, biggest one-frame change 5.7 pt
+  scroll-main__drag: 66 frames, finger -364.3 pt, content ahead of the finger by at most +170.3 pt, biggest one-frame change 17.7 pt
+  scroll-main__dragXXXL: 64 frames, finger -364.3 pt, content ahead of the finger by at most +168.3 pt, biggest one-frame change 13.0 pt
+  scroll-main__flick: 11 frames, finger -143.7 pt, content ahead of the finger by at most +58.0 pt, biggest one-frame change 28.0 pt
+  scroll-main__slow: 90 frames, finger -156.7 pt, content ahead of the finger by at most +50.0 pt, biggest one-frame change 3.0 pt
+  scroll-main__slowXXXL: 89 frames, finger -156.7 pt, content ahead of the finger by at most +50.0 pt, biggest one-frame change 7.0 pt
+=== se-ios26
+  device: iPhone-SE-3rd-generation | runtime: com.apple.CoreSimulator.SimRuntime.iOS-26-5 | test runner: | Xcode 26.6 | Build version 17F113 | Ammy built with: | "DTPlatformVersion" => "26.5" | "DTSDKName" => "iphonesimulator26.5" | "DTXcode" => "2660" | "DTXcodeBuild" => "17F113" | "MinimumOSVersion"
+keyboard cases:
+  fix__idle__kbKey
+    rest Start y=595.5-646.0 (21.0 from the edge)
+    focused: kb top 407.0, Start 335.5-386.0 gap +21.0 hit=y
+    typed: kb top 407.0, Start 335.5-386.0 gap +21.0 hit=y
+  fix__idle__kbURL
+    rest Start y=595.5-646.0 (21.0 from the edge)
+    focused: kb top 407.0, Start 335.5-386.0 gap +21.0 hit=y
+    typed: kb top 407.0, Start 335.5-386.0 gap +21.0 hit=y
+  fix__running__kbKey
+    rest Stop y=595.5-646.0 (21.0 from the edge)
+    focused: kb top 407.0, Stop 335.5-386.0 gap +21.0 hit=y
+    typed: kb top 407.0, Stop 335.5-386.0 gap +21.0 hit=y, Restart 335.5-386.0 gap +21.0 hit=y
+  fix__running__kbURL
+    rest Stop y=595.5-646.0 (21.0 from the edge)
+    focused: kb top 407.0, Stop 335.5-386.0 gap +21.0 hit=y
+    typed: kb top 407.0, Stop 335.5-386.0 gap +21.0 hit=y, Restart 335.5-386.0 gap +21.0 hit=y
+  form148__running__kbKey
+    rest Stop y=595.5-646.0 (21.0 from the edge)
+    focused: kb top 407.0, Stop 423.0-473.5 gap -66.5 hit=n
+    typed: kb top 407.0, Stop 423.0-473.5 gap -66.5 hit=n, Restart 423.0-473.5 gap -66.5 hit=n
+  form148__running__kbURL
+    rest Stop y=595.5-646.0 (21.0 from the edge)
+    focused: kb top 407.0, Stop 423.0-473.5 gap -66.5 hit=n
+    typed: kb top 407.0, Stop 423.0-473.5 gap -66.5 hit=n, Restart 423.0-473.5 gap -66.5 hit=n
+  ignore__running__kbKey
+    rest Stop y=595.5-646.0 (21.0 from the edge)
+    focused: kb top 407.0, Stop 335.5-386.0 gap +21.0 hit=y
+    typed: kb top 407.0, Stop 335.5-386.0 gap +21.0 hit=y, Restart 335.5-386.0 gap +21.0 hit=y
+  ignore__running__kbURL
+    rest Stop y=595.5-646.0 (21.0 from the edge)
+    focused: kb top 407.0, Stop 335.5-386.0 gap +21.0 hit=y
+    typed: kb top 407.0, Stop 335.5-386.0 gap +21.0 hit=y, Restart 335.5-386.0 gap +21.0 hit=y
+  main__idle__kbKey
+    rest Start y=595.5-646.0 (21.0 from the edge)
+    focused: kb top 407.0, Start 423.0-473.5 gap -66.5 hit=n
+    typed: kb top 407.0, Start 423.0-473.5 gap -66.5 hit=n
+  main__idle__kbURL
+    rest Start y=595.5-646.0 (21.0 from the edge)
+    focused: kb top 407.0, Start 423.0-473.5 gap -66.5 hit=n
+    typed: kb top 407.0, Start 423.0-473.5 gap -66.5 hit=n
+  main__running__kbKey
+    rest Stop y=595.5-646.0 (21.0 from the edge)
+    focused: kb top 407.0, Stop 423.0-473.5 gap -66.5 hit=n
+    typed: kb top 407.0, Stop 423.0-473.5 gap -66.5 hit=n, Restart 423.0-473.5 gap -66.5 hit=n
+  main__running__kbURL
+    rest Stop y=595.5-646.0 (21.0 from the edge)
+    focused: kb top 407.0, Stop 423.0-473.5 gap -66.5 hit=n
+    typed: kb top 407.0, Stop 423.0-473.5 gap -66.5 hit=n, Restart 423.0-473.5 gap -66.5 hit=n
+readings (probe):
+  fix__idle__kbKey: without=0 with=0 with=233 [kb 434+233] with=260 [kb 407+260] [kb 407+260]
+  fix__idle__kbURL: without=0 with=0 with=233 [kb 434+233] with=260 [kb 407+260] [kb 407+260]
+  fix__running__kbKey: without=0 with=0 with=233 [kb 434+233] with=260 [kb 407+260] [kb 407+260]
+  fix__running__kbURL: without=0 with=0 with=233 [kb 434+233] with=260 [kb 407+260] [kb 407+260]
+  form148__running__kbKey: without=0 with=0 with=233 [kb 434+233] with=260 [kb 407+260] [kb 407+260]
+  form148__running__kbURL: without=0 with=0 with=233 [kb 434+233] with=260 [kb 407+260] [kb 407+260]
+  ignore__running__kbKey: without=0 with=0 with=233 [kb 434+233] with=260 [kb 407+260] [kb 407+260]
+  ignore__running__kbURL: without=0 with=0 with=233 [kb 434+233] with=260 [kb 407+260] [kb 407+260]
+  main__idle__kbKey: without=0 with=0 with=233 [kb 434+233] with=260 [kb 407+260] [kb 407+260]
+  main__idle__kbURL: without=0 with=0 with=233 [kb 434+233] with=260 [kb 407+260] [kb 407+260]
+  main__running__kbKey: without=0 with=0 with=233 [kb 434+233] with=260 [kb 407+260] [kb 407+260]
+  main__running__kbURL: without=0 with=0 with=233 [kb 434+233] with=260 [kb 407+260] [kb 407+260]
+at rest, fix against build 172:
+  running: 44 differing pixels below the status bar, rows 1191-1291 px
+  idle: 0 differing pixels below the status bar
+  ignore vs main, running: 0 differing pixels below the status bar
+  form148 vs main, running: 0 differing pixels below the status bar
+scrolls:
+  scroll-fix__drag: 56 frames, finger -284.0 pt, content ahead of the finger by at most +101.0 pt, biggest one-frame change 6.0 pt
+  scroll-fix__dragXXXL: 57 frames, finger -284.0 pt, content ahead of the finger by at most +48.0 pt, biggest one-frame change 5.0 pt
+  scroll-fix__flick: 7 frames, finger -118.0 pt, content ahead of the finger by at most +40.5 pt, biggest one-frame change 25.5 pt
+  scroll-fix__slow: 78 frames, finger -123.0 pt, content ahead of the finger by at most +15.5 pt, biggest one-frame change 2.0 pt
+  scroll-fix__slowXXXL: 78 frames, finger -123.0 pt, content ahead of the finger by at most +3.0 pt, biggest one-frame change 1.5 pt
+  scroll-form148__drag: 57 frames, finger -284.0 pt, content ahead of the finger by at most +79.5 pt, biggest one-frame change 39.5 pt
+  scroll-form148__dragXXXL: 57 frames, finger -284.0 pt, content ahead of the finger by at most -60.0 pt, biggest one-frame change 41.5 pt
+  scroll-form148__flick: 6 frames, finger -106.0 pt, content ahead of the finger by at most -40.5 pt, biggest one-frame change 54.0 pt
+  scroll-form148__slow: 61 frames, finger -123.0 pt, content ahead of the finger by at most -47.5 pt, biggest one-frame change 37.5 pt
+  scroll-form148__slowXXXL: 65 frames, finger -123.0 pt, content ahead of the finger by at most -54.5 pt, biggest one-frame change 33.5 pt
+  scroll-main__drag: 58 frames, finger -284.0 pt, content ahead of the finger by at most +101.0 pt, biggest one-frame change 11.5 pt
+  scroll-main__dragXXXL: 53 frames, finger -284.0 pt, content ahead of the finger by at most +48.0 pt, biggest one-frame change 23.0 pt
+  scroll-main__flick: 5 frames, finger -118.0 pt, content ahead of the finger by at most +52.5 pt, biggest one-frame change 25.5 pt
+  scroll-main__slow: 79 frames, finger -123.0 pt, content ahead of the finger by at most +16.0 pt, biggest one-frame change 6.0 pt
+  scroll-main__slowXXXL: 69 frames, finger -121.0 pt, content ahead of the finger by at most +4.0 pt, biggest one-frame change 6.0 pt
+=== se-ios27
+  device: iPhone-SE-3rd-generation | runtime: com.apple.CoreSimulator.SimRuntime.iOS-27-0 | test runner: | Xcode 27.1 | Build version 27A9275 | Ammy built with: | "DTPlatformVersion" => "26.5" | "DTSDKName" => "iphonesimulator26.5" | "DTXcode" => "2660" | "DTXcodeBuild" => "17F113" | "MinimumOSVersion
+keyboard cases:
+  fix__idle__kbKey
+    rest Start y=595.5-646.0 (21.0 from the edge)
+    focused: kb top 407.0, Start 335.5-386.0 gap +21.0 hit=y
+    typed: kb top 407.0, Start 335.5-386.0 gap +21.0 hit=y
+  fix__idle__kbURL
+    rest Start y=595.5-646.0 (21.0 from the edge)
+    focused: kb top 407.0, Start 335.5-386.0 gap +21.0 hit=y
+    typed: kb top 407.0, Start 335.5-386.0 gap +21.0 hit=y
+  fix__running__kbKey
+    rest Stop y=595.5-646.0 (21.0 from the edge)
+    focused: kb top 407.0, Stop 335.5-386.0 gap +21.0 hit=y
+    typed: kb top 407.0, Stop 335.5-386.0 gap +21.0 hit=y, Restart 335.5-386.0 gap +21.0 hit=y
+  fix__running__kbURL
+    rest Stop y=595.5-646.0 (21.0 from the edge)
+    focused: kb top 407.0, Stop 335.5-386.0 gap +21.0 hit=y
+    typed: kb top 407.0, Stop 335.5-386.0 gap +21.0 hit=y, Restart 335.5-386.0 gap +21.0 hit=y
+  form148__running__kbKey
+    rest Stop y=595.5-646.0 (21.0 from the edge)
+    focused: kb top 407.0, Stop 423.0-473.5 gap -66.5 hit=n
+    typed: kb top 407.0, Stop 423.0-473.5 gap -66.5 hit=n, Restart 423.0-473.5 gap -66.5 hit=n
+  form148__running__kbURL
+    rest Stop y=595.5-646.0 (21.0 from the edge)
+    focused: kb top 407.0, Stop 423.0-473.5 gap -66.5 hit=n
+    typed: kb top 407.0, Stop 423.0-473.5 gap -66.5 hit=n, Restart 423.0-473.5 gap -66.5 hit=n
+  ignore__running__kbKey
+    rest Stop y=595.5-646.0 (21.0 from the edge)
+    focused: kb top 407.0, Stop 335.5-386.0 gap +21.0 hit=y
+    typed: kb top 407.0, Stop 335.5-386.0 gap +21.0 hit=y, Restart 335.5-386.0 gap +21.0 hit=y
+  ignore__running__kbURL
+    rest Stop y=595.5-646.0 (21.0 from the edge)
+    focused: kb top 407.0, Stop 335.5-386.0 gap +21.0 hit=y
+    typed: kb top 407.0, Stop 335.5-386.0 gap +21.0 hit=y, Restart 335.5-386.0 gap +21.0 hit=y
+  main__idle__kbKey
+    rest Start y=595.5-646.0 (21.0 from the edge)
+    focused: kb top 407.0, Start 423.0-473.5 gap -66.5 hit=n
+    typed: kb top 407.0, Start 423.0-473.5 gap -66.5 hit=n
+  main__idle__kbURL
+    rest Start y=595.5-646.0 (21.0 from the edge)
+    focused: kb top 407.0, Start 423.0-473.5 gap -66.5 hit=n
+    typed: kb top 407.0, Start 423.0-473.5 gap -66.5 hit=n
+  main__running__kbKey
+    rest Stop y=595.5-646.0 (21.0 from the edge)
+    focused: kb top 407.0, Stop 423.0-473.5 gap -66.5 hit=n
+    typed: kb top 407.0, Stop 423.0-473.5 gap -66.5 hit=n, Restart 423.0-473.5 gap -66.5 hit=n
+  main__running__kbURL
+    rest Stop y=595.5-646.0 (21.0 from the edge)
+    focused: kb top 407.0, Stop 423.0-473.5 gap -66.5 hit=n
+    typed: kb top 407.0, Stop 423.0-473.5 gap -66.5 hit=n, Restart 423.0-473.5 gap -66.5 hit=n
+readings (probe):
+  fix__idle__kbKey: without=0 with=0 with=233 [kb 407+260] with=260 [kb 407+260]
+  fix__idle__kbURL: without=0 with=0 with=233 [kb 407+260] with=260 [kb 407+260]
+  fix__running__kbKey: without=0 with=0 with=233 [kb 407+260] with=260 [kb 407+260]
+  fix__running__kbURL: without=0 with=0 with=233 [kb 407+260] with=260 [kb 407+260]
+  form148__running__kbKey: without=0 with=0 with=233 [kb 407+260] with=260 [kb 407+260]
+  form148__running__kbURL: without=0 with=0 with=233 [kb 407+260] with=260 [kb 407+260]
+  ignore__running__kbKey: without=0 with=0 with=233 [kb 407+260] with=260 [kb 407+260]
+  ignore__running__kbURL: without=0 with=0 with=233 [kb 407+260] with=260 [kb 407+260]
+  main__idle__kbKey: without=0 with=0 with=233 [kb 407+260] with=260 [kb 407+260]
+  main__idle__kbURL: without=0 with=0 with=233 [kb 407+260] with=260 [kb 407+260]
+  main__running__kbKey: without=0 with=0 with=233 [kb 407+260] with=260 [kb 407+260]
+  main__running__kbURL: without=0 with=0 with=233 [kb 407+260] with=260 [kb 407+260]
+at rest, fix against build 172:
+  running: 0 differing pixels below the status bar
+  idle: 0 differing pixels below the status bar
+  ignore vs main, running: 0 differing pixels below the status bar
+  form148 vs main, running: 98 differing pixels below the status bar
+scrolls:
+  scroll-fix__drag: 58 frames, finger -284.0 pt, content ahead of the finger by at most +100.0 pt, biggest one-frame change 20.0 pt
+  scroll-fix__dragXXXL: 55 frames, finger -284.0 pt, content ahead of the finger by at most +47.5 pt, biggest one-frame change 11.5 pt
+  scroll-fix__flick: 7 frames, finger -118.0 pt, content ahead of the finger by at most +39.5 pt, biggest one-frame change 16.0 pt
+  scroll-fix__slow: 76 frames, finger -121.0 pt, content ahead of the finger by at most +13.0 pt, biggest one-frame change 6.0 pt
+  scroll-fix__slowXXXL: 74 frames, finger -123.0 pt, content ahead of the finger by at most +5.0 pt, biggest one-frame change 5.5 pt
+  scroll-form148__drag: 55 frames, finger -284.0 pt, content ahead of the finger by at most +88.0 pt, biggest one-frame change 26.5 pt
+  scroll-form148__dragXXXL: 55 frames, finger -284.0 pt, content ahead of the finger by at most +34.0 pt, biggest one-frame change 15.5 pt
+  scroll-form148__flick: 6 frames, finger -118.0 pt, content ahead of the finger by at most +25.5 pt, biggest one-frame change 13.5 pt
+  scroll-form148__slow: 76 frames, finger -123.0 pt, content ahead of the finger by at most -32.0 pt, biggest one-frame change 8.5 pt
+  scroll-form148__slowXXXL: 73 frames, finger -123.0 pt, content ahead of the finger by at most -36.5 pt, biggest one-frame change 14.5 pt
+  scroll-main__drag: 57 frames, finger -284.0 pt, content ahead of the finger by at most +101.0 pt, biggest one-frame change 23.0 pt
+  scroll-main__dragXXXL: 53 frames, finger -284.0 pt, content ahead of the finger by at most +47.5 pt, biggest one-frame change 23.0 pt
+  scroll-main__flick: 9 frames, finger -118.0 pt, content ahead of the finger by at most +39.5 pt, biggest one-frame change 15.5 pt
+  scroll-main__slow: 78 frames, finger -123.0 pt, content ahead of the finger by at most +14.0 pt, biggest one-frame change 2.5 pt
+  scroll-main__slowXXXL: 69 frames, finger -123.0 pt, content ahead of the finger by at most +10.5 pt, biggest one-frame change 8.0 pt

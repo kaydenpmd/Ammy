@@ -1,0 +1,82 @@
+getpwuid_r did not find a match for uid 501
+Filtering the log data using "subsystem == "com.local.ammy" AND category == "bar""
+Timestamp               Ty Process[PID:TID]
+2026-11-12 07:50:53.663 Df Ammy[8458:7512] [com.local.ammy:bar] bottom edge without the keyboard: 0.000000 pt
+2026-11-12 07:50:53.663 Df Ammy[8458:7512] [com.local.ammy:bar] bottom edge with the keyboard: 0.000000 pt, keyboard down
+2026-11-12 07:51:21.687 Df Ammy[8458:7512] [com.local.ammy:bar] bottom edge with the keyboard: 233.000000 pt, keyboard up
+2026-11-12 07:51:21.747 Df Ammy[8458:7512] [com.local.ammy:bar] bottom edge with the keyboard: 260.000000 pt, keyboard up
+2026-11-12 07:51:31.839 Df Ammy[9776:83de] [com.local.ammy:bar] bottom edge without the keyboard: 0.000000 pt
+2026-11-12 07:51:31.839 Df Ammy[9776:83de] [com.local.ammy:bar] bottom edge with the keyboard: 0.000000 pt, keyboard down
+2026-11-12 07:51:39.614 Df Ammy[9776:83de] [com.local.ammy:bar] bottom edge with the keyboard: 233.000000 pt, keyboard up
+2026-11-12 07:51:39.696 Df Ammy[9776:83de] [com.local.ammy:bar] bottom edge with the keyboard: 260.000000 pt, keyboard up
+2026-11-12 07:51:48.846 Df Ammy[9921:867b] [com.local.ammy:bar] bottom edge without the keyboard: 0.000000 pt
+2026-11-12 07:51:48.846 Df Ammy[9921:867b] [com.local.ammy:bar] bottom edge with the keyboard: 0.000000 pt, keyboard down
+2026-11-12 07:51:54.058 Df Ammy[9921:867b] [com.local.ammy:bar] bottom edge with the keyboard: 233.000000 pt, keyboard up
+2026-11-12 07:51:54.098 Df Ammy[9921:867b] [com.local.ammy:bar] bottom edge with the keyboard: 260.000000 pt, keyboard up
+2026-11-12 07:52:46.465 Df Ammy[10263:8a73] [com.local.ammy:bar] bottom edge without the keyboard: 0.000000 pt
+2026-11-12 07:52:46.466 Df Ammy[10263:8a73] [com.local.ammy:bar] bottom edge with the keyboard: 0.000000 pt, keyboard down
+2026-11-12 07:52:56.702 Df Ammy[10263:8a73] [com.local.ammy:bar] bottom edge with the keyboard: 233.000000 pt, keyboard up
+2026-11-12 07:52:56.766 Df Ammy[10263:8a73] [com.local.ammy:bar] bottom edge with the keyboard: 260.000000 pt, keyboard up
+2026-11-12 07:53:06.108 Df Ammy[12858:a5df] [com.local.ammy:bar] bottom edge without the keyboard: 0.000000 pt
+2026-11-12 07:53:06.108 Df Ammy[12858:a5df] [com.local.ammy:bar] bottom edge with the keyboard: 0.000000 pt, keyboard down
+2026-11-12 07:53:13.481 Df Ammy[12858:a5df] [com.local.ammy:bar] bottom edge with the keyboard: 233.000000 pt, keyboard up
+2026-11-12 07:53:13.528 Df Ammy[12858:a5df] [com.local.ammy:bar] bottom edge with the keyboard: 260.000000 pt, keyboard up
+2026-11-12 07:53:22.348 Df Ammy[13488:acd8] [com.local.ammy:bar] bottom edge without the keyboard: 0.000000 pt
+2026-11-12 07:53:22.348 Df Ammy[13488:acd8] [com.local.ammy:bar] bottom edge with the keyboard: 0.000000 pt, keyboard down
+2026-11-12 07:53:33.619 Df Ammy[13488:acd8] [com.local.ammy:bar] bottom edge with the keyboard: 233.000000 pt, keyboard up
+2026-11-12 07:53:33.660 Df Ammy[13488:acd8] [com.local.ammy:bar] bottom edge with the keyboard: 260.000000 pt, keyboard up
+2026-11-12 07:53:42.909 Df Ammy[14465:b684] [com.local.ammy:bar] bottom edge without the keyboard: 0.000000 pt
+2026-11-12 07:53:42.909 Df Ammy[14465:b684] [com.local.ammy:bar] bottom edge with the keyboard: 0.000000 pt, keyboard down
+2026-11-12 07:53:48.333 Df Ammy[14465:b684] [com.local.ammy:bar] bottom edge with the keyboard: 233.000000 pt, keyboard up
+2026-11-12 07:53:48.361 Df Ammy[14465:b684] [com.local.ammy:bar] bottom edge with the keyboard: 260.000000 pt, keyboard up
+2026-11-12 07:53:56.997 Df Ammy[15042:bc4d] [com.local.ammy:bar] bottom edge without the keyboard: 0.000000 pt
+2026-11-12 07:53:56.997 Df Ammy[15042:bc4d] [com.local.ammy:bar] bottom edge with the keyboard: 0.000000 pt, keyboard down
+2026-11-12 07:54:02.451 Df Ammy[15042:bc4d] [com.local.ammy:bar] bottom edge with the keyboard: 233.000000 pt, keyboard up
+2026-11-12 07:54:02.490 Df Ammy[15042:bc4d] [com.local.ammy:bar] bottom edge with the keyboard: 260.000000 pt, keyboard up
+2026-11-12 07:54:11.097 Df Ammy[15735:c359] [com.local.ammy:bar] bottom edge without the keyboard: 0.000000 pt
+2026-11-12 07:54:11.097 Df Ammy[15735:c359] [com.local.ammy:bar] bottom edge with the keyboard: 0.000000 pt, keyboard down
+2026-11-12 07:54:16.147 Df Ammy[15735:c359] [com.local.ammy:bar] bottom edge with the keyboard: 233.000000 pt, keyboard up
+2026-11-12 07:54:16.201 Df Ammy[15735:c359] [com.local.ammy:bar] bottom edge with the keyboard: 260.000000 pt, keyboard up
+2026-11-12 07:54:24.461 Df Ammy[16465:cac8] [com.local.ammy:bar] bottom edge without the keyboard: 0.000000 pt
+2026-11-12 07:54:24.461 Df Ammy[16465:cac8] [com.local.ammy:bar] bottom edge with the keyboard: 0.000000 pt, keyboard down
+2026-11-12 07:54:30.671 Df Ammy[16465:cac8] [com.local.ammy:bar] bottom edge with the keyboard: 233.000000 pt, keyboard up
+2026-11-12 07:54:30.711 Df Ammy[16465:cac8] [com.local.ammy:bar] bottom edge with the keyboard: 260.000000 pt, keyboard up
+2026-11-12 07:54:39.083 Df Ammy[17213:d23d] [com.local.ammy:bar] bottom edge without the keyboard: 0.000000 pt
+2026-11-12 07:54:39.083 Df Ammy[17213:d23d] [com.local.ammy:bar] bottom edge with the keyboard: 0.000000 pt, keyboard down
+2026-11-12 07:54:44.211 Df Ammy[17213:d23d] [com.local.ammy:bar] bottom edge with the keyboard: 233.000000 pt, keyboard up
+2026-11-12 07:54:44.245 Df Ammy[17213:d23d] [com.local.ammy:bar] bottom edge with the keyboard: 260.000000 pt, keyboard up
+2026-11-12 07:54:53.712 Df Ammy[17973:d9c7] [com.local.ammy:bar] bottom edge without the keyboard: 0.000000 pt
+2026-11-12 07:54:53.712 Df Ammy[17973:d9c7] [com.local.ammy:bar] bottom edge with the keyboard: 0.000000 pt, keyboard down
+2026-11-12 07:54:59.289 Df Ammy[17973:d9c7] [com.local.ammy:bar] bottom edge with the keyboard: 233.000000 pt, keyboard up
+2026-11-12 07:54:59.379 Df Ammy[17973:d9c7] [com.local.ammy:bar] bottom edge with the keyboard: 260.000000 pt, keyboard up
+2026-11-12 07:55:48.304 Df Ammy[20618:f4ed] [com.local.ammy:bar] bottom edge without the keyboard: 0.000000 pt
+2026-11-12 07:55:48.304 Df Ammy[20618:f4ed] [com.local.ammy:bar] bottom edge with the keyboard: 0.000000 pt, keyboard down
+2026-11-12 07:55:59.423 Df Ammy[21374:fc29] [com.local.ammy:bar] bottom edge without the keyboard: 0.000000 pt
+2026-11-12 07:55:59.423 Df Ammy[21374:fc29] [com.local.ammy:bar] bottom edge with the keyboard: 0.000000 pt, keyboard down
+2026-11-12 07:56:10.315 Df Ammy[22107:102f7] [com.local.ammy:bar] bottom edge without the keyboard: 0.000000 pt
+2026-11-12 07:56:10.315 Df Ammy[22107:102f7] [com.local.ammy:bar] bottom edge with the keyboard: 0.000000 pt, keyboard down
+2026-11-12 07:56:20.191 Df Ammy[22203:10504] [com.local.ammy:bar] bottom edge without the keyboard: 0.000000 pt
+2026-11-12 07:56:20.191 Df Ammy[22203:10504] [com.local.ammy:bar] bottom edge with the keyboard: 0.000000 pt, keyboard down
+2026-11-12 07:56:30.574 Df Ammy[22883:10b52] [com.local.ammy:bar] bottom edge without the keyboard: 0.000000 pt
+2026-11-12 07:56:30.574 Df Ammy[22883:10b52] [com.local.ammy:bar] bottom edge with the keyboard: 0.000000 pt, keyboard down
+2026-11-12 07:56:41.165 Df Ammy[23482:1111e] [com.local.ammy:bar] bottom edge without the keyboard: 0.000000 pt
+2026-11-12 07:56:41.165 Df Ammy[23482:1111e] [com.local.ammy:bar] bottom edge with the keyboard: 0.000000 pt, keyboard down
+2026-11-12 07:56:51.707 Df Ammy[23751:11415] [com.local.ammy:bar] bottom edge without the keyboard: 0.000000 pt
+2026-11-12 07:56:51.707 Df Ammy[23751:11415] [com.local.ammy:bar] bottom edge with the keyboard: 0.000000 pt, keyboard down
+2026-11-12 07:57:03.227 Df Ammy[24743:11d38] [com.local.ammy:bar] bottom edge without the keyboard: 0.000000 pt
+2026-11-12 07:57:03.227 Df Ammy[24743:11d38] [com.local.ammy:bar] bottom edge with the keyboard: 0.000000 pt, keyboard down
+2026-11-12 07:57:14.395 Df Ammy[24824:11ee7] [com.local.ammy:bar] bottom edge without the keyboard: 0.000000 pt
+2026-11-12 07:57:14.395 Df Ammy[24824:11ee7] [com.local.ammy:bar] bottom edge with the keyboard: 0.000000 pt, keyboard down
+2026-11-12 07:57:31.783 Df Ammy[25300:1260f] [com.local.ammy:bar] bottom edge without the keyboard: 0.000000 pt
+2026-11-12 07:57:31.783 Df Ammy[25300:1260f] [com.local.ammy:bar] bottom edge with the keyboard: 0.000000 pt, keyboard down
+2026-11-12 07:57:44.347 Df Ammy[25800:12909] [com.local.ammy:bar] bottom edge without the keyboard: 0.000000 pt
+2026-11-12 07:57:44.347 Df Ammy[25800:12909] [com.local.ammy:bar] bottom edge with the keyboard: 0.000000 pt, keyboard down
+2026-11-12 07:57:56.554 Df Ammy[26351:12e11] [com.local.ammy:bar] bottom edge without the keyboard: 0.000000 pt
+2026-11-12 07:57:56.555 Df Ammy[26351:12e11] [com.local.ammy:bar] bottom edge with the keyboard: 0.000000 pt, keyboard down
+2026-11-12 07:58:07.962 Df Ammy[26778:132e5] [com.local.ammy:bar] bottom edge without the keyboard: 0.000000 pt
+2026-11-12 07:58:07.962 Df Ammy[26778:132e5] [com.local.ammy:bar] bottom edge with the keyboard: 0.000000 pt, keyboard down
+2026-11-12 07:58:18.178 Df Ammy[27528:139fc] [com.local.ammy:bar] bottom edge without the keyboard: 0.000000 pt
+2026-11-12 07:58:18.178 Df Ammy[27528:139fc] [com.local.ammy:bar] bottom edge with the keyboard: 0.000000 pt, keyboard down
+2026-11-12 07:58:29.798 Df Ammy[27838:13dda] [com.local.ammy:bar] bottom edge without the keyboard: 0.000000 pt
+2026-11-12 07:58:29.798 Df Ammy[27838:13dda] [com.local.ammy:bar] bottom edge with the keyboard: 0.000000 pt, keyboard down
+Child process terminated with signal 15: Terminated

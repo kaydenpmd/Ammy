@@ -1,0 +1,6 @@
+1794470406.476975 start scroll-main__slow
+1794470410.474448 end scroll-main__slow
+1794470419.3486 start scroll-main__drag
+1794470422.519072 end scroll-main__drag
+1794470431.58946 start scroll-main__flick
+1794470433.394651 end scroll-main__flick

@@ -1,0 +1,11 @@
+device: iPhone-SE-3rd-generation
+runtime: com.apple.CoreSimulator.SimRuntime.iOS-26-5
+test runner:
+Xcode 26.6
+Build version 17F113
+Ammy built with:
+  "DTPlatformVersion" => "26.5"
+  "DTSDKName" => "iphonesimulator26.5"
+  "DTXcode" => "2660"
+  "DTXcodeBuild" => "17F113"
+  "MinimumOSVersion" => "26.0"
