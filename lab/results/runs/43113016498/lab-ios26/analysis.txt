@@ -1,0 +1,426 @@
+==============================================================================
+A-control
+  mark -70.7  launch 
+  mark +0.0  background
+  mark +154.3  foreground
+  mark +197.3  end
+  probe pids: ['9696']
+  launchctl pids in order: ['9696']
+  background phase: 155 probe lines from +0.1 to +154.1; gaps > 2.5 s: none
+  last line before going to the front/terminate: +154.1 (0.2 s before it)  -> continuous
+  -24.9 START pid=9696 path=/Users/runner/work/Ammy/Ammy/out/A-control/probe.txt args=-labOut /Users/runner/work/Ammy/Ammy/out/A-control -relay_endpoint https://localhost:8443/now-playing -relay_key lab
+  +7.8 BACKGROUND
+  first probe line with engine and node playing after the fault: -
+  last background line: pid=9696 state=2 engine=1 node=1 want=1 holds=0 saves=0 expiries=0 refusals=0 fails=0 run=0 retries=0 heals=0 resumes=1 bgleft=-
+  pushes: 9
+   push -21.4 engine_running=True node_playing=True running=True resumes=1 resume_failures=0 fail_run=0 fail_run_max=0 holds=0 hold_saves=0 hold_expiries=0 hold_refusals=0 retries=0 self_heals=0 int_began=0 int_ended=0 int_on_resume=0 app_state=active app_uptime_s=0 media_resets=0 config_changes=0
+   push -19.4 (+2.0) engine_running=True node_playing=True running=True resumes=1 resume_failures=0 fail_run=0 fail_run_max=0 holds=0 hold_saves=0 hold_expiries=0 hold_refusals=0 retries=0 self_heals=0 int_began=0 int_ended=0 int_on_resume=0 app_state=active app_uptime_s=2 media_resets=0 config_changes=0
+   push +10.1 (+29.4) engine_running=True node_playing=True running=True resumes=1 resume_failures=0 fail_run=0 fail_run_max=0 holds=0 hold_saves=0 hold_expiries=0 hold_refusals=0 retries=0 self_heals=0 int_began=0 int_ended=0 int_on_resume=0 app_state=background app_uptime_s=31 media_resets=0 config_changes=0
+   push +40.6 (+30.6) engine_running=True node_playing=True running=True resumes=1 resume_failures=0 fail_run=0 fail_run_max=0 holds=0 hold_saves=0 hold_expiries=0 hold_refusals=0 retries=0 self_heals=0 int_began=0 int_ended=0 int_on_resume=0 app_state=background app_uptime_s=62 media_resets=0 config_changes=0
+   push +71.2 (+30.6) engine_running=True node_playing=True running=True resumes=1 resume_failures=0 fail_run=0 fail_run_max=0 holds=0 hold_saves=0 hold_expiries=0 hold_refusals=0 retries=0 self_heals=0 int_began=0 int_ended=0 int_on_resume=0 app_state=background app_uptime_s=93 media_resets=0 config_changes=0
+   push +101.9 (+30.7) engine_running=True node_playing=True running=True resumes=1 resume_failures=0 fail_run=0 fail_run_max=0 holds=0 hold_saves=0 hold_expiries=0 hold_refusals=0 retries=0 self_heals=0 int_began=0 int_ended=0 int_on_resume=0 app_state=background app_uptime_s=123 media_resets=0 config_changes=0
+   push +132.4 (+30.5) engine_running=True node_playing=True running=True resumes=1 resume_failures=0 fail_run=0 fail_run_max=0 holds=0 hold_saves=0 hold_expiries=0 hold_refusals=0 retries=0 self_heals=0 int_began=0 int_ended=0 int_on_resume=0 app_state=background app_uptime_s=154 media_resets=0 config_changes=0
+   push +164.2 (+31.9) engine_running=True node_playing=True running=True resumes=1 resume_failures=0 fail_run=0 fail_run_max=0 holds=0 hold_saves=0 hold_expiries=0 hold_refusals=0 retries=0 self_heals=0 int_began=0 int_ended=0 int_on_resume=0 app_state=inactive app_uptime_s=185 media_resets=0 config_changes=0
+   push +194.8 (+30.6) engine_running=True node_playing=True running=True resumes=1 resume_failures=0 fail_run=0 fail_run_max=0 holds=0 hold_saves=0 hold_expiries=0 hold_refusals=0 retries=0 self_heals=0 int_began=0 int_ended=0 int_on_resume=0 app_state=active app_uptime_s=216 media_resets=0 config_changes=0
+  journal-end.log (last 14 of 2 lines):
+     | 2026-11-11T22:46:02Z --- launch, Ammy 1.0 (999)
+     | 2026-11-11T22:46:02Z start
+==============================================================================
+C-hold
+  mark -56.0  launch -labStopAt 30 -labFailStage engine.start -labFailFor 15
+  mark -33.1  background
+  mark +94.3  foreground
+  mark +139.0  end
+  probe pids: ['18250']
+  launchctl pids in order: ['18250']
+  background phase: 138 probe lines from -32.7 to +94.3; gaps > 2.5 s: none
+  last line before going to the front/terminate: +94.3 (0.1 s before it)  -> continuous
+  -53.8 START pid=18250 path=/Users/runner/work/Ammy/Ammy/out/C-hold/probe.txt args=-labOut /Users/runner/work/Ammy/Ammy/out/C-hold -relay_endpoint https://localhost:8443/now-playing -relay_key lab -labStopAt
+  -31.5 BACKGROUND
+  +0.0 FAULT stop engine, post .began, verify (failStage=engine.start failFor=15.0 noHold=false)
+  +0.0 LABFAIL engine.start 'what'
+  +0.0 FAULTDONE 1794437442.857 pid=18250 state=2 engine=0 node=0 want=1 holds=1 saves=0 expiries=0 refusals=0 fails=1 run=1 retries=0 heals=1 resumes=1 bgleft=-
+  +1.1 LABFAIL engine.start 'what'
+  +3.2 LABFAIL engine.start 'what'
+  +6.4 LABFAIL engine.start 'what'
+  +7.3 LABFAIL engine.start 'what'
+  +9.2 LABFAIL engine.start 'what'
+  +11.7 LABFAIL engine.start 'what'
+  first probe line with engine and node playing after the fault: +17.3
+  at the hold's opening (FAULTDONE): bgleft=-
+  last background line: pid=18250 state=2 engine=1 node=1 want=1 holds=1 saves=1 expiries=0 refusals=0 fails=7 run=0 retries=5 heals=3 resumes=2 bgleft=-
+  pushes: 8
+   push -51.4 engine_running=True node_playing=True running=True resumes=1 resume_failures=0 fail_run=0 fail_run_max=0 holds=0 hold_saves=0 hold_expiries=0 hold_refusals=0 retries=0 self_heals=0 int_began=0 int_ended=0 int_on_resume=0 app_state=active app_uptime_s=0 media_resets=0 config_changes=0
+     prev_alive='2026-11-11T22:49:42Z engine=yes hold=no'
+     prev_tail| 2026-11-11T22:46:02Z --- launch, Ammy 1.0 (999)
+     prev_tail| 2026-11-11T22:46:02Z start
+   push -49.6 (+1.7) engine_running=True node_playing=True running=True resumes=1 resume_failures=0 fail_run=0 fail_run_max=0 holds=0 hold_saves=0 hold_expiries=0 hold_refusals=0 retries=0 self_heals=0 int_began=0 int_ended=0 int_on_resume=0 app_state=active app_uptime_s=2 media_resets=0 config_changes=0
+   push -21.3 (+28.3) engine_running=True node_playing=True running=True resumes=1 resume_failures=0 fail_run=0 fail_run_max=0 holds=0 hold_saves=0 hold_expiries=0 hold_refusals=0 retries=0 self_heals=0 int_began=0 int_ended=0 int_on_resume=0 app_state=background app_uptime_s=30 media_resets=0 config_changes=0
+   push +9.2 (+30.5) engine_running=False node_playing=False running=True resumes=1 resume_failures=6 fail_stage=engine.start fail_code=2003329396 fail_run=6 fail_run_max=6 holds=1 hold_saves=0 hold_expiries=0 hold_refusals=0 retries=3 self_heals=3 int_began=1 int_ended=0 int_on_resume=0 down_s=9 secs_since_fail=0 last_error=engine.start: The operation couldn’t be completed. (com.apple.coreaudio.avfaudio error 2003329396.) [2003329396 'what'] app_state=background app_uptime_s=61 media_resets=0 config_changes=0
+   push +39.9 (+30.6) engine_running=True node_playing=True running=True resumes=2 resume_failures=7 fail_stage=engine.start fail_code=2003329396 fail_run=0 fail_run_max=7 holds=1 hold_saves=1 hold_expiries=0 hold_refusals=0 retries=5 self_heals=3 int_began=1 int_ended=0 int_on_resume=0 secs_since_fail=28 app_state=background app_uptime_s=91 media_resets=0 config_changes=0
+   push +70.4 (+30.5) engine_running=True node_playing=True running=True resumes=2 resume_failures=7 fail_stage=engine.start fail_code=2003329396 fail_run=0 fail_run_max=7 holds=1 hold_saves=1 hold_expiries=0 hold_refusals=0 retries=5 self_heals=3 int_began=1 int_ended=0 int_on_resume=0 secs_since_fail=58 app_state=background app_uptime_s=122 media_resets=0 config_changes=0
+   push +100.9 (+30.6) engine_running=True node_playing=True running=True resumes=2 resume_failures=7 fail_stage=engine.start fail_code=2003329396 fail_run=0 fail_run_max=7 holds=1 hold_saves=1 hold_expiries=0 hold_refusals=0 retries=5 self_heals=3 int_began=1 int_ended=0 int_on_resume=0 secs_since_fail=89 app_state=active app_uptime_s=153 media_resets=0 config_changes=0
+   push +131.5 (+30.6) engine_running=True node_playing=True running=True resumes=2 resume_failures=7 fail_stage=engine.start fail_code=2003329396 fail_run=0 fail_run_max=7 holds=1 hold_saves=1 hold_expiries=0 hold_refusals=0 retries=5 self_heals=3 int_began=1 int_ended=0 int_on_resume=0 secs_since_fail=119 app_state=active app_uptime_s=183 media_resets=0 config_changes=0
+  journal-end.log (last 14 of 18 lines):
+     | 2026-11-11T22:50:42Z interruption began, reason -
+     | 2026-11-11T22:50:42Z verify: engine stopped
+     | 2026-11-11T22:50:42Z hold opened (found stopped)
+     | 2026-11-11T22:50:42Z failed, 1 in a row: engine.start: The operation couldn’t be completed. (com.apple.coreaudio.avfaudio error 2003329396.) [2003329396 'what']
+     | 2026-11-11T22:50:43Z failed, 2 in a row: engine.start: The operation couldn’t be completed. (com.apple.coreaudio.avfaudio error 2003329396.) [2003329396 'what']
+     | 2026-11-11T22:50:46Z failed, 3 in a row: engine.start: The operation couldn’t be completed. (com.apple.coreaudio.avfaudio error 2003329396.) [2003329396 'what']
+     | 2026-11-11T22:50:49Z failed, 4 in a row: engine.start: The operation couldn’t be completed. (com.apple.coreaudio.avfaudio error 2003329396.) [2003329396 'what']
+     | 2026-11-11T22:50:50Z verify: engine stopped
+     | 2026-11-11T22:50:50Z failed, 5 in a row: engine.start: The operation couldn’t be completed. (com.apple.coreaudio.avfaudio error 2003329396.) [2003329396 'what']
+     | 2026-11-11T22:50:51Z verify: engine stopped
+     | 2026-11-11T22:50:51Z failed, 6 in a row: engine.start: The operation couldn’t be completed. (com.apple.coreaudio.avfaudio error 2003329396.) [2003329396 'what']
+     | 2026-11-11T22:50:54Z failed, 7 in a row: engine.start: The operation couldn’t be completed. (com.apple.coreaudio.avfaudio error 2003329396.) [2003329396 'what']
+     | 2026-11-11T22:50:59Z playing again after 7 failed tries, down 16s
+     | 2026-11-11T22:50:59Z hold ended: playing again after 16s
+==============================================================================
+C-nohold
+  mark -56.6  launch -labStopAt 30 -labFailStage engine.start -labFailFor 15 -labNoHold YES
+  mark -33.1  background
+  mark +88.0  foreground
+  mark +132.6  end
+  probe pids: ['27406']
+  launchctl pids in order: ['27406']
+  background phase: 127 probe lines from -32.7 to +87.4; gaps > 2.5 s: none
+  last line before going to the front/terminate: +87.4 (0.6 s before it)  -> continuous
+  -55.7 START pid=27406 path=/Users/runner/work/Ammy/Ammy/out/C-nohold/probe.txt args=-labOut /Users/runner/work/Ammy/Ammy/out/C-nohold -relay_endpoint https://localhost:8443/now-playing -relay_key lab -labSt
+  -31.5 BACKGROUND
+  +0.0 FAULT stop engine, post .began, verify (failStage=engine.start failFor=15.0 noHold=true)
+  +0.0 LABFAIL engine.start 'what'
+  +0.0 FAULTDONE 1794437641.397 pid=27406 state=2 engine=0 node=0 want=1 holds=0 saves=0 expiries=0 refusals=0 fails=1 run=1 retries=0 heals=1 resumes=1 bgleft=-
+  +5.1 LABFAIL engine.start 'what'
+  +6.8 LABFAIL engine.start 'what'
+  first probe line with engine and node playing after the fault: +15.4
+  at the hold's opening (FAULTDONE): bgleft=-
+  last background line: pid=27406 state=2 engine=1 node=1 want=1 holds=0 saves=0 expiries=0 refusals=0 fails=3 run=0 retries=0 heals=4 resumes=2 bgleft=-
+  pushes: 9
+   push -54.0 engine_running=True node_playing=True running=True resumes=1 resume_failures=0 fail_run=0 fail_run_max=0 holds=0 hold_saves=0 hold_expiries=0 hold_refusals=0 retries=0 self_heals=0 int_began=0 int_ended=0 int_on_resume=0 app_state=active app_uptime_s=0 media_resets=0 config_changes=0
+     prev_alive='2026-11-11T22:53:00Z engine=yes hold=no'
+     prev_tail| 2026-11-11T22:50:50Z failed, 5 in a row: engine.start: The operation couldn’t be completed. (com.apple.coreaudio.avfaudio error 2003329396.) [2003329396 'what']
+     prev_tail| 2026-11-11T22:50:51Z verify: engine stopped
+     prev_tail| 2026-11-11T22:50:51Z failed, 6 in a row: engine.start: The operation couldn’t be completed. (com.apple.coreaudio.avfaudio error 2003329396.) [2003329396 'what']
+     prev_tail| 2026-11-11T22:50:54Z failed, 7 in a row: engine.start: The operation couldn’t be completed. (com.apple.coreaudio.avfaudio error 2003329396.) [2003329396 'what']
+     prev_tail| 2026-11-11T22:50:59Z playing again after 7 failed tries, down 16s
+     prev_tail| 2026-11-11T22:50:59Z hold ended: playing again after 16s
+   push -54.0 (+0.0) engine_running=True node_playing=True running=True resumes=1 resume_failures=0 fail_run=0 fail_run_max=0 holds=0 hold_saves=0 hold_expiries=0 hold_refusals=0 retries=0 self_heals=0 int_began=0 int_ended=0 int_on_resume=0 app_state=active app_uptime_s=0 media_resets=0 config_changes=0
+     prev_alive='2026-11-11T22:53:00Z engine=yes hold=no'
+     prev_tail| 2026-11-11T22:50:50Z failed, 5 in a row: engine.start: The operation couldn’t be completed. (com.apple.coreaudio.avfaudio error 2003329396.) [2003329396 'what']
+     prev_tail| 2026-11-11T22:50:51Z verify: engine stopped
+     prev_tail| 2026-11-11T22:50:51Z failed, 6 in a row: engine.start: The operation couldn’t be completed. (com.apple.coreaudio.avfaudio error 2003329396.) [2003329396 'what']
+     prev_tail| 2026-11-11T22:50:54Z failed, 7 in a row: engine.start: The operation couldn’t be completed. (com.apple.coreaudio.avfaudio error 2003329396.) [2003329396 'what']
+     prev_tail| 2026-11-11T22:50:59Z playing again after 7 failed tries, down 16s
+     prev_tail| 2026-11-11T22:50:59Z hold ended: playing again after 16s
+   push -51.8 (+2.2) engine_running=True node_playing=True running=True resumes=1 resume_failures=0 fail_run=0 fail_run_max=0 holds=0 hold_saves=0 hold_expiries=0 hold_refusals=0 retries=0 self_heals=0 int_began=0 int_ended=0 int_on_resume=0 app_state=active app_uptime_s=2 media_resets=0 config_changes=0
+   push -23.7 (+28.1) engine_running=True node_playing=True running=True resumes=1 resume_failures=0 fail_run=0 fail_run_max=0 holds=0 hold_saves=0 hold_expiries=0 hold_refusals=0 retries=0 self_heals=0 int_began=0 int_ended=0 int_on_resume=0 app_state=background app_uptime_s=30 media_resets=0 config_changes=0
+   push +6.9 (+30.6) engine_running=False node_playing=False running=True resumes=1 resume_failures=3 fail_stage=engine.start fail_code=2003329396 fail_run=3 fail_run_max=3 holds=0 hold_saves=0 hold_expiries=0 hold_refusals=0 retries=0 self_heals=3 int_began=1 int_ended=0 int_on_resume=0 secs_since_fail=0 last_error=engine.start: The operation couldn’t be completed. (com.apple.coreaudio.avfaudio error 2003329396.) [2003329396 'what'] app_state=background app_uptime_s=61 media_resets=0 config_changes=0
+   push +37.5 (+30.5) engine_running=True node_playing=True running=True resumes=2 resume_failures=3 fail_stage=engine.start fail_code=2003329396 fail_run=0 fail_run_max=3 holds=0 hold_saves=0 hold_expiries=0 hold_refusals=0 retries=0 self_heals=4 int_began=1 int_ended=0 int_on_resume=0 secs_since_fail=30 app_state=background app_uptime_s=92 media_resets=0 config_changes=0
+   push +68.0 (+30.6) engine_running=True node_playing=True running=True resumes=2 resume_failures=3 fail_stage=engine.start fail_code=2003329396 fail_run=0 fail_run_max=3 holds=0 hold_saves=0 hold_expiries=0 hold_refusals=0 retries=0 self_heals=4 int_began=1 int_ended=0 int_on_resume=0 secs_since_fail=61 app_state=background app_uptime_s=122 media_resets=0 config_changes=0
+   push +98.8 (+30.7) engine_running=True node_playing=True running=True resumes=2 resume_failures=3 fail_stage=engine.start fail_code=2003329396 fail_run=0 fail_run_max=3 holds=0 hold_saves=0 hold_expiries=0 hold_refusals=0 retries=0 self_heals=4 int_began=1 int_ended=0 int_on_resume=0 secs_since_fail=91 app_state=active app_uptime_s=153 media_resets=0 config_changes=0
+   push +129.3 (+30.6) engine_running=True node_playing=True running=True resumes=2 resume_failures=3 fail_stage=engine.start fail_code=2003329396 fail_run=0 fail_run_max=3 holds=0 hold_saves=0 hold_expiries=0 hold_refusals=0 retries=0 self_heals=4 int_began=1 int_ended=0 int_on_resume=0 secs_since_fail=122 app_state=active app_uptime_s=183 media_resets=0 config_changes=0
+  journal-end.log (last 14 of 28 lines):
+     | 2026-11-11T22:50:51Z failed, 6 in a row: engine.start: The operation couldn’t be completed. (com.apple.coreaudio.avfaudio error 2003329396.) [2003329396 'what']
+     | 2026-11-11T22:50:54Z failed, 7 in a row: engine.start: The operation couldn’t be completed. (com.apple.coreaudio.avfaudio error 2003329396.) [2003329396 'what']
+     | 2026-11-11T22:50:59Z playing again after 7 failed tries, down 16s
+     | 2026-11-11T22:50:59Z hold ended: playing again after 16s
+     | 2026-11-11T22:53:06Z --- launch, Ammy 1.0 (999)
+     | 2026-11-11T22:53:06Z start
+     | 2026-11-11T22:54:01Z interruption began, reason -
+     | 2026-11-11T22:54:01Z verify: engine stopped
+     | 2026-11-11T22:54:01Z failed, 1 in a row: engine.start: The operation couldn’t be completed. (com.apple.coreaudio.avfaudio error 2003329396.) [2003329396 'what']
+     | 2026-11-11T22:54:06Z verify: engine stopped
+     | 2026-11-11T22:54:06Z failed, 2 in a row: engine.start: The operation couldn’t be completed. (com.apple.coreaudio.avfaudio error 2003329396.) [2003329396 'what']
+     | 2026-11-11T22:54:08Z verify: engine stopped
+     | 2026-11-11T22:54:08Z failed, 3 in a row: engine.start: The operation couldn’t be completed. (com.apple.coreaudio.avfaudio error 2003329396.) [2003329396 'what']
+     | 2026-11-11T22:54:16Z verify: engine stopped
+==============================================================================
+D-hold
+  mark -59.7  launch -labStopAt 30 -labFailStage engine.start -labFailFor 200
+  mark -33.2  background
+  mark +223.1  foreground
+  mark +281.5  end
+  probe pids: ['37324']
+  launchctl pids in order: ['37324']
+  background phase: 326 probe lines from -32.4 to +222.6; gaps > 2.5 s: none
+  last line before going to the front/terminate: +222.6 (0.6 s before it)  -> continuous
+  -57.4 START pid=37324 path=/Users/runner/work/Ammy/Ammy/out/D-hold/probe.txt args=-labOut /Users/runner/work/Ammy/Ammy/out/D-hold -relay_endpoint https://localhost:8443/now-playing -relay_key lab -labStopAt
+  -31.5 BACKGROUND
+  +0.0 FAULT stop engine, post .began, verify (failStage=engine.start failFor=200.0 noHold=false)
+  +0.0 LABFAIL engine.start 'what'
+  +0.0 FAULTDONE 1794437837.148 pid=37324 state=2 engine=0 node=0 want=1 holds=1 saves=0 expiries=0 refusals=0 fails=1 run=1 retries=0 heals=1 resumes=1 bgleft=-
+  +1.1 LABFAIL engine.start 'what'
+  +3.2 LABFAIL engine.start 'what'
+  +3.5 LABFAIL engine.start 'what'
+  +6.1 LABFAIL engine.start 'what'
+  +6.3 LABFAIL engine.start 'what'
+  +11.5 LABFAIL engine.start 'what'
+  +13.5 LABFAIL engine.start 'what'
+  +16.8 LABFAIL engine.start 'what'
+  +22.1 LABFAIL engine.start 'what'
+  +23.5 LABFAIL engine.start 'what'
+  +27.3 LABFAIL engine.start 'what'
+  +32.6 LABFAIL engine.start 'what'
+  +33.5 LABFAIL engine.start 'what'
+  +36.7 LABFAIL engine.start 'what'
+  +37.9 LABFAIL engine.start 'what'
+  +43.1 LABFAIL engine.start 'what'
+  +43.5 LABFAIL engine.start 'what'
+  +48.4 LABFAIL engine.start 'what'
+  +53.5 LABFAIL engine.start 'what'
+  +53.7 LABFAIL engine.start 'what'
+  +58.9 LABFAIL engine.start 'what'
+  +63.5 LABFAIL engine.start 'what'
+  +64.1 LABFAIL engine.start 'what'
+  +67.3 LABFAIL engine.start 'what'
+  +69.4 LABFAIL engine.start 'what'
+  +73.5 LABFAIL engine.start 'what'
+  +74.7 LABFAIL engine.start 'what'
+  +79.9 LABFAIL engine.start 'what'
+  +83.5 LABFAIL engine.start 'what'
+  +85.1 LABFAIL engine.start 'what'
+  +90.4 LABFAIL engine.start 'what'
+  +93.5 LABFAIL engine.start 'what'
+  +95.7 LABFAIL engine.start 'what'
+  +97.9 LABFAIL engine.start 'what'
+  +100.9 LABFAIL engine.start 'what'
+  +103.5 LABFAIL engine.start 'what'
+  +106.2 LABFAIL engine.start 'what'
+  +111.4 LABFAIL engine.start 'what'
+  +113.5 LABFAIL engine.start 'what'
+  +116.7 LABFAIL engine.start 'what'
+  +122.0 LABFAIL engine.start 'what'
+  +123.6 LABFAIL engine.start 'what'
+  +127.3 LABFAIL engine.start 'what'
+  +128.5 LABFAIL engine.start 'what'
+  +132.6 LABFAIL engine.start 'what'
+  +133.6 LABFAIL engine.start 'what'
+  +137.9 LABFAIL engine.start 'what'
+  +143.2 LABFAIL engine.start 'what'
+  +143.5 LABFAIL engine.start 'what'
+  +148.4 LABFAIL engine.start 'what'
+  +153.5 LABFAIL engine.start 'what'
+  +153.7 LABFAIL engine.start 'what'
+  +159.0 LABFAIL engine.start 'what'
+  +159.0 LABFAIL engine.start 'what'
+  +163.5 LABFAIL engine.start 'what'
+  +164.2 LABFAIL engine.start 'what'
+  +169.5 LABFAIL engine.start 'what'
+  +173.5 LABFAIL engine.start 'what'
+  +174.7 LABFAIL engine.start 'what'
+  +180.0 LABFAIL engine.start 'what'
+  +183.5 LABFAIL engine.start 'what'
+  +185.2 LABFAIL engine.start 'what'
+  +189.6 LABFAIL engine.start 'what'
+  +190.5 LABFAIL engine.start 'what'
+  +193.5 LABFAIL engine.start 'what'
+  +195.7 LABFAIL engine.start 'what'
+  first probe line with engine and node playing after the fault: +201.6
+  at the hold's opening (FAULTDONE): bgleft=-
+  last background line: pid=37324 state=2 engine=1 node=1 want=1 holds=1 saves=1 expiries=0 refusals=0 fails=67 run=0 retries=40 heals=28 resumes=2 bgleft=-
+  pushes: 13
+   push -55.7 engine_running=True node_playing=True running=True resumes=1 resume_failures=0 fail_run=0 fail_run_max=0 holds=0 hold_saves=0 hold_expiries=0 hold_refusals=0 retries=0 self_heals=0 int_began=0 int_ended=0 int_on_resume=0 app_state=active app_uptime_s=0 media_resets=0 config_changes=0
+     prev_alive='2026-11-11T22:56:06Z engine=yes hold=no'
+     prev_tail| 2026-11-11T22:54:01Z failed, 1 in a row: engine.start: The operation couldn’t be completed. (com.apple.coreaudio.avfaudio error 2003329396.) [2003329396 'what']
+     prev_tail| 2026-11-11T22:54:06Z verify: engine stopped
+     prev_tail| 2026-11-11T22:54:06Z failed, 2 in a row: engine.start: The operation couldn’t be completed. (com.apple.coreaudio.avfaudio error 2003329396.) [2003329396 'what']
+     prev_tail| 2026-11-11T22:54:08Z verify: engine stopped
+     prev_tail| 2026-11-11T22:54:08Z failed, 3 in a row: engine.start: The operation couldn’t be completed. (com.apple.coreaudio.avfaudio error 2003329396.) [2003329396 'what']
+     prev_tail| 2026-11-11T22:54:16Z verify: engine stopped
+   push -53.3 (+2.4) engine_running=True node_playing=True running=True resumes=1 resume_failures=0 fail_run=0 fail_run_max=0 holds=0 hold_saves=0 hold_expiries=0 hold_refusals=0 retries=0 self_heals=0 int_began=0 int_ended=0 int_on_resume=0 app_state=active app_uptime_s=2 media_resets=0 config_changes=0
+   push -25.8 (+27.6) engine_running=True node_playing=True running=True resumes=1 resume_failures=0 fail_run=0 fail_run_max=0 holds=0 hold_saves=0 hold_expiries=0 hold_refusals=0 retries=0 self_heals=0 int_began=0 int_ended=0 int_on_resume=0 app_state=background app_uptime_s=30 media_resets=0 config_changes=0
+   push +6.2 (+32.0) engine_running=False node_playing=False running=True resumes=1 resume_failures=5 fail_stage=engine.start fail_code=2003329396 fail_run=5 fail_run_max=5 holds=1 hold_saves=0 hold_expiries=0 hold_refusals=0 retries=2 self_heals=3 int_began=1 int_ended=0 int_on_resume=0 down_s=6 secs_since_fail=0 last_error=engine.start: The operation couldn’t be completed. (com.apple.coreaudio.avfaudio error 2003329396.) [2003329396 'what'] app_state=background app_uptime_s=62 media_resets=0 config_changes=0
+   push +36.8 (+30.6) engine_running=False node_playing=False running=True resumes=1 resume_failures=15 fail_stage=engine.start fail_code=2003329396 fail_run=15 fail_run_max=15 holds=1 hold_saves=0 hold_expiries=0 hold_refusals=0 retries=8 self_heals=7 int_began=1 int_ended=0 int_on_resume=0 down_s=36 secs_since_fail=0 last_error=engine.start: The operation couldn’t be completed. (com.apple.coreaudio.avfaudio error 2003329396.) [2003329396 'what'] app_state=background app_uptime_s=92 media_resets=0 config_changes=0
+   push +67.4 (+30.6) engine_running=False node_playing=False running=True resumes=1 resume_failures=25 fail_stage=engine.start fail_code=2003329396 fail_run=25 fail_run_max=25 holds=1 hold_saves=0 hold_expiries=0 hold_refusals=0 retries=14 self_heals=11 int_began=1 int_ended=0 int_on_resume=0 down_s=67 secs_since_fail=0 last_error=engine.start: The operation couldn’t be completed. (com.apple.coreaudio.avfaudio error 2003329396.) [2003329396 'what'] app_state=background app_uptime_s=123 media_resets=0 config_changes=0
+   push +98.0 (+30.6) engine_running=False node_playing=False running=True resumes=1 resume_failures=35 fail_stage=engine.start fail_code=2003329396 fail_run=35 fail_run_max=35 holds=1 hold_saves=0 hold_expiries=0 hold_refusals=0 retries=20 self_heals=15 int_began=1 int_ended=0 int_on_resume=0 down_s=97 secs_since_fail=0 last_error=engine.start: The operation couldn’t be completed. (com.apple.coreaudio.avfaudio error 2003329396.) [2003329396 'what'] app_state=background app_uptime_s=153 media_resets=0 config_changes=0
+   push +128.6 (+30.6) engine_running=False node_playing=False running=True resumes=1 resume_failures=45 fail_stage=engine.start fail_code=2003329396 fail_run=45 fail_run_max=45 holds=1 hold_saves=0 hold_expiries=0 hold_refusals=0 retries=26 self_heals=19 int_began=1 int_ended=0 int_on_resume=0 down_s=128 secs_since_fail=0 last_error=engine.start: The operation couldn’t be completed. (com.apple.coreaudio.avfaudio error 2003329396.) [2003329396 'what'] app_state=background app_uptime_s=184 media_resets=0 config_changes=0
+   push +159.1 (+30.4) engine_running=False node_playing=False running=True resumes=1 resume_failures=55 fail_stage=engine.start fail_code=2003329396 fail_run=55 fail_run_max=55 holds=1 hold_saves=0 hold_expiries=0 hold_refusals=0 retries=32 self_heals=23 int_began=1 int_ended=0 int_on_resume=0 down_s=158 secs_since_fail=0 last_error=engine.start: The operation couldn’t be completed. (com.apple.coreaudio.avfaudio error 2003329396.) [2003329396 'what'] app_state=background app_uptime_s=215 media_resets=0 config_changes=0
+   push +189.6 (+30.5) engine_running=False node_playing=False running=True resumes=1 resume_failures=64 fail_stage=engine.start fail_code=2003329396 fail_run=64 fail_run_max=64 holds=1 hold_saves=0 hold_expiries=0 hold_refusals=0 retries=37 self_heals=27 int_began=1 int_ended=0 int_on_resume=0 down_s=189 secs_since_fail=0 last_error=engine.start: The operation couldn’t be completed. (com.apple.coreaudio.avfaudio error 2003329396.) [2003329396 'what'] app_state=background app_uptime_s=245 media_resets=0 config_changes=0
+   push +220.2 (+30.6) engine_running=True node_playing=True running=True resumes=2 resume_failures=67 fail_stage=engine.start fail_code=2003329396 fail_run=0 fail_run_max=67 holds=1 hold_saves=1 hold_expiries=0 hold_refusals=0 retries=40 self_heals=28 int_began=1 int_ended=0 int_on_resume=0 secs_since_fail=24 app_state=background app_uptime_s=276 media_resets=0 config_changes=0
+   push +250.8 (+30.6) engine_running=True node_playing=True running=True resumes=2 resume_failures=67 fail_stage=engine.start fail_code=2003329396 fail_run=0 fail_run_max=67 holds=1 hold_saves=1 hold_expiries=0 hold_refusals=0 retries=40 self_heals=28 int_began=1 int_ended=0 int_on_resume=0 secs_since_fail=54 app_state=active app_uptime_s=306 media_resets=0 config_changes=0
+   push +281.4 (+30.6) engine_running=True node_playing=True running=True resumes=2 resume_failures=67 fail_stage=engine.start fail_code=2003329396 fail_run=0 fail_run_max=67 holds=1 hold_saves=1 hold_expiries=0 hold_refusals=0 retries=40 self_heals=28 int_began=1 int_ended=0 int_on_resume=0 secs_since_fail=85 app_state=active app_uptime_s=337 media_resets=0 config_changes=0
+  journal-end.log (last 14 of 129 lines):
+     | 2026-11-11T23:00:10Z failed, 59 in a row: engine.start: The operation couldn’t be completed. (com.apple.coreaudio.avfaudio error 2003329396.) [2003329396 'what']
+     | 2026-11-11T23:00:11Z failed, 60 in a row: engine.start: The operation couldn’t be completed. (com.apple.coreaudio.avfaudio error 2003329396.) [2003329396 'what']
+     | 2026-11-11T23:00:17Z failed, 61 in a row: engine.start: The operation couldn’t be completed. (com.apple.coreaudio.avfaudio error 2003329396.) [2003329396 'what']
+     | 2026-11-11T23:00:20Z verify: engine stopped
+     | 2026-11-11T23:00:20Z failed, 62 in a row: engine.start: The operation couldn’t be completed. (com.apple.coreaudio.avfaudio error 2003329396.) [2003329396 'what']
+     | 2026-11-11T23:00:22Z failed, 63 in a row: engine.start: The operation couldn’t be completed. (com.apple.coreaudio.avfaudio error 2003329396.) [2003329396 'what']
+     | 2026-11-11T23:00:26Z verify: engine stopped
+     | 2026-11-11T23:00:26Z failed, 64 in a row: engine.start: The operation couldn’t be completed. (com.apple.coreaudio.avfaudio error 2003329396.) [2003329396 'what']
+     | 2026-11-11T23:00:27Z failed, 65 in a row: engine.start: The operation couldn’t be completed. (com.apple.coreaudio.avfaudio error 2003329396.) [2003329396 'what']
+     | 2026-11-11T23:00:30Z verify: engine stopped
+     | 2026-11-11T23:00:30Z failed, 66 in a row: engine.start: The operation couldn’t be completed. (com.apple.coreaudio.avfaudio error 2003329396.) [2003329396 'what']
+     | 2026-11-11T23:00:32Z failed, 67 in a row: engine.start: The operation couldn’t be completed. (com.apple.coreaudio.avfaudio error 2003329396.) [2003329396 'what']
+     | 2026-11-11T23:00:38Z playing again after 67 failed tries, down 200s
+     | 2026-11-11T23:00:38Z hold ended: playing again after 200s
+==============================================================================
+E-hold
+  mark -55.5  launch -labStopAt 30 -labFailStage setActive -labFailFor 8 -labEndAt 10
+  mark -33.0  background
+  mark +68.4  foreground
+  mark +99.4  end
+  probe pids: ['66446']
+  launchctl pids in order: ['66446']
+  background phase: 111 probe lines from -32.7 to +68.3; gaps > 2.5 s: none
+  last line before going to the front/terminate: +68.3 (0.1 s before it)  -> continuous
+  -53.7 START pid=66446 path=/Users/runner/work/Ammy/Ammy/out/E-hold/probe.txt args=-labOut /Users/runner/work/Ammy/Ammy/out/E-hold -relay_endpoint https://localhost:8443/now-playing -relay_key lab -labStopAt
+  -31.5 BACKGROUND
+  +0.0 FAULT stop engine, post .began, verify (failStage=setActive failFor=8.0 noHold=false)
+  +0.0 LABFAIL setActive '!pri'
+  +0.0 FAULTDONE 1794438381.698 pid=66446 state=2 engine=0 node=0 want=1 holds=1 saves=0 expiries=0 refusals=0 fails=1 run=1 retries=0 heals=1 resumes=1 bgleft=-
+  +1.1 LABFAIL setActive '!pri'
+  +3.2 LABFAIL setActive '!pri'
+  +6.3 LABFAIL setActive '!pri'
+  +7.3 LABFAIL setActive '!pri'
+  +10.3 FAULT post .ended
+  first probe line with engine and node playing after the fault: +9.3
+  at the hold's opening (FAULTDONE): bgleft=-
+  last background line: pid=66446 state=2 engine=1 node=1 want=1 holds=1 saves=1 expiries=0 refusals=0 fails=5 run=0 retries=3 heals=3 resumes=2 bgleft=-
+  pushes: 6
+   push -51.8 engine_running=True node_playing=True running=True resumes=1 resume_failures=0 fail_run=0 fail_run_max=0 holds=0 hold_saves=0 hold_expiries=0 hold_refusals=0 retries=0 self_heals=0 int_began=0 int_ended=0 int_on_resume=0 app_state=active app_uptime_s=0 media_resets=0 config_changes=0
+     prev_alive='2026-11-11T23:05:15Z engine=yes hold=no'
+     prev_tail| 2026-11-11T23:04:24Z failed, 30 in a row: engine.start: The operation couldn’t be completed. (com.apple.coreaudio.avfaudio error 2003329396.) [2003329396 'what']
+     prev_tail| 2026-11-11T23:04:26Z verify: engine stopped
+     prev_tail| 2026-11-11T23:04:26Z failed, 31 in a row: engine.start: The operation couldn’t be completed. (com.apple.coreaudio.avfaudio error 2003329396.) [2003329396 'what']
+     prev_tail| 2026-11-11T23:04:29Z failed, 32 in a row: engine.start: The operation couldn’t be completed. (com.apple.coreaudio.avfaudio error 2003329396.) [2003329396 'what']
+     prev_tail| 2026-11-11T23:04:35Z --- launch, Ammy 1.0 (999)
+     prev_tail| 2026-11-11T23:04:35Z start
+   push -49.4 (+2.4) engine_running=True node_playing=True running=True resumes=1 resume_failures=0 fail_run=0 fail_run_max=0 holds=0 hold_saves=0 hold_expiries=0 hold_refusals=0 retries=0 self_heals=0 int_began=0 int_ended=0 int_on_resume=0 app_state=active app_uptime_s=2 media_resets=0 config_changes=0
+   push -21.3 (+28.1) engine_running=True node_playing=True running=True resumes=1 resume_failures=0 fail_run=0 fail_run_max=0 holds=0 hold_saves=0 hold_expiries=0 hold_refusals=0 retries=0 self_heals=0 int_began=0 int_ended=0 int_on_resume=0 app_state=background app_uptime_s=30 media_resets=0 config_changes=0
+   push +9.3 (+30.6) engine_running=True node_playing=True running=True resumes=2 resume_failures=5 fail_stage=setActive fail_code=561017449 fail_run=0 fail_run_max=5 holds=1 hold_saves=1 hold_expiries=0 hold_refusals=0 retries=3 self_heals=3 int_began=1 int_ended=0 int_on_resume=0 secs_since_fail=1 app_state=background app_uptime_s=61 media_resets=0 config_changes=0
+   push +39.8 (+30.5) engine_running=True node_playing=True running=True resumes=2 resume_failures=5 fail_stage=setActive fail_code=561017449 fail_run=0 fail_run_max=5 holds=1 hold_saves=1 hold_expiries=0 hold_refusals=0 retries=3 self_heals=3 int_began=1 int_ended=1 int_on_resume=0 secs_since_fail=32 app_state=background app_uptime_s=92 media_resets=0 config_changes=0
+   push +70.3 (+30.5) engine_running=True node_playing=True running=True resumes=2 resume_failures=5 fail_stage=setActive fail_code=561017449 fail_run=0 fail_run_max=5 holds=1 hold_saves=1 hold_expiries=0 hold_refusals=0 retries=3 self_heals=3 int_began=1 int_ended=1 int_on_resume=0 secs_since_fail=62 app_state=active app_uptime_s=122 media_resets=0 config_changes=0
+  journal-end.log (last 14 of 195 lines):
+     | 2026-11-11T23:05:28Z start
+     | 2026-11-11T23:06:21Z interruption began, reason -
+     | 2026-11-11T23:06:21Z verify: engine stopped
+     | 2026-11-11T23:06:21Z hold opened (found stopped)
+     | 2026-11-11T23:06:21Z failed, 1 in a row: setActive: Session activation failed (lab) [561017449 '!pri']
+     | 2026-11-11T23:06:22Z failed, 2 in a row: setActive: Session activation failed (lab) [561017449 '!pri']
+     | 2026-11-11T23:06:24Z failed, 3 in a row: setActive: Session activation failed (lab) [561017449 '!pri']
+     | 2026-11-11T23:06:27Z failed, 4 in a row: setActive: Session activation failed (lab) [561017449 '!pri']
+     | 2026-11-11T23:06:28Z verify: engine stopped
+     | 2026-11-11T23:06:28Z failed, 5 in a row: setActive: Session activation failed (lab) [561017449 '!pri']
+     | 2026-11-11T23:06:30Z verify: engine stopped
+     | 2026-11-11T23:06:30Z playing again after 5 failed tries, down 9s
+     | 2026-11-11T23:06:30Z hold ended: playing again after 9s
+     | 2026-11-11T23:06:32Z interruption ended, shouldResume true
+==============================================================================
+F-hold
+  mark -56.7  launch -labStopAt 30 -labFailStage engine.start -labFailFor 200
+  mark -32.9  background
+  mark +90.8  terminate (suspended)
+  mark +94.9  relaunch
+  mark +144.2  end
+  probe pids: ['54676', '63842']
+  launchctl pids in order: ['54676', '63842']
+  background phase: 158 probe lines from -31.9 to +90.4; gaps > 2.5 s: none
+  last line before going to the front/terminate: +90.4 (0.4 s before it)  -> continuous
+  -53.9 START pid=54676 path=/Users/runner/work/Ammy/Ammy/out/F-hold/probe.txt args=-labOut /Users/runner/work/Ammy/Ammy/out/F-hold -relay_endpoint https://localhost:8443/now-playing -relay_key lab -labStopAt
+  -31.5 BACKGROUND
+  +0.0 FAULT stop engine, post .began, verify (failStage=engine.start failFor=200.0 noHold=false)
+  +0.0 LABFAIL engine.start 'what'
+  +0.1 FAULTDONE 1794438179.083 pid=54676 state=2 engine=0 node=0 want=1 holds=1 saves=0 expiries=0 refusals=0 fails=1 run=1 retries=0 heals=1 resumes=1 bgleft=-
+  +1.1 LABFAIL engine.start 'what'
+  +3.2 LABFAIL engine.start 'what'
+  +6.4 LABFAIL engine.start 'what'
+  +7.2 LABFAIL engine.start 'what'
+  +8.8 LABFAIL engine.start 'what'
+  +11.6 LABFAIL engine.start 'what'
+  +16.9 LABFAIL engine.start 'what'
+  +17.2 LABFAIL engine.start 'what'
+  +22.2 LABFAIL engine.start 'what'
+  +27.2 LABFAIL engine.start 'what'
+  +27.4 LABFAIL engine.start 'what'
+  +32.7 LABFAIL engine.start 'what'
+  +37.2 LABFAIL engine.start 'what'
+  +37.9 LABFAIL engine.start 'what'
+  +39.2 LABFAIL engine.start 'what'
+  +43.2 LABFAIL engine.start 'what'
+  +47.2 LABFAIL engine.start 'what'
+  +48.4 LABFAIL engine.start 'what'
+  +53.7 LABFAIL engine.start 'what'
+  +57.2 LABFAIL engine.start 'what'
+  +59.0 LABFAIL engine.start 'what'
+  +64.2 LABFAIL engine.start 'what'
+  +67.2 LABFAIL engine.start 'what'
+  +69.4 LABFAIL engine.start 'what'
+  +69.5 LABFAIL engine.start 'what'
+  +74.7 LABFAIL engine.start 'what'
+  +77.2 LABFAIL engine.start 'what'
+  +79.9 LABFAIL engine.start 'what'
+  +85.2 LABFAIL engine.start 'what'
+  +87.2 LABFAIL engine.start 'what'
+  +90.4 LABFAIL engine.start 'what'
+  +96.1 START pid=63842 path=/Users/runner/work/Ammy/Ammy/out/F-hold/probe.txt args=-labOut /Users/runner/work/Ammy/Ammy/out/F-hold -relay_endpoint https://localhost:8443/now-playing -relay_key lab
+  first probe line with engine and node playing after the fault: +97.3
+  at the hold's opening (FAULTDONE): bgleft=-
+  last background line: LABFAIL engine.start 'what'
+  pushes: 10
+   push -51.9 engine_running=True node_playing=True running=True resumes=1 resume_failures=0 fail_run=0 fail_run_max=0 holds=0 hold_saves=0 hold_expiries=0 hold_refusals=0 retries=0 self_heals=0 int_began=0 int_ended=0 int_on_resume=0 app_state=active app_uptime_s=0 media_resets=0 config_changes=0
+     prev_alive='2026-11-11T23:01:50Z engine=yes hold=no'
+     prev_tail| 2026-11-11T23:00:27Z failed, 65 in a row: engine.start: The operation couldn’t be completed. (com.apple.coreaudio.avfaudio error 2003329396.) [2003329396 'what']
+     prev_tail| 2026-11-11T23:00:30Z verify: engine stopped
+     prev_tail| 2026-11-11T23:00:30Z failed, 66 in a row: engine.start: The operation couldn’t be completed. (com.apple.coreaudio.avfaudio error 2003329396.) [2003329396 'what']
+     prev_tail| 2026-11-11T23:00:32Z failed, 67 in a row: engine.start: The operation couldn’t be completed. (com.apple.coreaudio.avfaudio error 2003329396.) [2003329396 'what']
+     prev_tail| 2026-11-11T23:00:38Z playing again after 67 failed tries, down 200s
+     prev_tail| 2026-11-11T23:00:38Z hold ended: playing again after 200s
+   push -49.6 (+2.2) engine_running=True node_playing=True running=True resumes=1 resume_failures=0 fail_run=0 fail_run_max=0 holds=0 hold_saves=0 hold_expiries=0 hold_refusals=0 retries=0 self_heals=0 int_began=0 int_ended=0 int_on_resume=0 app_state=active app_uptime_s=2 media_resets=0 config_changes=0
+   push -21.7 (+27.9) engine_running=True node_playing=True running=True resumes=1 resume_failures=0 fail_run=0 fail_run_max=0 holds=0 hold_saves=0 hold_expiries=0 hold_refusals=0 retries=0 self_heals=0 int_began=0 int_ended=0 int_on_resume=0 app_state=background app_uptime_s=30 media_resets=0 config_changes=0
+   push +8.9 (+30.6) engine_running=False node_playing=False running=True resumes=1 resume_failures=6 fail_stage=engine.start fail_code=2003329396 fail_run=6 fail_run_max=6 holds=1 hold_saves=0 hold_expiries=0 hold_refusals=0 retries=3 self_heals=3 int_began=1 int_ended=0 int_on_resume=0 down_s=8 secs_since_fail=0 last_error=engine.start: The operation couldn’t be completed. (com.apple.coreaudio.avfaudio error 2003329396.) [2003329396 'what'] app_state=background app_uptime_s=61 media_resets=0 config_changes=0
+   push +39.3 (+30.5) engine_running=False node_playing=False running=True resumes=1 resume_failures=16 fail_stage=engine.start fail_code=2003329396 fail_run=16 fail_run_max=16 holds=1 hold_saves=0 hold_expiries=0 hold_refusals=0 retries=9 self_heals=7 int_began=1 int_ended=0 int_on_resume=0 down_s=39 secs_since_fail=0 last_error=engine.start: The operation couldn’t be completed. (com.apple.coreaudio.avfaudio error 2003329396.) [2003329396 'what'] app_state=background app_uptime_s=91 media_resets=0 config_changes=0
+   push +69.5 (+30.2) engine_running=False node_playing=False running=True resumes=1 resume_failures=26 fail_stage=engine.start fail_code=2003329396 fail_run=26 fail_run_max=26 holds=1 hold_saves=0 hold_expiries=0 hold_refusals=0 retries=15 self_heals=11 int_began=1 int_ended=0 int_on_resume=0 down_s=69 secs_since_fail=0 last_error=engine.start: The operation couldn’t be completed. (com.apple.coreaudio.avfaudio error 2003329396.) [2003329396 'what'] app_state=background app_uptime_s=121 media_resets=0 config_changes=0
+   push +97.8 (+28.3) engine_running=True node_playing=True running=True resumes=1 resume_failures=0 fail_run=0 fail_run_max=0 holds=0 hold_saves=0 hold_expiries=0 hold_refusals=0 retries=0 self_heals=0 int_began=0 int_ended=0 int_on_resume=0 app_state=active app_uptime_s=0 media_resets=0 config_changes=0
+     prev_alive='2026-11-11T23:04:26Z engine=no hold=yes'
+     prev_tail| 2026-11-11T23:04:16Z failed, 28 in a row: engine.start: The operation couldn’t be completed. (com.apple.coreaudio.avfaudio error 2003329396.) [2003329396 'what']
+     prev_tail| 2026-11-11T23:04:18Z failed, 29 in a row: engine.start: The operation couldn’t be completed. (com.apple.coreaudio.avfaudio error 2003329396.) [2003329396 'what']
+     prev_tail| 2026-11-11T23:04:24Z failed, 30 in a row: engine.start: The operation couldn’t be completed. (com.apple.coreaudio.avfaudio error 2003329396.) [2003329396 'what']
+     prev_tail| 2026-11-11T23:04:26Z verify: engine stopped
+     prev_tail| 2026-11-11T23:04:26Z failed, 31 in a row: engine.start: The operation couldn’t be completed. (com.apple.coreaudio.avfaudio error 2003329396.) [2003329396 'what']
+     prev_tail| 2026-11-11T23:04:29Z failed, 32 in a row: engine.start: The operation couldn’t be completed. (com.apple.coreaudio.avfaudio error 2003329396.) [2003329396 'what']
+   push +98.0 (+0.2) engine_running=True node_playing=True running=True resumes=1 resume_failures=0 fail_run=0 fail_run_max=0 holds=0 hold_saves=0 hold_expiries=0 hold_refusals=0 retries=0 self_heals=0 int_began=0 int_ended=0 int_on_resume=0 app_state=active app_uptime_s=0 media_resets=0 config_changes=0
+     prev_alive='2026-11-11T23:04:26Z engine=no hold=yes'
+     prev_tail| 2026-11-11T23:04:16Z failed, 28 in a row: engine.start: The operation couldn’t be completed. (com.apple.coreaudio.avfaudio error 2003329396.) [2003329396 'what']
+     prev_tail| 2026-11-11T23:04:18Z failed, 29 in a row: engine.start: The operation couldn’t be completed. (com.apple.coreaudio.avfaudio error 2003329396.) [2003329396 'what']
+     prev_tail| 2026-11-11T23:04:24Z failed, 30 in a row: engine.start: The operation couldn’t be completed. (com.apple.coreaudio.avfaudio error 2003329396.) [2003329396 'what']
+     prev_tail| 2026-11-11T23:04:26Z verify: engine stopped
+     prev_tail| 2026-11-11T23:04:26Z failed, 31 in a row: engine.start: The operation couldn’t be completed. (com.apple.coreaudio.avfaudio error 2003329396.) [2003329396 'what']
+     prev_tail| 2026-11-11T23:04:29Z failed, 32 in a row: engine.start: The operation couldn’t be completed. (com.apple.coreaudio.avfaudio error 2003329396.) [2003329396 'what']
+   push +100.0 (+2.0) engine_running=True node_playing=True running=True resumes=1 resume_failures=0 fail_run=0 fail_run_max=0 holds=0 hold_saves=0 hold_expiries=0 hold_refusals=0 retries=0 self_heals=0 int_began=0 int_ended=0 int_on_resume=0 app_state=active app_uptime_s=2 media_resets=0 config_changes=0
+   push +128.2 (+28.2) engine_running=True node_playing=True running=True resumes=1 resume_failures=0 fail_run=0 fail_run_max=0 holds=0 hold_saves=0 hold_expiries=0 hold_refusals=0 retries=0 self_heals=0 int_began=0 int_ended=0 int_on_resume=0 app_state=active app_uptime_s=30 media_resets=0 config_changes=0
+  F: probe's last line before terminate: +90.4 LABFAIL engine.start 'what'
+  F: first push after relaunch at +97.8: prev_alive='2026-11-11T23:04:26Z engine=no hold=yes', prev_tail last="2026-11-11T23:04:29Z failed, 32 in a row: engine.start: The operation couldn’t be completed. (com.apple.coreaudio.avfaudio error 2003329396.) [2003329396 'what']"
+  journal-before-kill.log (last 14 of 178 lines):
+     | 2026-11-11T23:04:03Z failed, 23 in a row: engine.start: The operation couldn’t be completed. (com.apple.coreaudio.avfaudio error 2003329396.) [2003329396 'what']
+     | 2026-11-11T23:04:06Z verify: engine stopped
+     | 2026-11-11T23:04:06Z failed, 24 in a row: engine.start: The operation couldn’t be completed. (com.apple.coreaudio.avfaudio error 2003329396.) [2003329396 'what']
+     | 2026-11-11T23:04:08Z failed, 25 in a row: engine.start: The operation couldn’t be completed. (com.apple.coreaudio.avfaudio error 2003329396.) [2003329396 'what']
+     | 2026-11-11T23:04:08Z verify: engine stopped
+     | 2026-11-11T23:04:08Z failed, 26 in a row: engine.start: The operation couldn’t be completed. (com.apple.coreaudio.avfaudio error 2003329396.) [2003329396 'what']
+     | 2026-11-11T23:04:13Z failed, 27 in a row: engine.start: The operation couldn’t be completed. (com.apple.coreaudio.avfaudio error 2003329396.) [2003329396 'what']
+     | 2026-11-11T23:04:16Z verify: engine stopped
+     | 2026-11-11T23:04:16Z failed, 28 in a row: engine.start: The operation couldn’t be completed. (com.apple.coreaudio.avfaudio error 2003329396.) [2003329396 'what']
+     | 2026-11-11T23:04:18Z failed, 29 in a row: engine.start: The operation couldn’t be completed. (com.apple.coreaudio.avfaudio error 2003329396.) [2003329396 'what']
+     | 2026-11-11T23:04:24Z failed, 30 in a row: engine.start: The operation couldn’t be completed. (com.apple.coreaudio.avfaudio error 2003329396.) [2003329396 'what']
+     | 2026-11-11T23:04:26Z verify: engine stopped
+     | 2026-11-11T23:04:26Z failed, 31 in a row: engine.start: The operation couldn’t be completed. (com.apple.coreaudio.avfaudio error 2003329396.) [2003329396 'what']
+     | 2026-11-11T23:04:29Z failed, 32 in a row: engine.start: The operation couldn’t be completed. (com.apple.coreaudio.avfaudio error 2003329396.) [2003329396 'what']
+  journal-end.log (last 14 of 180 lines):
+     | 2026-11-11T23:04:06Z failed, 24 in a row: engine.start: The operation couldn’t be completed. (com.apple.coreaudio.avfaudio error 2003329396.) [2003329396 'what']
+     | 2026-11-11T23:04:08Z failed, 25 in a row: engine.start: The operation couldn’t be completed. (com.apple.coreaudio.avfaudio error 2003329396.) [2003329396 'what']
+     | 2026-11-11T23:04:08Z verify: engine stopped
+     | 2026-11-11T23:04:08Z failed, 26 in a row: engine.start: The operation couldn’t be completed. (com.apple.coreaudio.avfaudio error 2003329396.) [2003329396 'what']
+     | 2026-11-11T23:04:13Z failed, 27 in a row: engine.start: The operation couldn’t be completed. (com.apple.coreaudio.avfaudio error 2003329396.) [2003329396 'what']
+     | 2026-11-11T23:04:16Z verify: engine stopped
+     | 2026-11-11T23:04:16Z failed, 28 in a row: engine.start: The operation couldn’t be completed. (com.apple.coreaudio.avfaudio error 2003329396.) [2003329396 'what']
+     | 2026-11-11T23:04:18Z failed, 29 in a row: engine.start: The operation couldn’t be completed. (com.apple.coreaudio.avfaudio error 2003329396.) [2003329396 'what']
+     | 2026-11-11T23:04:24Z failed, 30 in a row: engine.start: The operation couldn’t be completed. (com.apple.coreaudio.avfaudio error 2003329396.) [2003329396 'what']
+     | 2026-11-11T23:04:26Z verify: engine stopped
+     | 2026-11-11T23:04:26Z failed, 31 in a row: engine.start: The operation couldn’t be completed. (com.apple.coreaudio.avfaudio error 2003329396.) [2003329396 'what']
+     | 2026-11-11T23:04:29Z failed, 32 in a row: engine.start: The operation couldn’t be completed. (com.apple.coreaudio.avfaudio error 2003329396.) [2003329396 'what']
+     | 2026-11-11T23:04:35Z --- launch, Ammy 1.0 (999)
+     | 2026-11-11T23:04:35Z start
+==============================================================================
+Ammy crash reports: none

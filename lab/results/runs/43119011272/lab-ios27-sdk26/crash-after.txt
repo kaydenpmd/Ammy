@@ -1,0 +1,24 @@
+total 736
+drwxrwx---  23 runner  _analyticsusers    736 Nov 11 23:44 .
+drwxr-xr-x@ 13 runner  staff              416 Nov 11 23:17 ..
+-rw-------@  1 runner  _analyticsusers  12936 Nov 11 23:32 AppIntentsLiveEntityService-2026-11-11-233231.ips
+-rw-------@  1 runner  _analyticsusers  39026 Nov  4 04:43 ExcUserFault_nsattributedstringagent-2026-11-04-044342.ips
+-rw-------@  1 runner  _analyticsusers  38267 Nov  4 05:14 ExcUserFault_nsattributedstringagent-2026-11-04-051404.000.ips
+-rw-------@  1 runner  _analyticsusers  14198 Nov 11 23:37 intelligencetasksd-2026-11-11-233756.ips
+-rw-------@  1 runner  _analyticsusers  14605 Nov 11 23:38 intelligencetasksd-2026-11-11-233803.ips
+-rw-------@  1 runner  _analyticsusers  14774 Nov 11 23:38 intelligencetasksd-2026-11-11-233812.ips
+-rw-------@  1 runner  _analyticsusers  14199 Nov 11 23:38 intelligencetasksd-2026-11-11-233823.ips
+-rw-------@  1 runner  _analyticsusers  14594 Nov 11 23:38 intelligencetasksd-2026-11-11-233833.ips
+-rw-------@  1 runner  _analyticsusers  13536 Nov 11 23:38 intelligencetasksd-2026-11-11-233844.ips
+-rw-------@  1 runner  _analyticsusers  15180 Nov 11 23:38 intelligencetasksd-2026-11-11-233854.ips
+-rw-------@  1 runner  _analyticsusers  13421 Nov 11 23:39 intelligencetasksd-2026-11-11-233905.ips
+-rw-------@  1 runner  _analyticsusers  13426 Nov 11 23:39 intelligencetasksd-2026-11-11-233916.ips
+-rw-------@  1 runner  _analyticsusers  13466 Nov 11 23:39 intelligencetasksd-2026-11-11-233926.ips
+-rw-------@  1 runner  _analyticsusers  13542 Nov 11 23:39 intelligencetasksd-2026-11-11-233936.ips
+-rw-------@  1 runner  _analyticsusers  14909 Nov 11 23:39 intelligencetasksd-2026-11-11-233947.ips
+-rw-------@  1 runner  _analyticsusers  14200 Nov 11 23:40 intelligencetasksd-2026-11-11-234009.ips
+-rw-------@  1 runner  _analyticsusers  13417 Nov 11 23:40 intelligencetasksd-2026-11-11-234049.ips
+-rw-------@  1 runner  _analyticsusers  13428 Nov 11 23:42 intelligencetasksd-2026-11-11-234209.ips
+-rw-------@  1 runner  _analyticsusers  13424 Nov 11 23:44 intelligencetasksd-2026-11-11-234450.ips
+drwxrwx---   2 runner  _analyticsusers     64 Nov  4 04:40 Retired
+-rw-------@  1 runner  _analyticsusers  13285 Nov 11 23:37 SettingsSearchReindexService-2026-11-11-233729.ips

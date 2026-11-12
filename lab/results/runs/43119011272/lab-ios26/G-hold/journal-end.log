@@ -1,0 +1,25 @@
+2026-11-11T23:28:00Z --- launch, Ammy 1.0 (999)
+2026-11-11T23:28:00Z start
+2026-11-11T23:28:01Z failed, 1 in a row: engine.start: The operation couldn’t be completed. (com.apple.coreaudio.avfaudio error 2003329396.) [2003329396 'what']
+2026-11-11T23:28:01Z hold opened (engine.start)
+2026-11-11T23:28:01Z verify: engine stopped
+2026-11-11T23:28:01Z failed, 2 in a row: engine.start: The operation couldn’t be completed. (com.apple.coreaudio.avfaudio error 2003329396.) [2003329396 'what']
+2026-11-11T23:28:02Z failed, 3 in a row: engine.start: The operation couldn’t be completed. (com.apple.coreaudio.avfaudio error 2003329396.) [2003329396 'what']
+2026-11-11T23:28:04Z verify: engine stopped
+2026-11-11T23:28:04Z failed, 4 in a row: engine.start: The operation couldn’t be completed. (com.apple.coreaudio.avfaudio error 2003329396.) [2003329396 'what']
+2026-11-11T23:28:05Z failed, 5 in a row: engine.start: The operation couldn’t be completed. (com.apple.coreaudio.avfaudio error 2003329396.) [2003329396 'what']
+2026-11-11T23:28:10Z verify: engine stopped
+2026-11-11T23:28:10Z failed, 6 in a row: engine.start: The operation couldn’t be completed. (com.apple.coreaudio.avfaudio error 2003329396.) [2003329396 'what']
+2026-11-11T23:28:11Z failed, 7 in a row: engine.start: The operation couldn’t be completed. (com.apple.coreaudio.avfaudio error 2003329396.) [2003329396 'what']
+2026-11-11T23:28:16Z failed, 8 in a row: engine.start: The operation couldn’t be completed. (com.apple.coreaudio.avfaudio error 2003329396.) [2003329396 'what']
+2026-11-11T23:28:20Z verify: engine stopped
+2026-11-11T23:28:20Z failed, 9 in a row: engine.start: The operation couldn’t be completed. (com.apple.coreaudio.avfaudio error 2003329396.) [2003329396 'what']
+2026-11-11T23:28:21Z failed, 10 in a row: engine.start: The operation couldn’t be completed. (com.apple.coreaudio.avfaudio error 2003329396.) [2003329396 'what']
+2026-11-11T23:28:27Z failed, 11 in a row: engine.start: The operation couldn’t be completed. (com.apple.coreaudio.avfaudio error 2003329396.) [2003329396 'what']
+2026-11-11T23:28:30Z verify: engine stopped
+2026-11-11T23:28:30Z failed, 12 in a row: engine.start: The operation couldn’t be completed. (com.apple.coreaudio.avfaudio error 2003329396.) [2003329396 'what']
+2026-11-11T23:28:32Z failed, 13 in a row: engine.start: The operation couldn’t be completed. (com.apple.coreaudio.avfaudio error 2003329396.) [2003329396 'what']
+2026-11-11T23:28:32Z verify: engine stopped
+2026-11-11T23:28:32Z failed, 14 in a row: engine.start: The operation couldn’t be completed. (com.apple.coreaudio.avfaudio error 2003329396.) [2003329396 'what']
+2026-11-11T23:28:37Z playing again after 14 failed tries, down 35s
+2026-11-11T23:28:37Z hold ended: playing again after 35s

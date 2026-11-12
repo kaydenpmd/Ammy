@@ -1,0 +1,203 @@
+1794440623.592 START pid=46929 path=/Users/runner/work/Ammy/Ammy/out/I-hold/probe.txt args=-labOut /Users/runner/work/Ammy/Ammy/out/I-hold -relay_endpoint https://localhost:8443/now-playing -relay_key lab -labFailFromLaunch YES -labFailStage engine.start -labFailFor 600
+1794440623.594 FAULT fail from launch (failStage=engine.start failFor=600.0 noHold=false)
+1794440625.101 pid=46929 state=0 engine=0 node=0 want=0 holds=0 saves=0 expiries=0 refusals=0 fails=0 run=0 retries=0 heals=0 resumes=0 bgleft=-
+1794440625.649 LABFAIL engine.start 'what'
+1794440625.667 LABFAIL engine.start 'what'
+1794440625.756 pid=46929 state=0 engine=0 node=0 want=1 holds=1 saves=0 expiries=0 refusals=0 fails=2 run=2 retries=0 heals=1 resumes=0 bgleft=-
+1794440626.597 pid=46929 state=0 engine=0 node=0 want=1 holds=1 saves=0 expiries=0 refusals=0 fails=2 run=2 retries=0 heals=1 resumes=0 bgleft=-
+1794440626.720 LABFAIL engine.start 'what'
+1794440627.598 pid=46929 state=0 engine=0 node=0 want=1 holds=1 saves=0 expiries=0 refusals=0 fails=3 run=3 retries=1 heals=1 resumes=0 bgleft=-
+1794440628.376 LABFAIL engine.start 'what'
+1794440628.598 pid=46929 state=0 engine=0 node=0 want=1 holds=1 saves=0 expiries=0 refusals=0 fails=4 run=4 retries=1 heals=2 resumes=0 bgleft=-
+1794440629.597 pid=46929 state=0 engine=0 node=0 want=1 holds=1 saves=0 expiries=0 refusals=0 fails=4 run=4 retries=1 heals=2 resumes=0 bgleft=-
+1794440629.882 LABFAIL engine.start 'what'
+1794440630.598 pid=46929 state=0 engine=0 node=0 want=1 holds=1 saves=0 expiries=0 refusals=0 fails=5 run=5 retries=2 heals=2 resumes=0 bgleft=-
+1794440631.597 pid=46929 state=0 engine=0 node=0 want=1 holds=1 saves=0 expiries=0 refusals=0 fails=5 run=5 retries=2 heals=2 resumes=0 bgleft=-
+1794440632.598 pid=46929 state=0 engine=0 node=0 want=1 holds=1 saves=0 expiries=0 refusals=0 fails=5 run=5 retries=2 heals=2 resumes=0 bgleft=-
+1794440633.598 pid=46929 state=0 engine=0 node=0 want=1 holds=1 saves=0 expiries=0 refusals=0 fails=5 run=5 retries=2 heals=2 resumes=0 bgleft=-
+1794440634.597 pid=46929 state=0 engine=0 node=0 want=1 holds=1 saves=0 expiries=0 refusals=0 fails=5 run=5 retries=2 heals=2 resumes=0 bgleft=-
+1794440635.145 LABFAIL engine.start 'what'
+1794440635.245 LABFAIL engine.start 'what'
+1794440635.597 pid=46929 state=0 engine=0 node=0 want=1 holds=1 saves=0 expiries=0 refusals=0 fails=7 run=7 retries=3 heals=3 resumes=0 bgleft=-
+1794440636.598 pid=46929 state=0 engine=0 node=0 want=1 holds=1 saves=0 expiries=0 refusals=0 fails=7 run=7 retries=3 heals=3 resumes=0 bgleft=-
+1794440637.597 pid=46929 state=0 engine=0 node=0 want=1 holds=1 saves=0 expiries=0 refusals=0 fails=7 run=7 retries=3 heals=3 resumes=0 bgleft=-
+1794440638.597 pid=46929 state=0 engine=0 node=0 want=1 holds=1 saves=0 expiries=0 refusals=0 fails=7 run=7 retries=3 heals=3 resumes=0 bgleft=-
+1794440639.595 pid=46929 state=0 engine=0 node=0 want=1 holds=1 saves=0 expiries=0 refusals=0 fails=7 run=7 retries=3 heals=3 resumes=0 bgleft=-
+1794440640.379 LABFAIL engine.start 'what'
+1794440640.597 pid=46929 state=0 engine=0 node=0 want=1 holds=1 saves=0 expiries=0 refusals=0 fails=8 run=8 retries=4 heals=3 resumes=0 bgleft=-
+1794440641.597 pid=46929 state=0 engine=0 node=0 want=1 holds=1 saves=0 expiries=0 refusals=0 fails=8 run=8 retries=4 heals=3 resumes=0 bgleft=-
+1794440642.597 pid=46929 state=0 engine=0 node=0 want=1 holds=1 saves=0 expiries=0 refusals=0 fails=8 run=8 retries=4 heals=3 resumes=0 bgleft=-
+1794440643.597 pid=46929 state=0 engine=0 node=0 want=1 holds=1 saves=0 expiries=0 refusals=0 fails=8 run=8 retries=4 heals=3 resumes=0 bgleft=-
+1794440644.596 pid=46929 state=1 engine=0 node=0 want=1 holds=1 saves=0 expiries=0 refusals=0 fails=8 run=8 retries=4 heals=3 resumes=0 bgleft=-
+1794440644.845 BACKGROUND
+1794440645.431 LABFAIL engine.start 'what'
+1794440645.464 LABFAIL engine.start 'what'
+1794440645.596 pid=46929 state=2 engine=0 node=0 want=1 holds=1 saves=0 expiries=0 refusals=0 fails=10 run=10 retries=5 heals=4 resumes=0 bgleft=-
+1794440646.598 pid=46929 state=2 engine=0 node=0 want=1 holds=1 saves=0 expiries=0 refusals=0 fails=10 run=10 retries=5 heals=4 resumes=0 bgleft=-
+1794440647.599 pid=46929 state=2 engine=0 node=0 want=1 holds=1 saves=0 expiries=0 refusals=0 fails=10 run=10 retries=5 heals=4 resumes=0 bgleft=-
+1794440648.601 pid=46929 state=2 engine=0 node=0 want=1 holds=1 saves=0 expiries=0 refusals=0 fails=10 run=10 retries=5 heals=4 resumes=0 bgleft=-
+1794440649.597 pid=46929 state=2 engine=0 node=0 want=1 holds=1 saves=0 expiries=0 refusals=0 fails=10 run=10 retries=5 heals=4 resumes=0 bgleft=-
+1794440650.599 pid=46929 state=2 engine=0 node=0 want=1 holds=1 saves=0 expiries=0 refusals=0 fails=10 run=10 retries=5 heals=4 resumes=0 bgleft=-
+1794440650.716 LABFAIL engine.start 'what'
+1794440651.599 pid=46929 state=2 engine=0 node=0 want=1 holds=1 saves=0 expiries=0 refusals=0 fails=11 run=11 retries=6 heals=4 resumes=0 bgleft=-
+1794440652.598 pid=46929 state=2 engine=0 node=0 want=1 holds=1 saves=0 expiries=0 refusals=0 fails=11 run=11 retries=6 heals=4 resumes=0 bgleft=-
+1794440653.597 pid=46929 state=2 engine=0 node=0 want=1 holds=1 saves=0 expiries=0 refusals=0 fails=11 run=11 retries=6 heals=4 resumes=0 bgleft=-
+1794440654.596 pid=46929 state=2 engine=0 node=0 want=1 holds=1 saves=0 expiries=0 refusals=0 fails=11 run=11 retries=6 heals=4 resumes=0 bgleft=-
+1794440655.247 LABFAIL engine.start 'what'
+1794440655.597 pid=46929 state=2 engine=0 node=0 want=1 holds=1 saves=0 expiries=0 refusals=0 fails=12 run=12 retries=6 heals=5 resumes=0 bgleft=-
+1794440655.968 LABFAIL engine.start 'what'
+1794440655.980 LABFAIL engine.start 'what'
+1794440656.598 pid=46929 state=2 engine=0 node=0 want=1 holds=1 saves=0 expiries=0 refusals=0 fails=14 run=14 retries=7 heals=6 resumes=0 bgleft=-
+1794440657.605 pid=46929 state=2 engine=0 node=0 want=1 holds=1 saves=0 expiries=0 refusals=0 fails=14 run=14 retries=7 heals=6 resumes=0 bgleft=-
+1794440658.602 pid=46929 state=2 engine=0 node=0 want=1 holds=1 saves=0 expiries=0 refusals=0 fails=14 run=14 retries=7 heals=6 resumes=0 bgleft=-
+1794440659.605 pid=46929 state=2 engine=0 node=0 want=1 holds=1 saves=0 expiries=0 refusals=0 fails=14 run=14 retries=7 heals=6 resumes=0 bgleft=-
+1794440660.605 pid=46929 state=2 engine=0 node=0 want=1 holds=1 saves=0 expiries=0 refusals=0 fails=14 run=14 retries=7 heals=6 resumes=0 bgleft=-
+1794440661.213 LABFAIL engine.start 'what'
+1794440661.605 pid=46929 state=2 engine=0 node=0 want=1 holds=1 saves=0 expiries=0 refusals=0 fails=15 run=15 retries=8 heals=6 resumes=0 bgleft=-
+1794440662.603 pid=46929 state=2 engine=0 node=0 want=1 holds=1 saves=0 expiries=0 refusals=0 fails=15 run=15 retries=8 heals=6 resumes=0 bgleft=-
+1794440663.602 pid=46929 state=2 engine=0 node=0 want=1 holds=1 saves=0 expiries=0 refusals=0 fails=15 run=15 retries=8 heals=6 resumes=0 bgleft=-
+1794440664.602 pid=46929 state=2 engine=0 node=0 want=1 holds=1 saves=0 expiries=0 refusals=0 fails=15 run=15 retries=8 heals=6 resumes=0 bgleft=-
+1794440665.249 LABFAIL engine.start 'what'
+1794440665.599 pid=46929 state=2 engine=0 node=0 want=1 holds=1 saves=0 expiries=0 refusals=0 fails=16 run=16 retries=8 heals=7 resumes=0 bgleft=-
+1794440666.471 LABFAIL engine.start 'what'
+1794440666.605 pid=46929 state=2 engine=0 node=0 want=1 holds=1 saves=0 expiries=0 refusals=0 fails=17 run=17 retries=9 heals=7 resumes=0 bgleft=-
+1794440667.597 pid=46929 state=2 engine=0 node=0 want=1 holds=1 saves=0 expiries=0 refusals=0 fails=17 run=17 retries=9 heals=7 resumes=0 bgleft=-
+1794440668.598 pid=46929 state=2 engine=0 node=0 want=1 holds=1 saves=0 expiries=0 refusals=0 fails=17 run=17 retries=9 heals=7 resumes=0 bgleft=-
+1794440669.605 pid=46929 state=2 engine=0 node=0 want=1 holds=1 saves=0 expiries=0 refusals=0 fails=17 run=17 retries=9 heals=7 resumes=0 bgleft=-
+1794440670.606 pid=46929 state=2 engine=0 node=0 want=1 holds=1 saves=0 expiries=0 refusals=0 fails=17 run=17 retries=9 heals=7 resumes=0 bgleft=-
+1794440671.605 pid=46929 state=2 engine=0 node=0 want=1 holds=1 saves=0 expiries=0 refusals=0 fails=17 run=17 retries=9 heals=7 resumes=0 bgleft=-
+1794440671.741 LABFAIL engine.start 'what'
+1794440672.605 pid=46929 state=2 engine=0 node=0 want=1 holds=1 saves=0 expiries=0 refusals=0 fails=18 run=18 retries=10 heals=7 resumes=0 bgleft=-
+1794440673.606 pid=46929 state=2 engine=0 node=0 want=1 holds=1 saves=0 expiries=0 refusals=0 fails=18 run=18 retries=10 heals=7 resumes=0 bgleft=-
+1794440674.607 pid=46929 state=2 engine=0 node=0 want=1 holds=1 saves=0 expiries=0 refusals=0 fails=18 run=18 retries=10 heals=7 resumes=0 bgleft=-
+1794440675.243 LABFAIL engine.start 'what'
+1794440675.605 pid=46929 state=2 engine=0 node=0 want=1 holds=1 saves=0 expiries=0 refusals=0 fails=19 run=19 retries=10 heals=8 resumes=0 bgleft=-
+1794440676.598 pid=46929 state=2 engine=0 node=0 want=1 holds=1 saves=0 expiries=0 refusals=0 fails=19 run=19 retries=10 heals=8 resumes=0 bgleft=-
+1794440676.978 LABFAIL engine.start 'what'
+1794440677.596 pid=46929 state=2 engine=0 node=0 want=1 holds=1 saves=0 expiries=0 refusals=0 fails=20 run=20 retries=11 heals=8 resumes=0 bgleft=-
+1794440678.604 pid=46929 state=2 engine=0 node=0 want=1 holds=1 saves=0 expiries=0 refusals=0 fails=20 run=20 retries=11 heals=8 resumes=0 bgleft=-
+1794440679.604 pid=46929 state=2 engine=0 node=0 want=1 holds=1 saves=0 expiries=0 refusals=0 fails=20 run=20 retries=11 heals=8 resumes=0 bgleft=-
+1794440680.599 pid=46929 state=2 engine=0 node=0 want=1 holds=1 saves=0 expiries=0 refusals=0 fails=20 run=20 retries=11 heals=8 resumes=0 bgleft=-
+1794440681.601 pid=46929 state=2 engine=0 node=0 want=1 holds=1 saves=0 expiries=0 refusals=0 fails=20 run=20 retries=11 heals=8 resumes=0 bgleft=-
+1794440682.218 LABFAIL engine.start 'what'
+1794440682.602 pid=46929 state=2 engine=0 node=0 want=1 holds=1 saves=0 expiries=0 refusals=0 fails=21 run=21 retries=12 heals=8 resumes=0 bgleft=-
+1794440683.605 pid=46929 state=2 engine=0 node=0 want=1 holds=1 saves=0 expiries=0 refusals=0 fails=21 run=21 retries=12 heals=8 resumes=0 bgleft=-
+1794440684.599 pid=46929 state=2 engine=0 node=0 want=1 holds=1 saves=0 expiries=0 refusals=0 fails=21 run=21 retries=12 heals=8 resumes=0 bgleft=-
+1794440685.251 LABFAIL engine.start 'what'
+1794440685.605 pid=46929 state=2 engine=0 node=0 want=1 holds=1 saves=0 expiries=0 refusals=0 fails=22 run=22 retries=12 heals=9 resumes=0 bgleft=-
+1794440686.605 pid=46929 state=2 engine=0 node=0 want=1 holds=1 saves=0 expiries=0 refusals=0 fails=22 run=22 retries=12 heals=9 resumes=0 bgleft=-
+1794440687.478 LABFAIL engine.start 'what'
+1794440687.487 LABFAIL engine.start 'what'
+1794440687.606 pid=46929 state=2 engine=0 node=0 want=1 holds=1 saves=0 expiries=0 refusals=0 fails=24 run=24 retries=13 heals=10 resumes=0 bgleft=-
+1794440688.608 pid=46929 state=2 engine=0 node=0 want=1 holds=1 saves=0 expiries=0 refusals=0 fails=24 run=24 retries=13 heals=10 resumes=0 bgleft=-
+1794440689.603 pid=46929 state=2 engine=0 node=0 want=1 holds=1 saves=0 expiries=0 refusals=0 fails=24 run=24 retries=13 heals=10 resumes=0 bgleft=-
+1794440690.600 pid=46929 state=2 engine=0 node=0 want=1 holds=1 saves=0 expiries=0 refusals=0 fails=24 run=24 retries=13 heals=10 resumes=0 bgleft=-
+1794440691.596 pid=46929 state=2 engine=0 node=0 want=1 holds=1 saves=0 expiries=0 refusals=0 fails=24 run=24 retries=13 heals=10 resumes=0 bgleft=-
+1794440692.600 pid=46929 state=2 engine=0 node=0 want=1 holds=1 saves=0 expiries=0 refusals=0 fails=24 run=24 retries=13 heals=10 resumes=0 bgleft=-
+1794440692.714 LABFAIL engine.start 'what'
+1794440693.597 pid=46929 state=2 engine=0 node=0 want=1 holds=1 saves=0 expiries=0 refusals=0 fails=25 run=25 retries=14 heals=10 resumes=0 bgleft=-
+1794440694.604 pid=46929 state=2 engine=0 node=0 want=1 holds=1 saves=0 expiries=0 refusals=0 fails=25 run=25 retries=14 heals=10 resumes=0 bgleft=-
+1794440695.267 LABFAIL engine.start 'what'
+1794440695.605 pid=46929 state=2 engine=0 node=0 want=1 holds=1 saves=0 expiries=0 refusals=0 fails=26 run=26 retries=14 heals=11 resumes=0 bgleft=-
+1794440696.602 pid=46929 state=2 engine=0 node=0 want=1 holds=1 saves=0 expiries=0 refusals=0 fails=26 run=26 retries=14 heals=11 resumes=0 bgleft=-
+1794440697.601 pid=46929 state=2 engine=0 node=0 want=1 holds=1 saves=0 expiries=0 refusals=0 fails=26 run=26 retries=14 heals=11 resumes=0 bgleft=-
+1794440697.965 LABFAIL engine.start 'what'
+1794440698.599 pid=46929 state=2 engine=0 node=0 want=1 holds=1 saves=0 expiries=0 refusals=0 fails=27 run=27 retries=15 heals=11 resumes=0 bgleft=-
+1794440699.605 pid=46929 state=2 engine=0 node=0 want=1 holds=1 saves=0 expiries=0 refusals=0 fails=27 run=27 retries=15 heals=11 resumes=0 bgleft=-
+1794440700.608 pid=46929 state=2 engine=0 node=0 want=1 holds=1 saves=0 expiries=0 refusals=0 fails=27 run=27 retries=15 heals=11 resumes=0 bgleft=-
+1794440701.601 pid=46929 state=2 engine=0 node=0 want=1 holds=1 saves=0 expiries=0 refusals=0 fails=27 run=27 retries=15 heals=11 resumes=0 bgleft=-
+1794440702.604 pid=46929 state=2 engine=0 node=0 want=1 holds=1 saves=0 expiries=0 refusals=0 fails=27 run=27 retries=15 heals=11 resumes=0 bgleft=-
+1794440703.223 LABFAIL engine.start 'what'
+1794440703.610 pid=46929 state=2 engine=0 node=0 want=1 holds=1 saves=0 expiries=0 refusals=0 fails=28 run=28 retries=16 heals=11 resumes=0 bgleft=-
+1794440704.606 pid=46929 state=2 engine=0 node=0 want=1 holds=1 saves=0 expiries=0 refusals=0 fails=28 run=28 retries=16 heals=11 resumes=0 bgleft=-
+1794440705.244 LABFAIL engine.start 'what'
+1794440705.605 pid=46929 state=2 engine=0 node=0 want=1 holds=1 saves=0 expiries=0 refusals=0 fails=29 run=29 retries=16 heals=12 resumes=0 bgleft=-
+1794440706.603 pid=46929 state=2 engine=0 node=0 want=1 holds=1 saves=0 expiries=0 refusals=0 fails=29 run=29 retries=16 heals=12 resumes=0 bgleft=-
+1794440707.601 pid=46929 state=2 engine=0 node=0 want=1 holds=1 saves=0 expiries=0 refusals=0 fails=29 run=29 retries=16 heals=12 resumes=0 bgleft=-
+1794440708.463 LABFAIL engine.start 'what'
+1794440708.605 pid=46929 state=2 engine=0 node=0 want=1 holds=1 saves=0 expiries=0 refusals=0 fails=30 run=30 retries=17 heals=12 resumes=0 bgleft=-
+1794440709.605 pid=46929 state=2 engine=0 node=0 want=1 holds=1 saves=0 expiries=0 refusals=0 fails=30 run=30 retries=17 heals=12 resumes=0 bgleft=-
+1794440710.603 pid=46929 state=2 engine=0 node=0 want=1 holds=1 saves=0 expiries=0 refusals=0 fails=30 run=30 retries=17 heals=12 resumes=0 bgleft=-
+1794440711.596 pid=46929 state=2 engine=0 node=0 want=1 holds=1 saves=0 expiries=0 refusals=0 fails=30 run=30 retries=17 heals=12 resumes=0 bgleft=-
+1794440712.608 pid=46929 state=2 engine=0 node=0 want=1 holds=1 saves=0 expiries=0 refusals=0 fails=30 run=30 retries=17 heals=12 resumes=0 bgleft=-
+1794440713.602 pid=46929 state=2 engine=0 node=0 want=1 holds=1 saves=0 expiries=0 refusals=0 fails=30 run=30 retries=17 heals=12 resumes=0 bgleft=-
+1794440713.710 LABFAIL engine.start 'what'
+1794440714.606 pid=46929 state=2 engine=0 node=0 want=1 holds=1 saves=0 expiries=0 refusals=0 fails=31 run=31 retries=18 heals=12 resumes=0 bgleft=-
+1794440715.249 LABFAIL engine.start 'what'
+1794440715.608 pid=46929 state=2 engine=0 node=0 want=1 holds=1 saves=0 expiries=0 refusals=0 fails=32 run=32 retries=18 heals=13 resumes=0 bgleft=-
+1794440716.611 pid=46929 state=2 engine=0 node=0 want=1 holds=1 saves=0 expiries=0 refusals=0 fails=32 run=32 retries=18 heals=13 resumes=0 bgleft=-
+1794440717.606 pid=46929 state=2 engine=0 node=0 want=1 holds=1 saves=0 expiries=0 refusals=0 fails=32 run=32 retries=18 heals=13 resumes=0 bgleft=-
+1794440718.007 LABFAIL engine.start 'what'
+1794440718.604 pid=46929 state=2 engine=0 node=0 want=1 holds=1 saves=0 expiries=0 refusals=0 fails=33 run=33 retries=18 heals=14 resumes=0 bgleft=-
+1794440718.962 LABFAIL engine.start 'what'
+1794440719.600 pid=46929 state=2 engine=0 node=0 want=1 holds=1 saves=0 expiries=0 refusals=0 fails=34 run=34 retries=19 heals=14 resumes=0 bgleft=-
+1794440720.597 pid=46929 state=2 engine=0 node=0 want=1 holds=1 saves=0 expiries=0 refusals=0 fails=34 run=34 retries=19 heals=14 resumes=0 bgleft=-
+1794440721.601 pid=46929 state=2 engine=0 node=0 want=1 holds=1 saves=0 expiries=0 refusals=0 fails=34 run=34 retries=19 heals=14 resumes=0 bgleft=-
+1794440722.600 pid=46929 state=2 engine=0 node=0 want=1 holds=1 saves=0 expiries=0 refusals=0 fails=34 run=34 retries=19 heals=14 resumes=0 bgleft=-
+1794440723.596 pid=46929 state=2 engine=0 node=0 want=1 holds=1 saves=0 expiries=0 refusals=0 fails=34 run=34 retries=19 heals=14 resumes=0 bgleft=-
+1794440724.229 LABFAIL engine.start 'what'
+1794440724.595 pid=46929 state=2 engine=0 node=0 want=1 holds=1 saves=0 expiries=0 refusals=0 fails=35 run=35 retries=20 heals=14 resumes=0 bgleft=-
+1794440725.259 LABFAIL engine.start 'what'
+1794440725.599 pid=46929 state=2 engine=0 node=0 want=1 holds=1 saves=0 expiries=0 refusals=0 fails=36 run=36 retries=20 heals=15 resumes=0 bgleft=-
+1794440726.603 pid=46929 state=2 engine=0 node=0 want=1 holds=1 saves=0 expiries=0 refusals=0 fails=36 run=36 retries=20 heals=15 resumes=0 bgleft=-
+1794440727.598 pid=46929 state=2 engine=0 node=0 want=1 holds=1 saves=0 expiries=0 refusals=0 fails=36 run=36 retries=20 heals=15 resumes=0 bgleft=-
+1794440728.608 pid=46929 state=2 engine=0 node=0 want=1 holds=1 saves=0 expiries=0 refusals=0 fails=36 run=36 retries=20 heals=15 resumes=0 bgleft=-
+1794440729.478 LABFAIL engine.start 'what'
+1794440729.605 pid=46929 state=2 engine=0 node=0 want=1 holds=1 saves=0 expiries=0 refusals=0 fails=37 run=37 retries=21 heals=15 resumes=0 bgleft=-
+1794440730.603 pid=46929 state=2 engine=0 node=0 want=1 holds=1 saves=0 expiries=0 refusals=0 fails=37 run=37 retries=21 heals=15 resumes=0 bgleft=-
+1794440731.597 pid=46929 state=2 engine=0 node=0 want=1 holds=1 saves=0 expiries=0 refusals=0 fails=37 run=37 retries=21 heals=15 resumes=0 bgleft=-
+1794440732.604 pid=46929 state=2 engine=0 node=0 want=1 holds=1 saves=0 expiries=0 refusals=0 fails=37 run=37 retries=21 heals=15 resumes=0 bgleft=-
+1794440733.605 pid=46929 state=2 engine=0 node=0 want=1 holds=1 saves=0 expiries=0 refusals=0 fails=37 run=37 retries=21 heals=15 resumes=0 bgleft=-
+1794440734.606 pid=46929 state=2 engine=0 node=0 want=1 holds=1 saves=0 expiries=0 refusals=0 fails=37 run=37 retries=21 heals=15 resumes=0 bgleft=-
+1794440734.738 LABFAIL engine.start 'what'
+1794440735.243 LABFAIL engine.start 'what'
+1794440735.595 pid=46929 state=2 engine=0 node=0 want=1 holds=1 saves=0 expiries=0 refusals=0 fails=39 run=39 retries=22 heals=16 resumes=0 bgleft=-
+1794440736.598 pid=46929 state=2 engine=0 node=0 want=1 holds=1 saves=0 expiries=0 refusals=0 fails=39 run=39 retries=22 heals=16 resumes=0 bgleft=-
+1794440740.798 START pid=55214 path=/Users/runner/work/Ammy/Ammy/out/I-hold/probe.txt args=-labOut /Users/runner/work/Ammy/Ammy/out/I-hold -relay_endpoint https://localhost:8443/now-playing -relay_key lab
+1794440741.843 pid=55214 state=0 engine=1 node=1 want=1 holds=0 saves=0 expiries=0 refusals=0 fails=0 run=0 retries=0 heals=0 resumes=1 bgleft=-
+1794440742.802 pid=55214 state=0 engine=1 node=1 want=1 holds=0 saves=0 expiries=0 refusals=0 fails=0 run=0 retries=0 heals=0 resumes=1 bgleft=-
+1794440743.803 pid=55214 state=0 engine=1 node=1 want=1 holds=0 saves=0 expiries=0 refusals=0 fails=0 run=0 retries=0 heals=0 resumes=1 bgleft=-
+1794440744.802 pid=55214 state=0 engine=1 node=1 want=1 holds=0 saves=0 expiries=0 refusals=0 fails=0 run=0 retries=0 heals=0 resumes=1 bgleft=-
+1794440745.802 pid=55214 state=0 engine=1 node=1 want=1 holds=0 saves=0 expiries=0 refusals=0 fails=0 run=0 retries=0 heals=0 resumes=1 bgleft=-
+1794440746.804 pid=55214 state=0 engine=1 node=1 want=1 holds=0 saves=0 expiries=0 refusals=0 fails=0 run=0 retries=0 heals=0 resumes=1 bgleft=-
+1794440747.802 pid=55214 state=0 engine=1 node=1 want=1 holds=0 saves=0 expiries=0 refusals=0 fails=0 run=0 retries=0 heals=0 resumes=1 bgleft=-
+1794440748.802 pid=55214 state=0 engine=1 node=1 want=1 holds=0 saves=0 expiries=0 refusals=0 fails=0 run=0 retries=0 heals=0 resumes=1 bgleft=-
+1794440749.802 pid=55214 state=0 engine=1 node=1 want=1 holds=0 saves=0 expiries=0 refusals=0 fails=0 run=0 retries=0 heals=0 resumes=1 bgleft=-
+1794440750.801 pid=55214 state=0 engine=1 node=1 want=1 holds=0 saves=0 expiries=0 refusals=0 fails=0 run=0 retries=0 heals=0 resumes=1 bgleft=-
+1794440751.802 pid=55214 state=0 engine=1 node=1 want=1 holds=0 saves=0 expiries=0 refusals=0 fails=0 run=0 retries=0 heals=0 resumes=1 bgleft=-
+1794440752.801 pid=55214 state=0 engine=1 node=1 want=1 holds=0 saves=0 expiries=0 refusals=0 fails=0 run=0 retries=0 heals=0 resumes=1 bgleft=-
+1794440753.803 pid=55214 state=0 engine=1 node=1 want=1 holds=0 saves=0 expiries=0 refusals=0 fails=0 run=0 retries=0 heals=0 resumes=1 bgleft=-
+1794440754.804 pid=55214 state=0 engine=1 node=1 want=1 holds=0 saves=0 expiries=0 refusals=0 fails=0 run=0 retries=0 heals=0 resumes=1 bgleft=-
+1794440755.802 pid=55214 state=0 engine=1 node=1 want=1 holds=0 saves=0 expiries=0 refusals=0 fails=0 run=0 retries=0 heals=0 resumes=1 bgleft=-
+1794440756.803 pid=55214 state=0 engine=1 node=1 want=1 holds=0 saves=0 expiries=0 refusals=0 fails=0 run=0 retries=0 heals=0 resumes=1 bgleft=-
+1794440757.802 pid=55214 state=0 engine=1 node=1 want=1 holds=0 saves=0 expiries=0 refusals=0 fails=0 run=0 retries=0 heals=0 resumes=1 bgleft=-
+1794440758.802 pid=55214 state=0 engine=1 node=1 want=1 holds=0 saves=0 expiries=0 refusals=0 fails=0 run=0 retries=0 heals=0 resumes=1 bgleft=-
+1794440759.802 pid=55214 state=0 engine=1 node=1 want=1 holds=0 saves=0 expiries=0 refusals=0 fails=0 run=0 retries=0 heals=0 resumes=1 bgleft=-
+1794440760.802 pid=55214 state=0 engine=1 node=1 want=1 holds=0 saves=0 expiries=0 refusals=0 fails=0 run=0 retries=0 heals=0 resumes=1 bgleft=-
+1794440761.802 pid=55214 state=0 engine=1 node=1 want=1 holds=0 saves=0 expiries=0 refusals=0 fails=0 run=0 retries=0 heals=0 resumes=1 bgleft=-
+1794440762.805 pid=55214 state=0 engine=1 node=1 want=1 holds=0 saves=0 expiries=0 refusals=0 fails=0 run=0 retries=0 heals=0 resumes=1 bgleft=-
+1794440763.802 pid=55214 state=0 engine=1 node=1 want=1 holds=0 saves=0 expiries=0 refusals=0 fails=0 run=0 retries=0 heals=0 resumes=1 bgleft=-
+1794440764.802 pid=55214 state=0 engine=1 node=1 want=1 holds=0 saves=0 expiries=0 refusals=0 fails=0 run=0 retries=0 heals=0 resumes=1 bgleft=-
+1794440765.802 pid=55214 state=0 engine=1 node=1 want=1 holds=0 saves=0 expiries=0 refusals=0 fails=0 run=0 retries=0 heals=0 resumes=1 bgleft=-
+1794440766.802 pid=55214 state=0 engine=1 node=1 want=1 holds=0 saves=0 expiries=0 refusals=0 fails=0 run=0 retries=0 heals=0 resumes=1 bgleft=-
+1794440767.804 pid=55214 state=0 engine=1 node=1 want=1 holds=0 saves=0 expiries=0 refusals=0 fails=0 run=0 retries=0 heals=0 resumes=1 bgleft=-
+1794440768.806 pid=55214 state=0 engine=1 node=1 want=1 holds=0 saves=0 expiries=0 refusals=0 fails=0 run=0 retries=0 heals=0 resumes=1 bgleft=-
+1794440769.803 pid=55214 state=0 engine=1 node=1 want=1 holds=0 saves=0 expiries=0 refusals=0 fails=0 run=0 retries=0 heals=0 resumes=1 bgleft=-
+1794440770.801 pid=55214 state=0 engine=1 node=1 want=1 holds=0 saves=0 expiries=0 refusals=0 fails=0 run=0 retries=0 heals=0 resumes=1 bgleft=-
+1794440771.805 pid=55214 state=0 engine=1 node=1 want=1 holds=0 saves=0 expiries=0 refusals=0 fails=0 run=0 retries=0 heals=0 resumes=1 bgleft=-
+1794440772.801 pid=55214 state=0 engine=1 node=1 want=1 holds=0 saves=0 expiries=0 refusals=0 fails=0 run=0 retries=0 heals=0 resumes=1 bgleft=-
+1794440773.803 pid=55214 state=0 engine=1 node=1 want=1 holds=0 saves=0 expiries=0 refusals=0 fails=0 run=0 retries=0 heals=0 resumes=1 bgleft=-
+1794440774.803 pid=55214 state=0 engine=1 node=1 want=1 holds=0 saves=0 expiries=0 refusals=0 fails=0 run=0 retries=0 heals=0 resumes=1 bgleft=-
+1794440775.804 pid=55214 state=0 engine=1 node=1 want=1 holds=0 saves=0 expiries=0 refusals=0 fails=0 run=0 retries=0 heals=0 resumes=1 bgleft=-
+1794440776.802 pid=55214 state=0 engine=1 node=1 want=1 holds=0 saves=0 expiries=0 refusals=0 fails=0 run=0 retries=0 heals=0 resumes=1 bgleft=-
+1794440777.804 pid=55214 state=0 engine=1 node=1 want=1 holds=0 saves=0 expiries=0 refusals=0 fails=0 run=0 retries=0 heals=0 resumes=1 bgleft=-
+1794440778.802 pid=55214 state=0 engine=1 node=1 want=1 holds=0 saves=0 expiries=0 refusals=0 fails=0 run=0 retries=0 heals=0 resumes=1 bgleft=-
+1794440779.803 pid=55214 state=0 engine=1 node=1 want=1 holds=0 saves=0 expiries=0 refusals=0 fails=0 run=0 retries=0 heals=0 resumes=1 bgleft=-
+1794440780.802 pid=55214 state=0 engine=1 node=1 want=1 holds=0 saves=0 expiries=0 refusals=0 fails=0 run=0 retries=0 heals=0 resumes=1 bgleft=-
+1794440781.802 pid=55214 state=0 engine=1 node=1 want=1 holds=0 saves=0 expiries=0 refusals=0 fails=0 run=0 retries=0 heals=0 resumes=1 bgleft=-
+1794440782.802 pid=55214 state=0 engine=1 node=1 want=1 holds=0 saves=0 expiries=0 refusals=0 fails=0 run=0 retries=0 heals=0 resumes=1 bgleft=-
+1794440783.803 pid=55214 state=0 engine=1 node=1 want=1 holds=0 saves=0 expiries=0 refusals=0 fails=0 run=0 retries=0 heals=0 resumes=1 bgleft=-
+1794440784.803 pid=55214 state=0 engine=1 node=1 want=1 holds=0 saves=0 expiries=0 refusals=0 fails=0 run=0 retries=0 heals=0 resumes=1 bgleft=-
+1794440785.803 pid=55214 state=0 engine=1 node=1 want=1 holds=0 saves=0 expiries=0 refusals=0 fails=0 run=0 retries=0 heals=0 resumes=1 bgleft=-
+1794440786.803 pid=55214 state=0 engine=1 node=1 want=1 holds=0 saves=0 expiries=0 refusals=0 fails=0 run=0 retries=0 heals=0 resumes=1 bgleft=-
+1794440787.803 pid=55214 state=0 engine=1 node=1 want=1 holds=0 saves=0 expiries=0 refusals=0 fails=0 run=0 retries=0 heals=0 resumes=1 bgleft=-

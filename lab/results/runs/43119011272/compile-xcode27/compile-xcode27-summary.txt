@@ -1,0 +1,28 @@
+== xcode27: Xcode 27.2 Build version 27B52  at /Applications/Xcode_27.2.0.app/Contents/Developer
+iphoneos SDK 27.2, iphonesimulator SDK 27.2
+the three changed files, as built:
+fb2210e8f74f5ed8346478a03212e7d6c219467c09220fa386d02a67c8848b12  Ammy/KeepAlive.swift
+54dab6faed31de54187f809fab8f61ae52b43784b89662ec172292c410735b88  Ammy/KeepAliveJournal.swift
+c0c1bc2c9ddae415f93370f45174dafaa3457bbb6e812ae6e0fe776bd03124c6  Ammy/Diagnostics.swift
+-- pure-device (iphoneos): exit 0, ** BUILD SUCCEEDED **
+   errors: 0
+   distinct warnings, all files: 1
+   warnings and errors in KeepAlive.swift, KeepAliveJournal.swift, Diagnostics.swift (and LabFaults.swift):
+   all| 2026-11-11 23:21:47.901 appintentsmetadataprocessor[8482:27550] warning: Metadata extraction skipped, no AppIntents.framework dependency found
+  "DTPlatformVersion" => "27.2"
+  "DTSDKName" => "iphoneos27.2"
+  "DTXcode" => "2720"
+  "DTXcodeBuild" => "27B52"
+  "MinimumOSVersion" => "26.0"
+Non-fat file: ./build/Build/Products/Release-iphoneos/Ammy.app/Ammy is architecture: arm64
+-- pure-simulator (iphonesimulator): exit 0, ** BUILD SUCCEEDED **
+   errors: 0
+   distinct warnings, all files: 1
+   warnings and errors in KeepAlive.swift, KeepAliveJournal.swift, Diagnostics.swift (and LabFaults.swift):
+   all| 2026-11-11 23:22:11.576 appintentsmetadataprocessor[9328:29789] warning: Metadata extraction skipped, no AppIntents.framework dependency found
+  "DTPlatformVersion" => "27.2"
+  "DTSDKName" => "iphonesimulator27.2"
+  "DTXcode" => "2720"
+  "DTXcodeBuild" => "27B52"
+  "MinimumOSVersion" => "26.0"
+Architectures in the fat file: ./build-sim/Build/Products/Release-iphonesimulator/Ammy.app/Ammy are: x86_64 arm64 

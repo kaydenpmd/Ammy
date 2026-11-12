@@ -1,0 +1,390 @@
+Command line invocation:
+    /Applications/Xcode_26.6.app/Contents/Developer/usr/bin/xcodebuild -project Ammy.xcodeproj -scheme Ammy -configuration Release -sdk iphoneos -derivedDataPath build MARKETING_VERSION=1.0 CURRENT_PROJECT_VERSION=999 CODE_SIGN_IDENTITY= CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO ONLY_ACTIVE_ARCH=NO
+
+Build settings from command line:
+    CODE_SIGN_IDENTITY = 
+    CODE_SIGNING_ALLOWED = NO
+    CODE_SIGNING_REQUIRED = NO
+    CURRENT_PROJECT_VERSION = 999
+    MARKETING_VERSION = 1.0
+    ONLY_ACTIVE_ARCH = NO
+    SDKROOT = iphoneos26.5
+
+2026-11-11 23:21:18.540 xcodebuild[1431:7660] [MT] IDERunDestination: Supported platforms for the buildables in the current scheme is empty.
+--- xcodebuild: WARNING: Using the first of multiple matching destinations:
+{ platform:iOS, id:dvtdevice-DVTiPhonePlaceholder-iphoneos:placeholder, name:Any iOS Device }
+{ platform:macOS, arch:arm64, variant:Designed for [iPad,iPhone], id:4749717f9ddbf2041f1e38abdb14bcc6f0854a3c, name:My Mac }
+{ platform:iOS Simulator, id:dvtdevice-DVTiOSDeviceSimulatorPlaceholder-iphonesimulator:placeholder, name:Any iOS Simulator Device }
+note: Using codesigning identity override: 
+ComputePackagePrebuildTargetDependencyGraph
+
+Prepare packages
+
+CreateBuildRequest
+
+SendProjectDescription
+
+CreateBuildOperation
+
+ComputeTargetDependencyGraph
+note: Building targets in dependency order
+note: Target dependency graph (1 target)
+    Target 'Ammy' in project 'Ammy' (no dependencies)
+
+GatherProvisioningInputs
+
+CreateBuildDescription
+
+ExecuteExternalTool /Applications/Xcode_26.6.app/Contents/Developer/usr/bin/actool --print-asset-tag-combinations --output-format xml1 /Users/runner/work/Ammy/Ammy/Ammy/Assets.xcassets
+
+ExecuteExternalTool /Applications/Xcode_26.6.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -v -E -dM -isysroot /Applications/Xcode_26.6.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS26.5.sdk -x c -c /dev/null
+
+ExecuteExternalTool /Applications/Xcode_26.6.app/Contents/Developer/usr/bin/actool --version --output-format xml1
+
+ExecuteExternalTool /Applications/Xcode_26.6.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc --version
+
+ExecuteExternalTool /Applications/Xcode_26.6.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ld -version_details
+
+Build description signature: 08bbd7636294c643f8667b6c891c16d4
+Build description path: /Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/XCBuildData/08bbd7636294c643f8667b6c891c16d4.xcbuilddata
+CreateBuildDirectory /Users/runner/work/Ammy/Ammy/build/Build/Products
+    cd /Users/runner/work/Ammy/Ammy/Ammy.xcodeproj
+    builtin-create-build-directory /Users/runner/work/Ammy/Ammy/build/Build/Products
+
+CreateBuildDirectory /Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex
+    cd /Users/runner/work/Ammy/Ammy/Ammy.xcodeproj
+    builtin-create-build-directory /Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex
+
+ClangStatCache /Applications/Xcode_26.6.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang-stat-cache /Applications/Xcode_26.6.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS26.5.sdk /Users/runner/work/Ammy/Ammy/build/SDKStatCaches.noindex/iphoneos26.5-23F81a-688ef53f1462e2c8f657fdc38a81448fee66e23052a0157c865c76b268046726.sdkstatcache
+    cd /Users/runner/work/Ammy/Ammy/Ammy.xcodeproj
+    /Applications/Xcode_26.6.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang-stat-cache /Applications/Xcode_26.6.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS26.5.sdk -o /Users/runner/work/Ammy/Ammy/build/SDKStatCaches.noindex/iphoneos26.5-23F81a-688ef53f1462e2c8f657fdc38a81448fee66e23052a0157c865c76b268046726.sdkstatcache
+
+CreateBuildDirectory /Users/runner/work/Ammy/Ammy/build/Build/Products/Release-iphoneos
+    cd /Users/runner/work/Ammy/Ammy/Ammy.xcodeproj
+    builtin-create-build-directory /Users/runner/work/Ammy/Ammy/build/Build/Products/Release-iphoneos
+
+WriteAuxiliaryFile /Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy-84def68766d24ba56f769ea36e325f5a-VFS-iphoneos/all-product-headers.yaml
+    cd /Users/runner/work/Ammy/Ammy/Ammy.xcodeproj
+    write-file /Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy-84def68766d24ba56f769ea36e325f5a-VFS-iphoneos/all-product-headers.yaml
+
+CreateBuildDirectory /Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/SwiftExplicitPrecompiledModules
+    cd /Users/runner/work/Ammy/Ammy/Ammy.xcodeproj
+    builtin-create-build-directory /Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/SwiftExplicitPrecompiledModules
+
+CreateBuildDirectory /Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/ExplicitPrecompiledModules
+    cd /Users/runner/work/Ammy/Ammy/Ammy.xcodeproj
+    builtin-create-build-directory /Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/ExplicitPrecompiledModules
+
+CreateBuildDirectory /Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/EagerLinkingTBDs/Release-iphoneos
+    cd /Users/runner/work/Ammy/Ammy/Ammy.xcodeproj
+    builtin-create-build-directory /Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/EagerLinkingTBDs/Release-iphoneos
+
+WriteAuxiliaryFile /Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/Objects-normal/arm64/Ammy_const_extract_protocols.json (in target 'Ammy' from project 'Ammy')
+    cd /Users/runner/work/Ammy/Ammy
+    write-file /Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/Objects-normal/arm64/Ammy_const_extract_protocols.json
+
+WriteAuxiliaryFile /Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/Objects-normal/arm64/Ammy.SwiftFileList (in target 'Ammy' from project 'Ammy')
+    cd /Users/runner/work/Ammy/Ammy
+    write-file /Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/Objects-normal/arm64/Ammy.SwiftFileList
+
+WriteAuxiliaryFile /Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/Objects-normal/arm64/Ammy.SwiftConstValuesFileList (in target 'Ammy' from project 'Ammy')
+    cd /Users/runner/work/Ammy/Ammy
+    write-file /Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/Objects-normal/arm64/Ammy.SwiftConstValuesFileList
+
+WriteAuxiliaryFile /Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/Objects-normal/arm64/Ammy.LinkFileList (in target 'Ammy' from project 'Ammy')
+    cd /Users/runner/work/Ammy/Ammy
+    write-file /Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/Objects-normal/arm64/Ammy.LinkFileList
+
+WriteAuxiliaryFile /Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/Objects-normal/arm64/Ammy-OutputFileMap.json (in target 'Ammy' from project 'Ammy')
+    cd /Users/runner/work/Ammy/Ammy
+    write-file /Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/Objects-normal/arm64/Ammy-OutputFileMap.json
+
+WriteAuxiliaryFile /Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/Ammy.hmap (in target 'Ammy' from project 'Ammy')
+    cd /Users/runner/work/Ammy/Ammy
+    write-file /Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/Ammy.hmap
+
+WriteAuxiliaryFile /Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/Ammy.DependencyStaticMetadataFileList (in target 'Ammy' from project 'Ammy')
+    cd /Users/runner/work/Ammy/Ammy
+    write-file /Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/Ammy.DependencyStaticMetadataFileList
+
+WriteAuxiliaryFile /Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/Ammy.DependencyMetadataFileList (in target 'Ammy' from project 'Ammy')
+    cd /Users/runner/work/Ammy/Ammy
+    write-file /Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/Ammy.DependencyMetadataFileList
+
+WriteAuxiliaryFile /Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/Ammy-project-headers.hmap (in target 'Ammy' from project 'Ammy')
+    cd /Users/runner/work/Ammy/Ammy
+    write-file /Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/Ammy-project-headers.hmap
+
+WriteAuxiliaryFile /Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/Ammy-own-target-headers.hmap (in target 'Ammy' from project 'Ammy')
+    cd /Users/runner/work/Ammy/Ammy
+    write-file /Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/Ammy-own-target-headers.hmap
+
+WriteAuxiliaryFile /Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/Ammy-generated-files.hmap (in target 'Ammy' from project 'Ammy')
+    cd /Users/runner/work/Ammy/Ammy
+    write-file /Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/Ammy-generated-files.hmap
+
+WriteAuxiliaryFile /Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/Ammy-all-target-headers.hmap (in target 'Ammy' from project 'Ammy')
+    cd /Users/runner/work/Ammy/Ammy
+    write-file /Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/Ammy-all-target-headers.hmap
+
+WriteAuxiliaryFile /Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/Ammy-all-non-framework-target-headers.hmap (in target 'Ammy' from project 'Ammy')
+    cd /Users/runner/work/Ammy/Ammy
+    write-file /Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/Ammy-all-non-framework-target-headers.hmap
+
+MkDir /Users/runner/work/Ammy/Ammy/build/Build/Products/Release-iphoneos/Ammy.app (in target 'Ammy' from project 'Ammy')
+    cd /Users/runner/work/Ammy/Ammy
+    /bin/mkdir -p /Users/runner/work/Ammy/Ammy/build/Build/Products/Release-iphoneos/Ammy.app
+
+MkDir /Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/assetcatalog_output/unthinned (in target 'Ammy' from project 'Ammy')
+    cd /Users/runner/work/Ammy/Ammy
+    /bin/mkdir -p /Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/assetcatalog_output/unthinned
+
+MkDir /Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/assetcatalog_output/thinned (in target 'Ammy' from project 'Ammy')
+    cd /Users/runner/work/Ammy/Ammy
+    /bin/mkdir -p /Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/assetcatalog_output/thinned
+
+GenerateAssetSymbols /Users/runner/work/Ammy/Ammy/Ammy/Assets.xcassets (in target 'Ammy' from project 'Ammy')
+    cd /Users/runner/work/Ammy/Ammy
+    /Applications/Xcode_26.6.app/Contents/Developer/usr/bin/actool /Users/runner/work/Ammy/Ammy/Ammy/Assets.xcassets --compile /Users/runner/work/Ammy/Ammy/build/Build/Products/Release-iphoneos/Ammy.app --output-format human-readable-text --notices --warnings --export-dependency-info /Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/assetcatalog_dependencies --output-partial-info-plist /Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/assetcatalog_generated_info.plist --app-icon AppIcon --compress-pngs --enable-on-demand-resources YES --development-region en --target-device iphone --target-device ipad --minimum-deployment-target 26.0 --platform iphoneos --bundle-identifier com.local.ammy --generate-swift-asset-symbol-extensions NO --generate-swift-asset-symbols /Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/DerivedSources/GeneratedAssetSymbols.swift --generate-objc-asset-symbols /Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/DerivedSources/GeneratedAssetSymbols.h --generate-asset-symbol-index /Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/DerivedSources/GeneratedAssetSymbols-Index.plist
+/* com.apple.actool.compilation-results */
+/Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/DerivedSources/GeneratedAssetSymbols-Index.plist
+/Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/DerivedSources/GeneratedAssetSymbols.h
+/Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/DerivedSources/GeneratedAssetSymbols.swift
+
+
+CompileAssetCatalogVariant thinned /Users/runner/work/Ammy/Ammy/build/Build/Products/Release-iphoneos/Ammy.app /Users/runner/work/Ammy/Ammy/Ammy/Assets.xcassets (in target 'Ammy' from project 'Ammy')
+    cd /Users/runner/work/Ammy/Ammy
+    /Applications/Xcode_26.6.app/Contents/Developer/usr/bin/actool /Users/runner/work/Ammy/Ammy/Ammy/Assets.xcassets --compile /Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/assetcatalog_output/thinned --output-format human-readable-text --notices --warnings --export-dependency-info /Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/assetcatalog_dependencies_thinned --output-partial-info-plist /Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/assetcatalog_generated_info.plist_thinned --app-icon AppIcon --compress-pngs --enable-on-demand-resources YES --development-region en --target-device iphone --target-device ipad --minimum-deployment-target 26.0 --platform iphoneos
+/* com.apple.actool.compilation-results */
+/Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/assetcatalog_generated_info.plist_thinned
+/Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/assetcatalog_output/thinned/AppIcon60x60@2x.png
+/Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/assetcatalog_output/thinned/AppIcon76x76@2x~ipad.png
+/Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/assetcatalog_output/thinned/Assets.car
+
+
+SwiftDriver Ammy normal arm64 com.apple.xcode.tools.swift.compiler (in target 'Ammy' from project 'Ammy')
+    cd /Users/runner/work/Ammy/Ammy
+    builtin-SwiftDriver -- /Applications/Xcode_26.6.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc -module-name Ammy -O -whole-module-optimization @/Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/Objects-normal/arm64/Ammy.SwiftFileList -enable-bare-slash-regex -enable-experimental-feature DebugDescriptionMacro -sdk /Applications/Xcode_26.6.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS26.5.sdk -target arm64-apple-ios26.0 -g -module-cache-path /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex -Xfrontend -serialize-debugging-options -swift-version 5 -I /Users/runner/work/Ammy/Ammy/build/Build/Products/Release-iphoneos -F /Users/runner/work/Ammy/Ammy/build/Build/Products/Release-iphoneos -c -num-threads 3 -Xcc -ivfsstatcache -Xcc /Users/runner/work/Ammy/Ammy/build/SDKStatCaches.noindex/iphoneos26.5-23F81a-688ef53f1462e2c8f657fdc38a81448fee66e23052a0157c865c76b268046726.sdkstatcache -output-file-map /Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/Objects-normal/arm64/Ammy-OutputFileMap.json -use-frontend-parseable-output -save-temps -no-color-diagnostics -explicit-module-build -module-cache-path /Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/SwiftExplicitPrecompiledModules -clang-scanner-module-cache-path /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex -sdk-module-cache-path /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex -serialize-diagnostics -emit-dependencies -emit-module -emit-module-path /Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/Objects-normal/arm64/Ammy.swiftmodule -validate-clang-modules-once -clang-build-session-file /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/Session.modulevalidation -Xcc -I/Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/swift-overrides.hmap -emit-const-values -Xfrontend -const-gather-protocols-file -Xfrontend /Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/Objects-normal/arm64/Ammy_const_extract_protocols.json -Xcc -iquote -Xcc /Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/Ammy-generated-files.hmap -Xcc -I/Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/Ammy-own-target-headers.hmap -Xcc -I/Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/Ammy-all-target-headers.hmap -Xcc -iquote -Xcc /Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/Ammy-project-headers.hmap -Xcc -I/Users/runner/work/Ammy/Ammy/build/Build/Products/Release-iphoneos/include -Xcc -I/Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/DerivedSources-normal/arm64 -Xcc -I/Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/DerivedSources/arm64 -Xcc -I/Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/DerivedSources -emit-objc-header -emit-objc-header-path /Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/Objects-normal/arm64/Ammy-Swift.h -working-directory /Users/runner/work/Ammy/Ammy -no-emit-module-separately-wmo
+
+SwiftDriver\ Compilation Ammy normal arm64 com.apple.xcode.tools.swift.compiler (in target 'Ammy' from project 'Ammy')
+    cd /Users/runner/work/Ammy/Ammy
+    builtin-Swift-Compilation -- /Applications/Xcode_26.6.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc -module-name Ammy -O -whole-module-optimization @/Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/Objects-normal/arm64/Ammy.SwiftFileList -enable-bare-slash-regex -enable-experimental-feature DebugDescriptionMacro -sdk /Applications/Xcode_26.6.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS26.5.sdk -target arm64-apple-ios26.0 -g -module-cache-path /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex -Xfrontend -serialize-debugging-options -swift-version 5 -I /Users/runner/work/Ammy/Ammy/build/Build/Products/Release-iphoneos -F /Users/runner/work/Ammy/Ammy/build/Build/Products/Release-iphoneos -c -num-threads 3 -Xcc -ivfsstatcache -Xcc /Users/runner/work/Ammy/Ammy/build/SDKStatCaches.noindex/iphoneos26.5-23F81a-688ef53f1462e2c8f657fdc38a81448fee66e23052a0157c865c76b268046726.sdkstatcache -output-file-map /Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/Objects-normal/arm64/Ammy-OutputFileMap.json -use-frontend-parseable-output -save-temps -no-color-diagnostics -explicit-module-build -module-cache-path /Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/SwiftExplicitPrecompiledModules -clang-scanner-module-cache-path /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex -sdk-module-cache-path /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex -serialize-diagnostics -emit-dependencies -emit-module -emit-module-path /Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/Objects-normal/arm64/Ammy.swiftmodule -validate-clang-modules-once -clang-build-session-file /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/Session.modulevalidation -Xcc -I/Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/swift-overrides.hmap -emit-const-values -Xfrontend -const-gather-protocols-file -Xfrontend /Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/Objects-normal/arm64/Ammy_const_extract_protocols.json -Xcc -iquote -Xcc /Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/Ammy-generated-files.hmap -Xcc -I/Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/Ammy-own-target-headers.hmap -Xcc -I/Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/Ammy-all-target-headers.hmap -Xcc -iquote -Xcc /Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/Ammy-project-headers.hmap -Xcc -I/Users/runner/work/Ammy/Ammy/build/Build/Products/Release-iphoneos/include -Xcc -I/Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/DerivedSources-normal/arm64 -Xcc -I/Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/DerivedSources/arm64 -Xcc -I/Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/DerivedSources -emit-objc-header -emit-objc-header-path /Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/Objects-normal/arm64/Ammy-Swift.h -working-directory /Users/runner/work/Ammy/Ammy -no-emit-module-separately-wmo
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/_Builtin_stddef-97024XI0JTNI5ZWJ597FB813H.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/ptrauth-CJ6GR8VTJCWKDJB5U82P3DN2D.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/ptrcheck-EXLGPGJLWWWFEIU0DKSDE8D1B.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/_Builtin_stdarg-94M8NBIWPISFAL08U38CPEQC4.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/DeveloperToolsSupport-8KYI1YP64H477CBTBVLFZ91N4.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/_SwiftConcurrencyShims-BPUVNXPWOPTA9LHXU48V0YU9I.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/_Builtin_stdbool-3V9I5PWCWCVEOYMEQ447CMD8W.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/_Builtin_float-EGK1O7DJ40KL04P4MDA31UA11.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/_AvailabilityInternal-DVGQBSTY54LHRHZO97L3AC9IF.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/SwiftShims-9ZFSA504R0QRU148X8CWXJD5J.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/_DarwinFoundation1-A5LHSI8FD45A7OXQVYX9PK7UV.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/_DarwinFoundation2-6A4TLVX9JESIBJ3AHHB6LPQ0O.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/_Builtin_limits-CBHZ6SDY123PK493NBHF35WKP.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/_Builtin_tgmath-7UDGS1JMKJLL6QAGXDFE5BIRG.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/sys_types-9TD16TNVWBRR1RP73I0T97IN5.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/_Builtin_stdint-XNELVA9A0KAN5IWYFIVGKKDX.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/_Builtin_intrinsics-DYLHBPCW08L2T2MKKA1LVSOCG.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/_Builtin_stdatomic-3O45FPD2DBOUZQNKY04N2SBPQ.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/_DarwinFoundation3-CTWL55UKMT9JBNSISAKYSA2TW.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/_Builtin_inttypes-61FOH934ADAI09B2C60P5GPF8.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/simd-EI4VB056UMQTB9796BEVSIBKB.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/Darwin-5K6S46SZB8BMA5Z5BIQINKALL.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/ObjectiveC-EC7ZIUCGG94S2HFPSTXJPT4TR.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/MachO-BEJ0JYTH6D2JXV8Z2XN3S9UP9.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/os_object-279ZD6ZU08G9NF9JSOT2P4FMJ.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/Spatial-EW3S4ELKKYOIX6NU1Y2UTIH83.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/os_workgroup-9C383SY4WS4C4FJH97EO8ITBQ.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/Dispatch-6WRLFVUL3DYJ8ZUF6HJX7ZY85.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/CoreFoundation-36ZOTFX9BT0Q766MUY6BC5JDG.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/XPC-136FPGIPSYWMLV8G14H0254GL.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/dnssd-1GILG0YC82K6YLRBNWM2ZC0DC.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/os-5K8XQMWYRRX6T92QPG02N71ML.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/Security-97650ZGQE1GVUOG6305Z06A12.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/CoreAudioTypes-TLEQTFY80FNDXS84XJC2DPXC.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/CoreGraphics-9LFDSUKLUZ2SDVS2GELCWY5K4.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/CFNetwork-AHOF473RQX2Z1MWYOWLCODFIV.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/CoreAudio-CSY5Z2KEYDEQ7DU2MYTK1OYFU.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/Foundation-GW7E90JI517RAUT2F96QR2WN.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/CoreText-6LRI81PKBUFZZTO4G4I34MZC.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/ImageIO-W392L0TNTE1G4BDL9KBY5LGR.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/DataDetection-AU1NXZ99MT4PN86W8X2S7ZD2T.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/CoreMIDI-6ZHL8IINBV062FOI61WOWLJ3W.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/CoreTransferable-9WTXGY5IG22AZIPNKO44EHQFH.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/Symbols-6J4LZ953ASSTX313Q6NJEQMSI.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/AudioToolbox-C41P09MKZX05JL1FR82HY4F7Y.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/UniformTypeIdentifiers-8VH3ZTXCPSLZP94ZXR9YN0Y8M.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/UserNotifications-BF9DZ4Z3IZJ7BY68RE74B3T48.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/Network-1OEX6G98JLGL44G8SBCBP8B74.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/IOSurface-9R2OG3WUSTR74JLW3BADKOOGQ.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/OSLog-76I91N7MPSQBKM8Q64Q6F0JKZ.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/AVRouting-7JZLC1J20Z8GQETXUA6QHD67O.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/Metal-6KJO812T8470OG6Z9C3XJ6U10.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/OpenGLES-CVDTLERS5EP3FNZJOJXUULPOR.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/FileProvider-97QIB83O1RVE9YFUCJVEHFVK2.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/Accessibility-1FFWJ0A83CABM3IP8821GHK3A.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/CoreVideo-H88C9DJJWVXLM464JGJLZ277.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/CoreData-EDIC2QKLBOIUY20YRVRY89WLI.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/UIUtilities-34PLSFNMPP0TRN9UR0OYE98U4.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/CoreImage-2MZV0AM6V4VAO5OH9C98CPINI.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/QuartzCore-9BC8354COUM2IDZ5XPOOVAM88.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/CoreMedia-BZ26VTB98WN53SN8DBM8SG104.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/UIKit-8FJUQ1OSEGZ7POLKKGCNP5XW3.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/SwiftUICore-CQNUIS2UBFI7PKVQTG6ZBF0QQ.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/MediaToolbox-D2VX740CNULAK8I6N3KVGOWEA.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/AVFAudio-8VKZ11SDBFOYZ2XDONDRGSTGP.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/AVFoundation-5WGNBRWIG213EP1CABWLYUEPU.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/SwiftUI-8ESKVFNPCEY639N7IVWMIV9PS.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/MediaPlayer-EYIOINYRHDZXBTA3NR7SZO224.pcm
+
+SwiftCompile normal arm64 Compiling\ AmmyApp.swift,\ Diagnostics.swift,\ EventLog.swift,\ KeepAlive.swift,\ KeepAliveJournal.swift,\ LinkHistoryView.swift,\ NowPlayingMonitor.swift,\ PresenceController.swift,\ PresenceRelay.swift,\ SilenceWatchdog.swift,\ GeneratedAssetSymbols.swift /Users/runner/work/Ammy/Ammy/Ammy/AmmyApp.swift /Users/runner/work/Ammy/Ammy/Ammy/Diagnostics.swift /Users/runner/work/Ammy/Ammy/Ammy/EventLog.swift /Users/runner/work/Ammy/Ammy/Ammy/KeepAlive.swift /Users/runner/work/Ammy/Ammy/Ammy/KeepAliveJournal.swift /Users/runner/work/Ammy/Ammy/Ammy/LinkHistoryView.swift /Users/runner/work/Ammy/Ammy/Ammy/NowPlayingMonitor.swift /Users/runner/work/Ammy/Ammy/Ammy/PresenceController.swift /Users/runner/work/Ammy/Ammy/Ammy/PresenceRelay.swift /Users/runner/work/Ammy/Ammy/Ammy/SilenceWatchdog.swift /Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/DerivedSources/GeneratedAssetSymbols.swift /Applications/Xcode_26.6.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/iphoneos/prebuilt-modules/26.5/_DarwinFoundation1.swiftmodule/arm64e-apple-ios.swiftmodule /Applications/Xcode_26.6.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/iphoneos/prebuilt-modules/26.5/CoreMedia.swiftmodule/arm64e-apple-ios.swiftmodule /Applications/Xcode_26.6.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/iphoneos/prebuilt-modules/26.5/Swift.swiftmodule/arm64e-apple-ios.swiftmodule /Applications/Xcode_26.6.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/iphoneos/prebuilt-modules/26.5/Combine.swiftmodule/arm64e-apple-ios.swiftmodule /Applications/Xcode_26.6.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/iphoneos/prebuilt-modules/26.5/_Builtin_float.swiftmodule/arm64e-apple-ios.swiftmodule /Applications/Xcode_26.6.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/iphoneos/prebuilt-modules/26.5/SwiftUI.swiftmodule/arm64e-apple-ios.swiftmodule /Applications/Xcode_26.6.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/iphoneos/prebuilt-modules/26.5/System.swiftmodule/arm64e-apple-ios.swiftmodule /Applications/Xcode_26.6.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/iphoneos/prebuilt-modules/26.5/Symbols.swiftmodule/arm64e-apple-ios.swiftmodule /Applications/Xcode_26.6.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/iphoneos/prebuilt-modules/26.5/FileProvider.swiftmodule/arm64e-apple-ios.swiftmodule /Applications/Xcode_26.6.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/iphoneos/prebuilt-modules/26.5/CoreData.swiftmodule/arm64e-apple-ios.swiftmodule /Applications/Xcode_26.6.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/iphoneos/prebuilt-modules/26.5/_Concurrency.swiftmodule/arm64e-apple-ios.swiftmodule /Applications/Xcode_26.6.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/iphoneos/prebuilt-modules/26.5/CoreText.swiftmodule/arm64e-apple-ios.swiftmodule /Applications/Xcode_26.6.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/iphoneos/prebuilt-modules/26.5/CoreFoundation.swiftmodule/arm64e-apple-ios.swiftmodule /Applications/Xcode_26.6.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/iphoneos/prebuilt-modules/26.5/ObjectiveC.swiftmodule/arm64e-apple-ios.swiftmodule /Applications/Xcode_26.6.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/iphoneos/prebuilt-modules/26.5/XPC.swiftmodule/arm64e-apple-ios.swiftmodule /Applications/Xcode_26.6.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/iphoneos/prebuilt-modules/26.5/Darwin.swiftmodule/arm64e-apple-ios.swiftmodule /Applications/Xcode_26.6.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/iphoneos/prebuilt-modules/26.5/Synchronization.swiftmodule/arm64e-apple-ios.swiftmodule /Applications/Xcode_26.6.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/iphoneos/prebuilt-modules/26.5/UniformTypeIdentifiers.swiftmodule/arm64e-apple-ios.swiftmodule /Applications/Xcode_26.6.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/iphoneos/prebuilt-modules/26.5/CoreVideo.swiftmodule/arm64e-apple-ios.swiftmodule /Applications/Xcode_26.6.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/iphoneos/prebuilt-modules/26.5/DeveloperToolsSupport.swiftmodule/arm64e-apple-ios.swiftmodule /Applications/Xcode_26.6.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/iphoneos/prebuilt-modules/26.5/CoreImage.swiftmodule/arm64e-apple-ios.swiftmodule /Applications/Xcode_26.6.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/iphoneos/prebuilt-modules/26.5/Metal.swiftmodule/arm64e-apple-ios.swiftmodule /Applications/Xcode_26.6.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/iphoneos/prebuilt-modules/26.5/Dispatch.swiftmodule/arm64e-apple-ios.swiftmodule /Applications/Xcode_26.6.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/iphoneos/prebuilt-modules/26.5/simd.swiftmodule/arm64e-apple-ios.swiftmodule /Applications/Xcode_26.6.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/iphoneos/prebuilt-modules/26.5/Observation.swiftmodule/arm64e-apple-ios.swiftmodule /Applications/Xcode_26.6.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/iphoneos/prebuilt-modules/26.5/AVFoundation.swiftmodule/arm64e-apple-ios.swiftmodule /Applications/Xcode_26.6.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/iphoneos/prebuilt-modules/26.5/CoreMIDI.swiftmodule/arm64e-apple-ios.swiftmodule /Applications/Xcode_26.6.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/iphoneos/prebuilt-modules/26.5/UIKit.swiftmodule/arm64e-apple-ios.swiftmodule /Applications/Xcode_26.6.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/iphoneos/prebuilt-modules/26.5/AVFAudio.swiftmodule/arm64e-apple-ios.swiftmodule /Applications/Xcode_26.6.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/iphoneos/prebuilt-modules/26.5/QuartzCore.swiftmodule/arm64e-apple-ios.swiftmodule /Applications/Xcode_26.6.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/iphoneos/prebuilt-modules/26.5/Accessibility.swiftmodule/arm64e-apple-ios.swiftmodule /Applications/Xcode_26.6.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/iphoneos/prebuilt-modules/26.5/AudioToolbox.swiftmodule/arm64e-apple-ios.swiftmodule /Applications/Xcode_26.6.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/iphoneos/prebuilt-modules/26.5/_DarwinFoundation3.swiftmodule/arm64e-apple-ios.swiftmodule /Applications/Xcode_26.6.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/iphoneos/prebuilt-modules/26.5/CoreGraphics.swiftmodule/arm64e-apple-ios.swiftmodule /Applications/Xcode_26.6.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/iphoneos/prebuilt-modules/26.5/MediaPlayer.swiftmodule/arm64e-apple-ios.swiftmodule /Applications/Xcode_26.6.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/iphoneos/prebuilt-modules/26.5/SwiftUICore.swiftmodule/arm64e-apple-ios.swiftmodule /Applications/Xcode_26.6.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/iphoneos/prebuilt-modules/26.5/OSLog.swiftmodule/arm64e-apple-ios.swiftmodule /Applications/Xcode_26.6.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/iphoneos/prebuilt-modules/26.5/CoreTransferable.swiftmodule/arm64e-apple-ios.swiftmodule /Applications/Xcode_26.6.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/iphoneos/prebuilt-modules/26.5/Foundation.swiftmodule/arm64e-apple-ios.swiftmodule /Applications/Xcode_26.6.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/iphoneos/prebuilt-modules/26.5/_StringProcessing.swiftmodule/arm64e-apple-ios.swiftmodule /Applications/Xcode_26.6.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/iphoneos/prebuilt-modules/26.5/os.swiftmodule/arm64e-apple-ios.swiftmodule /Applications/Xcode_26.6.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/iphoneos/prebuilt-modules/26.5/_DarwinFoundation2.swiftmodule/arm64e-apple-ios.swiftmodule /Applications/Xcode_26.6.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/iphoneos/prebuilt-modules/26.5/CoreAudio.swiftmodule/arm64e-apple-ios.swiftmodule /Applications/Xcode_26.6.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/iphoneos/prebuilt-modules/26.5/DataDetection.swiftmodule/arm64e-apple-ios.swiftmodule /Applications/Xcode_26.6.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/iphoneos/prebuilt-modules/26.5/Spatial.swiftmodule/arm64e-apple-ios.swiftmodule /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/_DarwinFoundation3-CTWL55UKMT9JBNSISAKYSA2TW.pcm /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/Network-1OEX6G98JLGL44G8SBCBP8B74.pcm /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/AVFAudio-8VKZ11SDBFOYZ2XDONDRGSTGP.pcm /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/MediaPlayer-EYIOINYRHDZXBTA3NR7SZO224.pcm /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/_SwiftConcurrencyShims-BPUVNXPWOPTA9LHXU48V0YU9I.pcm /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/DataDetection-AU1NXZ99MT4PN86W8X2S7ZD2T.pcm /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/_Builtin_tgmath-7UDGS1JMKJLL6QAGXDFE5BIRG.pcm /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/_AvailabilityInternal-DVGQBSTY54LHRHZO97L3AC9IF.pcm /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/CoreMedia-BZ26VTB98WN53SN8DBM8SG104.pcm /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/_Builtin_stdbool-3V9I5PWCWCVEOYMEQ447CMD8W.pcm /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/SwiftUI-8ESKVFNPCEY639N7IVWMIV9PS.pcm /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/CoreTransferable-9WTXGY5IG22AZIPNKO44EHQFH.pcm /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/MachO-BEJ0JYTH6D2JXV8Z2XN3S9UP9.pcm /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/Foundation-GW7E90JI517RAUT2F96QR2WN.pcm /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/SwiftUICore-CQNUIS2UBFI7PKVQTG6ZBF0QQ.pcm /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/CoreAudio-CSY5Z2KEYDEQ7DU2MYTK1OYFU.pcm /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/_Builtin_limits-CBHZ6SDY123PK493NBHF35WKP.pcm /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/AVRouting-7JZLC1J20Z8GQETXUA6QHD67O.pcm /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/UserNotifications-BF9DZ4Z3IZJ7BY68RE74B3T48.pcm /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/Darwin-5K6S46SZB8BMA5Z5BIQINKALL.pcm /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/simd-EI4VB056UMQTB9796BEVSIBKB.pcm /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/CoreFoundation-36ZOTFX9BT0Q766MUY6BC5JDG.pcm /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/UIKit-8FJUQ1OSEGZ7POLKKGCNP5XW3.pcm /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/ObjectiveC-EC7ZIUCGG94S2HFPSTXJPT4TR.pcm /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/CoreAudioTypes-TLEQTFY80FNDXS84XJC2DPXC.pcm /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/MediaToolbox-D2VX740CNULAK8I6N3KVGOWEA.pcm /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/os-5K8XQMWYRRX6T92QPG02N71ML.pcm /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/_Builtin_inttypes-61FOH934ADAI09B2C60P5GPF8.pcm /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/CoreImage-2MZV0AM6V4VAO5OH9C98CPINI.pcm /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/CoreText-6LRI81PKBUFZZTO4G4I34MZC.pcm /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/os_workgroup-9C383SY4WS4C4FJH97EO8ITBQ.pcm /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/Dispatch-6WRLFVUL3DYJ8ZUF6HJX7ZY85.pcm /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/_Builtin_stdint-XNELVA9A0KAN5IWYFIVGKKDX.pcm /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/_Builtin_float-EGK1O7DJ40KL04P4MDA31UA11.pcm /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/ptrauth-CJ6GR8VTJCWKDJB5U82P3DN2D.pcm /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/UniformTypeIdentifiers-8VH3ZTXCPSLZP94ZXR9YN0Y8M.pcm /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/CFNetwork-AHOF473RQX2Z1MWYOWLCODFIV.pcm /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/os_object-279ZD6ZU08G9NF9JSOT2P4FMJ.pcm /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/AudioToolbox-C41P09MKZX05JL1FR82HY4F7Y.pcm /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/XPC-136FPGIPSYWMLV8G14H0254GL.pcm /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/Metal-6KJO812T8470OG6Z9C3XJ6U10.pcm /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/CoreData-EDIC2QKLBOIUY20YRVRY89WLI.pcm /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/ptrcheck-EXLGPGJLWWWFEIU0DKSDE8D1B.pcm /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/_Builtin_stdatomic-3O45FPD2DBOUZQNKY04N2SBPQ.pcm /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/CoreGraphics-9LFDSUKLUZ2SDVS2GELCWY5K4.pcm /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/OSLog-76I91N7MPSQBKM8Q64Q6F0JKZ.pcm /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/sys_types-9TD16TNVWBRR1RP73I0T97IN5.pcm /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/_Builtin_stdarg-94M8NBIWPISFAL08U38CPEQC4.pcm /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/IOSurface-9R2OG3WUSTR74JLW3BADKOOGQ.pcm /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/UIUtilities-34PLSFNMPP0TRN9UR0OYE98U4.pcm /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/Spatial-EW3S4ELKKYOIX6NU1Y2UTIH83.pcm /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/FileProvider-97QIB83O1RVE9YFUCJVEHFVK2.pcm /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/CoreVideo-H88C9DJJWVXLM464JGJLZ277.pcm /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/AVFoundation-5WGNBRWIG213EP1CABWLYUEPU.pcm /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/DeveloperToolsSupport-8KYI1YP64H477CBTBVLFZ91N4.pcm /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/OpenGLES-CVDTLERS5EP3FNZJOJXUULPOR.pcm /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/CoreMIDI-6ZHL8IINBV062FOI61WOWLJ3W.pcm /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/_Builtin_stddef-97024XI0JTNI5ZWJ597FB813H.pcm /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/_Builtin_intrinsics-DYLHBPCW08L2T2MKKA1LVSOCG.pcm /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/dnssd-1GILG0YC82K6YLRBNWM2ZC0DC.pcm /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/Accessibility-1FFWJ0A83CABM3IP8821GHK3A.pcm /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/Symbols-6J4LZ953ASSTX313Q6NJEQMSI.pcm /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/_DarwinFoundation2-6A4TLVX9JESIBJ3AHHB6LPQ0O.pcm /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/ImageIO-W392L0TNTE1G4BDL9KBY5LGR.pcm /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/Security-97650ZGQE1GVUOG6305Z06A12.pcm /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/SwiftShims-9ZFSA504R0QRU148X8CWXJD5J.pcm /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/_DarwinFoundation1-A5LHSI8FD45A7OXQVYX9PK7UV.pcm /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/QuartzCore-9BC8354COUM2IDZ5XPOOVAM88.pcm /Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/Objects-normal/arm64/Ammy-dependencies-1.json (in target 'Ammy' from project 'Ammy')
+CompileSwift normal arm64 (in target 'Ammy' from project 'Ammy')
+    cd /Users/runner/work/Ammy/Ammy
+    
+
+LinkAssetCatalog /Users/runner/work/Ammy/Ammy/Ammy/Assets.xcassets (in target 'Ammy' from project 'Ammy')
+    cd /Users/runner/work/Ammy/Ammy
+    builtin-linkAssetCatalog --thinned /Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/assetcatalog_output/thinned --thinned-dependencies /Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/assetcatalog_dependencies_thinned --thinned-info-plist-content /Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/assetcatalog_generated_info.plist_thinned --unthinned /Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/assetcatalog_output/unthinned --unthinned-dependencies /Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/assetcatalog_dependencies_unthinned --unthinned-info-plist-content /Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/assetcatalog_generated_info.plist_unthinned --output /Users/runner/work/Ammy/Ammy/build/Build/Products/Release-iphoneos/Ammy.app --plist-output /Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/assetcatalog_generated_info.plist
+note: Emplaced /Users/runner/work/Ammy/Ammy/build/Build/Products/Release-iphoneos/Ammy.app/AppIcon76x76@2x~ipad.png (in target 'Ammy' from project 'Ammy')
+note: Emplaced /Users/runner/work/Ammy/Ammy/build/Build/Products/Release-iphoneos/Ammy.app/AppIcon60x60@2x.png (in target 'Ammy' from project 'Ammy')
+note: Emplaced /Users/runner/work/Ammy/Ammy/build/Build/Products/Release-iphoneos/Ammy.app/Assets.car (in target 'Ammy' from project 'Ammy')
+
+ProcessInfoPlistFile /Users/runner/work/Ammy/Ammy/build/Build/Products/Release-iphoneos/Ammy.app/Info.plist /Users/runner/work/Ammy/Ammy/Ammy/Info.plist (in target 'Ammy' from project 'Ammy')
+    cd /Users/runner/work/Ammy/Ammy
+    builtin-infoPlistUtility /Users/runner/work/Ammy/Ammy/Ammy/Info.plist -producttype com.apple.product-type.application -genpkginfo /Users/runner/work/Ammy/Ammy/build/Build/Products/Release-iphoneos/Ammy.app/PkgInfo -expandbuildsettings -format binary -platform iphoneos -additionalcontentfile /Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/assetcatalog_generated_info.plist -requiredArchitecture arm64 -o /Users/runner/work/Ammy/Ammy/build/Build/Products/Release-iphoneos/Ammy.app/Info.plist
+
+SwiftDriverJobDiscovery normal arm64 Compiling AmmyApp.swift, Diagnostics.swift, EventLog.swift, KeepAlive.swift, KeepAliveJournal.swift, LinkHistoryView.swift, NowPlayingMonitor.swift, PresenceController.swift, PresenceRelay.swift, SilenceWatchdog.swift, GeneratedAssetSymbols.swift (in target 'Ammy' from project 'Ammy')
+
+SwiftDriver\ Compilation\ Requirements Ammy normal arm64 com.apple.xcode.tools.swift.compiler (in target 'Ammy' from project 'Ammy')
+    cd /Users/runner/work/Ammy/Ammy
+    builtin-Swift-Compilation-Requirements -- /Applications/Xcode_26.6.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc -module-name Ammy -O -whole-module-optimization @/Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/Objects-normal/arm64/Ammy.SwiftFileList -enable-bare-slash-regex -enable-experimental-feature DebugDescriptionMacro -sdk /Applications/Xcode_26.6.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS26.5.sdk -target arm64-apple-ios26.0 -g -module-cache-path /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex -Xfrontend -serialize-debugging-options -swift-version 5 -I /Users/runner/work/Ammy/Ammy/build/Build/Products/Release-iphoneos -F /Users/runner/work/Ammy/Ammy/build/Build/Products/Release-iphoneos -c -num-threads 3 -Xcc -ivfsstatcache -Xcc /Users/runner/work/Ammy/Ammy/build/SDKStatCaches.noindex/iphoneos26.5-23F81a-688ef53f1462e2c8f657fdc38a81448fee66e23052a0157c865c76b268046726.sdkstatcache -output-file-map /Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/Objects-normal/arm64/Ammy-OutputFileMap.json -use-frontend-parseable-output -save-temps -no-color-diagnostics -explicit-module-build -module-cache-path /Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/SwiftExplicitPrecompiledModules -clang-scanner-module-cache-path /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex -sdk-module-cache-path /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex -serialize-diagnostics -emit-dependencies -emit-module -emit-module-path /Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/Objects-normal/arm64/Ammy.swiftmodule -validate-clang-modules-once -clang-build-session-file /Users/runner/work/Ammy/Ammy/build/ModuleCache.noindex/Session.modulevalidation -Xcc -I/Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/swift-overrides.hmap -emit-const-values -Xfrontend -const-gather-protocols-file -Xfrontend /Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/Objects-normal/arm64/Ammy_const_extract_protocols.json -Xcc -iquote -Xcc /Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/Ammy-generated-files.hmap -Xcc -I/Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/Ammy-own-target-headers.hmap -Xcc -I/Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/Ammy-all-target-headers.hmap -Xcc -iquote -Xcc /Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/Ammy-project-headers.hmap -Xcc -I/Users/runner/work/Ammy/Ammy/build/Build/Products/Release-iphoneos/include -Xcc -I/Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/DerivedSources-normal/arm64 -Xcc -I/Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/DerivedSources/arm64 -Xcc -I/Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/DerivedSources -emit-objc-header -emit-objc-header-path /Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/Objects-normal/arm64/Ammy-Swift.h -working-directory /Users/runner/work/Ammy/Ammy -no-emit-module-separately-wmo
+
+SwiftMergeGeneratedHeaders /Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/DerivedSources/Ammy-Swift.h /Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/Objects-normal/arm64/Ammy-Swift.h (in target 'Ammy' from project 'Ammy')
+    cd /Users/runner/work/Ammy/Ammy
+    builtin-swiftHeaderTool -arch arm64 /Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/Objects-normal/arm64/Ammy-Swift.h -o /Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/DerivedSources/Ammy-Swift.h
+
+Copy /Users/runner/work/Ammy/Ammy/build/Build/Products/Release-iphoneos/Ammy.swiftmodule/arm64-apple-ios.swiftdoc /Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/Objects-normal/arm64/Ammy.swiftdoc (in target 'Ammy' from project 'Ammy')
+    cd /Users/runner/work/Ammy/Ammy
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks -rename /Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/Objects-normal/arm64/Ammy.swiftdoc /Users/runner/work/Ammy/Ammy/build/Build/Products/Release-iphoneos/Ammy.swiftmodule/arm64-apple-ios.swiftdoc
+
+Copy /Users/runner/work/Ammy/Ammy/build/Build/Products/Release-iphoneos/Ammy.swiftmodule/arm64-apple-ios.swiftmodule /Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/Objects-normal/arm64/Ammy.swiftmodule (in target 'Ammy' from project 'Ammy')
+    cd /Users/runner/work/Ammy/Ammy
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks -rename /Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/Objects-normal/arm64/Ammy.swiftmodule /Users/runner/work/Ammy/Ammy/build/Build/Products/Release-iphoneos/Ammy.swiftmodule/arm64-apple-ios.swiftmodule
+
+Copy /Users/runner/work/Ammy/Ammy/build/Build/Products/Release-iphoneos/Ammy.swiftmodule/arm64-apple-ios.abi.json /Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/Objects-normal/arm64/Ammy.abi.json (in target 'Ammy' from project 'Ammy')
+    cd /Users/runner/work/Ammy/Ammy
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks -rename /Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/Objects-normal/arm64/Ammy.abi.json /Users/runner/work/Ammy/Ammy/build/Build/Products/Release-iphoneos/Ammy.swiftmodule/arm64-apple-ios.abi.json
+
+Copy /Users/runner/work/Ammy/Ammy/build/Build/Products/Release-iphoneos/Ammy.swiftmodule/Project/arm64-apple-ios.swiftsourceinfo /Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/Objects-normal/arm64/Ammy.swiftsourceinfo (in target 'Ammy' from project 'Ammy')
+    cd /Users/runner/work/Ammy/Ammy
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks -rename /Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/Objects-normal/arm64/Ammy.swiftsourceinfo /Users/runner/work/Ammy/Ammy/build/Build/Products/Release-iphoneos/Ammy.swiftmodule/Project/arm64-apple-ios.swiftsourceinfo
+
+Ld /Users/runner/work/Ammy/Ammy/build/Build/Products/Release-iphoneos/Ammy.app/Ammy normal (in target 'Ammy' from project 'Ammy')
+    cd /Users/runner/work/Ammy/Ammy
+    /Applications/Xcode_26.6.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -Xlinker -reproducible -target arm64-apple-ios26.0 -isysroot /Applications/Xcode_26.6.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS26.5.sdk -Os -L/Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/EagerLinkingTBDs/Release-iphoneos -L/Users/runner/work/Ammy/Ammy/build/Build/Products/Release-iphoneos -F/Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/EagerLinkingTBDs/Release-iphoneos -F/Users/runner/work/Ammy/Ammy/build/Build/Products/Release-iphoneos -filelist /Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/Objects-normal/arm64/Ammy.LinkFileList -Xlinker -rpath -Xlinker @executable_path/Frameworks -Xlinker -dead_strip -Xlinker -object_path_lto -Xlinker /Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/Objects-normal/arm64/Ammy_lto.o -Xlinker -dependency_info -Xlinker /Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/Objects-normal/arm64/Ammy_dependency_info.dat -fobjc-link-runtime -L/Applications/Xcode_26.6.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/iphoneos -L/usr/lib/swift -Xlinker -add_ast_path -Xlinker /Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/Objects-normal/arm64/Ammy.swiftmodule @/Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/Objects-normal/arm64/Ammy-linker-args.resp -o /Users/runner/work/Ammy/Ammy/build/Build/Products/Release-iphoneos/Ammy.app/Ammy
+
+CopySwiftLibs /Users/runner/work/Ammy/Ammy/build/Build/Products/Release-iphoneos/Ammy.app (in target 'Ammy' from project 'Ammy')
+    cd /Users/runner/work/Ammy/Ammy
+    builtin-swiftStdLibTool --copy --verbose --scan-executable /Users/runner/work/Ammy/Ammy/build/Build/Products/Release-iphoneos/Ammy.app/Ammy --scan-folder /Users/runner/work/Ammy/Ammy/build/Build/Products/Release-iphoneos/Ammy.app/Frameworks --scan-folder /Users/runner/work/Ammy/Ammy/build/Build/Products/Release-iphoneos/Ammy.app/PlugIns --scan-folder /Users/runner/work/Ammy/Ammy/build/Build/Products/Release-iphoneos/Ammy.app/SystemExtensions --scan-folder /Users/runner/work/Ammy/Ammy/build/Build/Products/Release-iphoneos/Ammy.app/Extensions --platform iphoneos --toolchain /var/run/com.apple.security.cryptexd/mnt/com.apple.MobileAsset.MetalToolchain-v17.6.109.0.QKB78K/Metal.xctoolchain --toolchain /Applications/Xcode_26.6.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain --destination /Users/runner/work/Ammy/Ammy/build/Build/Products/Release-iphoneos/Ammy.app/Frameworks --strip-bitcode --strip-bitcode-tool /Applications/Xcode_26.6.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/bitcode_strip --emit-dependency-info /Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/SwiftStdLibToolInputDependencies.dep --filter-for-swift-os
+Ignoring --strip-bitcode because --sign was not passed
+
+ExtractAppIntentsMetadata (in target 'Ammy' from project 'Ammy')
+    cd /Users/runner/work/Ammy/Ammy
+    /Applications/Xcode_26.6.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/appintentsmetadataprocessor --toolchain-dir /var/run/com.apple.security.cryptexd/mnt/com.apple.MobileAsset.MetalToolchain-v17.6.109.0.QKB78K/Metal.xctoolchain --module-name Ammy --sdk-root /Applications/Xcode_26.6.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS26.5.sdk --xcode-version 17F113 --platform-family iOS --deployment-target 26.0 --bundle-identifier com.local.ammy --output /Users/runner/work/Ammy/Ammy/build/Build/Products/Release-iphoneos/Ammy.app --target-triple arm64-apple-ios26.0 --binary-file /Users/runner/work/Ammy/Ammy/build/Build/Products/Release-iphoneos/Ammy.app/Ammy --dependency-file /Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/Objects-normal/arm64/Ammy_dependency_info.dat --stringsdata-file /Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/Objects-normal/arm64/ExtractedAppShortcutsMetadata.stringsdata --source-file-list /Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/Objects-normal/arm64/Ammy.SwiftFileList --metadata-file-list /Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/Ammy.DependencyMetadataFileList --static-metadata-file-list /Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/Ammy.DependencyStaticMetadataFileList --swift-const-vals-list /Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/Objects-normal/arm64/Ammy.SwiftConstValuesFileList --compile-time-extraction --deployment-aware-processing --validate-assistant-intents --no-app-shortcuts-localization
+2026-11-11 23:21:41.841 appintentsmetadataprocessor[2191:10140] Starting appintentsmetadataprocessor export
+2026-11-11 23:21:41.850 appintentsmetadataprocessor[2191:10140] warning: Metadata extraction skipped. No AppIntents.framework dependency found.
+
+GenerateDSYMFile /Users/runner/work/Ammy/Ammy/build/Build/Products/Release-iphoneos/Ammy.app.dSYM /Users/runner/work/Ammy/Ammy/build/Build/Products/Release-iphoneos/Ammy.app/Ammy (in target 'Ammy' from project 'Ammy')
+    cd /Users/runner/work/Ammy/Ammy
+    /Applications/Xcode_26.6.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/dsymutil /Users/runner/work/Ammy/Ammy/build/Build/Products/Release-iphoneos/Ammy.app/Ammy -o /Users/runner/work/Ammy/Ammy/build/Build/Products/Release-iphoneos/Ammy.app.dSYM
+
+AppIntentsSSUTraining (in target 'Ammy' from project 'Ammy')
+    cd /Users/runner/work/Ammy/Ammy
+    /Applications/Xcode_26.6.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/appintentsnltrainingprocessor --infoplist-path /Users/runner/work/Ammy/Ammy/build/Build/Products/Release-iphoneos/Ammy.app/Info.plist --temp-dir-path /Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/ssu --bundle-id com.local.ammy --product-path /Users/runner/work/Ammy/Ammy/build/Build/Products/Release-iphoneos/Ammy.app --extracted-metadata-path /Users/runner/work/Ammy/Ammy/build/Build/Products/Release-iphoneos/Ammy.app/Metadata.appintents --metadata-file-list /Users/runner/work/Ammy/Ammy/build/Build/Intermediates.noindex/Ammy.build/Release-iphoneos/Ammy.build/Ammy.DependencyMetadataFileList --source-file /Users/runner/work/Ammy/Ammy/build/Build/Products/Release-iphoneos/Ammy.app/Info.plist --archive-ssu-assets
+2026-11-11 23:21:41.883 appintentsnltrainingprocessor[2193:10147] Parsing options for appintentsnltrainingprocessor
+2026-11-11 23:21:41.884 appintentsnltrainingprocessor[2193:10147] Starting AppIntents SSU YAML Generation
+2026-11-11 23:21:41.888 appintentsnltrainingprocessor[2193:10147] No AppShortcuts found - Skipping.
+
+RegisterExecutionPolicyException /Users/runner/work/Ammy/Ammy/build/Build/Products/Release-iphoneos/Ammy.app (in target 'Ammy' from project 'Ammy')
+    cd /Users/runner/work/Ammy/Ammy
+    builtin-RegisterExecutionPolicyException /Users/runner/work/Ammy/Ammy/build/Build/Products/Release-iphoneos/Ammy.app
+
+Validate /Users/runner/work/Ammy/Ammy/build/Build/Products/Release-iphoneos/Ammy.app (in target 'Ammy' from project 'Ammy')
+    cd /Users/runner/work/Ammy/Ammy
+    builtin-validationUtility /Users/runner/work/Ammy/Ammy/build/Build/Products/Release-iphoneos/Ammy.app -shallow-bundle -infoplist-subpath Info.plist
+
+Touch /Users/runner/work/Ammy/Ammy/build/Build/Products/Release-iphoneos/Ammy.app (in target 'Ammy' from project 'Ammy')
+    cd /Users/runner/work/Ammy/Ammy
+    /usr/bin/touch -c /Users/runner/work/Ammy/Ammy/build/Build/Products/Release-iphoneos/Ammy.app
+
+** BUILD SUCCEEDED **
+

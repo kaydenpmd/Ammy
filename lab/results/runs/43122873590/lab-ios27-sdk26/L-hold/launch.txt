@@ -1,0 +1,9 @@
+com.local.ammy: 37098
+com.apple.Preferences: 23358
+An error was encountered processing the command (domain=NSPOSIXErrorDomain, code=3):
+Simulator device failed to terminate com.local.ammy.
+found nothing to terminate
+Underlying error (domain=NSPOSIXErrorDomain, code=3):
+	The request to terminate "com.local.ammy" failed. found nothing to terminate
+	found nothing to terminate
+com.local.ammy: 45204

@@ -1,0 +1,281 @@
+==============================================================================
+J-hold
+  mark -39.2  launch -labFailFromLaunch YES -labFailStage setActive -labFailFor 35
+  mark +0.0  background
+  mark +138.9  foreground
+  mark +179.6  end
+  probe pids: ['6708']
+  launchctl pids in order: ['6708']
+  background phase: 137 probe lines from +0.7 to +138.7; gaps > 2.5 s: +14.1 for 5.5 s, +39.8 for 3.3 s
+  last line before going to the front/terminate: +138.7 (0.2 s before it)  -> continuous
+  -30.3 START pid=6708 path=/Users/runner/work/Ammy/Ammy/out/J-hold/probe.txt args=-labOut /Users/runner/work/Ammy/Ammy/out/J-hold -relay_endpoint https://localhost:8443/now-playing -relay_key lab -labFailFro
+  -30.3 FAULT fail from launch (failStage=setActive failFor=35.0 noHold=false)
+  -28.1 LABFAIL setActive '!pri'
+  -28.1 LABFAIL setActive '!pri'
+  -27.1 LABFAIL setActive '!pri'
+  -25.4 LABFAIL setActive '!pri'
+  -24.0 LABFAIL setActive '!pri'
+  -18.8 LABFAIL setActive '!pri'
+  -18.6 LABFAIL setActive '!pri'
+  -13.6 LABFAIL setActive '!pri'
+  -8.6 LABFAIL setActive '!pri'
+  -8.4 LABFAIL setActive '!pri'
+  -3.1 LABFAIL setActive '!pri'
+  +1.4 LABFAIL setActive '!pri'
+  +2.1 LABFAIL setActive '!pri'
+  +2.1 LABFAIL setActive '!pri'
+  +14.1 BACKGROUND
+  first probe line with engine and node playing after the fault: +7.9
+  last background line: pid=6708 state=2 engine=1 node=1 want=1 holds=1 saves=1 expiries=0 refusals=0 fails=14 run=0 retries=8 heals=6 resumes=1 bgleft=-
+  pushes: 8
+   push -27.6 engine_running=False node_playing=False running=True resumes=0 resume_failures=2 fail_stage=setActive fail_code=561017449 fail_run=2 fail_run_max=2 holds=1 hold_saves=0 hold_expiries=0 hold_refusals=0 retries=0 self_heals=1 int_began=0 int_ended=0 int_on_resume=0 down_s=0 secs_since_fail=0 last_error=setActive: Session activation failed (lab) [561017449 '!pri'] app_state=active app_uptime_s=0 media_resets=0 config_changes=0
+   push -22.6 (+5.0) engine_running=False node_playing=False running=True resumes=0 resume_failures=4 fail_stage=setActive fail_code=561017449 fail_run=4 fail_run_max=4 holds=1 hold_saves=0 hold_expiries=0 hold_refusals=0 retries=1 self_heals=2 int_began=0 int_ended=0 int_on_resume=0 down_s=2 secs_since_fail=0 last_error=setActive: Session activation failed (lab) [561017449 '!pri'] app_state=active app_uptime_s=2 media_resets=0 config_changes=0
+   push +2.2 (+24.8) engine_running=False node_playing=False running=True resumes=0 resume_failures=14 fail_stage=setActive fail_code=561017449 fail_run=14 fail_run_max=14 holds=1 hold_saves=0 hold_expiries=0 hold_refusals=0 retries=7 self_heals=6 int_began=0 int_ended=0 int_on_resume=0 down_s=30 secs_since_fail=0 last_error=setActive: Session activation failed (lab) [561017449 '!pri'] app_state=active app_uptime_s=30 media_resets=0 config_changes=0
+   push +35.3 (+33.1) engine_running=True node_playing=True running=True resumes=1 resume_failures=14 fail_stage=setActive fail_code=561017449 fail_run=0 fail_run_max=14 holds=1 hold_saves=1 hold_expiries=0 hold_refusals=0 retries=8 self_heals=6 int_began=0 int_ended=0 int_on_resume=0 secs_since_fail=31 app_state=background app_uptime_s=61 media_resets=0 config_changes=0
+   push +65.2 (+29.9) engine_running=True node_playing=True running=True resumes=1 resume_failures=14 fail_stage=setActive fail_code=561017449 fail_run=0 fail_run_max=14 holds=1 hold_saves=1 hold_expiries=0 hold_refusals=0 retries=8 self_heals=6 int_began=0 int_ended=0 int_on_resume=0 secs_since_fail=63 app_state=background app_uptime_s=93 media_resets=0 config_changes=0
+   push +97.3 (+32.0) engine_running=True node_playing=True running=True resumes=1 resume_failures=14 fail_stage=setActive fail_code=561017449 fail_run=0 fail_run_max=14 holds=1 hold_saves=1 hold_expiries=0 hold_refusals=0 retries=8 self_heals=6 int_began=0 int_ended=0 int_on_resume=0 secs_since_fail=95 app_state=background app_uptime_s=125 media_resets=0 config_changes=0
+   push +127.9 (+30.6) engine_running=True node_playing=True running=True resumes=1 resume_failures=14 fail_stage=setActive fail_code=561017449 fail_run=0 fail_run_max=14 holds=1 hold_saves=1 hold_expiries=0 hold_refusals=0 retries=8 self_heals=6 int_began=0 int_ended=0 int_on_resume=0 secs_since_fail=125 app_state=background app_uptime_s=155 media_resets=0 config_changes=0
+   push +158.4 (+30.6) engine_running=True node_playing=True running=True resumes=1 resume_failures=14 fail_stage=setActive fail_code=561017449 fail_run=0 fail_run_max=14 holds=1 hold_saves=1 hold_expiries=0 hold_refusals=0 retries=8 self_heals=6 int_began=0 int_ended=0 int_on_resume=0 secs_since_fail=156 app_state=active app_uptime_s=186 media_resets=0 config_changes=0
+  journal-end.log (last 14 of 25 lines):
+     | 2026-11-11T23:57:24Z verify: engine stopped
+     | 2026-11-11T23:57:24Z failed, 7 in a row: setActive: Session activation failed (lab) [561017449 '!pri']
+     | 2026-11-11T23:57:29Z failed, 8 in a row: setActive: Session activation failed (lab) [561017449 '!pri']
+     | 2026-11-11T23:57:34Z verify: engine stopped
+     | 2026-11-11T23:57:34Z failed, 9 in a row: setActive: Session activation failed (lab) [561017449 '!pri']
+     | 2026-11-11T23:57:34Z failed, 10 in a row: setActive: Session activation failed (lab) [561017449 '!pri']
+     | 2026-11-11T23:57:40Z failed, 11 in a row: setActive: Session activation failed (lab) [561017449 '!pri']
+     | 2026-11-11T23:57:44Z verify: engine stopped
+     | 2026-11-11T23:57:44Z failed, 12 in a row: setActive: Session activation failed (lab) [561017449 '!pri']
+     | 2026-11-11T23:57:45Z failed, 13 in a row: setActive: Session activation failed (lab) [561017449 '!pri']
+     | 2026-11-11T23:57:45Z verify: engine stopped
+     | 2026-11-11T23:57:45Z failed, 14 in a row: setActive: Session activation failed (lab) [561017449 '!pri']
+     | 2026-11-11T23:57:51Z playing again after 14 failed tries, down 36s
+     | 2026-11-11T23:57:51Z hold ended: playing again after 36s
+==============================================================================
+J-nohold
+  mark -23.5  launch -labFailFromLaunch YES -labFailStage setActive -labFailFor 35 -labNoHold YES
+  mark +0.0  background
+  mark +123.5  foreground
+  mark +160.0  end
+  probe pids: ['13310']
+  launchctl pids in order: ['13310']
+  background phase: 34 probe lines from +0.5 to +121.0; gaps > 2.5 s: +13.7 for 29.1 s, +46.0 for 2.7 s, +48.7 for 2.9 s, +51.6 for 3.1 s, +56.7 for 7.9 s, +68.8 for 3.0 s, +72.8 for 2.6 s, +75.4 for 4.0 s, +79.4 for 27.7 s, +109.0 for 3.4 s, +112.4 for 8.5 s
+  last line before going to the front/terminate: +121.0 (2.5 s before it)  -> continuous
+  -21.5 START pid=13310 path=/Users/runner/work/Ammy/Ammy/out/J-nohold/probe.txt args=-labOut /Users/runner/work/Ammy/Ammy/out/J-nohold -relay_endpoint https://localhost:8443/now-playing -relay_key lab -labFa
+  -21.5 FAULT fail from launch (failStage=setActive failFor=35.0 noHold=true)
+  -19.9 LABFAIL setActive '!pri'
+  -19.9 LABFAIL setActive '!pri'
+  -17.2 LABFAIL setActive '!pri'
+  -10.2 LABFAIL setActive '!pri'
+  +1.5 BACKGROUND
+  first probe line with engine and node playing after the fault: +126.1
+  bgleft: first 29.6 at +2.6, last 0.0 at +121.0 (31 readings)
+  last background line: pid=13310 state=2 engine=0 node=0 want=0 holds=0 saves=0 expiries=0 refusals=0 fails=4 run=0 retries=0 heals=3 resumes=0 bgleft=0.0
+  pushes: 3
+   push +127.5 engine_running=True node_playing=True running=True resumes=1 resume_failures=4 fail_stage=setActive fail_code=561017449 fail_run=0 fail_run_max=4 holds=0 hold_saves=0 hold_expiries=0 hold_refusals=0 retries=0 self_heals=3 int_began=0 int_ended=0 int_on_resume=0 secs_since_fail=136 app_state=active app_uptime_s=145 media_resets=0 config_changes=0
+     prev_alive='2026-11-12T00:00:34Z engine=yes hold=no'
+     prev_tail| 2026-11-11T23:57:44Z failed, 12 in a row: setActive: Session activation failed (lab) [561017449 '!pri']
+     prev_tail| 2026-11-11T23:57:45Z failed, 13 in a row: setActive: Session activation failed (lab) [561017449 '!pri']
+     prev_tail| 2026-11-11T23:57:45Z verify: engine stopped
+     prev_tail| 2026-11-11T23:57:45Z failed, 14 in a row: setActive: Session activation failed (lab) [561017449 '!pri']
+     prev_tail| 2026-11-11T23:57:51Z playing again after 14 failed tries, down 36s
+     prev_tail| 2026-11-11T23:57:51Z hold ended: playing again after 36s
+   push +128.7 (+1.3) engine_running=True node_playing=True running=True resumes=1 resume_failures=4 fail_stage=setActive fail_code=561017449 fail_run=0 fail_run_max=4 holds=0 hold_saves=0 hold_expiries=0 hold_refusals=0 retries=0 self_heals=3 int_began=0 int_ended=0 int_on_resume=0 secs_since_fail=138 app_state=active app_uptime_s=148 media_resets=0 config_changes=0
+   push +158.0 (+29.3) engine_running=True node_playing=True running=True resumes=1 resume_failures=4 fail_stage=setActive fail_code=561017449 fail_run=0 fail_run_max=4 holds=0 hold_saves=0 hold_expiries=0 hold_refusals=0 retries=0 self_heals=3 int_began=0 int_ended=0 int_on_resume=0 secs_since_fail=168 app_state=active app_uptime_s=177 media_resets=0 config_changes=0
+  journal-end.log (last 14 of 36 lines):
+     | 2026-11-11T23:57:45Z failed, 14 in a row: setActive: Session activation failed (lab) [561017449 '!pri']
+     | 2026-11-11T23:57:51Z playing again after 14 failed tries, down 36s
+     | 2026-11-11T23:57:51Z hold ended: playing again after 36s
+     | 2026-11-12T00:00:50Z --- launch, Ammy 1.0 (999)
+     | 2026-11-12T00:00:50Z start
+     | 2026-11-12T00:00:50Z failed, 1 in a row: setActive: Session activation failed (lab) [561017449 '!pri']
+     | 2026-11-12T00:00:50Z verify: engine stopped
+     | 2026-11-12T00:00:50Z failed, 2 in a row: setActive: Session activation failed (lab) [561017449 '!pri']
+     | 2026-11-12T00:00:53Z verify: engine stopped
+     | 2026-11-12T00:00:53Z failed, 3 in a row: setActive: Session activation failed (lab) [561017449 '!pri']
+     | 2026-11-12T00:01:00Z verify: engine stopped
+     | 2026-11-12T00:01:00Z failed, 4 in a row: setActive: Session activation failed (lab) [561017449 '!pri']
+     | 2026-11-12T00:01:01Z stop
+     | 2026-11-12T00:03:15Z start
+==============================================================================
+K-hold
+  mark -22.3  launch -labFailFromLaunch YES -labFailStage setActive -labFailFor 170
+  mark +0.0  background
+  mark +194.6  foreground
+  mark +239.1  end
+  probe pids: ['22386', '32686']
+  launchctl pids in order: ['22386', '32686']
+  background phase: 29 probe lines from +0.1 to +35.0; gaps > 2.5 s: +6.3 for 2.7 s, +23.4 for 4.1 s
+  last line before going to the front/terminate: +35.0 (159.6 s before it)  -> QUIET
+  -21.0 START pid=22386 path=/Users/runner/work/Ammy/Ammy/out/K-hold/probe.txt args=-labOut /Users/runner/work/Ammy/Ammy/out/K-hold -relay_endpoint https://localhost:8443/now-playing -relay_key lab -labFailFr
+  -21.0 FAULT fail from launch (failStage=setActive failFor=170.0 noHold=false)
+  -20.0 LABFAIL setActive '!pri'
+  -20.0 LABFAIL setActive '!pri'
+  -19.0 LABFAIL setActive '!pri'
+  -17.3 LABFAIL setActive '!pri'
+  -15.8 LABFAIL setActive '!pri'
+  -10.6 LABFAIL setActive '!pri'
+  -10.2 LABFAIL setActive '!pri'
+  -5.3 LABFAIL setActive '!pri'
+  -0.1 LABFAIL setActive '!pri'
+  -0.1 LABFAIL setActive '!pri'
+  +3.2 BACKGROUND
+  +9.0 LABFAIL setActive '!pri'
+  +12.2 LABFAIL setActive '!pri'
+  +14.0 LABFAIL setActive '!pri'
+  +15.2 LABFAIL setActive '!pri'
+  +20.2 LABFAIL setActive '!pri'
+  +21.0 LABFAIL setActive '!pri'
+  +27.6 LABFAIL setActive '!pri'
+  +31.6 LABFAIL setActive '!pri'
+  +196.2 START pid=32686 path=/Users/runner/work/Ammy/Ammy/out/K-hold/probe.txt args=-labOut /Users/runner/work/Ammy/Ammy/out/K-hold -relay_endpoint https://localhost:8443/now-playing -relay_key lab
+  first probe line with engine and node playing after the fault: +198.1
+  bgleft: first 28.3 at +6.3, last 0.0 at +35.0 (15 readings)
+  last background line: pid=22386 state=2 engine=0 node=0 want=1 holds=2 saves=0 expiries=1 refusals=0 fails=18 run=18 retries=9 heals=8 resumes=0 bgleft=0.0
+  pushes: 6
+   push -19.6 engine_running=False node_playing=False running=True resumes=0 resume_failures=2 fail_stage=setActive fail_code=561017449 fail_run=2 fail_run_max=2 holds=1 hold_saves=0 hold_expiries=0 hold_refusals=0 retries=0 self_heals=1 int_began=0 int_ended=0 int_on_resume=0 down_s=0 secs_since_fail=0 last_error=setActive: Session activation failed (lab) [561017449 '!pri'] app_state=active app_uptime_s=0 media_resets=0 config_changes=0
+     prev_alive='2026-11-12T00:03:45Z engine=yes hold=no'
+     prev_tail| 2026-11-12T00:00:53Z verify: engine stopped
+     prev_tail| 2026-11-12T00:00:53Z failed, 3 in a row: setActive: Session activation failed (lab) [561017449 '!pri']
+     prev_tail| 2026-11-12T00:01:00Z verify: engine stopped
+     prev_tail| 2026-11-12T00:01:00Z failed, 4 in a row: setActive: Session activation failed (lab) [561017449 '!pri']
+     prev_tail| 2026-11-12T00:01:01Z stop
+     prev_tail| 2026-11-12T00:03:15Z start
+   push -17.2 (+2.4) engine_running=False node_playing=False running=True resumes=0 resume_failures=4 fail_stage=setActive fail_code=561017449 fail_run=4 fail_run_max=4 holds=1 hold_saves=0 hold_expiries=0 hold_refusals=0 retries=1 self_heals=2 int_began=0 int_ended=0 int_on_resume=0 down_s=2 secs_since_fail=0 last_error=setActive: Session activation failed (lab) [561017449 '!pri'] app_state=active app_uptime_s=2 media_resets=0 config_changes=0
+   push +14.7 (+32.0) engine_running=False node_playing=False running=True resumes=0 resume_failures=13 fail_stage=setActive fail_code=561017449 fail_run=13 fail_run_max=13 holds=1 hold_saves=0 hold_expiries=0 hold_refusals=0 retries=6 self_heals=6 int_began=0 int_ended=0 int_on_resume=0 down_s=34 secs_since_fail=0 last_error=setActive: Session activation failed (lab) [561017449 '!pri'] app_state=background bg_secs_left=20 app_uptime_s=34 media_resets=0 config_changes=0
+   push +199.0 (+184.3) engine_running=True node_playing=True running=True resumes=1 resume_failures=0 fail_run=0 fail_run_max=0 holds=0 hold_saves=0 hold_expiries=0 hold_refusals=0 retries=0 self_heals=0 int_began=0 int_ended=0 int_on_resume=0 app_state=active app_uptime_s=0 media_resets=0 config_changes=0
+     prev_alive='2026-11-12T00:04:46Z engine=no hold=yes'
+     prev_tail| 2026-11-12T00:04:36Z failed, 16 in a row: setActive: Session activation failed (lab) [561017449 '!pri']
+     prev_tail| 2026-11-12T00:04:43Z failed, 17 in a row: setActive: Session activation failed (lab) [561017449 '!pri']
+     prev_tail| 2026-11-12T00:04:46Z hold expired after 51s, 17 failed tries, last: setActive: Session activation failed (lab) [561017449 '!pri']
+     prev_tail| 2026-11-12T00:04:46Z verify: engine stopped
+     prev_tail| 2026-11-12T00:04:46Z hold opened (found stopped)
+     prev_tail| 2026-11-12T00:04:46Z failed, 18 in a row: setActive: Session activation failed (lab) [561017449 '!pri']
+   push +200.7 (+1.8) engine_running=True node_playing=True running=True resumes=1 resume_failures=0 fail_run=0 fail_run_max=0 holds=0 hold_saves=0 hold_expiries=0 hold_refusals=0 retries=0 self_heals=0 int_began=0 int_ended=0 int_on_resume=0 app_state=active app_uptime_s=2 media_resets=0 config_changes=0
+   push +229.2 (+28.4) engine_running=True node_playing=True running=True resumes=1 resume_failures=0 fail_run=0 fail_run_max=0 holds=0 hold_saves=0 hold_expiries=0 hold_refusals=0 retries=0 self_heals=0 int_began=0 int_ended=0 int_on_resume=0 app_state=active app_uptime_s=31 media_resets=0 config_changes=0
+  journal-end.log (last 14 of 69 lines):
+     | 2026-11-12T00:04:27Z failed, 12 in a row: setActive: Session activation failed (lab) [561017449 '!pri']
+     | 2026-11-12T00:04:29Z verify: engine stopped
+     | 2026-11-12T00:04:29Z failed, 13 in a row: setActive: Session activation failed (lab) [561017449 '!pri']
+     | 2026-11-12T00:04:30Z failed, 14 in a row: setActive: Session activation failed (lab) [561017449 '!pri']
+     | 2026-11-12T00:04:35Z verify: engine stopped
+     | 2026-11-12T00:04:35Z failed, 15 in a row: setActive: Session activation failed (lab) [561017449 '!pri']
+     | 2026-11-12T00:04:36Z failed, 16 in a row: setActive: Session activation failed (lab) [561017449 '!pri']
+     | 2026-11-12T00:04:43Z failed, 17 in a row: setActive: Session activation failed (lab) [561017449 '!pri']
+     | 2026-11-12T00:04:46Z hold expired after 51s, 17 failed tries, last: setActive: Session activation failed (lab) [561017449 '!pri']
+     | 2026-11-12T00:04:46Z verify: engine stopped
+     | 2026-11-12T00:04:46Z hold opened (found stopped)
+     | 2026-11-12T00:04:46Z failed, 18 in a row: setActive: Session activation failed (lab) [561017449 '!pri']
+     | 2026-11-12T00:07:32Z --- launch, Ammy 1.0 (999)
+     | 2026-11-12T00:07:32Z start
+==============================================================================
+L-hold
+  mark -25.2  launch -labFailFromLaunch YES -labFailStage setActive -labFailFor 600
+  mark +0.0  background
+  mark +96.3  terminate (suspended)
+  mark +99.9  relaunch
+  mark +149.4  end
+  probe pids: ['35284', '42805']
+  launchctl pids in order: ['35284', '42805']
+  background phase: 86 probe lines from +0.6 to +66.7; gaps > 2.5 s: none
+  last line before going to the front/terminate: +66.7 (29.6 s before it)  -> QUIET
+  -24.4 START pid=35284 path=/Users/runner/work/Ammy/Ammy/out/L-hold/probe.txt args=-labOut /Users/runner/work/Ammy/Ammy/out/L-hold -relay_endpoint https://localhost:8443/now-playing -relay_key lab -labFailFr
+  -24.4 FAULT fail from launch (failStage=setActive failFor=600.0 noHold=false)
+  -23.6 LABFAIL setActive '!pri'
+  -23.6 LABFAIL setActive '!pri'
+  -23.6 LABFAIL setActive '!pri'
+  -22.6 LABFAIL setActive '!pri'
+  -21.0 LABFAIL setActive '!pri'
+  -17.3 LABFAIL setActive '!pri'
+  -13.8 LABFAIL setActive '!pri'
+  -12.1 LABFAIL setActive '!pri'
+  -6.9 LABFAIL setActive '!pri'
+  -3.8 LABFAIL setActive '!pri'
+  -1.7 LABFAIL setActive '!pri'
+  +1.2 BACKGROUND
+  +3.6 LABFAIL setActive '!pri'
+  +6.3 LABFAIL setActive '!pri'
+  +7.0 LABFAIL setActive '!pri'
+  +9.0 LABFAIL setActive '!pri'
+  +14.1 LABFAIL setActive '!pri'
+  +16.3 LABFAIL setActive '!pri'
+  +19.3 LABFAIL setActive '!pri'
+  +24.8 LABFAIL setActive '!pri'
+  +26.3 LABFAIL setActive '!pri'
+  +36.3 LABFAIL setActive '!pri'
+  +37.4 LABFAIL setActive '!pri'
+  +41.5 LABFAIL setActive '!pri'
+  +46.4 LABFAIL setActive '!pri'
+  +46.7 LABFAIL setActive '!pri'
+  +51.9 LABFAIL setActive '!pri'
+  +56.3 LABFAIL setActive '!pri'
+  +57.1 LABFAIL setActive '!pri'
+  +66.2 LABFAIL setActive '!pri'
+  +101.0 START pid=42805 path=/Users/runner/work/Ammy/Ammy/out/L-hold/probe.txt args=-labOut /Users/runner/work/Ammy/Ammy/out/L-hold -relay_endpoint https://localhost:8443/now-playing -relay_key lab
+  first probe line with engine and node playing after the fault: +102.1
+  bgleft: first 29.1 at +2.8, last 0.0 at +66.7 (65 readings)
+  last background line: pid=35284 state=2 engine=0 node=0 want=1 holds=3 saves=0 expiries=2 refusals=0 fails=29 run=29 retries=14 heals=14 resumes=0 bgleft=0.0
+  pushes: 8
+   push -23.4 engine_running=False node_playing=False running=True resumes=0 resume_failures=2 fail_stage=setActive fail_code=561017449 fail_run=2 fail_run_max=2 holds=1 hold_saves=0 hold_expiries=0 hold_refusals=0 retries=0 self_heals=1 int_began=0 int_ended=0 int_on_resume=0 down_s=0 secs_since_fail=0 last_error=setActive: Session activation failed (lab) [561017449 '!pri'] app_state=active app_uptime_s=0 media_resets=0 config_changes=0
+     prev_alive='2026-11-12T00:08:12Z engine=yes hold=no'
+     prev_tail| 2026-11-12T00:04:46Z hold expired after 51s, 17 failed tries, last: setActive: Session activation failed (lab) [561017449 '!pri']
+     prev_tail| 2026-11-12T00:04:46Z verify: engine stopped
+     prev_tail| 2026-11-12T00:04:46Z hold opened (found stopped)
+     prev_tail| 2026-11-12T00:04:46Z failed, 18 in a row: setActive: Session activation failed (lab) [561017449 '!pri']
+     prev_tail| 2026-11-12T00:07:32Z --- launch, Ammy 1.0 (999)
+     prev_tail| 2026-11-12T00:07:32Z start
+   push -23.3 (+0.1) engine_running=False node_playing=False running=True resumes=0 resume_failures=3 fail_stage=setActive fail_code=561017449 fail_run=3 fail_run_max=3 holds=1 hold_saves=0 hold_expiries=0 hold_refusals=0 retries=0 self_heals=2 int_began=0 int_ended=0 int_on_resume=0 down_s=0 secs_since_fail=0 last_error=setActive: Session activation failed (lab) [561017449 '!pri'] app_state=active app_uptime_s=0 media_resets=0 config_changes=0
+     prev_alive='2026-11-12T00:08:12Z engine=yes hold=no'
+     prev_tail| 2026-11-12T00:04:46Z hold expired after 51s, 17 failed tries, last: setActive: Session activation failed (lab) [561017449 '!pri']
+     prev_tail| 2026-11-12T00:04:46Z verify: engine stopped
+     prev_tail| 2026-11-12T00:04:46Z hold opened (found stopped)
+     prev_tail| 2026-11-12T00:04:46Z failed, 18 in a row: setActive: Session activation failed (lab) [561017449 '!pri']
+     prev_tail| 2026-11-12T00:07:32Z --- launch, Ammy 1.0 (999)
+     prev_tail| 2026-11-12T00:07:32Z start
+   push -20.9 (+2.4) engine_running=False node_playing=False running=True resumes=0 resume_failures=5 fail_stage=setActive fail_code=561017449 fail_run=5 fail_run_max=5 holds=1 hold_saves=0 hold_expiries=0 hold_refusals=0 retries=1 self_heals=3 int_began=0 int_ended=0 int_on_resume=0 down_s=2 secs_since_fail=0 last_error=setActive: Session activation failed (lab) [561017449 '!pri'] app_state=active app_uptime_s=2 media_resets=0 config_changes=0
+   push +7.3 (+28.2) engine_running=False node_playing=False running=True resumes=0 resume_failures=14 fail_stage=setActive fail_code=561017449 fail_run=14 fail_run_max=14 holds=1 hold_saves=0 hold_expiries=0 hold_refusals=0 retries=6 self_heals=7 int_began=0 int_ended=0 int_on_resume=0 down_s=30 secs_since_fail=0 last_error=setActive: Session activation failed (lab) [561017449 '!pri'] app_state=background bg_secs_left=24 app_uptime_s=30 media_resets=0 config_changes=0
+   push +37.4 (+30.1) engine_running=False node_playing=False running=True resumes=0 resume_failures=22 fail_stage=setActive fail_code=561017449 fail_run=22 fail_run_max=22 holds=2 hold_saves=0 hold_expiries=1 hold_refusals=0 retries=10 self_heals=11 int_began=0 int_ended=0 int_on_resume=0 down_s=61 secs_since_fail=0 last_error=setActive: Session activation failed (lab) [561017449 '!pri'] app_state=background bg_secs_left=28 app_uptime_s=61 media_resets=0 config_changes=0
+   push +102.4 (+65.0) engine_running=True node_playing=True running=True resumes=1 resume_failures=0 fail_run=0 fail_run_max=0 holds=0 hold_saves=0 hold_expiries=0 hold_refusals=0 retries=0 self_heals=0 int_began=0 int_ended=0 int_on_resume=0 app_state=active app_uptime_s=0 media_resets=0 config_changes=0
+     prev_alive='2026-11-12T00:09:48Z engine=no hold=yes'
+     prev_tail| 2026-11-12T00:09:38Z failed, 27 in a row: setActive: Session activation failed (lab) [561017449 '!pri']
+     prev_tail| 2026-11-12T00:09:39Z failed, 28 in a row: setActive: Session activation failed (lab) [561017449 '!pri']
+     prev_tail| 2026-11-12T00:09:44Z hold expired after 25s, 28 failed tries, last: setActive: Session activation failed (lab) [561017449 '!pri']
+     prev_tail| 2026-11-12T00:09:48Z verify: engine stopped
+     prev_tail| 2026-11-12T00:09:48Z hold opened (found stopped)
+     prev_tail| 2026-11-12T00:09:48Z failed, 29 in a row: setActive: Session activation failed (lab) [561017449 '!pri']
+   push +104.7 (+2.3) engine_running=True node_playing=True running=True resumes=1 resume_failures=0 fail_run=0 fail_run_max=0 holds=0 hold_saves=0 hold_expiries=0 hold_refusals=0 retries=0 self_heals=0 int_began=0 int_ended=0 int_on_resume=0 app_state=active app_uptime_s=2 media_resets=0 config_changes=0
+   push +132.9 (+28.2) engine_running=True node_playing=True running=True resumes=1 resume_failures=0 fail_run=0 fail_run_max=0 holds=0 hold_saves=0 hold_expiries=0 hold_refusals=0 retries=0 self_heals=0 int_began=0 int_ended=0 int_on_resume=0 app_state=active app_uptime_s=30 media_resets=0 config_changes=0
+  F: probe's last line before terminate: +66.7 pid=35284 state=2 engine=0 node=0 want=1 holds=3 saves=0 expiries=2 refusals=0 f
+  F: first push after relaunch at +102.4: prev_alive='2026-11-12T00:09:48Z engine=no hold=yes', prev_tail last="2026-11-12T00:09:48Z failed, 29 in a row: setActive: Session activation failed (lab) [561017449 '!pri']"
+  journal-before-kill.log (last 14 of 119 lines):
+     | 2026-11-12T00:09:19Z verify: engine stopped
+     | 2026-11-12T00:09:19Z failed, 22 in a row: setActive: Session activation failed (lab) [561017449 '!pri']
+     | 2026-11-12T00:09:23Z failed, 23 in a row: setActive: Session activation failed (lab) [561017449 '!pri']
+     | 2026-11-12T00:09:28Z verify: engine stopped
+     | 2026-11-12T00:09:28Z failed, 24 in a row: setActive: Session activation failed (lab) [561017449 '!pri']
+     | 2026-11-12T00:09:28Z failed, 25 in a row: setActive: Session activation failed (lab) [561017449 '!pri']
+     | 2026-11-12T00:09:33Z failed, 26 in a row: setActive: Session activation failed (lab) [561017449 '!pri']
+     | 2026-11-12T00:09:38Z verify: engine stopped
+     | 2026-11-12T00:09:38Z failed, 27 in a row: setActive: Session activation failed (lab) [561017449 '!pri']
+     | 2026-11-12T00:09:39Z failed, 28 in a row: setActive: Session activation failed (lab) [561017449 '!pri']
+     | 2026-11-12T00:09:44Z hold expired after 25s, 28 failed tries, last: setActive: Session activation failed (lab) [561017449 '!pri']
+     | 2026-11-12T00:09:48Z verify: engine stopped
+     | 2026-11-12T00:09:48Z hold opened (found stopped)
+     | 2026-11-12T00:09:48Z failed, 29 in a row: setActive: Session activation failed (lab) [561017449 '!pri']
+  journal-end.log (last 14 of 121 lines):
+     | 2026-11-12T00:09:23Z failed, 23 in a row: setActive: Session activation failed (lab) [561017449 '!pri']
+     | 2026-11-12T00:09:28Z verify: engine stopped
+     | 2026-11-12T00:09:28Z failed, 24 in a row: setActive: Session activation failed (lab) [561017449 '!pri']
+     | 2026-11-12T00:09:28Z failed, 25 in a row: setActive: Session activation failed (lab) [561017449 '!pri']
+     | 2026-11-12T00:09:33Z failed, 26 in a row: setActive: Session activation failed (lab) [561017449 '!pri']
+     | 2026-11-12T00:09:38Z verify: engine stopped
+     | 2026-11-12T00:09:38Z failed, 27 in a row: setActive: Session activation failed (lab) [561017449 '!pri']
+     | 2026-11-12T00:09:39Z failed, 28 in a row: setActive: Session activation failed (lab) [561017449 '!pri']
+     | 2026-11-12T00:09:44Z hold expired after 25s, 28 failed tries, last: setActive: Session activation failed (lab) [561017449 '!pri']
+     | 2026-11-12T00:09:48Z verify: engine stopped
+     | 2026-11-12T00:09:48Z hold opened (found stopped)
+     | 2026-11-12T00:09:48Z failed, 29 in a row: setActive: Session activation failed (lab) [561017449 '!pri']
+     | 2026-11-12T00:10:23Z --- launch, Ammy 1.0 (999)
+     | 2026-11-12T00:10:23Z start
+==============================================================================
+Ammy crash reports: none

@@ -1,0 +1,9 @@
+setup: ios26
+runtime: com.apple.CoreSimulator.SimRuntime.iOS-26-5
+Xcode 26.6
+Build version 17F113
+  "DTPlatformVersion" => "26.5"
+  "DTSDKName" => "iphonesimulator26.5"
+  "DTXcode" => "2660"
+  "DTXcodeBuild" => "17F113"
+  "MinimumOSVersion" => "26.0"

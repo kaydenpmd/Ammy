@@ -1,0 +1,8 @@
+[{"databaseId":43113016498,"headSha":"363179f7a33852ac70a9a279cda96f4b1ad633d3","status":"queued","workflowName":"Keepalive lab"}]
+branch keepalive-lab commit 363179f pushed; see runs above
+run 43113016498 (commit 363179f): compile26 + compile27 succeeded, 0 warnings in the 3 files; summaries in runs/43113016498/compile-*. Lab jobs ios26, ios27-sdk26 running.
+run 43113016498 lab results (runs/43113016498/lab-*): no arm ever suspended on either simulator; HAL holds MediaPlayback+AudioRecording RBS assertions after first engine start. bgleft always DBL_MAX.
+run 43117893651 (commit cc5036c): from-launch scenarios G-hold G-nohold H-hold H-nohold I-hold.
+run 43119011272 (commit a74ffc0, LF fixed; rerun attempt 2) from-launch scenarios
+run 43119011272: G-I from-launch engine.start: still no suspension (HAL assertions taken at first resume even when start refused). run 43122873590 (2fd0e28): J-hold J-nohold K-hold L-hold (setActive from launch)
+run 43122873590 (2fd0e28): J/K/L setActive-from-launch. Sim grants ~29-30 s bgleft. RunningBoard: "Ignoring suspend because this process is simulated and has background audio capabilities" -> sim never suspends Ammy. FOUND: after hold expiry, verify() reopens a hold with no time left -> RunningBoard terminates 0x2182BAD2 "Timed-out waiting for process to invalidate assertion 'Shared Background Assertion N'" (K-hold, L-hold both setups). Also ios27 J-hold killed with hold 1 never expired: main thread blocked in real audio calls after the fault window.

@@ -1,0 +1,5 @@
+1794442307.004 launch -labFailFromLaunch YES -labFailStage setActive -labFailFor 600
+1794442327.614 background
+1794442422.398 terminate (suspended)
+1794442425.741 relaunch
+1794442471.776 end

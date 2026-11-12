@@ -1,0 +1,36 @@
+2026-11-11T23:57:14Z --- launch, Ammy 1.0 (999)
+2026-11-11T23:57:14Z start
+2026-11-11T23:57:15Z failed, 1 in a row: setActive: Session activation failed (lab) [561017449 '!pri']
+2026-11-11T23:57:15Z hold opened (setActive)
+2026-11-11T23:57:15Z verify: engine stopped
+2026-11-11T23:57:15Z failed, 2 in a row: setActive: Session activation failed (lab) [561017449 '!pri']
+2026-11-11T23:57:16Z failed, 3 in a row: setActive: Session activation failed (lab) [561017449 '!pri']
+2026-11-11T23:57:17Z verify: engine stopped
+2026-11-11T23:57:17Z failed, 4 in a row: setActive: Session activation failed (lab) [561017449 '!pri']
+2026-11-11T23:57:19Z failed, 5 in a row: setActive: Session activation failed (lab) [561017449 '!pri']
+2026-11-11T23:57:24Z failed, 6 in a row: setActive: Session activation failed (lab) [561017449 '!pri']
+2026-11-11T23:57:24Z verify: engine stopped
+2026-11-11T23:57:24Z failed, 7 in a row: setActive: Session activation failed (lab) [561017449 '!pri']
+2026-11-11T23:57:29Z failed, 8 in a row: setActive: Session activation failed (lab) [561017449 '!pri']
+2026-11-11T23:57:34Z verify: engine stopped
+2026-11-11T23:57:34Z failed, 9 in a row: setActive: Session activation failed (lab) [561017449 '!pri']
+2026-11-11T23:57:34Z failed, 10 in a row: setActive: Session activation failed (lab) [561017449 '!pri']
+2026-11-11T23:57:40Z failed, 11 in a row: setActive: Session activation failed (lab) [561017449 '!pri']
+2026-11-11T23:57:44Z verify: engine stopped
+2026-11-11T23:57:44Z failed, 12 in a row: setActive: Session activation failed (lab) [561017449 '!pri']
+2026-11-11T23:57:45Z failed, 13 in a row: setActive: Session activation failed (lab) [561017449 '!pri']
+2026-11-11T23:57:45Z verify: engine stopped
+2026-11-11T23:57:45Z failed, 14 in a row: setActive: Session activation failed (lab) [561017449 '!pri']
+2026-11-11T23:57:51Z playing again after 14 failed tries, down 36s
+2026-11-11T23:57:51Z hold ended: playing again after 36s
+2026-11-12T00:00:50Z --- launch, Ammy 1.0 (999)
+2026-11-12T00:00:50Z start
+2026-11-12T00:00:50Z failed, 1 in a row: setActive: Session activation failed (lab) [561017449 '!pri']
+2026-11-12T00:00:50Z verify: engine stopped
+2026-11-12T00:00:50Z failed, 2 in a row: setActive: Session activation failed (lab) [561017449 '!pri']
+2026-11-12T00:00:53Z verify: engine stopped
+2026-11-12T00:00:53Z failed, 3 in a row: setActive: Session activation failed (lab) [561017449 '!pri']
+2026-11-12T00:01:00Z verify: engine stopped
+2026-11-12T00:01:00Z failed, 4 in a row: setActive: Session activation failed (lab) [561017449 '!pri']
+2026-11-12T00:01:01Z stop
+2026-11-12T00:03:15Z start
