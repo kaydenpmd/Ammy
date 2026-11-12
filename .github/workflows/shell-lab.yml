@@ -38,61 +38,73 @@ jobs:
           ls -d /System/Applications/Automator.app /Applications/Automator.app 2>&1 | tee -a out/actions.txt || true
           defaults read /System/Applications/Automator.app/Contents/Info CFBundleShortVersionString 2>&1 | tee out/automator-version.txt || true
 
-      - name: Build a workflow with Run Shell Script through Automator's scripting
+      - name: Open Automator, choose Workflow, add Run Shell Script with the command
         run: |
           set -x
+          open -a Automator; sleep 6
           cat > out/make.applescript <<'EOF'
-          tell application "Automator"
-            activate
-            set w to make new workflow
-            set a to add Automator action "Run Shell Script" to w
-            delay 2
-            try
-              set value of setting "COMMAND_STRING" of a to "winget install --id Tailscale.Tailscale --exact"
-            on error e
-              log "couldn't set the command: " & e
-            end try
-            save w in POSIX file "/tmp/ShellLab.workflow"
-          end tell
+          with timeout of 30 seconds
+            tell application "System Events" to tell process "Automator"
+              set frontmost to true
+              try
+                click button "Choose" of sheet 1 of window 1
+              on error e
+                log "no Choose button: " & e
+                keystroke return
+              end try
+            end tell
+          end timeout
+          delay 3
+          with timeout of 30 seconds
+            tell application "Automator"
+              set a to add Automator action "Run Shell Script" to workflow 1
+            end tell
+          end timeout
+          delay 2
+          with timeout of 30 seconds
+            tell application "Automator"
+              try
+                set value of setting "COMMAND_STRING" of Automator action 1 of workflow 1 to "winget install --id Tailscale.Tailscale --exact"
+              on error e
+                log "couldn't set the command by setting: " & e
+              end try
+            end tell
+          end timeout
           EOF
           osascript out/make.applescript 2>&1 | tee out/make.log || true
-          ls -la /tmp/ShellLab.workflow 2>&1 | tee -a out/make.log || true
-          sleep 4
+          sleep 3
 
-      - name: Capture the screen and the window's elements
+      - name: Capture the window and its elements, then run it and capture again
         run: |
           set -x
-          screencapture -x out/automator-screen.png || echo "screencapture failed" | tee out/screencapture.log
-          # Window bounds and every UI element's role, description and frame.
+          screencapture -x out/automator-screen.png || true
           cat > out/elements.applescript <<'EOF'
           set out to ""
-          tell application "System Events"
-            tell process "Automator"
-              set frontmost to true
-              repeat with w in windows
-                set out to out & "window " & (name of w) & " pos " & (position of w as text) & " size " & (size of w as text) & linefeed
-                repeat with e in (entire contents of w)
-                  try
-                    set out to out & (role of e) & " | " & (description of e) & " | " & (value of e as text) & " | pos " & (position of e as text) & " size " & (size of e as text) & linefeed
-                  end try
-                end repeat
-              end repeat
-            end tell
+          tell application "System Events" to tell process "Automator"
+            set w to window 1
+            set out to "window " & (name of w) & " pos " & (item 1 of (position of w as list)) & "," & (item 2 of (position of w as list)) & " size " & (item 1 of (size of w as list)) & "," & (item 2 of (size of w as list)) & linefeed
+            repeat with e in (entire contents of w)
+              try
+                set p to position of e as list
+                set s to size of e as list
+                set out to out & (role of e) & " | " & (description of e) & " | " & (name of e as text) & " | " & (value of e as text) & " | " & (item 1 of p) & "," & (item 2 of p) & " " & (item 1 of s) & "x" & (item 2 of s) & linefeed
+              end try
+            end repeat
           end tell
           return out
           EOF
           osascript out/elements.applescript > out/elements.txt 2> out/elements.err || true
-          head -c 4000 out/elements.txt; cat out/elements.err
-          # A capture of the front window alone, if its id can be read.
-          WID=$(osascript -e 'tell application "System Events" to tell process "Automator" to get value of attribute "AXWindowNumber" of window 1' 2>/dev/null || true)
-          echo "window id: $WID" | tee out/window.txt
-          [ -n "$WID" ] && screencapture -x -o -l"$WID" out/automator-window.png || true
-          # The same with the command run once, to see how a run shows itself.
-          osascript -e 'tell application "Automator" to execute workflow 1' > out/run.log 2>&1 || true
-          sleep 3
-          screencapture -x out/automator-after-run.png || true
+          head -c 3000 out/elements.txt
+          R=$(head -1 out/elements.txt | sed -E 's/.* pos ([0-9]+),([0-9]+) size ([0-9]+),([0-9]+).*/\1,\2,\3,\4/')
+          echo "region $R" | tee out/window.txt
+          [ -n "$R" ] && screencapture -x -R"$R" out/automator-window.png || true
+          osascript -e 'tell application "System Events" to tell process "Automator" to click button "Run" of toolbar 1 of window 1' > out/run.log 2>&1 || \
+            osascript -e 'tell application "System Events" to tell process "Automator" to keystroke "r" using command down' >> out/run.log 2>&1 || true
+          sleep 5
+          [ -n "$R" ] && screencapture -x -R"$R" out/automator-window-after-run.png || true
+          screencapture -x out/automator-screen-after-run.png || true
+          osascript out/elements.applescript > out/elements-after-run.txt 2>&1 || true
           ls -la out
-
       - uses: actions/upload-artifact@v7
         if: always()
         with:
