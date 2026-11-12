@@ -57,6 +57,12 @@ struct PushDiagnostics: Sendable {
     var totalPushFailures: Int
     /// Seconds since a push last got through, or 0 when the last one did.
     var secondsOffline: Double
+    /// The previous process's last keepalive journal lines and its last health
+    /// stamp (`KeepAliveJournal`). Sent until a push gets through, then
+    /// dropped: one process's account of how the one before it ended, which
+    /// nothing else can give, since a suspended or killed app reports nothing.
+    var previousTail: [String]?
+    var previousAlive: String?
 
     var dictionary: [String: Any] {
         var d = keepAlive.dictionary
@@ -79,6 +85,8 @@ struct PushDiagnostics: Sendable {
         if backgroundTimeRemaining >= 0 {
             d["bg_secs_left"] = Int(backgroundTimeRemaining)
         }
+        if let previousTail { d["prev_tail"] = previousTail }
+        if let previousAlive { d["prev_alive"] = previousAlive }
         return d
     }
 }
@@ -104,6 +112,9 @@ enum DeviceDiagnostics {
     private static var totalPushFailures = 0
     private static var lastPushSuccessAt: Date?
 
+    /// The previous process's journal tail, until a push carrying it lands.
+    private static var previousRunPending = KeepAliveJournal.previousRun
+
     /// Record what happened to a push. Called after every attempt, so the next
     /// snapshot describes what has actually been happening rather than what the
     /// app hopes is true.
@@ -116,6 +127,7 @@ enum DeviceDiagnostics {
         if ok {
             consecutivePushFailures = 0
             lastPushSuccessAt = Date()
+            previousRunPending = nil
         } else {
             consecutivePushFailures += 1
             totalPushFailures += 1
@@ -189,7 +201,9 @@ enum DeviceDiagnostics {
             deviceUptime: ProcessInfo.processInfo.systemUptime,
             consecutivePushFailures: consecutivePushFailures,
             totalPushFailures: totalPushFailures,
-            secondsOffline: offline
+            secondsOffline: offline,
+            previousTail: previousRunPending?.tail,
+            previousAlive: previousRunPending?.lastAlive
         )
     }
 

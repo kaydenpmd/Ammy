@@ -144,6 +144,7 @@ Ammy/
   NowPlayingMonitor.swift            MediaPlayer observation; store ID + cover art
   PresenceRelay.swift                HTTPS client for the endpoint; PushOutcome
   KeepAlive.swift                    Silent audio to survive backgrounding
+  KeepAliveJournal.swift             The keepalive's on-disk log; its tail rides the next run's pushes
   Diagnostics.swift                  The phone's self-report, sent with every push
   SilenceWatchdog.swift              Notification for when the app isn't running
   EventLog.swift                     Link history: failures, interruptions, recoveries
@@ -566,6 +567,27 @@ How to read it:
 shows the *sequence* leading to a death rather than only the state at the end of
 it. `GET /diag` returns the latest snapshot on demand, authenticated.
 
+**Since build 167 the phone also keeps its own record** (`KeepAliveJournal`),
+for what happens after the last push that got through, which nothing else can
+see. Every keepalive event (start, stop, `verify` finding the engine down, each
+failed try, each recovery, interruptions with their reason and whether iOS
+delivered them late, configuration changes, media resets) is appended to
+`keepalive.log` in Ammy's Application Support folder, 400 lines kept, each run
+starting with a header line. Every 10 s tick overwrites `keepalive.alive` with
+the time and the engine's state, so the last stamp a suspended or killed process
+left says when it stopped running, to within one tick. The next launch sends the
+previous run's last 25 lines as `prev_tail` and its stamp as `prev_alive` on
+every push until one lands. New `diag` fields beside them: `fail_stage` and
+`fail_code` (the step of `resume()` that failed last and its error code, kept
+after a recovery), `fail_run` and `fail_run_max`, `down_s`, `secs_since_fail`,
+`int_on_resume` (late `.began` notices, each proof of a suspension),
+`int_reason`, `secs_since_began` and `secs_since_ended`. `last_error` now ends
+with the code and its four characters, e.g. `[2003329396 'what']`, so Issun's
+existing "resume failed:" lines carry it. **Issun doesn't print the others
+yet**, `prev_tail` included: they reach `GET /diag` only until the next push
+replaces them, so a companion change in Issun has to log them before the journal
+pays off.
+
 ### Was it killed, or just unreachable?
 
 Two different bugs with two different fixes, and until relay 1.8.0 the log could
@@ -647,7 +669,8 @@ uptime. The launch times the pushes imply say what happened: 14:26:06 before the
 gap and at 18:46 that evening, but 14:27:48 for the push that ended the gap. So
 that push carried a snapshot about 100 s old, most likely built before iOS froze
 the app and sent when it woke. Discount that line too: build 158 died nine
-times, not ten.
+times, not ten. The census of 11 Nov 2026 found a third: 16 Oct 2026 at
+21:56:52, `89081s -> 89165s`, uptime up 84 s over a 93-second gap.
 
 ## Artwork
 
@@ -1145,21 +1168,68 @@ what they are for.
 - *Thermal.* Deaths have occurred at `nominal`, the coolest state.
 
 **Still unexplained: what ends a run.** Every death recorded since the fix but
-one (below) has carried `engine=yes want=yes` — a healthy audio engine — with no
+two (below) has carried `engine=yes want=yes` — a healthy audio engine — with no
 correlate in any signal collected. It is now a roughly once-a-day event rather
 than an hourly one: build 158 (3 to 11 Nov 2026) died nine times in about eight
 and a half days, after runs of 2 to 24 hours. Whether that is worth chasing
 further is a judgement call, not an open bug.
 
-**The one exception, 4 Nov 2026, build 158: the keepalive failed to restart.**
-Interruptions had piled up (eight began, one ended). At 18:50:06 the engine
-stopped (`engine_running True -> False`), the resume failed with `engine.start:
-... (com.apple.coreaudio.avfaudio error 2003329396.)`, whose code spells 'what',
-AVAudioSession's unspecified error, and that was the last push. Ammy stayed
-silent until it was opened at 22:20. The 10-second retry never got its chance,
-most likely because iOS suspends a backgrounded app soon after its audio stops.
-So `engine=no` at a death now has a precedent, and it is the case the retry loop
-can't cover.
+**The census of 11 Nov 2026**, every log from 24 Aug (relay.py's and Issun's,
+read with PowerShell; the scripts and tables are in that session's scratchpad,
+not the repo). Of 66 death verdicts since 11 Sept, 3 are unsound (same process
+through the gap), 17 are installs of a new build, 17 are phone reboots inside
+the gap, with Low Power Mode on at the last push in 15 of them (a battery
+running out, most likely), and 29 are unexplained, 27 of them with the engine
+running. Low Power Mode was on at the last push in 45% of the unexplained deaths
+under Issun, against 27% of the time alive and 8% of silences survived. 19 of
+132 silences began within two minutes of the top of an hour, against 4.4
+expected, 7 at 10:00 and 5 at 13:00, which looks like a scheduled interruption
+such as an alarm. And 24 gaps Issun labels "the path failed, not the app" had no
+failed pushes at all: the app wasn't trying, so those were suspensions, 19 of
+them ended in the background by an interruption's `.ended`.
+
+**The two exceptions: the keepalive failed to restart.** Since build 25, 15
+engine stops were seen at a push. 12 came with a failed restart, every one while
+an interruption was under way, and 10 of those were playing again by the next
+push, 3 to 33 s later, through an `.ended` or a self-heal. The other two never
+pushed again and were dead when the phone next checked in: 17 Sept 2026 at
+10:00:02 (build 51, `setActive: Session activation failed`, int 3/1) and 4 Nov
+2026 at 18:50:06 (build 158). On 4 Nov interruptions had piled up (eight began,
+one ended); the engine stopped, `setActive` succeeded, and `engine.start` failed
+with `com.apple.coreaudio.avfaudio error 2003329396`, whose code spells 'what',
+AVAudioSession's unspecified error. Ammy stayed silent until it was opened at
+22:20. The 10-second retry never got its chance, most likely because iOS
+suspends a backgrounded app soon after its audio stops, and it is the case the
+retry loop can't cover. Since build 167 a refused `engine.start` makes the next
+try build a fresh engine, the usual cure reported for 'what', and the journal
+(Diagnostics) records what follows.
+
+**The keepalive hold, parked (11 Nov 2026).** The obvious fix for those two was
+to hold a `UIApplication` background task from the first sign the engine is down
+and retry at 1, 2, 3, then every 5 s within iOS's ~30 s grace. It was built and
+tested in the `keepalive-lab` lab (never merged; at 2fd0e28), on the iOS 26.5
+SDK build on iOS 27.0 and on 26.5. The ladder and its bookkeeping worked: with
+`engine.start` refusing ('what') for 15 s, it played again at +16.6 s. But the
+lab found two ways it gets Ammy killed outright, which is worse than a
+suspension, since a suspended Ammy can still be woken by an `.ended`:
+- after iOS's deadline, the next `verify()` opened a new hold with no time left,
+  its expiry handler never ran, and RunningBoard terminated the process
+  (`0x2182BAD2`, "Timed-out waiting for process ... to invalidate assertion ...
+  Shared Background Assertion"), 0.6 to 4 s after the reopen, on both iOS
+  versions;
+- on iOS 27.0, a real audio call held the main thread for about 12 s, past the
+  deadline, so the expiry handler couldn't run either (seen only in the
+  simulator, whose audio HAL is in-process).
+And the simulator can't show whether a hold saves anything: RunningBoard never
+suspends an app with the audio background mode there ("Ignoring suspend because
+this process is simulated and has background audio capabilities"), and its audio
+HAL takes playback assertions on the first resume and never lets them go. The
+owner chose "Ship the safe half": the journal, the failure codes and the fresh
+engine, without the hold. Revisit it only with the journal's evidence from the
+phone of what follows an engine stop, and then with two guards at least: never
+begin a task in the background with under ~10 s of `backgroundTimeRemaining`,
+and release it a few seconds before the deadline rather than relying on the
+expiry handler alone.
 
 ## Open work
 
