@@ -9,12 +9,12 @@
       "versions": [
         {
           "version": "1.0",
-          "date": "2026-11-12T03:13:56+00:00",
-          "localizedDescription": "Scan a receiver's QR code to fill in the address and key\n\nA Scan QR Code row under the URL and Key fields opens the camera. A code\nholding the address and key fills in both fields; any other code is\nignored. Issun's setup window shows one.",
-          "downloadURL": "https://github.com/kaydenpmd/Ammy/releases/download/v1.0-b172/Ammy-1.0-b172-f416327.ipa",
-          "size": 585228,
-          "sha256": "cb5a43bed9b775992355b6ccf713154cb08a66d629126e7ec661ed4b46d5258e",
-          "buildVersion": "172",
+          "date": "2026-11-12T08:38:46+00:00",
+          "localizedDescription": "Keep the Restart button above the keyboard, and scan codes with only the address or only the key\n\nThe Stop and Restart buttons sit just above the keyboard again while\nthe endpoint or key is being edited. A receiver's QR code that carries\nonly the address, or only the key, now fills in just that field.",
+          "downloadURL": "https://github.com/kaydenpmd/Ammy/releases/download/v1.0-b177/Ammy-1.0-b177-55a1124.ipa",
+          "size": 588147,
+          "sha256": "61d4c29cf7dfe06022052724b104ba3e635821addbc81c5882e10170a4e5fdf3",
+          "buildVersion": "177",
           "minOSVersion": "26.0"
         }
       ],
