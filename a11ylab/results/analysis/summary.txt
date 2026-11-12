@@ -1,0 +1,281 @@
+se-ios27 | notPlaying-dark
+   change : 'Now Playing, Not Playing'
+   control: 'Not Playing'
+   rel: {'prefixThenControl': True, 'separator': ', ', 'separatorCodepoints': ['U+002C', 'U+0020']} | seq: lengths [9, 9], 1 difference(s): #1 ['label']
+   px: outside it 0 of 970500 px differ (>8: 0, max 0)
+    geometry change  tree: card h=85.0 side=14.0 top=14.0 bottom=14.0
+    geometry control tree: card h=85.0 side=14.0 top=14.0 bottom=14.0
+se-ios27 | notPlaying-light
+   change : 'Now Playing, Not Playing'
+   control: 'Not Playing'
+   rel: {'prefixThenControl': True, 'separator': ', ', 'separatorCodepoints': ['U+002C', 'U+0020']} | seq: lengths [9, 9], 1 difference(s): #1 ['label']
+   px: outside it 0 of 970500 px differ (>8: 0, max 0)
+    geometry change  tree: card h=85.0 side=14.0 top=14.0 bottom=14.0
+    geometry control tree: card h=85.0 side=14.0 top=14.0 bottom=14.0
+se-ios27 | notAvailable-dark
+   change : 'Now Playing, Not Available'
+   control: 'Not Available'
+   rel: {'prefixThenControl': True, 'separator': ', ', 'separatorCodepoints': ['U+002C', 'U+0020']} | seq: lengths [10, 10], 1 difference(s): #4 ['label']
+   px: outside it 0 of 970500 px differ (>8: 0, max 0)
+    geometry change  tree: card h=85.0 side=14.0 top=14.0 bottom=14.0
+    geometry control tree: card h=85.0 side=14.0 top=14.0 bottom=14.0
+se-ios27 | notAvailable-light
+   change : 'Now Playing, Not Available'
+   control: 'Not Available'
+   rel: {'prefixThenControl': True, 'separator': ', ', 'separatorCodepoints': ['U+002C', 'U+0020']} | seq: lengths [10, 10], 1 difference(s): #4 ['label']
+   px: outside it 0 of 970500 px differ (>8: 0, max 0)
+    geometry change  tree: card h=85.0 side=14.0 top=14.0 bottom=14.0
+    geometry control tree: card h=85.0 side=14.0 top=14.0 bottom=14.0
+se-ios27 | short-dark
+   change : 'Now Playing, Blue, Joni Mitchell'
+   control: 'Blue, Joni Mitchell'
+   rel: {'prefixThenControl': True, 'separator': ', ', 'separatorCodepoints': ['U+002C', 'U+0020']} | seq: lengths [9, 9], 1 difference(s): #1 ['label']
+   px: outside it 0 of 970500 px differ (>8: 0, max 0)
+    geometry change  tree: card h=85.0 side=14.0 top=14.0 bottom=14.0
+    geometry control tree: card h=85.0 side=14.0 top=14.0 bottom=14.0
+se-ios27 | short-light
+   change : 'Now Playing, Blue, Joni Mitchell'
+   control: 'Blue, Joni Mitchell'
+   rel: {'prefixThenControl': True, 'separator': ', ', 'separatorCodepoints': ['U+002C', 'U+0020']} | seq: lengths [9, 9], 1 difference(s): #1 ['label']
+   px: outside it 0 of 970500 px differ (>8: 0, max 0)
+    geometry change  tree: card h=85.0 side=14.0 top=14.0 bottom=14.0
+    geometry control tree: card h=85.0 side=14.0 top=14.0 bottom=14.0
+se-ios27 | explicit-dark
+   change : 'Now Playing, HUMBLE. , Kendrick Lamar'
+   control: 'HUMBLE. , Kendrick Lamar'
+   rel: {'prefixThenControl': True, 'separator': ', ', 'separatorCodepoints': ['U+002C', 'U+0020']} | seq: lengths [9, 9], 1 difference(s): #1 ['label']
+   px: outside it 0 of 970500 px differ (>8: 0, max 0)
+    geometry change  tree: card h=85.0 side=14.0 top=14.0 bottom=14.0
+    geometry control tree: card h=85.0 side=14.0 top=14.0 bottom=14.0
+se-ios27 | explicit-light
+   change : 'Now Playing, HUMBLE. , Kendrick Lamar'
+   control: 'HUMBLE. , Kendrick Lamar'
+   rel: {'prefixThenControl': True, 'separator': ', ', 'separatorCodepoints': ['U+002C', 'U+0020']} | seq: lengths [9, 9], 1 difference(s): #1 ['label']
+   px: outside it 0 of 970500 px differ (>8: 0, max 0)
+    geometry change  tree: card h=85.0 side=14.0 top=14.0 bottom=14.0
+    geometry control tree: card h=85.0 side=14.0 top=14.0 bottom=14.0
+se-ios27 | long-dark
+   change : 'Now Playing, Prime Time Golden Hour Show (Soundtrack), Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC'
+   control: 'Prime Time Golden Hour Show (Soundtrack), Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC'
+   rel: {'prefixThenControl': True, 'separator': ', ', 'separatorCodepoints': ['U+002C', 'U+0020']} | seq: lengths [9, 9], 1 difference(s): #1 ['label']
+   px: outside it 0 of 970500 px differ (>8: 0, max 0)
+    geometry change  tree: card h=85.0 side=14.0 top=14.0 bottom=14.0
+    geometry control tree: card h=85.0 side=14.0 top=14.0 bottom=14.0
+se-ios27 | long-light
+   change : 'Now Playing, Prime Time Golden Hour Show (Soundtrack), Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC'
+   control: 'Prime Time Golden Hour Show (Soundtrack), Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC'
+   rel: {'prefixThenControl': True, 'separator': ', ', 'separatorCodepoints': ['U+002C', 'U+0020']} | seq: lengths [9, 9], 1 difference(s): #1 ['label']
+   px: outside it 0 of 970500 px differ (>8: 0, max 0)
+    geometry change  tree: card h=85.0 side=14.0 top=14.0 bottom=14.0
+    geometry control tree: card h=85.0 side=14.0 top=14.0 bottom=14.0
+se-ios26 | notPlaying-dark
+   change : 'Now Playing, Not Playing'
+   control: 'Not Playing'
+   rel: {'prefixThenControl': True, 'separator': ', ', 'separatorCodepoints': ['U+002C', 'U+0020']} | seq: lengths [9, 9], 1 difference(s): #1 ['label']
+   px: outside it 0 of 970500 px differ (>8: 0, max 0)
+    geometry change  tree: card h=85.0 side=14.0 top=14.0 bottom=14.0
+    geometry control tree: card h=85.0 side=14.0 top=14.0 bottom=14.0
+se-ios26 | notPlaying-light
+   change : 'Now Playing, Not Playing'
+   control: 'Not Playing'
+   rel: {'prefixThenControl': True, 'separator': ', ', 'separatorCodepoints': ['U+002C', 'U+0020']} | seq: lengths [9, 9], 1 difference(s): #1 ['label']
+   px: outside it 0 of 970500 px differ (>8: 0, max 0)
+    geometry change  tree: card h=85.0 side=14.0 top=14.0 bottom=14.0
+    geometry control tree: card h=85.0 side=14.0 top=14.0 bottom=14.0
+se-ios26 | notAvailable-dark
+   change : 'Now Playing, Not Available'
+   control: 'Not Available'
+   rel: {'prefixThenControl': True, 'separator': ', ', 'separatorCodepoints': ['U+002C', 'U+0020']} | seq: lengths [10, 10], 1 difference(s): #4 ['label']
+   px: outside it 0 of 970500 px differ (>8: 0, max 0)
+    geometry change  tree: card h=85.0 side=14.0 top=14.0 bottom=14.0
+    geometry control tree: card h=85.0 side=14.0 top=14.0 bottom=14.0
+se-ios26 | notAvailable-light
+   change : 'Now Playing, Not Available'
+   control: 'Not Available'
+   rel: {'prefixThenControl': True, 'separator': ', ', 'separatorCodepoints': ['U+002C', 'U+0020']} | seq: lengths [10, 10], 1 difference(s): #4 ['label']
+   px: outside it 0 of 970500 px differ (>8: 0, max 0)
+    geometry change  tree: card h=85.0 side=14.0 top=14.0 bottom=14.0
+    geometry control tree: card h=85.0 side=14.0 top=14.0 bottom=14.0
+se-ios26 | short-dark
+   change : 'Now Playing, Blue, Joni Mitchell'
+   control: 'Blue, Joni Mitchell'
+   rel: {'prefixThenControl': True, 'separator': ', ', 'separatorCodepoints': ['U+002C', 'U+0020']} | seq: lengths [9, 9], 1 difference(s): #1 ['label']
+   px: outside it 0 of 970500 px differ (>8: 0, max 0)
+    geometry change  tree: card h=85.0 side=14.0 top=14.0 bottom=14.0
+    geometry control tree: card h=85.0 side=14.0 top=14.0 bottom=14.0
+se-ios26 | short-light
+   change : 'Now Playing, Blue, Joni Mitchell'
+   control: 'Blue, Joni Mitchell'
+   rel: {'prefixThenControl': True, 'separator': ', ', 'separatorCodepoints': ['U+002C', 'U+0020']} | seq: lengths [9, 9], 1 difference(s): #1 ['label']
+   px: outside it 0 of 970500 px differ (>8: 0, max 0)
+    geometry change  tree: card h=85.0 side=14.0 top=14.0 bottom=14.0
+    geometry control tree: card h=85.0 side=14.0 top=14.0 bottom=14.0
+se-ios26 | explicit-dark
+   change : 'Now Playing, HUMBLE. , Kendrick Lamar'
+   control: 'HUMBLE. , Kendrick Lamar'
+   rel: {'prefixThenControl': True, 'separator': ', ', 'separatorCodepoints': ['U+002C', 'U+0020']} | seq: lengths [9, 9], 1 difference(s): #1 ['label']
+   px: outside it 0 of 970500 px differ (>8: 0, max 0)
+    geometry change  tree: card h=85.0 side=14.0 top=14.0 bottom=14.0
+    geometry control tree: card h=85.0 side=14.0 top=14.0 bottom=14.0
+se-ios26 | explicit-light
+   change : 'Now Playing, HUMBLE. , Kendrick Lamar'
+   control: 'HUMBLE. , Kendrick Lamar'
+   rel: {'prefixThenControl': True, 'separator': ', ', 'separatorCodepoints': ['U+002C', 'U+0020']} | seq: lengths [9, 9], 1 difference(s): #1 ['label']
+   px: outside it 0 of 970500 px differ (>8: 0, max 0)
+    geometry change  tree: card h=85.0 side=14.0 top=14.0 bottom=14.0
+    geometry control tree: card h=85.0 side=14.0 top=14.0 bottom=14.0
+se-ios26 | long-dark
+   change : 'Now Playing, Prime Time Golden Hour Show (Soundtrack), Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC'
+   control: 'Prime Time Golden Hour Show (Soundtrack), Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC'
+   rel: {'prefixThenControl': True, 'separator': ', ', 'separatorCodepoints': ['U+002C', 'U+0020']} | seq: lengths [9, 9], 1 difference(s): #1 ['label']
+   px: outside it 0 of 970500 px differ (>8: 0, max 0)
+    geometry change  tree: card h=85.0 side=14.0 top=14.0 bottom=14.0
+    geometry control tree: card h=85.0 side=14.0 top=14.0 bottom=14.0
+se-ios26 | long-light
+   change : 'Now Playing, Prime Time Golden Hour Show (Soundtrack), Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC'
+   control: 'Prime Time Golden Hour Show (Soundtrack), Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC'
+   rel: {'prefixThenControl': True, 'separator': ', ', 'separatorCodepoints': ['U+002C', 'U+0020']} | seq: lengths [9, 9], 1 difference(s): #1 ['label']
+   px: outside it 0 of 970500 px differ (>8: 0, max 0)
+    geometry change  tree: card h=85.0 side=14.0 top=14.0 bottom=14.0
+    geometry control tree: card h=85.0 side=14.0 top=14.0 bottom=14.0
+17e-ios27 | notPlaying-dark
+   change : 'Now Playing, Not Playing'
+   control: 'Not Playing'
+   rel: {'prefixThenControl': True, 'separator': ', ', 'separatorCodepoints': ['U+002C', 'U+0020']} | seq: lengths [9, 9], 1 difference(s): #1 ['label']
+   px: outside it 0 of 2797470 px differ (>8: 0, max 0)
+    geometry change  tree: card h=85.0 side=14.0 top=14.0 bottom=14.0
+    geometry control tree: card h=85.0 side=14.0 top=14.0 bottom=14.0
+17e-ios27 | notPlaying-light
+   change : 'Now Playing, Not Playing'
+   control: 'Not Playing'
+   rel: {'prefixThenControl': True, 'separator': ', ', 'separatorCodepoints': ['U+002C', 'U+0020']} | seq: lengths [9, 9], 1 difference(s): #1 ['label']
+   px: outside it 0 of 2797470 px differ (>8: 0, max 0)
+    geometry change  tree: card h=85.0 side=14.0 top=14.0 bottom=14.0
+    geometry control tree: card h=85.0 side=14.0 top=14.0 bottom=14.0
+17e-ios27 | notAvailable-dark
+   change : 'Now Playing, Not Available'
+   control: 'Not Available'
+   rel: {'prefixThenControl': True, 'separator': ', ', 'separatorCodepoints': ['U+002C', 'U+0020']} | seq: lengths [12, 12], 1 difference(s): #4 ['label']
+   px: outside it 0 of 2797470 px differ (>8: 0, max 0)
+    geometry change  tree: card h=85.0 side=14.0 top=14.0 bottom=14.0
+    geometry control tree: card h=85.0 side=14.0 top=14.0 bottom=14.0
+17e-ios27 | notAvailable-light
+   change : 'Now Playing, Not Available'
+   control: 'Not Available'
+   rel: {'prefixThenControl': True, 'separator': ', ', 'separatorCodepoints': ['U+002C', 'U+0020']} | seq: lengths [12, 12], 1 difference(s): #4 ['label']
+   px: outside it 0 of 2797470 px differ (>8: 0, max 0)
+    geometry change  tree: card h=85.0 side=14.0 top=14.0 bottom=14.0
+    geometry control tree: card h=85.0 side=14.0 top=14.0 bottom=14.0
+17e-ios27 | short-dark
+   change : 'Now Playing, Blue, Joni Mitchell'
+   control: 'Blue, Joni Mitchell'
+   rel: {'prefixThenControl': True, 'separator': ', ', 'separatorCodepoints': ['U+002C', 'U+0020']} | seq: lengths [9, 9], 1 difference(s): #1 ['label']
+   px: outside it 0 of 2797470 px differ (>8: 0, max 0)
+    geometry change  tree: card h=85.0 side=14.0 top=14.0 bottom=14.0
+    geometry control tree: card h=85.0 side=14.0 top=14.0 bottom=14.0
+17e-ios27 | short-light
+   change : 'Now Playing, Blue, Joni Mitchell'
+   control: 'Blue, Joni Mitchell'
+   rel: {'prefixThenControl': True, 'separator': ', ', 'separatorCodepoints': ['U+002C', 'U+0020']} | seq: lengths [9, 9], 1 difference(s): #1 ['label']
+   px: outside it 0 of 2797470 px differ (>8: 0, max 0)
+    geometry change  tree: card h=85.0 side=14.0 top=14.0 bottom=14.0
+    geometry control tree: card h=85.0 side=14.0 top=14.0 bottom=14.0
+17e-ios27 | explicit-dark
+   change : 'Now Playing, HUMBLE. , Kendrick Lamar'
+   control: 'HUMBLE. , Kendrick Lamar'
+   rel: {'prefixThenControl': True, 'separator': ', ', 'separatorCodepoints': ['U+002C', 'U+0020']} | seq: lengths [9, 9], 1 difference(s): #1 ['label']
+   px: outside it 0 of 2797470 px differ (>8: 0, max 0)
+    geometry change  tree: card h=85.0 side=14.0 top=14.0 bottom=14.0
+    geometry control tree: card h=85.0 side=14.0 top=14.0 bottom=14.0
+17e-ios27 | explicit-light
+   change : 'Now Playing, HUMBLE. , Kendrick Lamar'
+   control: 'HUMBLE. , Kendrick Lamar'
+   rel: {'prefixThenControl': True, 'separator': ', ', 'separatorCodepoints': ['U+002C', 'U+0020']} | seq: lengths [9, 9], 1 difference(s): #1 ['label']
+   px: outside it 0 of 2797470 px differ (>8: 0, max 0)
+    geometry change  tree: card h=85.0 side=14.0 top=14.0 bottom=14.0
+    geometry control tree: card h=85.0 side=14.0 top=14.0 bottom=14.0
+17e-ios27 | long-dark
+   change : 'Now Playing, Prime Time Golden Hour Show (Soundtrack), Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC'
+   control: 'Prime Time Golden Hour Show (Soundtrack), Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC'
+   rel: {'prefixThenControl': True, 'separator': ', ', 'separatorCodepoints': ['U+002C', 'U+0020']} | seq: lengths [9, 9], 1 difference(s): #1 ['label']
+   px: outside it 0 of 2797470 px differ (>8: 0, max 0)
+    geometry change  tree: card h=85.0 side=14.0 top=14.0 bottom=14.0
+    geometry control tree: card h=85.0 side=14.0 top=14.0 bottom=14.0
+17e-ios27 | long-light
+   change : 'Now Playing, Prime Time Golden Hour Show (Soundtrack), Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC'
+   control: 'Prime Time Golden Hour Show (Soundtrack), Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC'
+   rel: {'prefixThenControl': True, 'separator': ', ', 'separatorCodepoints': ['U+002C', 'U+0020']} | seq: lengths [9, 9], 1 difference(s): #1 ['label']
+   px: outside it 0 of 2797470 px differ (>8: 0, max 0)
+    geometry change  tree: card h=85.0 side=14.0 top=14.0 bottom=14.0
+    geometry control tree: card h=85.0 side=14.0 top=14.0 bottom=14.0
+se-ios27-sdk26 | notPlaying-dark
+   change : 'Now Playing, Not Playing'
+   control: 'Not Playing'
+   rel: {'prefixThenControl': True, 'separator': ', ', 'separatorCodepoints': ['U+002C', 'U+0020']} | seq: lengths [9, 9], 1 difference(s): #1 ['label']
+   px: outside it 0 of 970500 px differ (>8: 0, max 0)
+    geometry change  tree: card h=85.0 side=14.0 top=14.0 bottom=14.0
+    geometry control tree: card h=85.0 side=14.0 top=14.0 bottom=14.0
+se-ios27-sdk26 | notPlaying-light
+   change : 'Now Playing, Not Playing'
+   control: 'Not Playing'
+   rel: {'prefixThenControl': True, 'separator': ', ', 'separatorCodepoints': ['U+002C', 'U+0020']} | seq: lengths [9, 9], 1 difference(s): #1 ['label']
+   px: outside it 0 of 970500 px differ (>8: 0, max 0)
+    geometry change  tree: card h=85.0 side=14.0 top=14.0 bottom=14.0
+    geometry control tree: card h=85.0 side=14.0 top=14.0 bottom=14.0
+se-ios27-sdk26 | notAvailable-dark
+   change : 'Now Playing, Not Available'
+   control: 'Not Available'
+   rel: {'prefixThenControl': True, 'separator': ', ', 'separatorCodepoints': ['U+002C', 'U+0020']} | seq: lengths [10, 10], 1 difference(s): #4 ['label']
+   px: outside it 0 of 970500 px differ (>8: 0, max 0)
+    geometry change  tree: card h=85.0 side=14.0 top=14.0 bottom=14.0
+    geometry control tree: card h=85.0 side=14.0 top=14.0 bottom=14.0
+se-ios27-sdk26 | notAvailable-light
+   change : 'Now Playing, Not Available'
+   control: 'Not Available'
+   rel: {'prefixThenControl': True, 'separator': ', ', 'separatorCodepoints': ['U+002C', 'U+0020']} | seq: lengths [10, 10], 1 difference(s): #4 ['label']
+   px: outside it 0 of 970500 px differ (>8: 0, max 0)
+    geometry change  tree: card h=85.0 side=14.0 top=14.0 bottom=14.0
+    geometry control tree: card h=85.0 side=14.0 top=14.0 bottom=14.0
+se-ios27-sdk26 | short-dark
+   change : 'Now Playing, Blue, Joni Mitchell'
+   control: 'Blue, Joni Mitchell'
+   rel: {'prefixThenControl': True, 'separator': ', ', 'separatorCodepoints': ['U+002C', 'U+0020']} | seq: lengths [9, 9], 1 difference(s): #1 ['label']
+   px: outside it 0 of 970500 px differ (>8: 0, max 0)
+    geometry change  tree: card h=85.0 side=14.0 top=14.0 bottom=14.0
+    geometry control tree: card h=85.0 side=14.0 top=14.0 bottom=14.0
+se-ios27-sdk26 | short-light
+   change : 'Now Playing, Blue, Joni Mitchell'
+   control: 'Blue, Joni Mitchell'
+   rel: {'prefixThenControl': True, 'separator': ', ', 'separatorCodepoints': ['U+002C', 'U+0020']} | seq: lengths [9, 9], 1 difference(s): #1 ['label']
+   px: outside it 0 of 970500 px differ (>8: 0, max 0)
+    geometry change  tree: card h=85.0 side=14.0 top=14.0 bottom=14.0
+    geometry control tree: card h=85.0 side=14.0 top=14.0 bottom=14.0
+se-ios27-sdk26 | explicit-dark
+   change : 'Now Playing, HUMBLE. , Kendrick Lamar'
+   control: 'HUMBLE. , Kendrick Lamar'
+   rel: {'prefixThenControl': True, 'separator': ', ', 'separatorCodepoints': ['U+002C', 'U+0020']} | seq: lengths [9, 9], 1 difference(s): #1 ['label']
+   px: outside it 0 of 970500 px differ (>8: 0, max 0)
+    geometry change  tree: card h=85.0 side=14.0 top=14.0 bottom=14.0
+    geometry control tree: card h=85.0 side=14.0 top=14.0 bottom=14.0
+se-ios27-sdk26 | explicit-light
+   change : 'Now Playing, HUMBLE. , Kendrick Lamar'
+   control: 'HUMBLE. , Kendrick Lamar'
+   rel: {'prefixThenControl': True, 'separator': ', ', 'separatorCodepoints': ['U+002C', 'U+0020']} | seq: lengths [9, 9], 1 difference(s): #1 ['label']
+   px: outside it 0 of 970500 px differ (>8: 0, max 0)
+    geometry change  tree: card h=85.0 side=14.0 top=14.0 bottom=14.0
+    geometry control tree: card h=85.0 side=14.0 top=14.0 bottom=14.0
+se-ios27-sdk26 | long-dark
+   change : 'Now Playing, Prime Time Golden Hour Show (Soundtrack), Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC'
+   control: 'Prime Time Golden Hour Show (Soundtrack), Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC'
+   rel: {'prefixThenControl': True, 'separator': ', ', 'separatorCodepoints': ['U+002C', 'U+0020']} | seq: lengths [9, 9], 1 difference(s): #1 ['label']
+   px: outside it 0 of 970500 px differ (>8: 0, max 0)
+    geometry change  tree: card h=85.0 side=14.0 top=14.0 bottom=14.0
+    geometry control tree: card h=85.0 side=14.0 top=14.0 bottom=14.0
+se-ios27-sdk26 | long-light
+   change : 'Now Playing, Prime Time Golden Hour Show (Soundtrack), Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC'
+   control: 'Prime Time Golden Hour Show (Soundtrack), Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC'
+   rel: {'prefixThenControl': True, 'separator': ', ', 'separatorCodepoints': ['U+002C', 'U+0020']} | seq: lengths [9, 9], 1 difference(s): #1 ['label']
+   px: outside it 0 of 970500 px differ (>8: 0, max 0)
+    geometry change  tree: card h=85.0 side=14.0 top=14.0 bottom=14.0
+    geometry control tree: card h=85.0 side=14.0 top=14.0 bottom=14.0
+40 cases

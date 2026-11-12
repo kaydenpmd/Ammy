@@ -1,0 +1,492 @@
+====================================================================================================
+SETUP 17e-ios27-sdk26
+setup: 17e-ios27-sdk26
+device: iPhone-17e
+runtime: com.apple.CoreSimulator.SimRuntime.iOS-27-0
+test runner:
+Xcode 27.2
+Build version 27B48
+change, installed from apps/change/Ammy.app:
+  "CFBundleVersion" => "158"
+  "DTPlatformVersion" => "26.5"
+  "DTSDKName" => "iphonesimulator26.5"
+  "DTXcode" => "2660"
+  "DTXcodeBuild" => "17F113"
+  "MinimumOSVersion" => "26.0"
+26193f755f1c24778fbf02b05e8336268dcd55d705d4d7b7c8a25f5d59ce6b5e  apps/change/Ammy.app/Ammy
+control, installed from apps/control/Ammy.app:
+  "CFBundleVersion" => "158"
+  "DTPlatformVersion" => "26.5"
+  "DTSDKName" => "iphonesimulator26.5"
+  "DTXcode" => "2660"
+  "DTXcodeBuild" => "17F113"
+  "MinimumOSVersion" => "26.0"
+1ff0264c67afc9025a8135b00f0b1473bba91904bb5b25565ffefc90252086f1  apps/control/Ammy.app/Ammy
+----------------------------------------------------------------------------------------------------
+17e-ios27-sdk26 | notPlaying-dark
+  first quick XCUITest read change : label='Now Playing, Not Playing' frame=(16.0, 153.0, 358.0, 85.0)
+  early in-app dump change : label='Now Playing, Not Playing' attributed='Now Playing, Not Playing' value=None traits=[] (0x0)
+  first quick XCUITest read control: label='Not Playing' frame=(16.0, 153.0, 358.0, 85.0)
+  early in-app dump control: label='Not Playing' attributed='Not Playing' value=None traits=[] (0x0)
+  early relation (in-app): {'prefixThenControl': True, 'separator': ', ', 'separatorCodepoints': ['U+002C', 'U+0020']}
+  first-read relation (XCUIElement): {'prefixThenControl': True, 'separator': ', ', 'separatorCodepoints': ['U+002C', 'U+0020']}
+  early in-app sequence: lengths [9, 9], 1 difference(s): #1 ['label']
+  [rest] change  XCUIElement label='Now Playing, Not Playing'
+  [rest] change              value=nil type=1 (Other) frame=[16.0, 153.0, 358.0, 85.0]
+  [rest] change              debugDescription: Other, 0x106990a00, {{16.0, 153.0}, {358.0, 85.0}}, label: 'Now Playing, Not Playing'
+  [rest] change  in-app      label='Now Playing, Not Playing' value=None hint=None traits=[] (0x0) class=AccessibilityNode index=1/9
+  [rest] change  in-app      attributedLabel='Now Playing, Not Playing' runs=[([0, 11], 'Now Playing', 'font tokens'), ([11, 2], ', ', 'no attributes'), ([13, 11], 'Not Playing', 'font tokens')]
+  [rest] control XCUIElement label='Not Playing'
+  [rest] control             value=nil type=1 (Other) frame=[16.0, 153.0, 358.0, 85.0]
+  [rest] control             debugDescription: Other, 0x109634a00, {{16.0, 153.0}, {358.0, 85.0}}, label: 'Not Playing'
+  [rest] control in-app      label='Not Playing' value=None hint=None traits=[] (0x0) class=AccessibilityNode index=1/9
+  [rest] control in-app      attributedLabel='Not Playing' runs=[([0, 11], 'Not Playing', 'font tokens')]
+  [rest] relation (XCUIElement): {'prefixThenControl': True, 'separator': ', ', 'separatorCodepoints': ['U+002C', 'U+0020']}
+  [rest] relation (in-app):      {'prefixThenControl': True, 'separator': ', ', 'separatorCodepoints': ['U+002C', 'U+0020']}
+  [rest] in-app sequence: lengths [9, 9], 1 difference(s): #1 ['label']
+  [rest] XCUITest tree: 101 vs 101 lines, 2 differing line(s), by kind {'card': 2}:
+      -                                  Other, 0x…, {{16.0, 153.0}, {358.0, 85.0}}, label: 'Not Playing'
+      +                                  Other, 0x…, {{16.0, 153.0}, {358.0, 85.0}}, label: 'Now Playing, Not Playing'
+  pixels top (status bar 47 pt @3x): status bar 0 px differ; outside it 0 of 2797470 px differ (>8: 0, max 0)
+  geometry change  tree: card h=85.0 side=14.0 top=14.0 bottom=14.0 cell=[16.0, 153.0, 358.0, 85.0] art=[30.0, 167.0, 57.0, 57.0]
+  geometry change  pixels: card h=85.0 art h=57.0 side=14.0 top=14.0 bottom=14.0 colours={'card': [28, 28, 30], 'page': [0, 0, 0], 'artCentre': [50, 50, 54]}
+  geometry control tree: card h=85.0 side=14.0 top=14.0 bottom=14.0 cell=[16.0, 153.0, 358.0, 85.0] art=[30.0, 167.0, 57.0, 57.0]
+  geometry control pixels: card h=85.0 art h=57.0 side=14.0 top=14.0 bottom=14.0 colours={'card': [28, 28, 30], 'page': [0, 0, 0], 'artCentre': [50, 50, 54]}
+  probe change  os=27.0 trackShown=None metrics={'safeArea': [47, 0, 34, 0], 'scale': 3, 'statusBar': [0, 0, 390, 47], 'style': 'dark', 'voiceOver': False}
+  probe control os=27.0 trackShown=None metrics={'safeArea': [47, 0, 34, 0], 'scale': 3, 'statusBar': [0, 0, 390, 47], 'style': 'dark', 'voiceOver': False}
+----------------------------------------------------------------------------------------------------
+17e-ios27-sdk26 | notPlaying-light
+  first quick XCUITest read change : label='Now Playing, Not Playing' frame=(16.0, 153.0, 358.0, 85.0)
+  early in-app dump change : label='Now Playing, Not Playing' attributed='Now Playing, Not Playing' value=None traits=[] (0x0)
+  first quick XCUITest read control: label='Not Playing' frame=(16.0, 153.0, 358.0, 85.0)
+  early in-app dump control: label='Not Playing' attributed='Not Playing' value=None traits=[] (0x0)
+  early relation (in-app): {'prefixThenControl': True, 'separator': ', ', 'separatorCodepoints': ['U+002C', 'U+0020']}
+  first-read relation (XCUIElement): {'prefixThenControl': True, 'separator': ', ', 'separatorCodepoints': ['U+002C', 'U+0020']}
+  early in-app sequence: lengths [9, 9], 1 difference(s): #1 ['label']
+  [rest] change  XCUIElement label='Now Playing, Not Playing'
+  [rest] change              value=nil type=1 (Other) frame=[16.0, 153.0, 358.0, 85.0]
+  [rest] change              debugDescription: Other, 0x106594a00, {{16.0, 153.0}, {358.0, 85.0}}, label: 'Now Playing, Not Playing'
+  [rest] change  in-app      label='Now Playing, Not Playing' value=None hint=None traits=[] (0x0) class=AccessibilityNode index=1/9
+  [rest] change  in-app      attributedLabel='Now Playing, Not Playing' runs=[([0, 11], 'Now Playing', 'font tokens'), ([11, 2], ', ', 'no attributes'), ([13, 11], 'Not Playing', 'font tokens')]
+  [rest] control XCUIElement label='Not Playing'
+  [rest] control             value=nil type=1 (Other) frame=[16.0, 153.0, 358.0, 85.0]
+  [rest] control             debugDescription: Other, 0x1095f0a00, {{16.0, 153.0}, {358.0, 85.0}}, label: 'Not Playing'
+  [rest] control in-app      label='Not Playing' value=None hint=None traits=[] (0x0) class=AccessibilityNode index=1/9
+  [rest] control in-app      attributedLabel='Not Playing' runs=[([0, 11], 'Not Playing', 'font tokens')]
+  [rest] relation (XCUIElement): {'prefixThenControl': True, 'separator': ', ', 'separatorCodepoints': ['U+002C', 'U+0020']}
+  [rest] relation (in-app):      {'prefixThenControl': True, 'separator': ', ', 'separatorCodepoints': ['U+002C', 'U+0020']}
+  [rest] in-app sequence: lengths [9, 9], 1 difference(s): #1 ['label']
+  [rest] XCUITest tree: 101 vs 101 lines, 2 differing line(s), by kind {'card': 2}:
+      -                                  Other, 0x…, {{16.0, 153.0}, {358.0, 85.0}}, label: 'Not Playing'
+      +                                  Other, 0x…, {{16.0, 153.0}, {358.0, 85.0}}, label: 'Now Playing, Not Playing'
+  pixels top (status bar 47 pt @3x): status bar 0 px differ; outside it 0 of 2797470 px differ (>8: 0, max 0)
+  geometry change  tree: card h=85.0 side=14.0 top=14.0 bottom=14.0 cell=[16.0, 153.0, 358.0, 85.0] art=[30.0, 167.0, 57.0, 57.0]
+  geometry change  pixels: card h=85.0 art h=57.0 side=14.0 top=14.0 bottom=14.0 colours={'card': [255, 255, 255], 'page': [242, 242, 247], 'artCentre': [239, 239, 240]}
+  geometry control tree: card h=85.0 side=14.0 top=14.0 bottom=14.0 cell=[16.0, 153.0, 358.0, 85.0] art=[30.0, 167.0, 57.0, 57.0]
+  geometry control pixels: card h=85.0 art h=57.0 side=14.0 top=14.0 bottom=14.0 colours={'card': [255, 255, 255], 'page': [242, 242, 247], 'artCentre': [239, 239, 240]}
+  probe change  os=27.0 trackShown=None metrics={'safeArea': [47, 0, 34, 0], 'scale': 3, 'statusBar': [0, 0, 390, 47], 'style': 'light', 'voiceOver': False}
+  probe control os=27.0 trackShown=None metrics={'safeArea': [47, 0, 34, 0], 'scale': 3, 'statusBar': [0, 0, 390, 47], 'style': 'light', 'voiceOver': False}
+----------------------------------------------------------------------------------------------------
+17e-ios27-sdk26 | notAvailable-dark
+  first quick XCUITest read change : label='Now Playing, Not Available' frame=(16.0, 316.33333333333337, 358.0, 84.99999999999994)
+  early in-app dump change : label='Now Playing, Not Available' attributed='Now Playing, Not Available' value=None traits=[] (0x0)
+  first quick XCUITest read control: label='Not Available' frame=(16.0, 316.33333333333337, 358.0, 84.99999999999994)
+  early in-app dump control: label='Not Available' attributed='Not Available' value=None traits=[] (0x0)
+  early relation (in-app): {'prefixThenControl': True, 'separator': ', ', 'separatorCodepoints': ['U+002C', 'U+0020']}
+  first-read relation (XCUIElement): {'prefixThenControl': True, 'separator': ', ', 'separatorCodepoints': ['U+002C', 'U+0020']}
+  early in-app sequence: lengths [12, 12], 1 difference(s): #4 ['label']
+  [rest] change  XCUIElement label='Now Playing, Not Available'
+  [rest] change              value=nil type=1 (Other) frame=[16.0, 316.33333333333337, 358.0, 85.0]
+  [rest] change              debugDescription: Other, 0x10a979cc0, {{16.0, 316.3}, {358.0, 85.0}}, label: 'Now Playing, Not Available'
+  [rest] change  in-app      label='Now Playing, Not Available' value=None hint=None traits=[] (0x0) class=AccessibilityNode index=4/12
+  [rest] change  in-app      attributedLabel='Now Playing, Not Available' runs=[([0, 11], 'Now Playing', 'font tokens'), ([11, 2], ', ', 'no attributes'), ([13, 13], 'Not Available', 'font tokens')]
+  [rest] control XCUIElement label='Not Available'
+  [rest] control             value=nil type=1 (Other) frame=[16.0, 316.33333333333337, 358.0, 85.0]
+  [rest] control             debugDescription: Other, 0x10ab61cc0, {{16.0, 316.3}, {358.0, 85.0}}, label: 'Not Available'
+  [rest] control in-app      label='Not Available' value=None hint=None traits=[] (0x0) class=AccessibilityNode index=4/12
+  [rest] control in-app      attributedLabel='Not Available' runs=[([0, 13], 'Not Available', 'font tokens')]
+  [rest] relation (XCUIElement): {'prefixThenControl': True, 'separator': ', ', 'separatorCodepoints': ['U+002C', 'U+0020']}
+  [rest] relation (in-app):      {'prefixThenControl': True, 'separator': ', ', 'separatorCodepoints': ['U+002C', 'U+0020']}
+  [rest] in-app sequence: lengths [12, 12], 1 difference(s): #4 ['label']
+  [rest] XCUITest tree: 119 vs 119 lines, 2 differing line(s), by kind {'card': 2}:
+      -                                  Other, 0x…, {{16.0, 316.3}, {358.0, 85.0}}, label: 'Not Available'
+      +                                  Other, 0x…, {{16.0, 316.3}, {358.0, 85.0}}, label: 'Now Playing, Not Available'
+  pixels top (status bar 47 pt @3x): status bar 0 px differ; outside it 0 of 2797470 px differ (>8: 0, max 0)
+  geometry change  tree: card h=85.0 side=14.0 top=14.0 bottom=14.0 cell=[16.0, 316.3, 358.0, 85.0] art=[30.0, 330.3, 57.0, 57.0]
+  geometry change  pixels: card h=85.0 art h=57.0 side=14.0 top=14.0 bottom=14.0 colours={'card': [28, 28, 30], 'page': [0, 0, 0], 'artCentre': [50, 50, 54]}
+  geometry control tree: card h=85.0 side=14.0 top=14.0 bottom=14.0 cell=[16.0, 316.3, 358.0, 85.0] art=[30.0, 330.3, 57.0, 57.0]
+  geometry control pixels: card h=85.0 art h=57.0 side=14.0 top=14.0 bottom=14.0 colours={'card': [28, 28, 30], 'page': [0, 0, 0], 'artCentre': [50, 50, 54]}
+  probe change  os=27.0 trackShown=None metrics={'safeArea': [47, 0, 34, 0], 'scale': 3, 'statusBar': [0, 0, 390, 47], 'style': 'dark', 'voiceOver': False}
+  probe control os=27.0 trackShown=None metrics={'safeArea': [47, 0, 34, 0], 'scale': 3, 'statusBar': [0, 0, 390, 47], 'style': 'dark', 'voiceOver': False}
+----------------------------------------------------------------------------------------------------
+17e-ios27-sdk26 | notAvailable-light
+  first quick XCUITest read change : label='Now Playing, Not Available' frame=(16.0, 316.33333333333337, 358.0, 84.99999999999994)
+  early in-app dump change : label='Now Playing, Not Available' attributed='Now Playing, Not Available' value=None traits=[] (0x0)
+  first quick XCUITest read control: label='Not Available' frame=(16.0, 316.33333333333337, 358.0, 84.99999999999994)
+  early in-app dump control: label='Not Available' attributed='Not Available' value=None traits=[] (0x0)
+  early relation (in-app): {'prefixThenControl': True, 'separator': ', ', 'separatorCodepoints': ['U+002C', 'U+0020']}
+  first-read relation (XCUIElement): {'prefixThenControl': True, 'separator': ', ', 'separatorCodepoints': ['U+002C', 'U+0020']}
+  early in-app sequence: lengths [12, 12], 1 difference(s): #4 ['label']
+  [rest] change  XCUIElement label='Now Playing, Not Available'
+  [rest] change              value=nil type=1 (Other) frame=[16.0, 316.33333333333337, 358.0, 85.0]
+  [rest] change              debugDescription: Other, 0x10b595b80, {{16.0, 316.3}, {358.0, 85.0}}, label: 'Now Playing, Not Available'
+  [rest] change  in-app      label='Now Playing, Not Available' value=None hint=None traits=[] (0x0) class=AccessibilityNode index=4/12
+  [rest] change  in-app      attributedLabel='Now Playing, Not Available' runs=[([0, 11], 'Now Playing', 'font tokens'), ([11, 2], ', ', 'no attributes'), ([13, 13], 'Not Available', 'font tokens')]
+  [rest] control XCUIElement label='Not Available'
+  [rest] control             value=nil type=1 (Other) frame=[16.0, 316.33333333333337, 358.0, 85.0]
+  [rest] control             debugDescription: Other, 0x1091e5cc0, {{16.0, 316.3}, {358.0, 85.0}}, label: 'Not Available'
+  [rest] control in-app      label='Not Available' value=None hint=None traits=[] (0x0) class=AccessibilityNode index=4/12
+  [rest] control in-app      attributedLabel='Not Available' runs=[([0, 13], 'Not Available', 'font tokens')]
+  [rest] relation (XCUIElement): {'prefixThenControl': True, 'separator': ', ', 'separatorCodepoints': ['U+002C', 'U+0020']}
+  [rest] relation (in-app):      {'prefixThenControl': True, 'separator': ', ', 'separatorCodepoints': ['U+002C', 'U+0020']}
+  [rest] in-app sequence: lengths [12, 12], 1 difference(s): #4 ['label']
+  [rest] XCUITest tree: 119 vs 119 lines, 2 differing line(s), by kind {'card': 2}:
+      -                                  Other, 0x…, {{16.0, 316.3}, {358.0, 85.0}}, label: 'Not Available'
+      +                                  Other, 0x…, {{16.0, 316.3}, {358.0, 85.0}}, label: 'Now Playing, Not Available'
+  pixels top (status bar 47 pt @3x): status bar 0 px differ; outside it 0 of 2797470 px differ (>8: 0, max 0)
+  geometry change  tree: card h=85.0 side=14.0 top=14.0 bottom=14.0 cell=[16.0, 316.3, 358.0, 85.0] art=[30.0, 330.3, 57.0, 57.0]
+  geometry change  pixels: card h=85.0 art h=57.0 side=14.0 top=14.0 bottom=14.0 colours={'card': [255, 255, 255], 'page': [242, 242, 247], 'artCentre': [239, 239, 240]}
+  geometry control tree: card h=85.0 side=14.0 top=14.0 bottom=14.0 cell=[16.0, 316.3, 358.0, 85.0] art=[30.0, 330.3, 57.0, 57.0]
+  geometry control pixels: card h=85.0 art h=57.0 side=14.0 top=14.0 bottom=14.0 colours={'card': [255, 255, 255], 'page': [242, 242, 247], 'artCentre': [239, 239, 240]}
+  probe change  os=27.0 trackShown=None metrics={'safeArea': [47, 0, 34, 0], 'scale': 3, 'statusBar': [0, 0, 390, 47], 'style': 'light', 'voiceOver': False}
+  probe control os=27.0 trackShown=None metrics={'safeArea': [47, 0, 34, 0], 'scale': 3, 'statusBar': [0, 0, 390, 47], 'style': 'light', 'voiceOver': False}
+----------------------------------------------------------------------------------------------------
+17e-ios27-sdk26 | short-dark
+  timing change  (s after the song showed): {'shot_top': 4.04, 'dump_early': 4.5, 'read_rest': 12.82, 'dump_rest': 13.03, 'first_read': 3.03}
+  first quick XCUITest read change : label='Now Playing, Blue, Joni Mitchell' frame=(16.0, 153.0, 358.0, 85.0)
+  early in-app dump change : label='Now Playing, Blue, Joni Mitchell' attributed='Now Playing, Blue, Joni Mitchell' value=None traits=[] (0x0)
+  timing control (s after the song showed): {'shot_top': 3.53, 'dump_early': 3.88, 'read_rest': 7.21, 'dump_rest': 7.42, 'first_read': 2.52}
+  first quick XCUITest read control: label='Blue, Joni Mitchell' frame=(16.0, 153.0, 358.0, 85.0)
+  early in-app dump control: label='Blue, Joni Mitchell' attributed='Blue, Joni Mitchell' value=None traits=[] (0x0)
+  early relation (in-app): {'prefixThenControl': True, 'separator': ', ', 'separatorCodepoints': ['U+002C', 'U+0020']}
+  first-read relation (XCUIElement): {'prefixThenControl': True, 'separator': ', ', 'separatorCodepoints': ['U+002C', 'U+0020']}
+  early in-app sequence: lengths [9, 9], 1 difference(s): #1 ['label']
+  [rest] change  XCUIElement label='Now Playing, Blue, Joni Mitchell'
+  [rest] change              value=nil type=1 (Other) frame=[16.0, 153.0, 358.0, 85.0]
+  [rest] change              debugDescription: Other, 0x10f758b40, {{16.0, 153.0}, {358.0, 85.0}}, label: 'Now Playing, Blue, Joni Mitchell'
+  [rest] change  in-app      label='Now Playing, Blue, Joni Mitchell' value=None hint=None traits=[] (0x0) class=AccessibilityNode index=1/9
+  [rest] change  in-app      attributedLabel='Now Playing, Blue, Joni Mitchell' runs=[([0, 11], 'Now Playing', 'font tokens'), ([11, 2], ', ', 'no attributes'), ([13, 4], 'Blue', 'font tokens'), ([17, 2], ', ', 'no attributes'), ([19, 13], 'Joni Mitchell', 'font tokens')]
+  [rest] control XCUIElement label='Blue, Joni Mitchell'
+  [rest] control             value=nil type=1 (Other) frame=[16.0, 153.0, 358.0, 85.0]
+  [rest] control             debugDescription: Other, 0x1124b4b40, {{16.0, 153.0}, {358.0, 85.0}}, label: 'Blue, Joni Mitchell'
+  [rest] control in-app      label='Blue, Joni Mitchell' value=None hint=None traits=[] (0x0) class=AccessibilityNode index=1/9
+  [rest] control in-app      attributedLabel='Blue, Joni Mitchell' runs=[([0, 4], 'Blue', 'font tokens'), ([4, 2], ', ', 'no attributes'), ([6, 13], 'Joni Mitchell', 'font tokens')]
+  [rest] relation (XCUIElement): {'prefixThenControl': True, 'separator': ', ', 'separatorCodepoints': ['U+002C', 'U+0020']}
+  [rest] relation (in-app):      {'prefixThenControl': True, 'separator': ', ', 'separatorCodepoints': ['U+002C', 'U+0020']}
+  [rest] in-app sequence: lengths [9, 9], 1 difference(s): #1 ['label']
+  [rest] XCUITest tree: 103 vs 103 lines, 2 differing line(s), by kind {'card': 2}:
+      -                                  Other, 0x…, {{16.0, 153.0}, {358.0, 85.0}}, label: 'Blue, Joni Mitchell'
+      +                                  Other, 0x…, {{16.0, 153.0}, {358.0, 85.0}}, label: 'Now Playing, Blue, Joni Mitchell'
+  pixels top (status bar 47 pt @3x): status bar 0 px differ; outside it 0 of 2797470 px differ (>8: 0, max 0)
+  geometry change  tree: card h=85.0 side=14.0 top=14.0 bottom=14.0 cell=[16.0, 153.0, 358.0, 85.0] art=[30.0, 167.0, 57.0, 57.0]
+  geometry change  pixels: card h=85.0 art h=57.0 side=14.0 top=14.0 bottom=14.0 colours={'card': [28, 28, 30], 'page': [0, 0, 0], 'artCentre': [236, 140, 56]}
+  geometry control tree: card h=85.0 side=14.0 top=14.0 bottom=14.0 cell=[16.0, 153.0, 358.0, 85.0] art=[30.0, 167.0, 57.0, 57.0]
+  geometry control pixels: card h=85.0 art h=57.0 side=14.0 top=14.0 bottom=14.0 colours={'card': [28, 28, 30], 'page': [0, 0, 0], 'artCentre': [236, 140, 56]}
+  probe change  os=27.0 trackShown=1793790875.184541 metrics={'safeArea': [47, 0, 34, 0], 'scale': 3, 'statusBar': [0, 0, 390, 47], 'style': 'dark', 'voiceOver': False}
+  probe control os=27.0 trackShown=1793791251.852077 metrics={'safeArea': [47, 0, 34, 0], 'scale': 3, 'statusBar': [0, 0, 390, 47], 'style': 'dark', 'voiceOver': False}
+----------------------------------------------------------------------------------------------------
+17e-ios27-sdk26 | short-light
+  timing change  (s after the song showed): {'shot_top': 3.49, 'dump_early': 3.84, 'read_rest': 6.51, 'dump_rest': 6.72, 'first_read': 2.48}
+  first quick XCUITest read change : label='Now Playing, Blue, Joni Mitchell' frame=(16.0, 153.0, 358.0, 85.0)
+  early in-app dump change : label='Now Playing, Blue, Joni Mitchell' attributed='Now Playing, Blue, Joni Mitchell' value=None traits=[] (0x0)
+  timing control (s after the song showed): {'shot_top': 3.62, 'dump_early': 3.95, 'read_rest': 6.25, 'dump_rest': 6.36, 'first_read': 2.62}
+  first quick XCUITest read control: label='Blue, Joni Mitchell' frame=(16.0, 153.0, 358.0, 85.0)
+  early in-app dump control: label='Blue, Joni Mitchell' attributed='Blue, Joni Mitchell' value=None traits=[] (0x0)
+  early relation (in-app): {'prefixThenControl': True, 'separator': ', ', 'separatorCodepoints': ['U+002C', 'U+0020']}
+  first-read relation (XCUIElement): {'prefixThenControl': True, 'separator': ', ', 'separatorCodepoints': ['U+002C', 'U+0020']}
+  early in-app sequence: lengths [9, 9], 1 difference(s): #1 ['label']
+  [rest] change  XCUIElement label='Now Playing, Blue, Joni Mitchell'
+  [rest] change              value=nil type=1 (Other) frame=[16.0, 153.0, 358.0, 85.0]
+  [rest] change              debugDescription: Other, 0x10f390b40, {{16.0, 153.0}, {358.0, 85.0}}, label: 'Now Playing, Blue, Joni Mitchell'
+  [rest] change  in-app      label='Now Playing, Blue, Joni Mitchell' value=None hint=None traits=[] (0x0) class=AccessibilityNode index=1/9
+  [rest] change  in-app      attributedLabel='Now Playing, Blue, Joni Mitchell' runs=[([0, 11], 'Now Playing', 'font tokens'), ([11, 2], ', ', 'no attributes'), ([13, 4], 'Blue', 'font tokens'), ([17, 2], ', ', 'no attributes'), ([19, 13], 'Joni Mitchell', 'font tokens')]
+  [rest] control XCUIElement label='Blue, Joni Mitchell'
+  [rest] control             value=nil type=1 (Other) frame=[16.0, 153.0, 358.0, 85.0]
+  [rest] control             debugDescription: Other, 0x112384b40, {{16.0, 153.0}, {358.0, 85.0}}, label: 'Blue, Joni Mitchell'
+  [rest] control in-app      label='Blue, Joni Mitchell' value=None hint=None traits=[] (0x0) class=AccessibilityNode index=1/9
+  [rest] control in-app      attributedLabel='Blue, Joni Mitchell' runs=[([0, 4], 'Blue', 'font tokens'), ([4, 2], ', ', 'no attributes'), ([6, 13], 'Joni Mitchell', 'font tokens')]
+  [rest] relation (XCUIElement): {'prefixThenControl': True, 'separator': ', ', 'separatorCodepoints': ['U+002C', 'U+0020']}
+  [rest] relation (in-app):      {'prefixThenControl': True, 'separator': ', ', 'separatorCodepoints': ['U+002C', 'U+0020']}
+  [rest] in-app sequence: lengths [9, 9], 1 difference(s): #1 ['label']
+  [rest] XCUITest tree: 103 vs 103 lines, 2 differing line(s), by kind {'card': 2}:
+      -                                  Other, 0x…, {{16.0, 153.0}, {358.0, 85.0}}, label: 'Blue, Joni Mitchell'
+      +                                  Other, 0x…, {{16.0, 153.0}, {358.0, 85.0}}, label: 'Now Playing, Blue, Joni Mitchell'
+  pixels top (status bar 47 pt @3x): status bar 0 px differ; outside it 0 of 2797470 px differ (>8: 0, max 0)
+  geometry change  tree: card h=85.0 side=14.0 top=14.0 bottom=14.0 cell=[16.0, 153.0, 358.0, 85.0] art=[30.0, 167.0, 57.0, 57.0]
+  geometry change  pixels: card h=85.0 art h=57.0 side=14.0 top=14.0 bottom=14.0 colours={'card': [255, 255, 255], 'page': [242, 242, 247], 'artCentre': [236, 140, 56]}
+  geometry control tree: card h=85.0 side=14.0 top=14.0 bottom=14.0 cell=[16.0, 153.0, 358.0, 85.0] art=[30.0, 167.0, 57.0, 57.0]
+  geometry control pixels: card h=85.0 art h=57.0 side=14.0 top=14.0 bottom=14.0 colours={'card': [255, 255, 255], 'page': [242, 242, 247], 'artCentre': [236, 140, 56]}
+  probe change  os=27.0 trackShown=1793791077.120491 metrics={'safeArea': [47, 0, 34, 0], 'scale': 3, 'statusBar': [0, 0, 390, 47], 'style': 'light', 'voiceOver': False}
+  probe control os=27.0 trackShown=1793791366.338481 metrics={'safeArea': [47, 0, 34, 0], 'scale': 3, 'statusBar': [0, 0, 390, 47], 'style': 'light', 'voiceOver': False}
+----------------------------------------------------------------------------------------------------
+17e-ios27-sdk26 | explicit-dark
+  timing change  (s after the song showed): {'shot_top': 3.77, 'dump_early': 4.16, 'read_rest': 11.87, 'dump_rest': 11.98, 'first_read': 2.76}
+  first quick XCUITest read change : label='Now Playing, HUMBLE. Explicit, Kendrick Lamar' frame=(16.0, 153.0, 358.0, 85.0)
+  early in-app dump change : label='Now Playing, HUMBLE. \ufffc, Kendrick Lamar' attributed='Now Playing, HUMBLE. Explicit, Kendrick Lamar' value=None traits=[] (0x0)
+  timing control (s after the song showed): {'shot_top': 3.69, 'dump_early': 3.93, 'read_rest': 6.55, 'dump_rest': 6.77, 'first_read': 2.68}
+  first quick XCUITest read control: label='HUMBLE. , Kendrick Lamar' frame=(16.0, 153.0, 358.0, 85.0)
+  early in-app dump control: label='HUMBLE. \ufffc, Kendrick Lamar' attributed='HUMBLE. Explicit, Kendrick Lamar' value=None traits=[] (0x0)
+  early relation (in-app): {'prefixThenControl': True, 'separator': ', ', 'separatorCodepoints': ['U+002C', 'U+0020']}
+  first-read relation (XCUIElement): {'other': True}
+  early in-app sequence: lengths [9, 9], 1 difference(s): #1 ['label']
+  [rest] change  XCUIElement label='Now Playing, HUMBLE. , Kendrick Lamar'
+  [rest] change              value=nil type=1 (Other) frame=[16.0, 153.0, 358.0, 85.0]
+  [rest] change              debugDescription: Other, 0x106b80c80, {{16.0, 153.0}, {358.0, 85.0}}, label: 'Now Playing, HUMBLE. , Kendrick Lamar'
+  [rest] change  in-app      label='Now Playing, HUMBLE. \ufffc, Kendrick Lamar' value=None hint=None traits=[] (0x0) class=AccessibilityNode index=1/9
+  [rest] change  in-app      attributedLabel='Now Playing, HUMBLE. Explicit, Kendrick Lamar' runs=[([0, 11], 'Now Playing', 'font tokens'), ([11, 2], ', ', 'no attributes'), ([13, 16], 'HUMBLE. Explicit', 'font tokens'), ([29, 2], ', ', 'no attributes'), ([31, 14], 'Kendrick Lamar', 'font tokens')]
+  [rest] control XCUIElement label='HUMBLE. , Kendrick Lamar'
+  [rest] control             value=nil type=1 (Other) frame=[16.0, 153.0, 358.0, 85.0]
+  [rest] control             debugDescription: Other, 0x111854c80, {{16.0, 153.0}, {358.0, 85.0}}, label: 'HUMBLE. , Kendrick Lamar'
+  [rest] control in-app      label='HUMBLE. \ufffc, Kendrick Lamar' value=None hint=None traits=[] (0x0) class=AccessibilityNode index=1/9
+  [rest] control in-app      attributedLabel='HUMBLE. Explicit, Kendrick Lamar' runs=[([0, 16], 'HUMBLE. Explicit', 'font tokens'), ([16, 2], ', ', 'no attributes'), ([18, 14], 'Kendrick Lamar', 'font tokens')]
+  [rest] relation (XCUIElement): {'prefixThenControl': True, 'separator': ', ', 'separatorCodepoints': ['U+002C', 'U+0020']}
+  [rest] relation (in-app):      {'prefixThenControl': True, 'separator': ', ', 'separatorCodepoints': ['U+002C', 'U+0020']}
+  [rest] in-app sequence: lengths [9, 9], 1 difference(s): #1 ['label']
+  [rest] XCUITest tree: 103 vs 103 lines, 2 differing line(s), by kind {'card': 2}:
+      -                                  Other, 0x…, {{16.0, 153.0}, {358.0, 85.0}}, label: 'HUMBLE. , Kendrick Lamar'
+      +                                  Other, 0x…, {{16.0, 153.0}, {358.0, 85.0}}, label: 'Now Playing, HUMBLE. , Kendrick Lamar'
+  pixels top (status bar 47 pt @3x): status bar 0 px differ; outside it 0 of 2797470 px differ (>8: 0, max 0)
+  geometry change  tree: card h=85.0 side=14.0 top=14.0 bottom=14.0 cell=[16.0, 153.0, 358.0, 85.0] art=[30.0, 167.0, 57.0, 57.0]
+  geometry change  pixels: card h=85.0 art h=57.0 side=14.0 top=14.0 bottom=14.0 colours={'card': [28, 28, 30], 'page': [0, 0, 0], 'artCentre': [236, 140, 56]}
+  geometry control tree: card h=85.0 side=14.0 top=14.0 bottom=14.0 cell=[16.0, 153.0, 358.0, 85.0] art=[30.0, 167.0, 57.0, 57.0]
+  geometry control pixels: card h=85.0 art h=57.0 side=14.0 top=14.0 bottom=14.0 colours={'card': [28, 28, 30], 'page': [0, 0, 0], 'artCentre': [236, 140, 56]}
+  probe change  os=27.0 trackShown=1793790929.4575582 metrics={'safeArea': [47, 0, 34, 0], 'scale': 3, 'statusBar': [0, 0, 390, 47], 'style': 'dark', 'voiceOver': False}
+  probe control os=27.0 trackShown=1793791265.292345 metrics={'safeArea': [47, 0, 34, 0], 'scale': 3, 'statusBar': [0, 0, 390, 47], 'style': 'dark', 'voiceOver': False}
+----------------------------------------------------------------------------------------------------
+17e-ios27-sdk26 | explicit-light
+  timing change  (s after the song showed): {'shot_top': 3.63, 'dump_early': 3.86, 'read_rest': 6.32, 'dump_rest': 6.43, 'first_read': 2.61}
+  first quick XCUITest read change : label='Now Playing, HUMBLE. , Kendrick Lamar' frame=(16.0, 153.0, 358.0, 85.0)
+  early in-app dump change : label='Now Playing, HUMBLE. \ufffc, Kendrick Lamar' attributed='Now Playing, HUMBLE. Explicit, Kendrick Lamar' value=None traits=[] (0x0)
+  timing control (s after the song showed): {'shot_top': 3.45, 'dump_early': 3.67, 'read_rest': 6.75, 'dump_rest': 6.85, 'first_read': 2.45}
+  first quick XCUITest read control: label='HUMBLE. , Kendrick Lamar' frame=(16.0, 153.0, 358.0, 85.0)
+  early in-app dump control: label='HUMBLE. \ufffc, Kendrick Lamar' attributed='HUMBLE. Explicit, Kendrick Lamar' value=None traits=[] (0x0)
+  early relation (in-app): {'prefixThenControl': True, 'separator': ', ', 'separatorCodepoints': ['U+002C', 'U+0020']}
+  first-read relation (XCUIElement): {'prefixThenControl': True, 'separator': ', ', 'separatorCodepoints': ['U+002C', 'U+0020']}
+  early in-app sequence: lengths [9, 9], 1 difference(s): #1 ['label']
+  [rest] change  XCUIElement label='Now Playing, HUMBLE. , Kendrick Lamar'
+  [rest] change              value=nil type=1 (Other) frame=[16.0, 153.0, 358.0, 85.0]
+  [rest] change              debugDescription: Other, 0x1067a8c80, {{16.0, 153.0}, {358.0, 85.0}}, label: 'Now Playing, HUMBLE. , Kendrick Lamar'
+  [rest] change  in-app      label='Now Playing, HUMBLE. \ufffc, Kendrick Lamar' value=None hint=None traits=[] (0x0) class=AccessibilityNode index=1/9
+  [rest] change  in-app      attributedLabel='Now Playing, HUMBLE. Explicit, Kendrick Lamar' runs=[([0, 11], 'Now Playing', 'font tokens'), ([11, 2], ', ', 'no attributes'), ([13, 16], 'HUMBLE. Explicit', 'font tokens'), ([29, 2], ', ', 'no attributes'), ([31, 14], 'Kendrick Lamar', 'font tokens')]
+  [rest] control XCUIElement label='HUMBLE. , Kendrick Lamar'
+  [rest] control             value=nil type=1 (Other) frame=[16.0, 153.0, 358.0, 85.0]
+  [rest] control             debugDescription: Other, 0x1097f0c80, {{16.0, 153.0}, {358.0, 85.0}}, label: 'HUMBLE. , Kendrick Lamar'
+  [rest] control in-app      label='HUMBLE. \ufffc, Kendrick Lamar' value=None hint=None traits=[] (0x0) class=AccessibilityNode index=1/9
+  [rest] control in-app      attributedLabel='HUMBLE. Explicit, Kendrick Lamar' runs=[([0, 16], 'HUMBLE. Explicit', 'font tokens'), ([16, 2], ', ', 'no attributes'), ([18, 14], 'Kendrick Lamar', 'font tokens')]
+  [rest] relation (XCUIElement): {'prefixThenControl': True, 'separator': ', ', 'separatorCodepoints': ['U+002C', 'U+0020']}
+  [rest] relation (in-app):      {'prefixThenControl': True, 'separator': ', ', 'separatorCodepoints': ['U+002C', 'U+0020']}
+  [rest] in-app sequence: lengths [9, 9], 1 difference(s): #1 ['label']
+  [rest] XCUITest tree: 103 vs 103 lines, 2 differing line(s), by kind {'card': 2}:
+      -                                  Other, 0x…, {{16.0, 153.0}, {358.0, 85.0}}, label: 'HUMBLE. , Kendrick Lamar'
+      +                                  Other, 0x…, {{16.0, 153.0}, {358.0, 85.0}}, label: 'Now Playing, HUMBLE. , Kendrick Lamar'
+  pixels top (status bar 47 pt @3x): status bar 0 px differ; outside it 0 of 2797470 px differ (>8: 0, max 0)
+  geometry change  tree: card h=85.0 side=14.0 top=14.0 bottom=14.0 cell=[16.0, 153.0, 358.0, 85.0] art=[30.0, 167.0, 57.0, 57.0]
+  geometry change  pixels: card h=85.0 art h=57.0 side=14.0 top=14.0 bottom=14.0 colours={'card': [255, 255, 255], 'page': [242, 242, 247], 'artCentre': [236, 140, 56]}
+  geometry control tree: card h=85.0 side=14.0 top=14.0 bottom=14.0 cell=[16.0, 153.0, 358.0, 85.0] art=[30.0, 167.0, 57.0, 57.0]
+  geometry control pixels: card h=85.0 art h=57.0 side=14.0 top=14.0 bottom=14.0 colours={'card': [255, 255, 255], 'page': [242, 242, 247], 'artCentre': [236, 140, 56]}
+  probe change  os=27.0 trackShown=1793791089.261164 metrics={'safeArea': [47, 0, 34, 0], 'scale': 3, 'statusBar': [0, 0, 390, 47], 'style': 'light', 'voiceOver': False}
+  probe control os=27.0 trackShown=1793791377.909037 metrics={'safeArea': [47, 0, 34, 0], 'scale': 3, 'statusBar': [0, 0, 390, 47], 'style': 'light', 'voiceOver': False}
+----------------------------------------------------------------------------------------------------
+17e-ios27-sdk26 | long-dark
+  timing change  (s after the song showed): {'shot_top': 3.7, 'shot_moving': 10.61, 'shot_loop2': 19.41, 'dump_early': 4.0, 'read_rest': 10.39, 'dump_rest': 10.61, 'read_moving': 18.73, 'dump_moving': 18.84, 'read_loop2': 25.77, 'dump_loop2': 25.98, 'first_read': 2.7}
+  first quick XCUITest read change : label='Now Playing, Prime Time Golden Hour Show (Soundtrack), Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC' frame=(16.0, 153.0, 358.0, 85.0)
+  early in-app dump change : label='Now Playing, Prime Time Golden Hour Show (Soundtrack), Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC' attributed='Now Playing, Prime Time Golden Hour Show (Soundtrack), Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC' value=None traits=[] (0x0)
+  timing control (s after the song showed): {'shot_top': 3.57, 'shot_moving': 10.11, 'shot_loop2': 19.41, 'dump_early': 3.93, 'read_rest': 9.89, 'dump_rest': 10.1, 'read_moving': 15.63, 'dump_moving': 15.74, 'read_loop2': 23.91, 'dump_loop2': 24.11, 'first_read': 2.57}
+  first quick XCUITest read control: label='Prime Time Golden Hour Show (Soundtrack), Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC' frame=(16.0, 153.0, 358.0, 85.0)
+  early in-app dump control: label='Prime Time Golden Hour Show (Soundtrack), Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC' attributed='Prime Time Golden Hour Show (Soundtrack), Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC' value=None traits=[] (0x0)
+  early relation (in-app): {'prefixThenControl': True, 'separator': ', ', 'separatorCodepoints': ['U+002C', 'U+0020']}
+  first-read relation (XCUIElement): {'prefixThenControl': True, 'separator': ', ', 'separatorCodepoints': ['U+002C', 'U+0020']}
+  early in-app sequence: lengths [9, 9], 1 difference(s): #1 ['label']
+  [rest] change  XCUIElement label='Now Playing, Prime Time Golden Hour Show (Soundtrack), Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC'
+  [rest] change              value=nil type=1 (Other) frame=[16.0, 153.0, 358.0, 85.0]
+  [rest] change              debugDescription: Other, 0x106b69040, {{16.0, 153.0}, {358.0, 85.0}}, label: 'Now Playing, Prime Time Golden Hour Show (Soundtrack), Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC'
+  [rest] change  in-app      label='Now Playing, Prime Time Golden Hour Show (Soundtrack), Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC' value=None hint=None traits=[] (0x0) class=AccessibilityNode index=1/9
+  [rest] change  in-app      attributedLabel='Now Playing, Prime Time Golden Hour Show (Soundtrack), Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC' runs=[([0, 11], 'Now Playing', 'font tokens'), ([11, 2], ', ', 'no attributes'), ([13, 40], 'Prime Time Golden Hour Show (Soundtrack)', 'font tokens'), ([53, 2], ', ', 'no attributes'), ([55, 50], 'Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC', 'font tokens')]
+  [rest] control XCUIElement label='Prime Time Golden Hour Show (Soundtrack), Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC'
+  [rest] control             value=nil type=1 (Other) frame=[16.0, 153.0, 358.0, 85.0]
+  [rest] control             debugDescription: Other, 0x111839040, {{16.0, 153.0}, {358.0, 85.0}}, label: 'Prime Time Golden Hour Show (Soundtrack), Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC'
+  [rest] control in-app      label='Prime Time Golden Hour Show (Soundtrack), Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC' value=None hint=None traits=[] (0x0) class=AccessibilityNode index=1/9
+  [rest] control in-app      attributedLabel='Prime Time Golden Hour Show (Soundtrack), Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC' runs=[([0, 40], 'Prime Time Golden Hour Show (Soundtrack)', 'font tokens'), ([40, 2], ', ', 'no attributes'), ([42, 50], 'Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC', 'font tokens')]
+  [rest] relation (XCUIElement): {'prefixThenControl': True, 'separator': ', ', 'separatorCodepoints': ['U+002C', 'U+0020']}
+  [rest] relation (in-app):      {'prefixThenControl': True, 'separator': ', ', 'separatorCodepoints': ['U+002C', 'U+0020']}
+  [rest] in-app sequence: lengths [9, 9], 1 difference(s): #1 ['label']
+  [rest] XCUITest tree: 107 vs 107 lines, 14 differing line(s), by kind {'card': 2, 'line': 12}:
+      -                                  Other, 0x…, {{16.0, 153.0}, {358.0, 85.0}}, label: 'Prime Time Golden Hour Show (Soundtrack), Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC'
+      -                                    Other, 0x…, {{-98.0, 174.2}, {734.0, 20.3}}, label: 'Prime Time Golden Hour Show (Soundtrack)'
+      -                                      StaticText, 0x…, {{-98.0, 174.2}, {351.0, 20.3}}, label: 'Prime Time Golden Hour Show (Soundtrack)'
+      +                                  Other, 0x…, {{16.0, 153.0}, {358.0, 85.0}}, label: 'Now Playing, Prime Time Golden Hour Show (Soundtrack), Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC'
+      +                                    Other, 0x…, {{-104.9, 174.2}, {734.0, 20.3}}, label: 'Prime Time Golden Hour Show (Soundtrack)'
+      +                                      StaticText, 0x…, {{-104.9, 174.2}, {351.0, 20.3}}, label: 'Prime Time Golden Hour Show (Soundtrack)'
+      -                                      StaticText, 0x…, {{285.0, 174.2}, {351.0, 20.3}}, label: 'Prime Time Golden Hour Show (Soundtrack)'
+      +                                      StaticText, 0x…, {{278.1, 174.2}, {351.0, 20.3}}, label: 'Prime Time Golden Hour Show (Soundtrack)'
+      -                                    Other, 0x…, {{-98.3, 196.5}, {904.7, 20.3}}, label: 'Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC'
+      -                                      StaticText, 0x…, {{-98.3, 196.5}, {436.3, 20.3}}, label: 'Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC'
+      +                                    Other, 0x…, {{-105.0, 196.5}, {904.7, 20.3}}, label: 'Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC'
+      +                                      StaticText, 0x…, {{-105.0, 196.5}, {436.3, 20.3}}, label: 'Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC'
+  [moving] change  XCUIElement label='Now Playing, Prime Time Golden Hour Show (Soundtrack), Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC'
+  [moving] change              value=nil type=1 (Other) frame=[16.0, 153.0, 358.0, 85.0]
+  [moving] change              debugDescription: Other, 0x113641cc0, {{16.0, 153.0}, {358.0, 85.0}}, label: 'Now Playing, Prime Time Golden Hour Show (Soundtrack), Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC'
+  [moving] change  in-app      label='Now Playing, Prime Time Golden Hour Show (Soundtrack), Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC' value=None hint=None traits=[] (0x0) class=AccessibilityNode index=1/9
+  [moving] change  in-app      attributedLabel='Now Playing, Prime Time Golden Hour Show (Soundtrack), Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC' runs=[([0, 11], 'Now Playing', 'font tokens'), ([11, 2], ', ', 'no attributes'), ([13, 40], 'Prime Time Golden Hour Show (Soundtrack)', 'font tokens'), ([53, 2], ', ', 'no attributes'), ([55, 50], 'Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC', 'font tokens')]
+  [moving] control XCUIElement label='Prime Time Golden Hour Show (Soundtrack), Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC'
+  [moving] control             value=nil type=1 (Other) frame=[16.0, 153.0, 358.0, 85.0]
+  [moving] control             debugDescription: Other, 0x115d85cc0, {{16.0, 153.0}, {358.0, 85.0}}, label: 'Prime Time Golden Hour Show (Soundtrack), Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC'
+  [moving] control in-app      label='Prime Time Golden Hour Show (Soundtrack), Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC' value=None hint=None traits=[] (0x0) class=AccessibilityNode index=1/9
+  [moving] control in-app      attributedLabel='Prime Time Golden Hour Show (Soundtrack), Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC' runs=[([0, 40], 'Prime Time Golden Hour Show (Soundtrack)', 'font tokens'), ([40, 2], ', ', 'no attributes'), ([42, 50], 'Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC', 'font tokens')]
+  [moving] relation (XCUIElement): {'prefixThenControl': True, 'separator': ', ', 'separatorCodepoints': ['U+002C', 'U+0020']}
+  [moving] relation (in-app):      {'prefixThenControl': True, 'separator': ', ', 'separatorCodepoints': ['U+002C', 'U+0020']}
+  [moving] in-app sequence: lengths [9, 9], 1 difference(s): #1 ['label']
+  [moving] XCUITest tree: 107 vs 107 lines, 8 differing line(s), by kind {'card': 2, 'line': 6}:
+      -                                  Other, 0x…, {{16.0, 153.0}, {358.0, 85.0}}, label: 'Prime Time Golden Hour Show (Soundtrack), Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC'
+      +                                  Other, 0x…, {{16.0, 153.0}, {358.0, 85.0}}, label: 'Now Playing, Prime Time Golden Hour Show (Soundtrack), Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC'
+      -                                    Other, 0x…, {{-331.5, 196.5}, {904.7, 20.3}}, label: 'Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC'
+      -                                      StaticText, 0x…, {{-331.5, 196.5}, {436.3, 20.3}}, label: 'Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC'
+      +                                    Other, 0x…, {{-368.8, 196.5}, {904.7, 20.3}}, label: 'Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC'
+      +                                      StaticText, 0x…, {{-368.8, 196.5}, {436.3, 20.3}}, label: 'Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC'
+      -                                      StaticText, 0x…, {{136.8, 196.5}, {436.3, 20.3}}, label: 'Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC'
+      +                                      StaticText, 0x…, {{99.6, 196.5}, {436.3, 20.3}}, label: 'Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC'
+  [loop2] change  XCUIElement label='Now Playing, Prime Time Golden Hour Show (Soundtrack), Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC'
+  [loop2] change              value=nil type=1 (Other) frame=[16.0, 153.0, 358.0, 85.0]
+  [loop2] change              debugDescription: Other, 0x106b68500, {{16.0, 153.0}, {358.0, 85.0}}, label: 'Now Playing, Prime Time Golden Hour Show (Soundtrack), Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC'
+  [loop2] change  in-app      label='Now Playing, Prime Time Golden Hour Show (Soundtrack), Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC' value=None hint=None traits=[] (0x0) class=AccessibilityNode index=1/9
+  [loop2] change  in-app      attributedLabel='Now Playing, Prime Time Golden Hour Show (Soundtrack), Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC' runs=[([0, 11], 'Now Playing', 'font tokens'), ([11, 2], ', ', 'no attributes'), ([13, 40], 'Prime Time Golden Hour Show (Soundtrack)', 'font tokens'), ([53, 2], ', ', 'no attributes'), ([55, 50], 'Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC', 'font tokens')]
+  [loop2] control XCUIElement label='Prime Time Golden Hour Show (Soundtrack), Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC'
+  [loop2] control             value=nil type=1 (Other) frame=[16.0, 153.0, 358.0, 85.0]
+  [loop2] control             debugDescription: Other, 0x111838500, {{16.0, 153.0}, {358.0, 85.0}}, label: 'Prime Time Golden Hour Show (Soundtrack), Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC'
+  [loop2] control in-app      label='Prime Time Golden Hour Show (Soundtrack), Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC' value=None hint=None traits=[] (0x0) class=AccessibilityNode index=1/9
+  [loop2] control in-app      attributedLabel='Prime Time Golden Hour Show (Soundtrack), Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC' runs=[([0, 40], 'Prime Time Golden Hour Show (Soundtrack)', 'font tokens'), ([40, 2], ', ', 'no attributes'), ([42, 50], 'Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC', 'font tokens')]
+  [loop2] relation (XCUIElement): {'prefixThenControl': True, 'separator': ', ', 'separatorCodepoints': ['U+002C', 'U+0020']}
+  [loop2] relation (in-app):      {'prefixThenControl': True, 'separator': ', ', 'separatorCodepoints': ['U+002C', 'U+0020']}
+  [loop2] in-app sequence: lengths [9, 9], 1 difference(s): #1 ['label']
+  [loop2] XCUITest tree: 107 vs 107 lines, 16 differing line(s), by kind {'card': 2, 'line': 14}:
+      -                                  Other, 0x…, {{16.0, 153.0}, {358.0, 85.0}}, label: 'Prime Time Golden Hour Show (Soundtrack), Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC'
+      +                                  Other, 0x…, {{16.0, 153.0}, {358.0, 85.0}}, label: 'Now Playing, Prime Time Golden Hour Show (Soundtrack), Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC'
+      +                                    Other, 0x…, {{43.8, 174.2}, {734.0, 20.3}}, label: 'Prime Time Golden Hour Show (Soundtrack)'
+      +                                      StaticText, 0x…, {{43.8, 174.2}, {351.0, 20.3}}, label: 'Prime Time Golden Hour Show (Soundtrack)'
+      +                                      StaticText, 0x…, {{99.0, 174.2}, {256.7, 20.3}}, label: 'Prime Time Golden Hour Show (Soundtrack)'
+      +                                      StaticText, 0x…, {{426.8, 174.2}, {351.0, 20.3}}, label: 'Prime Time Golden Hour Show (Soundtrack)'
+      -                                    Other, 0x…, {{99.0, 174.2}, {734.0, 20.3}}, label: 'Prime Time Golden Hour Show (Soundtrack)'
+      -                                      StaticText, 0x…, {{99.0, 174.2}, {256.7, 20.3}}, label: 'Prime Time Golden Hour Show (Soundtrack)'
+      -                                      StaticText, 0x…, {{99.0, 174.2}, {351.0, 20.3}}, label: 'Prime Time Golden Hour Show (Soundtrack)'
+      -                                      StaticText, 0x…, {{482.0, 174.2}, {351.0, 20.3}}, label: 'Prime Time Golden Hour Show (Soundtrack)'
+      -                                    Other, 0x…, {{99.0, 196.5}, {904.7, 20.3}}, label: 'Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC'
+      +                                    Other, 0x…, {{43.7, 196.5}, {904.7, 20.3}}, label: 'Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC'
+  pixels top (status bar 47 pt @3x): status bar 0 px differ; outside it 0 of 2797470 px differ (>8: 0, max 0)
+  pixels moving: status bar 0; outside 30367 (>8: 28514), box [99.0, 177.33, 360.0, 213.33]
+  geometry change  tree: card h=85.0 side=14.0 top=14.0 bottom=14.0 cell=[16.0, 153.0, 358.0, 85.0] art=[30.0, 167.0, 57.0, 57.0]
+  geometry change  pixels: card h=85.0 art h=57.0 side=14.0 top=14.0 bottom=14.0 colours={'card': [28, 28, 30], 'page': [0, 0, 0], 'artCentre': [236, 140, 56]}
+  geometry control tree: card h=85.0 side=14.0 top=14.0 bottom=14.0 cell=[16.0, 153.0, 358.0, 85.0] art=[30.0, 167.0, 57.0, 57.0]
+  geometry control pixels: card h=85.0 art h=57.0 side=14.0 top=14.0 bottom=14.0 colours={'card': [28, 28, 30], 'page': [0, 0, 0], 'artCentre': [236, 140, 56]}
+  probe change  os=27.0 trackShown=1793790956.274928 metrics={'safeArea': [47, 0, 34, 0], 'scale': 3, 'statusBar': [0, 0, 390, 47], 'style': 'dark', 'voiceOver': False}
+  probe control os=27.0 trackShown=1793791276.9326658 metrics={'safeArea': [47, 0, 34, 0], 'scale': 3, 'statusBar': [0, 0, 390, 47], 'style': 'dark', 'voiceOver': False}
+----------------------------------------------------------------------------------------------------
+17e-ios27-sdk26 | long-light
+  timing change  (s after the song showed): {'shot_top': 3.46, 'shot_moving': 9.24, 'shot_loop2': 19.41, 'dump_early': 3.8, 'read_rest': 9.03, 'dump_rest': 9.24, 'read_moving': 13.72, 'dump_moving': 13.83, 'read_loop2': 24.28, 'dump_loop2': 24.38, 'first_read': 2.45}
+  first quick XCUITest read change : label='Now Playing, Prime Time Golden Hour Show (Soundtrack), Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC' frame=(16.0, 153.0, 358.0, 85.0)
+  early in-app dump change : label='Now Playing, Prime Time Golden Hour Show (Soundtrack), Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC' attributed='Now Playing, Prime Time Golden Hour Show (Soundtrack), Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC' value=None traits=[] (0x0)
+  timing control (s after the song showed): {'shot_top': 3.49, 'shot_moving': 8.83, 'shot_loop2': 19.41, 'dump_early': 3.71, 'read_rest': 8.73, 'dump_rest': 8.83, 'read_moving': 13.7, 'dump_moving': 13.91, 'read_loop2': 24.5, 'dump_loop2': 24.72, 'first_read': 2.48}
+  first quick XCUITest read control: label='Prime Time Golden Hour Show (Soundtrack), Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC' frame=(16.0, 153.0, 358.0, 85.0)
+  early in-app dump control: label='Prime Time Golden Hour Show (Soundtrack), Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC' attributed='Prime Time Golden Hour Show (Soundtrack), Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC' value=None traits=[] (0x0)
+  early relation (in-app): {'prefixThenControl': True, 'separator': ', ', 'separatorCodepoints': ['U+002C', 'U+0020']}
+  first-read relation (XCUIElement): {'prefixThenControl': True, 'separator': ', ', 'separatorCodepoints': ['U+002C', 'U+0020']}
+  early in-app sequence: lengths [9, 9], 1 difference(s): #1 ['label']
+  [rest] change  XCUIElement label='Now Playing, Prime Time Golden Hour Show (Soundtrack), Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC'
+  [rest] change              value=nil type=1 (Other) frame=[16.0, 153.0, 358.0, 85.0]
+  [rest] change              debugDescription: Other, 0x10678d040, {{16.0, 153.0}, {358.0, 85.0}}, label: 'Now Playing, Prime Time Golden Hour Show (Soundtrack), Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC'
+  [rest] change  in-app      label='Now Playing, Prime Time Golden Hour Show (Soundtrack), Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC' value=None hint=None traits=[] (0x0) class=AccessibilityNode index=1/9
+  [rest] change  in-app      attributedLabel='Now Playing, Prime Time Golden Hour Show (Soundtrack), Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC' runs=[([0, 11], 'Now Playing', 'font tokens'), ([11, 2], ', ', 'no attributes'), ([13, 40], 'Prime Time Golden Hour Show (Soundtrack)', 'font tokens'), ([53, 2], ', ', 'no attributes'), ([55, 50], 'Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC', 'font tokens')]
+  [rest] control XCUIElement label='Prime Time Golden Hour Show (Soundtrack), Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC'
+  [rest] control             value=nil type=1 (Other) frame=[16.0, 153.0, 358.0, 85.0]
+  [rest] control             debugDescription: Other, 0x1097d5040, {{16.0, 153.0}, {358.0, 85.0}}, label: 'Prime Time Golden Hour Show (Soundtrack), Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC'
+  [rest] control in-app      label='Prime Time Golden Hour Show (Soundtrack), Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC' value=None hint=None traits=[] (0x0) class=AccessibilityNode index=1/9
+  [rest] control in-app      attributedLabel='Prime Time Golden Hour Show (Soundtrack), Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC' runs=[([0, 40], 'Prime Time Golden Hour Show (Soundtrack)', 'font tokens'), ([40, 2], ', ', 'no attributes'), ([42, 50], 'Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC', 'font tokens')]
+  [rest] relation (XCUIElement): {'prefixThenControl': True, 'separator': ', ', 'separatorCodepoints': ['U+002C', 'U+0020']}
+  [rest] relation (in-app):      {'prefixThenControl': True, 'separator': ', ', 'separatorCodepoints': ['U+002C', 'U+0020']}
+  [rest] in-app sequence: lengths [9, 9], 1 difference(s): #1 ['label']
+  [rest] XCUITest tree: 107 vs 107 lines, 14 differing line(s), by kind {'card': 2, 'line': 12}:
+      -                                  Other, 0x…, {{16.0, 153.0}, {358.0, 85.0}}, label: 'Prime Time Golden Hour Show (Soundtrack), Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC'
+      -                                    Other, 0x…, {{-35.1, 174.2}, {734.0, 20.3}}, label: 'Prime Time Golden Hour Show (Soundtrack)'
+      -                                      StaticText, 0x…, {{-35.1, 174.2}, {351.0, 20.3}}, label: 'Prime Time Golden Hour Show (Soundtrack)'
+      +                                  Other, 0x…, {{16.0, 153.0}, {358.0, 85.0}}, label: 'Now Playing, Prime Time Golden Hour Show (Soundtrack), Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC'
+      +                                    Other, 0x…, {{-53.7, 174.2}, {734.0, 20.3}}, label: 'Prime Time Golden Hour Show (Soundtrack)'
+      +                                      StaticText, 0x…, {{-53.7, 174.2}, {351.0, 20.3}}, label: 'Prime Time Golden Hour Show (Soundtrack)'
+      -                                      StaticText, 0x…, {{347.9, 174.2}, {351.0, 20.3}}, label: 'Prime Time Golden Hour Show (Soundtrack)'
+      +                                      StaticText, 0x…, {{329.3, 174.2}, {351.0, 20.3}}, label: 'Prime Time Golden Hour Show (Soundtrack)'
+      -                                    Other, 0x…, {{-35.0, 196.5}, {904.7, 20.3}}, label: 'Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC'
+      -                                      StaticText, 0x…, {{-35.0, 196.5}, {436.3, 20.3}}, label: 'Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC'
+      +                                    Other, 0x…, {{-54.1, 196.5}, {904.7, 20.3}}, label: 'Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC'
+      +                                      StaticText, 0x…, {{-54.1, 196.5}, {436.3, 20.3}}, label: 'Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC'
+  [moving] change  XCUIElement label='Now Playing, Prime Time Golden Hour Show (Soundtrack), Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC'
+  [moving] change              value=nil type=1 (Other) frame=[16.0, 153.0, 358.0, 85.0]
+  [moving] change              debugDescription: Other, 0x112f4dcc0, {{16.0, 153.0}, {358.0, 85.0}}, label: 'Now Playing, Prime Time Golden Hour Show (Soundtrack), Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC'
+  [moving] change  in-app      label='Now Playing, Prime Time Golden Hour Show (Soundtrack), Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC' value=None hint=None traits=[] (0x0) class=AccessibilityNode index=1/9
+  [moving] change  in-app      attributedLabel='Now Playing, Prime Time Golden Hour Show (Soundtrack), Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC' runs=[([0, 11], 'Now Playing', 'font tokens'), ([11, 2], ', ', 'no attributes'), ([13, 40], 'Prime Time Golden Hour Show (Soundtrack)', 'font tokens'), ([53, 2], ', ', 'no attributes'), ([55, 50], 'Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC', 'font tokens')]
+  [moving] control XCUIElement label='Prime Time Golden Hour Show (Soundtrack), Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC'
+  [moving] control             value=nil type=1 (Other) frame=[16.0, 153.0, 358.0, 85.0]
+  [moving] control             debugDescription: Other, 0x11664dcc0, {{16.0, 153.0}, {358.0, 85.0}}, label: 'Prime Time Golden Hour Show (Soundtrack), Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC'
+  [moving] control in-app      label='Prime Time Golden Hour Show (Soundtrack), Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC' value=None hint=None traits=[] (0x0) class=AccessibilityNode index=1/9
+  [moving] control in-app      attributedLabel='Prime Time Golden Hour Show (Soundtrack), Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC' runs=[([0, 40], 'Prime Time Golden Hour Show (Soundtrack)', 'font tokens'), ([40, 2], ', ', 'no attributes'), ([42, 50], 'Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC', 'font tokens')]
+  [moving] relation (XCUIElement): {'prefixThenControl': True, 'separator': ', ', 'separatorCodepoints': ['U+002C', 'U+0020']}
+  [moving] relation (in-app):      {'prefixThenControl': True, 'separator': ', ', 'separatorCodepoints': ['U+002C', 'U+0020']}
+  [moving] in-app sequence: lengths [9, 9], 1 difference(s): #1 ['label']
+  [moving] XCUITest tree: 107 vs 107 lines, 14 differing line(s), by kind {'card': 2, 'line': 12}:
+      -                                  Other, 0x…, {{16.0, 153.0}, {358.0, 85.0}}, label: 'Prime Time Golden Hour Show (Soundtrack), Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC'
+      -                                    Other, 0x…, {{-274.8, 174.2}, {734.0, 20.3}}, label: 'Prime Time Golden Hour Show (Soundtrack)'
+      -                                      StaticText, 0x…, {{-274.8, 174.2}, {351.0, 20.3}}, label: 'Prime Time Golden Hour Show (Soundtrack)'
+      +                                  Other, 0x…, {{16.0, 153.0}, {358.0, 85.0}}, label: 'Now Playing, Prime Time Golden Hour Show (Soundtrack), Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC'
+      +                                    Other, 0x…, {{-277.1, 174.2}, {734.0, 20.3}}, label: 'Prime Time Golden Hour Show (Soundtrack)'
+      +                                      StaticText, 0x…, {{-277.1, 174.2}, {351.0, 20.3}}, label: 'Prime Time Golden Hour Show (Soundtrack)'
+      -                                      StaticText, 0x…, {{108.2, 174.2}, {351.0, 20.3}}, label: 'Prime Time Golden Hour Show (Soundtrack)'
+      +                                      StaticText, 0x…, {{105.9, 174.2}, {351.0, 20.3}}, label: 'Prime Time Golden Hour Show (Soundtrack)'
+      -                                    Other, 0x…, {{-274.7, 196.5}, {904.7, 20.3}}, label: 'Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC'
+      -                                      StaticText, 0x…, {{-274.7, 196.5}, {436.3, 20.3}}, label: 'Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC'
+      +                                    Other, 0x…, {{-277.1, 196.5}, {904.7, 20.3}}, label: 'Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC'
+      +                                      StaticText, 0x…, {{-277.1, 196.5}, {436.3, 20.3}}, label: 'Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC'
+  [loop2] change  XCUIElement label='Now Playing, Prime Time Golden Hour Show (Soundtrack), Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC'
+  [loop2] change              value=nil type=1 (Other) frame=[16.0, 153.0, 358.0, 85.0]
+  [loop2] change              debugDescription: Other, 0x10678c500, {{16.0, 153.0}, {358.0, 85.0}}, label: 'Now Playing, Prime Time Golden Hour Show (Soundtrack), Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC'
+  [loop2] change  in-app      label='Now Playing, Prime Time Golden Hour Show (Soundtrack), Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC' value=None hint=None traits=[] (0x0) class=AccessibilityNode index=1/9
+  [loop2] change  in-app      attributedLabel='Now Playing, Prime Time Golden Hour Show (Soundtrack), Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC' runs=[([0, 11], 'Now Playing', 'font tokens'), ([11, 2], ', ', 'no attributes'), ([13, 40], 'Prime Time Golden Hour Show (Soundtrack)', 'font tokens'), ([53, 2], ', ', 'no attributes'), ([55, 50], 'Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC', 'font tokens')]
+  [loop2] control XCUIElement label='Prime Time Golden Hour Show (Soundtrack), Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC'
+  [loop2] control             value=nil type=1 (Other) frame=[16.0, 153.0, 358.0, 85.0]
+  [loop2] control             debugDescription: Other, 0x1097d4500, {{16.0, 153.0}, {358.0, 85.0}}, label: 'Prime Time Golden Hour Show (Soundtrack), Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC'
+  [loop2] control in-app      label='Prime Time Golden Hour Show (Soundtrack), Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC' value=None hint=None traits=[] (0x0) class=AccessibilityNode index=1/9
+  [loop2] control in-app      attributedLabel='Prime Time Golden Hour Show (Soundtrack), Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC' runs=[([0, 40], 'Prime Time Golden Hour Show (Soundtrack)', 'font tokens'), ([40, 2], ', ', 'no attributes'), ([42, 50], 'Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC', 'font tokens')]
+  [loop2] relation (XCUIElement): {'prefixThenControl': True, 'separator': ', ', 'separatorCodepoints': ['U+002C', 'U+0020']}
+  [loop2] relation (in-app):      {'prefixThenControl': True, 'separator': ', ', 'separatorCodepoints': ['U+002C', 'U+0020']}
+  [loop2] in-app sequence: lengths [9, 9], 1 difference(s): #1 ['label']
+  [loop2] XCUITest tree: 107 vs 107 lines, 16 differing line(s), by kind {'card': 2, 'line': 12, 'other': 2}:
+      -                                  Other, 0x…, {{16.0, 153.0}, {358.0, 85.0}}, label: 'Prime Time Golden Hour Show (Soundtrack), Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC'
+      +                                  Other, 0x…, {{16.0, 153.0}, {358.0, 85.0}}, label: 'Now Playing, Prime Time Golden Hour Show (Soundtrack), Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC'
+      -                                    Other, 0x…, {{90.4, 174.2}, {734.0, 20.3}}, label: 'Prime Time Golden Hour Show (Soundtrack)'
+      -                                      StaticText, 0x…, {{90.4, 174.2}, {351.0, 20.3}}, label: 'Prime Time Golden Hour Show (Soundtrack)'
+      +                                    Other, 0x…, {{99.0, 174.2}, {261.0, 42.7}}
+      +                                    Other, 0x…, {{99.0, 174.2}, {734.0, 20.3}}, label: 'Prime Time Golden Hour Show (Soundtrack)'
+      -                                      StaticText, 0x…, {{473.4, 174.2}, {351.0, 20.3}}, label: 'Prime Time Golden Hour Show (Soundtrack)'
+      -                                    Other, 0x…, {{99.0, 174.2}, {261.0, 42.7}}
+      -                                    Other, 0x…, {{90.5, 196.5}, {904.7, 20.3}}, label: 'Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC'
+      -                                      StaticText, 0x…, {{90.5, 196.5}, {436.3, 20.3}}, label: 'Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC'
+      +                                      StaticText, 0x…, {{99.0, 174.2}, {351.0, 20.3}}, label: 'Prime Time Golden Hour Show (Soundtrack)'
+      +                                      StaticText, 0x…, {{482.0, 174.2}, {351.0, 20.3}}, label: 'Prime Time Golden Hour Show (Soundtrack)'
+  pixels top (status bar 47 pt @3x): status bar 0 px differ; outside it 0 of 2797470 px differ (>8: 0, max 0)
+  pixels moving: status bar 0; outside 30118 (>8: 28396), box [99.0, 177.33, 360.0, 213.33]
+  geometry change  tree: card h=85.0 side=14.0 top=14.0 bottom=14.0 cell=[16.0, 153.0, 358.0, 85.0] art=[30.0, 167.0, 57.0, 57.0]
+  geometry change  pixels: card h=85.0 art h=57.0 side=14.0 top=14.0 bottom=14.0 colours={'card': [255, 255, 255], 'page': [242, 242, 247], 'artCentre': [236, 140, 56]}
+  geometry control tree: card h=85.0 side=14.0 top=14.0 bottom=14.0 cell=[16.0, 153.0, 358.0, 85.0] art=[30.0, 167.0, 57.0, 57.0]
+  geometry control pixels: card h=85.0 art h=57.0 side=14.0 top=14.0 bottom=14.0 colours={'card': [255, 255, 255], 'page': [242, 242, 247], 'artCentre': [236, 140, 56]}
+  probe change  os=27.0 trackShown=1793791101.175643 metrics={'safeArea': [47, 0, 34, 0], 'scale': 3, 'statusBar': [0, 0, 390, 47], 'style': 'light', 'voiceOver': False}
+  probe control os=27.0 trackShown=1793791389.772193 metrics={'safeArea': [47, 0, 34, 0], 'scale': 3, 'statusBar': [0, 0, 390, 47], 'style': 'light', 'voiceOver': False}
+----------------------------------------------------------------------------------------------------
+17e-ios27-sdk26 | audit short
+  change: 1 issue(s); ['audit returned after 3.5 s; 1 issue(s)']
+     type=contrast | compact=Contrast failed | detailed=Contrast failed for SwiftUI.AccessibilityNode | element: type=9 label="Start" frame=(21.0, 772.6666666666666, 348.0, 50.33333333333337)
+  control: 1 issue(s); ['audit returned after 2.6 s; 1 issue(s)']
+     type=contrast | compact=Contrast failed | detailed=Contrast failed for SwiftUI.AccessibilityNode | element: type=9 label="Start" frame=(21.0, 772.6666666666666, 348.0, 50.33333333333337)
+  identical issue lists (addresses aside): True
+----------------------------------------------------------------------------------------------------
+17e-ios27-sdk26 | audit long
+  change: 1 issue(s); ['audit returned after 3.1 s; 1 issue(s)']
+     type=contrast | compact=Contrast failed | detailed=Contrast failed for SwiftUI.AccessibilityNode | element: type=9 label="Start" frame=(21.0, 772.6666666666666, 348.0, 50.33333333333337)
+  control: 1 issue(s); ['audit returned after 2.6 s; 1 issue(s)']
+     type=contrast | compact=Contrast failed | detailed=Contrast failed for SwiftUI.AccessibilityNode | element: type=9 label="Start" frame=(21.0, 772.6666666666666, 348.0, 50.33333333333337)
+  identical issue lists (addresses aside): True

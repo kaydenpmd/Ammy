@@ -1,0 +1,102 @@
+se-ios27 notPlaying dark: 9 stops in both; card is stop 2, after 'Ammy', before 'URL'; differences: #2 label: 'Now Playing, Not Playing' vs 'Not Playing' (the card: 'Now Playing, ' + control)
+   notPlaying, change, se-ios27, in order:
+      1. label='Ammy' value=None traits=['header'] frame=[16, 77.5, 102, 41]
+      2. label='Now Playing, Not Playing' value=None traits=[] frame=[16, 126, 343, 85]
+      3. label='URL' value='Required' traits=['other:0x40000'] frame=[32, 285.5, 311, 22]
+      4. label='Key' value='Optional' traits=['other:0x1040000'] frame=[32, 362, 311, 21]
+      5. label="Ammy sends your now-playing details to this address. If you set a key, it's sent as a header." value=None traits=['staticText'] frame=[16, 398, 343, 46]
+      6. label='Endpoint, Disconnected' value=None traits=['staticText'] frame=[16, 461.5, 343, 52]
+      7. label='Version, 1.0 (158)' value=None traits=['staticText'] frame=[16, 513.5, 343, 52]
+      8. label='History' value=None traits=['button'] frame=[16, 600.5, 343, 52]
+      9. label='Start' value=None traits=['button', 'notEnabled'] frame=[21, 595.5, 333, 50.5]
+se-ios27 notPlaying light: 9 stops in both; card is stop 2, after 'Ammy', before 'URL'; differences: #2 label: 'Now Playing, Not Playing' vs 'Not Playing' (the card: 'Now Playing, ' + control)
+se-ios27 notAvailable dark: 10 stops in both; card is stop 5, after 'Open Settings', before 'URL'; differences: #5 label: 'Now Playing, Not Available' vs 'Not Available' (the card: 'Now Playing, ' + control)
+   notAvailable, change, se-ios27, in order:
+      1. label='Ammy' value=None traits=['header'] frame=[16, 77.5, 102, 41]
+      2. label='Allow Access to Media & Apple Music' value=None traits=['staticText'] frame=[32, 143, 295.5, 20.5]
+      3. label="Ammy needs it to see what's playing." value=None traits=['staticText'] frame=[32, 167.5, 254, 18]
+      4. label='Open Settings' value=None traits=['button'] frame=[16, 202.5, 343, 52]
+      5. label='Now Playing, Not Available' value=None traits=[] frame=[16, 289.5, 343, 85]
+      6. label='URL' value='Required' traits=['other:0x40000'] frame=[32, 449, 311, 22]
+      7. label='Key' value='Optional' traits=['other:0x1040000'] frame=[32, 525.5, 311, 21]
+      8. label="Ammy sends your now-playing details to this address. If you set a key, it's sent as a header." value=None traits=['staticText'] frame=[16, 561.5, 343, 46]
+      9. label='Endpoint, Disconnected' value=None traits=['staticText'] frame=[16, 625, 343, 52]
+     10. label='Start' value=None traits=['button', 'notEnabled'] frame=[21, 595.5, 333, 50.5]
+se-ios27 notAvailable light: 10 stops in both; card is stop 5, after 'Open Settings', before 'URL'; differences: #5 label: 'Now Playing, Not Available' vs 'Not Available' (the card: 'Now Playing, ' + control)
+se-ios27 short dark: 9 stops in both; card is stop 2, after 'Ammy', before 'URL'; differences: #2 label: 'Now Playing, Blue, Joni Mitchell' vs 'Blue, Joni Mitchell' (the card: 'Now Playing, ' + control)
+   short, change, se-ios27, in order:
+      1. label='Ammy' value=None traits=['header'] frame=[16, 77.5, 102, 41]
+      2. label='Now Playing, Blue, Joni Mitchell' value=None traits=[] frame=[16, 126, 343, 85]
+      3. label='URL' value='Required' traits=['other:0x40000'] frame=[32, 285.5, 311, 22]
+      4. label='Key' value='Optional' traits=['other:0x1040000'] frame=[32, 362, 311, 21]
+      5. label="Ammy sends your now-playing details to this address. If you set a key, it's sent as a header." value=None traits=['staticText'] frame=[16, 398, 343, 46]
+      6. label='Endpoint, Disconnected' value=None traits=['staticText'] frame=[16, 461.5, 343, 52]
+      7. label='Version, 1.0 (158)' value=None traits=['staticText'] frame=[16, 513.5, 343, 52]
+      8. label='History' value=None traits=['button'] frame=[16, 600.5, 343, 52]
+      9. label='Start' value=None traits=['button', 'notEnabled'] frame=[21, 595.5, 333, 50.5]
+se-ios27 short light: 9 stops in both; card is stop 2, after 'Ammy', before 'URL'; differences: #2 label: 'Now Playing, Blue, Joni Mitchell' vs 'Blue, Joni Mitchell' (the card: 'Now Playing, ' + control)
+se-ios27 explicit dark: 9 stops in both; card is stop 2, after 'Ammy', before 'URL'; differences: #2 label: 'Now Playing, HUMBLE. ￼, Kendrick Lamar' vs 'HUMBLE. ￼, Kendrick Lamar' (the card: 'Now Playing, ' + control)
+   explicit, change, se-ios27, in order:
+      1. label='Ammy' value=None traits=['header'] frame=[16, 77.5, 102, 41]
+      2. label='Now Playing, HUMBLE. \ufffc, Kendrick Lamar' value=None traits=[] attributed='Now Playing, HUMBLE. Explicit, Kendrick Lamar' frame=[16, 126, 343, 85]
+      3. label='URL' value='Required' traits=['other:0x40000'] frame=[32, 285.5, 311, 22]
+      4. label='Key' value='Optional' traits=['other:0x1040000'] frame=[32, 362, 311, 21]
+      5. label="Ammy sends your now-playing details to this address. If you set a key, it's sent as a header." value=None traits=['staticText'] frame=[16, 398, 343, 46]
+      6. label='Endpoint, Disconnected' value=None traits=['staticText'] frame=[16, 461.5, 343, 52]
+      7. label='Version, 1.0 (158)' value=None traits=['staticText'] frame=[16, 513.5, 343, 52]
+      8. label='History' value=None traits=['button'] frame=[16, 600.5, 343, 52]
+      9. label='Start' value=None traits=['button', 'notEnabled'] frame=[21, 595.5, 333, 50.5]
+se-ios27 explicit light: 9 stops in both; card is stop 2, after 'Ammy', before 'URL'; differences: #2 label: 'Now Playing, HUMBLE. ￼, Kendrick Lamar' vs 'HUMBLE. ￼, Kendrick Lamar' (the card: 'Now Playing, ' + control)
+se-ios27 long dark: 9 stops in both; card is stop 2, after 'Ammy', before 'URL'; differences: #2 label: 'Now Playing, Prime Time Golden Hour Show (Soundtrack), Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC' vs 'Prime Time Golden Hour Show (Soundtrack), Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC' (the card: 'Now Playing, ' + control)
+   long, change, se-ios27, in order:
+      1. label='Ammy' value=None traits=['header'] frame=[16, 77.5, 102, 41]
+      2. label='Now Playing, Prime Time Golden Hour Show (Soundtrack), Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC' value=None traits=[] frame=[16, 126, 343, 85]
+      3. label='URL' value='Required' traits=['other:0x40000'] frame=[32, 285.5, 311, 22]
+      4. label='Key' value='Optional' traits=['other:0x1040000'] frame=[32, 362, 311, 21]
+      5. label="Ammy sends your now-playing details to this address. If you set a key, it's sent as a header." value=None traits=['staticText'] frame=[16, 398, 343, 46]
+      6. label='Endpoint, Disconnected' value=None traits=['staticText'] frame=[16, 461.5, 343, 52]
+      7. label='Version, 1.0 (158)' value=None traits=['staticText'] frame=[16, 513.5, 343, 52]
+      8. label='History' value=None traits=['button'] frame=[16, 600.5, 343, 52]
+      9. label='Start' value=None traits=['button', 'notEnabled'] frame=[21, 595.5, 333, 50.5]
+se-ios27 long light: 9 stops in both; card is stop 2, after 'Ammy', before 'URL'; differences: #2 label: 'Now Playing, Prime Time Golden Hour Show (Soundtrack), Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC' vs 'Prime Time Golden Hour Show (Soundtrack), Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC' (the card: 'Now Playing, ' + control)
+se-ios26 notPlaying dark: 9 stops in both; card is stop 2, after 'Ammy', before 'URL'; differences: #2 label: 'Now Playing, Not Playing' vs 'Not Playing' (the card: 'Now Playing, ' + control)
+se-ios26 notPlaying light: 9 stops in both; card is stop 2, after 'Ammy', before 'URL'; differences: #2 label: 'Now Playing, Not Playing' vs 'Not Playing' (the card: 'Now Playing, ' + control)
+se-ios26 notAvailable dark: 10 stops in both; card is stop 5, after 'Open Settings', before 'URL'; differences: #5 label: 'Now Playing, Not Available' vs 'Not Available' (the card: 'Now Playing, ' + control)
+se-ios26 notAvailable light: 10 stops in both; card is stop 5, after 'Open Settings', before 'URL'; differences: #5 label: 'Now Playing, Not Available' vs 'Not Available' (the card: 'Now Playing, ' + control)
+se-ios26 short dark: 9 stops in both; card is stop 2, after 'Ammy', before 'URL'; differences: #2 label: 'Now Playing, Blue, Joni Mitchell' vs 'Blue, Joni Mitchell' (the card: 'Now Playing, ' + control)
+se-ios26 short light: 9 stops in both; card is stop 2, after 'Ammy', before 'URL'; differences: #2 label: 'Now Playing, Blue, Joni Mitchell' vs 'Blue, Joni Mitchell' (the card: 'Now Playing, ' + control)
+se-ios26 explicit dark: 9 stops in both; card is stop 2, after 'Ammy', before 'URL'; differences: #2 label: 'Now Playing, HUMBLE. ￼, Kendrick Lamar' vs 'HUMBLE. ￼, Kendrick Lamar' (the card: 'Now Playing, ' + control)
+se-ios26 explicit light: 9 stops in both; card is stop 2, after 'Ammy', before 'URL'; differences: #2 label: 'Now Playing, HUMBLE. ￼, Kendrick Lamar' vs 'HUMBLE. ￼, Kendrick Lamar' (the card: 'Now Playing, ' + control)
+se-ios26 long dark: 9 stops in both; card is stop 2, after 'Ammy', before 'URL'; differences: #2 label: 'Now Playing, Prime Time Golden Hour Show (Soundtrack), Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC' vs 'Prime Time Golden Hour Show (Soundtrack), Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC' (the card: 'Now Playing, ' + control)
+se-ios26 long light: 9 stops in both; card is stop 2, after 'Ammy', before 'URL'; differences: #2 label: 'Now Playing, Prime Time Golden Hour Show (Soundtrack), Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC' vs 'Prime Time Golden Hour Show (Soundtrack), Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC' (the card: 'Now Playing, ' + control)
+17e-ios27 notPlaying dark: 9 stops in both; card is stop 2, after 'Ammy', before 'URL'; differences: #2 label: 'Now Playing, Not Playing' vs 'Not Playing' (the card: 'Now Playing, ' + control)
+17e-ios27 notPlaying light: 9 stops in both; card is stop 2, after 'Ammy', before 'URL'; differences: #2 label: 'Now Playing, Not Playing' vs 'Not Playing' (the card: 'Now Playing, ' + control)
+17e-ios27 notAvailable dark: 12 stops in both; card is stop 5, after 'Open Settings', before 'URL'; differences: #5 label: 'Now Playing, Not Available' vs 'Not Available' (the card: 'Now Playing, ' + control)
+17e-ios27 notAvailable light: 12 stops in both; card is stop 5, after 'Open Settings', before 'URL'; differences: #5 label: 'Now Playing, Not Available' vs 'Not Available' (the card: 'Now Playing, ' + control)
+17e-ios27 short dark: 9 stops in both; card is stop 2, after 'Ammy', before 'URL'; differences: #2 label: 'Now Playing, Blue, Joni Mitchell' vs 'Blue, Joni Mitchell' (the card: 'Now Playing, ' + control)
+17e-ios27 short light: 9 stops in both; card is stop 2, after 'Ammy', before 'URL'; differences: #2 label: 'Now Playing, Blue, Joni Mitchell' vs 'Blue, Joni Mitchell' (the card: 'Now Playing, ' + control)
+17e-ios27 explicit dark: 9 stops in both; card is stop 2, after 'Ammy', before 'URL'; differences: #2 label: 'Now Playing, HUMBLE. ￼, Kendrick Lamar' vs 'HUMBLE. ￼, Kendrick Lamar' (the card: 'Now Playing, ' + control)
+17e-ios27 explicit light: 9 stops in both; card is stop 2, after 'Ammy', before 'URL'; differences: #2 label: 'Now Playing, HUMBLE. ￼, Kendrick Lamar' vs 'HUMBLE. ￼, Kendrick Lamar' (the card: 'Now Playing, ' + control)
+17e-ios27 long dark: 9 stops in both; card is stop 2, after 'Ammy', before 'URL'; differences: #2 label: 'Now Playing, Prime Time Golden Hour Show (Soundtrack), Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC' vs 'Prime Time Golden Hour Show (Soundtrack), Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC' (the card: 'Now Playing, ' + control)
+17e-ios27 long light: 9 stops in both; card is stop 2, after 'Ammy', before 'URL'; differences: #2 label: 'Now Playing, Prime Time Golden Hour Show (Soundtrack), Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC' vs 'Prime Time Golden Hour Show (Soundtrack), Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC' (the card: 'Now Playing, ' + control)
+se-ios27-sdk26 notPlaying dark: 9 stops in both; card is stop 2, after 'Ammy', before 'URL'; differences: #2 label: 'Now Playing, Not Playing' vs 'Not Playing' (the card: 'Now Playing, ' + control)
+se-ios27-sdk26 notPlaying light: 9 stops in both; card is stop 2, after 'Ammy', before 'URL'; differences: #2 label: 'Now Playing, Not Playing' vs 'Not Playing' (the card: 'Now Playing, ' + control)
+se-ios27-sdk26 notAvailable dark: 10 stops in both; card is stop 5, after 'Open Settings', before 'URL'; differences: #5 label: 'Now Playing, Not Available' vs 'Not Available' (the card: 'Now Playing, ' + control)
+se-ios27-sdk26 notAvailable light: 10 stops in both; card is stop 5, after 'Open Settings', before 'URL'; differences: #5 label: 'Now Playing, Not Available' vs 'Not Available' (the card: 'Now Playing, ' + control)
+se-ios27-sdk26 short dark: 9 stops in both; card is stop 2, after 'Ammy', before 'URL'; differences: #2 label: 'Now Playing, Blue, Joni Mitchell' vs 'Blue, Joni Mitchell' (the card: 'Now Playing, ' + control)
+se-ios27-sdk26 short light: 9 stops in both; card is stop 2, after 'Ammy', before 'URL'; differences: #2 label: 'Now Playing, Blue, Joni Mitchell' vs 'Blue, Joni Mitchell' (the card: 'Now Playing, ' + control)
+se-ios27-sdk26 explicit dark: 9 stops in both; card is stop 2, after 'Ammy', before 'URL'; differences: #2 label: 'Now Playing, HUMBLE. ￼, Kendrick Lamar' vs 'HUMBLE. ￼, Kendrick Lamar' (the card: 'Now Playing, ' + control)
+se-ios27-sdk26 explicit light: 9 stops in both; card is stop 2, after 'Ammy', before 'URL'; differences: #2 label: 'Now Playing, HUMBLE. ￼, Kendrick Lamar' vs 'HUMBLE. ￼, Kendrick Lamar' (the card: 'Now Playing, ' + control)
+se-ios27-sdk26 long dark: 9 stops in both; card is stop 2, after 'Ammy', before 'URL'; differences: #2 label: 'Now Playing, Prime Time Golden Hour Show (Soundtrack), Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC' vs 'Prime Time Golden Hour Show (Soundtrack), Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC' (the card: 'Now Playing, ' + control)
+se-ios27-sdk26 long light: 9 stops in both; card is stop 2, after 'Ammy', before 'URL'; differences: #2 label: 'Now Playing, Prime Time Golden Hour Show (Soundtrack), Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC' vs 'Prime Time Golden Hour Show (Soundtrack), Shiori Sasaki, ATLUS Sound Team & ATLUS GAME MUSIC' (the card: 'Now Playing, ' + control)
+17e-ios27-sdk26 notPlaying dark: missing
+17e-ios27-sdk26 notPlaying light: missing
+17e-ios27-sdk26 notAvailable dark: missing
+17e-ios27-sdk26 notAvailable light: missing
+17e-ios27-sdk26 short dark: missing
+17e-ios27-sdk26 short light: missing
+17e-ios27-sdk26 explicit dark: missing
+17e-ios27-sdk26 explicit light: missing
+17e-ios27-sdk26 long dark: missing
+17e-ios27-sdk26 long light: missing
+unexpected differences: 0
