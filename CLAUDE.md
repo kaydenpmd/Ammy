@@ -390,6 +390,51 @@ artwork 14 pt from its edges, and Apple's accessibility audit found the same
 single issue in both builds, the disabled Start button's contrast. VoiceOver
 itself can't run in CI, so it isn't heard yet.
 
+**The bar went behind the keyboard, from build 77 (18 Sept 2026) to build 172.
+Fixed 12 Nov 2026.** The owner noticed that editing the URL or Key mid-session
+no longer showed Stop + Restart above the keyboard. The cause was the bar's
+bottom padding, `edgeGap - bottomSafeArea`, and the reading behind it: an
+`onGeometryChange` outside the bar reads the bottom safe area *with the
+keyboard in it*, 260 pt on an SE and 328 on a 17e while the keyboard is up (0
+and 34 otherwise). 21 − 260 took the bar down until its button sat 66.5 pt
+under the keyboard's top (66.3 on the 17e), not hittable. Build 70
+(7adf1c8) had padded `max(0, 16 - inset)`, which clamps to 0 there, so the
+bar sat on the keyboard; build 77 (c02919b) dropped the clamp ("no clamp
+needed") for the 21 pt edge gap. The move of the bar to the stack in build 150
+didn't cause it: in the lab, build 148's arrangement (the bar on the Form)
+reads the same 260 and hides the bar the same way. The option-1 lab of 2 Nov
+saw it ("Start sits under the keyboard") and passed it as "same as build 156",
+which it was.
+
+The fix keeps the bar on the stack and adds a second reading: a `Color.clear`
+background with `.ignoresSafeArea(.keyboard)`, outside the bar, whose
+`safeAreaInsets.bottom` stays at the home indicator's 0 or 34 while the
+keyboard is up. That is `bottomSafeArea` now; the old reading only says whether
+the keyboard is up (it reads more than the other). With the keyboard up the bar
+pads `edgeGap` above the keyboard's top on every phone, as a home-button phone
+always had; otherwise nothing changed. Both readings are logged (category
+`bar`). `ignoresSafeArea(.container, edges: .bottom)` on the bar instead, with
+a plain `edgeGap`, was tried and is wrong: on the 17e it put the bar 55 pt off
+the edge at rest.
+
+Measured in the `keyboard-lab` lab (12 Nov 2026, never merged; run
+43177485233, report and screenshots in `lab/results/` on that branch): the
+release's build (iOS 26.5 SDK) on an SE and a 17e, iOS 27.0 and 26.5, dark
+mode, the URL and Key fields each focused and typed in, with Start alone, Stop
+alone and Stop + Restart. With the fix the buttons end exactly 21.0 pt above
+the keyboard (Passwords bar included), hittable, on all four, and iOS scrolls a
+focused Key field on the SE to end exactly at the bar's top. At rest the fix is
+pixel-identical to build 172 (44 pixels on the glass rim of one SE iOS 26.5
+capture differ by at most 3 of 255, frames identical), so the page's copy of
+the bar for History is unchanged too. The large title's jump stays gone: on
+every drag and flick the fix tracks the finger as build 172 does (slow drags
+at most 2–6 pt a frame), while the bar-on-the-Form control jumps up to 37.5 pt
+in a frame. On the 17e recording the bar rides up with the keyboard with no
+visible step where its padding changes by 34 pt. **iOS leaves the keyboard out
+of screenshots while the secure Key field is focused**, so a picture of that
+case shows a button the keyboard really covers; trust the frames. Not yet seen
+on a device, nor on iPad's floating or hardware keyboards.
+
 **16 Sept 2026: iOS 27 removed the tint behind the bar, and Ammy followed for
 free.** `safeAreaBar` does not draw a background — it applies the system's scroll
 edge effect, which is all Ammy ever asked for. Apple changed what that effect
@@ -1562,7 +1607,11 @@ own bar. That puts it outside the bar, because reading the safe area inside a
 resizes, and rather than a `GeometryReader` because that would take over the
 layout beneath it. The bar pads `.padding(.bottom, edgeGap - bottomSafeArea)`
 with `edgeGap = 21`, which pins the button 21pt above the true screen edge on
-every device, no clamp needed. System bars don't stop at the top of the
+every device. "No clamp needed" was said of that formula and was wrong: the
+reading counted the keyboard, and from build 77 to 172 the bar went behind it
+(Gotchas, "The bar went behind the keyboard"). Since then `bottomSafeArea` is
+read with the keyboard ignored, and with the keyboard up the bar sits `edgeGap`
+above it. System bars don't stop at the top of the
 home-indicator zone; they intrude about 13pt into it. Pixel-measured on an
 iPhone 16 Pro Max screenshot (18 Sept 2026), Shortcuts' floating tab bar sat
 21.3pt above the edge; on the SE, Music's tab bar ends 19pt from it. The read

@@ -783,15 +783,15 @@ struct ContentView: View {
         // inside the bar, or on the stack beneath it, is measuring the bar.
         // Out here it reports what the window reserves.
         //
-        // Two readings, because out here the keyboard counts too. From build
-        // 150, when the bar moved to the stack and this reading moved out
-        // past it, it read the keyboard's whole height while the keyboard was
-        // up, and the bar's padding (edgeGap minus this) took the bar down
-        // behind the keyboard: Stop and Restart vanished while the URL or Key
-        // was being edited. So this one counts the keyboard and only says
-        // whether it is up; the background below ignores it and gives the
-        // home indicator's inset alone. CLAUDE.md, "The bar went behind the
-        // keyboard", has the measurements.
+        // Two readings, because the keyboard counts too: while it is up, this
+        // one reads the keyboard's whole height (260 pt on an SE, 328 on a
+        // 17e), and from build 77 to build 172 the bar's padding, edgeGap
+        // minus it, took the bar 66 pt down behind the keyboard: Start, or
+        // Stop and Restart, vanished while the URL or Key was being edited.
+        // So this one only says whether the keyboard is up; the background
+        // below ignores the keyboard and gives the home indicator's inset
+        // alone. CLAUDE.md, "The bar went behind the keyboard", has the
+        // measurements.
         //
         // onGeometryChange rather than a one-shot read of the key window, since
         // iPad rotates and Split View resizes; and rather than a GeometryReader,
