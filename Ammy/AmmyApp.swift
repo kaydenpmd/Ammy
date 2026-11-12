@@ -947,8 +947,9 @@ struct ContentView: View {
         .navigationTitle("Ammy")
         .sheet(isPresented: $scanning) {
             CodeScannerSheet { code in
-                controller.endpoint = code.endpoint
-                controller.key = code.key
+                // Only what the code carries; a missing half keeps its field.
+                if let endpoint = code.endpoint { controller.endpoint = endpoint }
+                if let key = code.key { controller.key = key }
             }
         }
         .alert("Use HTTPS?", isPresented: Binding(

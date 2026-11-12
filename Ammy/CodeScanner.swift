@@ -8,24 +8,36 @@ private let log = Logger(subsystem: "com.local.ammy", category: "scan")
 ///
 /// The code is plain JSON, `{"endpoint": "...", "key": "..."}`, the two
 /// values under the names a receiver shows them by. Issun draws it on its
-/// setup window's last page (`PairingCode` in Issun), and any other receiver
-/// can draw the same. It isn't a link: a link would name an app to open, and
-/// the Camera app would offer to open a URL with the key in it.
+/// setup window's Connect your source page (`PairingCode` in Issun), and any
+/// other receiver can draw the same. It isn't a link: a link would name an app
+/// to open, and the Camera app would offer to open a URL with the key in it.
+///
+/// Either value may be missing (Issun's owner, 12 Nov 2026): a code with only
+/// the key, or only the endpoint, fills in that field and leaves the other as
+/// it was.
 struct EndpointCode: Decodable, Equatable {
-    let endpoint: String
-    let key: String
+    let endpoint: String?
+    let key: String?
 
     /// Nil for any code that isn't one of these, so scanning a menu's QR
-    /// code by mistake changes nothing. The endpoint must be an https URL
-    /// with a host, the rule `PresenceRelay.normalised` applies to a typed one.
+    /// code by mistake changes nothing: it needs at least one of the two, and
+    /// an endpoint must be an https URL with a host, the rule
+    /// `PresenceRelay.normalised` applies to a typed one.
     static func parse(_ text: String) -> EndpointCode? {
         guard let data = text.data(using: .utf8),
-              let code = try? JSONDecoder().decode(EndpointCode.self, from: data),
-              let url = URL(string: code.endpoint.trimmingCharacters(in: .whitespacesAndNewlines)),
-              url.scheme?.lowercased() == "https",
-              url.host?.isEmpty == false
+              let code = try? JSONDecoder().decode(EndpointCode.self, from: data)
         else { return nil }
-        return EndpointCode(endpoint: url.absoluteString, key: code.key)
+        let key = code.key.flatMap { $0.isEmpty ? nil : $0 }
+        var endpoint: String?
+        if let typed = code.endpoint?.trimmingCharacters(in: .whitespacesAndNewlines), !typed.isEmpty {
+            guard let url = URL(string: typed),
+                  url.scheme?.lowercased() == "https",
+                  url.host?.isEmpty == false
+            else { return nil }
+            endpoint = url.absoluteString
+        }
+        guard endpoint != nil || key != nil else { return nil }
+        return EndpointCode(endpoint: endpoint, key: key)
     }
 }
 
@@ -122,7 +134,7 @@ private struct CodeScanner: UIViewControllerRepresentable {
                 guard case .barcode(let barcode) = item, let text = barcode.payloadStringValue else { continue }
                 if let code = EndpointCode.parse(text) {
                     done = true
-                    log.notice("scanned an endpoint code (key \(code.key.isEmpty ? "empty" : "\(code.key.count) characters", privacy: .public))")
+                    log.notice("scanned an endpoint code (endpoint \(code.endpoint == nil ? "absent" : "present", privacy: .public), key \(code.key.map { "\($0.count) characters" } ?? "absent", privacy: .public))")
                     onFound(code)
                     return
                 }
