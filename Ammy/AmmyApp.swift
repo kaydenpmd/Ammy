@@ -647,6 +647,9 @@ struct ContentView: View {
     /// their text behind their back.
     @State private var schemeToConfirm: String?
 
+    /// The QR code scanner is up, for an endpoint and key shown as a code.
+    @State private var scanning = false
+
     /// Ties the glass surfaces together so they morph into one another rather
     /// than fading. See the bar below for what the two IDs mean.
     @Namespace private var glass
@@ -896,6 +899,13 @@ struct ContentView: View {
                         .autocorrectionDisabled()
                         .accessibilityLabel("Key")
                 }
+                // A row that acts, in the tint colour, like Passwords' "Scan
+                // QR Code" for a verification code. Fills in both fields from
+                // a receiver's code (CodeScanner.swift); hidden on a device
+                // whose camera VisionKit can't scan with.
+                if CodeScannerSheet.isSupported {
+                    Button("Scan QR Code") { scanning = true }
+                }
             } footer: {
                 Text("Ammy sends your now-playing details to this address. "
                      + "If you set a key, it's sent as a header.")
@@ -935,6 +945,12 @@ struct ContentView: View {
 
         }
         .navigationTitle("Ammy")
+        .sheet(isPresented: $scanning) {
+            CodeScannerSheet { code in
+                controller.endpoint = code.endpoint
+                controller.key = code.key
+            }
+        }
         .alert("Use HTTPS?", isPresented: Binding(
             get: { schemeToConfirm != nil },
             set: { if !$0 { schemeToConfirm = nil } }
