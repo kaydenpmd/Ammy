@@ -1,0 +1,45 @@
+name: MacLab
+
+# The macOS half of the layout lab: UI tests that drive System Settings on
+# GitHub's macOS runners and save each screen's window picture and the
+# accessibility tree (every element's frame). Never merged or released.
+
+options:
+  bundleIdPrefix: com.local
+  deploymentTarget:
+    macOS: "15.0"
+
+targets:
+  MacLab:
+    type: application
+    platform: macOS
+    sources:
+      - path: MacLab
+    info:
+      path: MacLab/Info.plist
+      properties:
+        CFBundleDisplayName: MacLab
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.local.maclab
+        SWIFT_VERSION: "5.0"
+        GENERATE_INFOPLIST_FILE: NO
+        CODE_SIGN_IDENTITY: "-"
+    scheme:
+      testTargets:
+        - MacLabUITests
+
+  MacLabUITests:
+    type: bundle.ui-testing
+    platform: macOS
+    sources:
+      - path: MacLabUITests
+    dependencies:
+      - target: MacLab
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.local.maclab.uitests
+        SWIFT_VERSION: "5.0"
+        GENERATE_INFOPLIST_FILE: YES
+        CODE_SIGN_IDENTITY: "-"
+        TEST_TARGET_NAME: MacLab

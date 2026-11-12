@@ -1,0 +1,157 @@
+name: Layout lab (iPad and Mac settings)
+
+# Runs only on the layout-lab branch, never on main, and releases nothing.
+# Captures Apple's own Settings on an iPad simulator (iPadOS 27) and System
+# Settings on macOS (27 and 26): screenshots, the accessibility tree of each
+# screen (every element's frame), and on iPad a recording of the run for the
+# motion. For Claude's artifacts' iPadOS and macOS layouts (the owner,
+# 12 Nov 2026), measured rather than remembered.
+
+on:
+  push:
+    branches: [layout-lab]
+  workflow_dispatch:
+
+jobs:
+  ipad:
+    runs-on: xcode-27
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Select Xcode
+        run: |
+          X=/Applications/Xcode_27.2_Release_Candidate.app
+          [ -d "$X" ] || X=/Applications/Xcode.app
+          sudo xcode-select -s "$X"
+          xcodebuild -version
+          xcrun simctl list runtimes
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Generate project
+        run: cd layoutlab && xcodegen generate
+
+      - name: Create and boot an 11-inch iPad in dark mode
+        id: sim
+        run: |
+          set -euo pipefail
+          mkdir -p out
+          xcrun simctl list devicetypes -j > out/devicetypes.json
+          TYPES=$(python3 -c '
+          import json
+          ts = [t for t in json.load(open("out/devicetypes.json"))["devicetypes"] if "iPad" in t["name"]]
+          pref = ["iPad Air 11-inch", "iPad Pro 11-inch", "iPad (A16)", "iPad"]
+          ts.sort(key=lambda t: next((i for i, p in enumerate(pref) if t["name"].startswith(p)), 99))
+          print(" ".join(t["identifier"] for t in ts))')
+          RUNTIMES=$(xcrun simctl list runtimes -j | python3 -c '
+          import json, sys
+          rs = [r for r in json.load(sys.stdin)["runtimes"]
+                if r["platform"] == "iOS" and r["isAvailable"] and r["version"].split(".")[0] == "27"]
+          rs.sort(key=lambda r: [int(x) for x in r["version"].split(".")], reverse=True)
+          print(" ".join(r["identifier"] for r in rs))')
+          UDID=""
+          for RUNTIME in $RUNTIMES; do
+            for TYPE in $TYPES; do
+              if UDID=$(xcrun simctl create "Layout Lab iPad" "$TYPE" "$RUNTIME" 2>/dev/null); then
+                echo "device: $TYPE on $RUNTIME" | tee out/device.txt
+                break 2
+              fi
+              UDID=""
+            done
+          done
+          [ -n "$UDID" ] || { echo "no usable iPad simulator"; exit 1; }
+          echo "udid=$UDID" >> "$GITHUB_OUTPUT"
+          echo "$RUNTIME" > out/runtime.txt
+          xcrun simctl boot "$UDID"
+          xcrun simctl bootstatus "$UDID" -b
+          xcrun simctl ui "$UDID" appearance dark
+          xcrun simctl status_bar "$UDID" override --time 9:41 --batteryState charged --batteryLevel 100 || true
+          xcodebuild -version > out/xcode.txt
+          sleep 30
+
+      - name: Build for testing
+        run: |
+          cd layoutlab
+          if ! xcodebuild build-for-testing -project LayoutLab.xcodeproj -scheme LayoutLab \
+              -destination "id=${{ steps.sim.outputs.udid }}" -derivedDataPath dd \
+              CODE_SIGNING_ALLOWED=NO > ../out/build.log 2>&1; then
+            grep -E "error|BUILD" ../out/build.log | head -60; exit 1
+          fi
+          tail -3 ../out/build.log
+
+      - name: Run, recording the screen
+        run: |
+          UDID="${{ steps.sim.outputs.udid }}"
+          xcrun simctl io "$UDID" recordVideo --codec h264 --force out/run.mp4 > out/record.log 2>&1 &
+          REC=$!
+          date +%s.%N > out/record-start.txt
+          sleep 2
+          TEST_RUNNER_LAB_OUT="$PWD/out" xcodebuild test-without-building \
+            -project layoutlab/LayoutLab.xcodeproj -scheme LayoutLab \
+            -destination "id=$UDID" -derivedDataPath layoutlab/dd \
+            -parallel-testing-enabled NO CODE_SIGNING_ALLOWED=NO > out/xcodebuild-test.log 2>&1 || echo "tests exited $?"
+          kill -INT $REC; wait $REC || true
+          tail -30 out/xcodebuild-test.log
+          ls out | head -80; du -sh out
+
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: layout-lab-ipad
+          path: out
+
+  mac:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: macos27
+            runner: xcode-27
+            xcode: /Applications/Xcode_27.2_Release_Candidate.app
+          - name: macos26
+            runner: macos-26
+            xcode: /Applications/Xcode_26.6.app
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Select Xcode
+        run: |
+          X="${{ matrix.xcode }}"
+          [ -d "$X" ] || X=/Applications/Xcode.app
+          sudo xcode-select -s "$X"
+          xcodebuild -version
+
+      - name: Describe the machine, and switch to dark mode
+        run: |
+          mkdir -p out
+          sw_vers | tee out/sw_vers.txt
+          system_profiler SPDisplaysDataType | tee out/displays.txt
+          osascript -e 'tell application "System Events" to tell appearance preferences to set dark mode to true' \
+            && echo "dark mode on" | tee out/appearance.txt || echo "couldn't switch to dark mode" | tee out/appearance.txt
+          defaults read -g AppleInterfaceStyle 2>&1 | tee -a out/appearance.txt || true
+          screencapture -x out/desktop-before.png || echo "screencapture failed"
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Generate project
+        run: cd layoutlab/mac && xcodegen generate
+
+      - name: Build and run the UI tests
+        run: |
+          cd layoutlab/mac
+          TEST_RUNNER_LAB_OUT="$GITHUB_WORKSPACE/out" xcodebuild test \
+            -project MacLab.xcodeproj -scheme MacLab -destination "platform=macOS" \
+            -derivedDataPath dd CODE_SIGN_IDENTITY="-" > "$GITHUB_WORKSPACE/out/xcodebuild-test.log" 2>&1 || echo "tests exited $?"
+          tail -40 "$GITHUB_WORKSPACE/out/xcodebuild-test.log"
+          ls "$GITHUB_WORKSPACE/out"
+
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: layout-lab-${{ matrix.name }}
+          path: out

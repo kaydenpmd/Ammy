@@ -1,0 +1,58 @@
+name: LayoutLab
+
+# A throwaway lab on the layout-lab branch, never merged or released. Its UI
+# tests drive Apple's own Settings on an iPad simulator and save, for each
+# screen, a screenshot and the accessibility tree (every element's frame), so
+# Claude's artifacts can copy iPadOS's layout from measurements (the owner,
+# 12 Nov 2026: "i want ipados layout on my tablet and macos layout on my
+# desktop").
+
+options:
+  bundleIdPrefix: com.local
+  deploymentTarget:
+    iOS: "26.0"
+
+targets:
+  LayoutLab:
+    type: application
+    platform: iOS
+    sources:
+      - path: LayoutLab
+    info:
+      path: LayoutLab/Info.plist
+      properties:
+        CFBundleDisplayName: LayoutLab
+        UILaunchScreen: {}
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+        UISupportedInterfaceOrientations~ipad:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationPortraitUpsideDown
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.local.layoutlab
+        SWIFT_VERSION: "5.0"
+        GENERATE_INFOPLIST_FILE: NO
+        TARGETED_DEVICE_FAMILY: "1,2"
+    scheme:
+      testTargets:
+        - LayoutLabUITests
+
+  LayoutLabUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources:
+      - path: LayoutLabUITests
+    dependencies:
+      - target: LayoutLab
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.local.layoutlab.uitests
+        SWIFT_VERSION: "5.0"
+        GENERATE_INFOPLIST_FILE: YES
+        TARGETED_DEVICE_FAMILY: "1,2"
+        TEST_TARGET_NAME: LayoutLab
