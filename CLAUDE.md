@@ -583,10 +583,19 @@ after a recovery), `fail_run` and `fail_run_max`, `down_s`, `secs_since_fail`,
 `int_on_resume` (late `.began` notices, each proof of a suspension),
 `int_reason`, `secs_since_began` and `secs_since_ended`. `last_error` now ends
 with the code and its four characters, e.g. `[2003329396 'what']`, so Issun's
-existing "resume failed:" lines carry it. **Issun doesn't print the others
-yet**, `prev_tail` included: they reach `GET /diag` only until the next push
-replaces them, so a companion change in Issun has to log them before the journal
-pays off.
+existing "resume failed:" lines carry it. **Issun prints the rest from its
+build 48** (11 Nov 2026). The first push from a new process that carries the
+previous run's account puts it in `issun.log` once, in local time: `[keepalive]
+previous run last ran <stamp> engine=yes|no; its journal's last 25 lines
+follow`, then one `[keepalive] journal: ...` line each. A gap that ends in a
+relaunch says when the dead process last ran (`— it died, last ran 18:52:10
+engine=no`). The other fields go on the death line and the window's
+Diagnostics line beside the counts they explain (`failrun=`, `failstage=`,
+`failcode=`, `sincefail=` and `down=` after `fails=`; `intlate=`,
+`intreason=`, `sincebegan=` and `sinceended=` after `int=`), and
+`int_on_resume` and `int_reason` are logged as they change. Issun's CLAUDE.md
+has the details. Until build 48 is installed, they reach `GET /diag` only
+until the next push replaces them.
 
 ### Was it killed, or just unreachable?
 
@@ -670,7 +679,10 @@ gap and at 18:46 that evening, but 14:27:48 for the push that ended the gap. So
 that push carried a snapshot about 100 s old, most likely built before iOS froze
 the app and sent when it woke. Discount that line too: build 158 died nine
 times, not ten. The census of 11 Nov 2026 found a third: 16 Oct 2026 at
-21:56:52, `89081s -> 89165s`, uptime up 84 s over a 93-second gap.
+21:56:52, `89081s -> 89165s`, uptime up 84 s over a 93-second gap. Issun's
+build 48 stops writing these: a process whose uptime is more than the gap plus
+20 s was running before the gap began, so it stayed up, however little its
+uptime gained.
 
 ## Artwork
 
@@ -1186,7 +1198,9 @@ under Issun, against 27% of the time alive and 8% of silences survived. 19 of
 expected, 7 at 10:00 and 5 at 13:00, which looks like a scheduled interruption
 such as an alarm. And 24 gaps Issun labels "the path failed, not the app" had no
 failed pushes at all: the app wasn't trying, so those were suspensions, 19 of
-them ended in the background by an interruption's `.ended`.
+them ended in the background by an interruption's `.ended`. From Issun's build
+48 those read `— suspended, no pushes failed`, and a gap that began with Stop's
+goodbye reads `— stopped on the phone`, as does the silence line before it.
 
 **The two exceptions: the keepalive failed to restart.** Since build 25, 15
 engine stops were seen at a push. 12 came with a failed restart, every one while
