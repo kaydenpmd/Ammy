@@ -140,6 +140,7 @@ scripts/measure_marquee.py           Times a scrolling line in a screen recordin
 source.config.json                   AltStore listing metadata (user-facing copy)
 public/                              Cloudflare Pages site: landing page, source.json
 PUBLISHING.md                        One-time setup for the AltStore source
+local/                               Private notes and data, never committed (.git/info/exclude)
 Ammy/
   AmmyApp.swift                      SwiftUI entry point + settings screen
   PresenceController.swift           Wires playback changes to pushes; failure announcing
@@ -259,7 +260,8 @@ iPhone 17e (27.0). Two things come with it:
   the indicators instead, and a margin there replaces the list's 20 pt
   rather than adding to it: History ended 16 pt above the button. In the
   `header-lab-option1` lab (2 Nov 2026; SE on 26.5 and 27.0, and 27.0 with
-  the iOS 26.5 SDK, as CI builds), History ends 36.0 pt above Start with the
+  the iOS 26.5 SDK, as CI builds; its report is `lab/REPORT-option1.txt` on
+  that branch), History ends 36.0 pt above Start with the
   padding or the bar on the Form and 16.0 with the margins, at XXXL text and
   with the media prompt up as well. The padding doesn't bring the jump back:
   every inset update during a drag took UIKit's direct path, and the content
@@ -375,7 +377,7 @@ not as a header: `accessibilityLabel(content:)` straight after the row's
 `.accessibilityElement(children: .combine)`, the same pair in the same order as
 Apple's sample code for WWDC24 session 10073 (`BeachesView.swift`). The
 `a11y-lab-nowplaying` lab (never merged; three runs on 4 Nov 2026, read on 11
-Nov) read the card with and without it in five states, light and dark, on an SE
+Nov; its reports are in `a11ylab/results/` on that branch) read the card with and without it in five states, light and dark, on an SE
 (iOS 27.0 and 26.5) and a 17e (27.0), and on both again with the iOS 26.5 SDK,
 as CI builds: 50 cases, and in every one the label is "Now Playing", a comma and
 a space, then exactly what build 158 reads ("Now Playing, Blue, Joni Mitchell",
@@ -1192,8 +1194,9 @@ and a half days, after runs of 2 to 24 hours. Whether that is worth chasing
 further is a judgement call, not an open bug.
 
 **The census of 11 Nov 2026**, every log from 24 Aug (relay.py's and Issun's,
-read with PowerShell; the scripts and tables are in that session's scratchpad,
-not the repo). Of 66 death verdicts since 11 Sept, 3 are unsound (same process
+read with PowerShell; the scripts, tables and log copies are in
+`local/keepalive-2026-11-11/`, never committed because the logs carry listening
+history, with a `NOTES.md` saying what each file is). Of 66 death verdicts since 11 Sept, 3 are unsound (same process
 through the gap), 17 are installs of a new build, 17 are phone reboots inside
 the gap, with Low Power Mode on at the last push in 15 of them (a battery
 running out, most likely), and 29 are unexplained, 27 of them with the engine
@@ -1226,7 +1229,9 @@ try build a fresh engine, the usual cure reported for 'what', and the journal
 **The keepalive hold, parked (11 Nov 2026).** The obvious fix for those two was
 to hold a `UIApplication` background task from the first sign the engine is down
 and retry at 1, 2, 3, then every 5 s within iOS's ~30 s grace. It was built and
-tested in the `keepalive-lab` lab (never merged; at 2fd0e28), on the iOS 26.5
+tested in the `keepalive-lab` lab (never merged; the code at 2fd0e28, its
+results in `lab/results/` since 1301c27; the Apple pages, SDK headers and other
+apps' code read for it are in `local/keepalive-2026-11-11/`), on the iOS 26.5
 SDK build on iOS 27.0 and on 26.5. The ladder and its bookkeeping worked: with
 `engine.start` refusing ('what') for 15 s, it played again at +16.6 s. But the
 lab found two ways it gets Ammy killed outright, which is worse than a
