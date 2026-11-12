@@ -9,12 +9,12 @@
       "versions": [
         {
           "version": "1.0",
-          "date": "2026-11-12T00:31:56+00:00",
-          "localizedDescription": "Keep a record of what keeps Ammy running in the background\n\nAmmy now logs every step of the silent audio that keeps it running in\nthe background, and after it has been stopped, its first check-ins send\nthe last of that log, so a stop it couldn't report at the time can be\nexplained afterwards. When the audio engine refuses to start, Ammy now\nbuilds a fresh one for its next try instead of reusing the old one.",
-          "downloadURL": "https://github.com/kaydenpmd/Ammy/releases/download/v1.0-b167/Ammy-1.0-b167-8f77b3f.ipa",
-          "size": 562528,
-          "sha256": "73d8ef193bf2b89c057271708f267a3e01639c6789e08387abe2b959a14b5f0e",
-          "buildVersion": "167",
+          "date": "2026-11-12T03:13:56+00:00",
+          "localizedDescription": "Scan a receiver's QR code to fill in the address and key\n\nA Scan QR Code row under the URL and Key fields opens the camera. A code\nholding the address and key fills in both fields; any other code is\nignored. Issun's setup window shows one.",
+          "downloadURL": "https://github.com/kaydenpmd/Ammy/releases/download/v1.0-b172/Ammy-1.0-b172-f416327.ipa",
+          "size": 585228,
+          "sha256": "cb5a43bed9b775992355b6ccf713154cb08a66d629126e7ec661ed4b46d5258e",
+          "buildVersion": "172",
           "minOSVersion": "26.0"
         }
       ],
@@ -23,7 +23,8 @@
       "appPermissions": {
         "entitlements": [],
         "privacy": {
-          "NSAppleMusicUsageDescription": "Reads what you're currently playing so it can be sent to the endpoint you choose."
+          "NSAppleMusicUsageDescription": "Reads what you're currently playing so it can be sent to the endpoint you choose.",
+          "NSCameraUsageDescription": "Scans a QR code to fill in the endpoint's address and key."
         }
       }
     },
