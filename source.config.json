@@ -21,7 +21,8 @@
     "appPermissions": {
       "entitlements": [],
       "privacy": {
-        "NSAppleMusicUsageDescription": "Reads what you're currently playing so it can be sent to the endpoint you choose."
+        "NSAppleMusicUsageDescription": "Reads what you're currently playing so it can be sent to the endpoint you choose.",
+        "NSCameraUsageDescription": "Scans a QR code to fill in the endpoint's address and key."
       }
     }
   }

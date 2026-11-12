@@ -56,6 +56,9 @@ targets:
         NSAppleMusicUsageDescription: >-
           Reads what you're currently playing so it can be sent to the endpoint
           you choose.
+        # Interface text, and receiver-agnostic like the line above.
+        NSCameraUsageDescription: >-
+          Scans a QR code to fill in the endpoint's address and key.
         # Required for the silent-audio keepalive in KeepAlive.swift.
         UIBackgroundModes:
           - audio

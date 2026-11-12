@@ -1255,6 +1255,19 @@ begin a task in the background with under ~10 s of `backgroundTimeRemaining`,
 and release it a few seconds before the deadline rather than relying on the
 expiry handler alone.
 
+## Scanning a receiver's QR code
+
+Since 12 Nov 2026, a **Scan QR Code** row under URL and Key opens VisionKit's
+scanner (`CodeScanner.swift`). A code holding `{"endpoint": "...", "key": "..."}`
+fills in both fields and closes the sheet; any other code is ignored and
+logged. Issun's setup window shows one (`PairingCode` there); the payload is
+plain JSON, not a link, so neither app names the other. The row is hidden
+where VisionKit can't scan. Camera access brings `NSCameraUsageDescription`,
+which is also in `source.config.json`'s `appPermissions`, since SideStore and
+AltStore compare the two. Every word of it is the owner's (`[sample]` on the
+wording page, claude.ai/artifact/BKtxXmKxc3ot9CSi7D2xRJ). Built on CI on its
+branch; not yet seen on a device, and not yet scanned against Issun's code.
+
 ## Open work
 
 **1. Shippable to others**, in the order things actually block:
