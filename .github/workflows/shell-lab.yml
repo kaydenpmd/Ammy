@@ -38,42 +38,60 @@ jobs:
           ls -d /System/Applications/Automator.app /Applications/Automator.app 2>&1 | tee -a out/actions.txt || true
           defaults read /System/Applications/Automator.app/Contents/Info CFBundleShortVersionString 2>&1 | tee out/automator-version.txt || true
 
-      - name: Open Automator, choose Workflow, add Run Shell Script with the command
+      - name: Open Automator and add Run Shell Script by hand, through accessibility only
         run: |
           set -x
+          brew install cliclick >/dev/null 2>&1 || true
           open -a Automator; sleep 6
-          cat > out/make.applescript <<'EOF'
-          with timeout of 30 seconds
-            tell application "System Events" to tell process "Automator"
-              set frontmost to true
-              try
-                click button "Choose" of sheet 1 of window 1
-              on error e
-                log "no Choose button: " & e
-                keystroke return
-              end try
-            end tell
-          end timeout
-          delay 3
-          with timeout of 30 seconds
-            tell application "Automator"
-              set a to add Automator action "Run Shell Script" to workflow 1
-            end tell
-          end timeout
-          delay 2
-          with timeout of 30 seconds
-            tell application "Automator"
-              try
-                set value of setting "COMMAND_STRING" of Automator action 1 of workflow 1 to "winget install --id Tailscale.Tailscale --exact"
-              on error e
-                log "couldn't set the command by setting: " & e
-              end try
-            end tell
-          end timeout
-          EOF
-          osascript out/make.applescript 2>&1 | tee out/make.log || true
+          osascript -e 'tell application "System Events" to tell process "Automator" to set frontmost to true' || true
+          osascript -e 'tell application "System Events" to tell process "Automator" to click button "Choose" of sheet 1 of window 1' 2>&1 | tee out/make.log || true
           sleep 3
-
+          # Every element with its frame, as "role|description|name|value|x,y wxh".
+          cat > out/dump.applescript <<'EOF'
+          set out to ""
+          tell application "System Events" to tell process "Automator"
+            repeat with e in (entire contents of window 1)
+              try
+                set p to position of e as list
+                set s to size of e as list
+                set out to out & (role of e) & "|" & (description of e) & "|" & (name of e as text) & "|" & (value of e as text) & "|" & (item 1 of p) & "," & (item 2 of p) & " " & (item 1 of s) & "x" & (item 2 of s) & linefeed
+              end try
+            end repeat
+          end tell
+          return out
+          EOF
+          center() { python3 - "$1" "$2" <<'PY'
+          import sys
+          role, want = sys.argv[1], sys.argv[2]
+          for line in open("out/dump.txt"):
+              parts = line.rstrip("\n").split("|")
+              if len(parts) < 5: continue
+              if parts[0] == role and want in "|".join(parts[1:4]):
+                  pos, size = parts[4].split(" ")
+                  x, y = map(float, pos.split(",")); w, h = map(float, size.split("x"))
+                  if w > 0 and h > 0:
+                      print(f"{int(x + w / 2)},{int(y + h / 2)}"); break
+          PY
+          }
+          osascript out/dump.applescript > out/dump.txt 2>&1 || true
+          XY=$(center AXTextField "") ; echo "search field at $XY" | tee -a out/make.log
+          [ -n "$XY" ] && cliclick c:"$XY" && sleep 1
+          osascript -e 'tell application "System Events" to keystroke "Run Shell Script"' || true
+          sleep 3
+          osascript out/dump.applescript > out/dump.txt 2>&1 || true
+          XY=$(center AXStaticText "Run Shell Script"); echo "action row at $XY" | tee -a out/make.log
+          [ -n "$XY" ] && cliclick dc:"$XY" && sleep 4
+          osascript out/dump.applescript > out/dump.txt 2>&1 || true
+          XY=$(center AXTextArea ""); echo "command box at $XY" | tee -a out/make.log
+          if [ -n "$XY" ]; then
+            cliclick c:"$XY"; sleep 1
+            osascript -e 'tell application "System Events" to keystroke "a" using command down' || true
+            osascript -e 'tell application "System Events" to keystroke "winget install --id Tailscale.Tailscale --exact"' || true
+            sleep 1
+          fi
+          # Click away from the box so it shows at rest.
+          cliclick c:700,450 || true
+          sleep 2
       - name: Capture the window and its elements, then run it and capture again
         run: |
           set -x
