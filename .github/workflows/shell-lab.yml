@@ -1,0 +1,100 @@
+# Shell lab: how macOS shows a shell command that an app will run, for the
+# owner's question of 12 Nov 2026 (Issun's Install Tailscale command link).
+# Apple's guides have no picture of it, so this captures the real thing:
+# Automator's Run Shell Script action, the Apple app whose control is a
+# command shown in an editable field and run from the window. Branch
+# shell-lab, never merged; results go to the design library.
+name: Shell lab (macOS Run Shell Script)
+
+on:
+  push:
+    branches: [shell-lab]
+  workflow_dispatch:
+
+jobs:
+  mac:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: macos27
+            runner: xcode-27
+          - name: macos26
+            runner: macos-26
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Describe the machine, and switch to dark mode
+        run: |
+          mkdir -p out
+          sw_vers | tee out/sw_vers.txt
+          system_profiler SPDisplaysDataType | tee out/displays.txt
+          osascript -e 'tell application "System Events" to tell appearance preferences to set dark mode to true' \
+            && echo "dark mode on" | tee out/appearance.txt || echo "couldn't switch to dark mode" | tee out/appearance.txt
+          defaults read -g AppleInterfaceStyle 2>&1 | tee -a out/appearance.txt || true
+          ls "/System/Library/Automator/" | grep -i shell | tee out/actions.txt || true
+          ls -d /System/Applications/Automator.app /Applications/Automator.app 2>&1 | tee -a out/actions.txt || true
+          defaults read /System/Applications/Automator.app/Contents/Info CFBundleShortVersionString 2>&1 | tee out/automator-version.txt || true
+
+      - name: Build a workflow with Run Shell Script through Automator's scripting
+        run: |
+          set -x
+          cat > out/make.applescript <<'EOF'
+          tell application "Automator"
+            activate
+            set w to make new workflow
+            set a to add Automator action "Run Shell Script" to w
+            delay 2
+            try
+              set value of setting "COMMAND_STRING" of a to "winget install --id Tailscale.Tailscale --exact"
+            on error e
+              log "couldn't set the command: " & e
+            end try
+            save w in POSIX file "/tmp/ShellLab.workflow"
+          end tell
+          EOF
+          osascript out/make.applescript 2>&1 | tee out/make.log || true
+          ls -la /tmp/ShellLab.workflow 2>&1 | tee -a out/make.log || true
+          sleep 4
+
+      - name: Capture the screen and the window's elements
+        run: |
+          set -x
+          screencapture -x out/automator-screen.png || echo "screencapture failed" | tee out/screencapture.log
+          # Window bounds and every UI element's role, description and frame.
+          cat > out/elements.applescript <<'EOF'
+          set out to ""
+          tell application "System Events"
+            tell process "Automator"
+              set frontmost to true
+              repeat with w in windows
+                set out to out & "window " & (name of w) & " pos " & (position of w as text) & " size " & (size of w as text) & linefeed
+                repeat with e in (entire contents of w)
+                  try
+                    set out to out & (role of e) & " | " & (description of e) & " | " & (value of e as text) & " | pos " & (position of e as text) & " size " & (size of e as text) & linefeed
+                  end try
+                end repeat
+              end repeat
+            end tell
+          end tell
+          return out
+          EOF
+          osascript out/elements.applescript > out/elements.txt 2> out/elements.err || true
+          head -c 4000 out/elements.txt; cat out/elements.err
+          # A capture of the front window alone, if its id can be read.
+          WID=$(osascript -e 'tell application "System Events" to tell process "Automator" to get value of attribute "AXWindowNumber" of window 1' 2>/dev/null || true)
+          echo "window id: $WID" | tee out/window.txt
+          [ -n "$WID" ] && screencapture -x -o -l"$WID" out/automator-window.png || true
+          # The same with the command run once, to see how a run shows itself.
+          osascript -e 'tell application "Automator" to execute workflow 1' > out/run.log 2>&1 || true
+          sleep 3
+          screencapture -x out/automator-after-run.png || true
+          ls -la out
+
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: shell-lab-${{ matrix.name }}
+          path: out
