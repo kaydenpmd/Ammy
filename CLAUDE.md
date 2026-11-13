@@ -1165,8 +1165,12 @@ Tailscale name for the window's endpoint and for cover URLs sent to Discord. By
 4 Nov the address itself was gone: Google's and Cloudflare's resolvers answered
 NXDOMAIN for `ammy.kaydenpmd.net`, so its DNS record has been deleted. The
 service was still running, though, and Public address still held the dead
-address, so the window's endpoint and any cover URL built from it point nowhere.
-Finishing it is the owner's: clear Public address in Issun's Settings, remove
+address, so the window's endpoint and any cover URL built from it pointed
+nowhere. **Issun's half is done (13 Nov 2026):** the owner saw setup fill in
+ammy.kaydenpmd.net and had the whole Public address override removed from
+Issun (its build 127, "clear that publicbase mechanic"), and the value was
+dropped from settings.json; Issun's address is Tailscale's, full stop.
+Finishing the rest is the owner's: remove
 the `cloudflared` service from an elevated shell, and, if the tunnel's public
 hostname is still listed in the Cloudflare dashboard, delete it there. The token
 lives in the service's registry `ImagePath` (token installs have no
