@@ -52,7 +52,7 @@ and to build 48 on 11 Nov 2026, which logs the keepalive journal (see
 Diagnostics).
 Since 12 Nov 2026 it has been replaced many more times by local publishes of
 Issun's unreleased `main` (`tools/install-local.ps1` there), build 142 on
-13 Nov 2026 among them. Issun's CLAUDE.md records each update; ask
+13 Nov 2026 and build 146 on 14 Nov 2026 among them. Issun's CLAUDE.md records each update; ask
 `/version` for the current one.
 Updating stops the live receiver for a few seconds, so get a yes first; the
 procedure is in Issun's CLAUDE.md, "Updating the installed copy".
@@ -1053,7 +1053,16 @@ What the app's side needs to know:
   when a source sends no `activity_name`, and the owner meant to rename it
   from `Apple Music` to `Issun`. Issun's CLAUDE.md, "The Discord application
   and "Listening to"", has the rest, including the test that showed a name
-  sent over the pipe replacing the application's.
+  sent over the pipe replacing the application's. **Where it stood on 14 Nov
+  2026 (handoff):** Issun build 146 with all of it installed on the owner's PC
+  (started 03:32:16); Ammy build 184 (821f54b) pushed at the owner's "do 1 and
+  2", its release run 43581036534 still building at the handoff (check with
+  `gh run list -R kaydenpmd/Ammy`, and that `public/source.json` lists 184).
+  Not yet on the phone, so not yet seen: the card reading "Listening to Apple
+  Music" from Ammy's own `activity_name`. The application's rename and its
+  1024 px icon (a square drawn by Issun's `tools/make_icon.py`, sent in chat,
+  copy at `local/issun-icon-1024.png`) are the owner's to put in the Developer
+  Portal.
 - **Public read** (Issun's `PublicRead` setting) serves `GET /now-playing` with
   no key and with CORS, so a web page can read the feed directly. Off by
   default, and a separate switch on purpose: it publishes what you are
