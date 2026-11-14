@@ -50,7 +50,10 @@ with the new icon and a tray hint and new-key notice that no longer name Ammy;
 to build 46 on 3 Nov 2026 (`/version` answered `issun 0.1.0 (46)` on 4 Nov);
 and to build 48 on 11 Nov 2026, which logs the keepalive journal (see
 Diagnostics).
-Issun's CLAUDE.md records each update; ask `/version` for the current one.
+Since 12 Nov 2026 it has been replaced many more times by local publishes of
+Issun's unreleased `main` (`tools/install-local.ps1` there), build 142 on
+13 Nov 2026 among them. Issun's CLAUDE.md records each update; ask
+`/version` for the current one.
 Updating stops the live receiver for a few seconds, so get a yes first; the
 procedure is in Issun's CLAUDE.md, "Updating the installed copy".
 
