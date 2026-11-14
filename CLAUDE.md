@@ -116,10 +116,16 @@ surfaces too.
 tile, a little larger, with two waves leaving it in Albums' greys, fading as
 they go. Like the app's own screens, it names no receiver; the waves go out to
 whatever is listening. Issun's icon is the other half of the sentence, the same
-two waves arriving at a speech bubble. Both are drawn the way Albums' icon is
-(`scripts/make_icon.py` here, `tools/make_icon.py` in Issun), black on white
-with no accent colour. Ammy's, like Albums', also has a white-on-black dark
-version and a tinted one; Issun's `.ico` is the light tile only. There is no
+two waves arriving at a speech bubble. Ammy's is drawn the way Albums' icon is
+(`scripts/make_icon.py`), black on white with no accent colour, and also has a
+white-on-black dark version and a tinted one, like Albums'. Issun's was drawn
+the same way until 14 Nov 2026, when the owner moved it to Discord's look:
+"issun is more of a discord-adjacent tool than it is an apple music-adjacent
+one and i want to sell that". It is now white on a flat blurple disc, and white
+alone in the tray, as Discord's own icons are on Windows (`tools/make_icon.py`
+in Issun; its CLAUDE.md has the rest). `local/issun-icon-1024.png`, the square
+for the Discord application's icon, was redrawn in the new colours the same
+day. There is no
 music note on purpose: since iOS 27.2 the Music app's own icon is a dark note
 on a light tile. The owner set aside a sumi-e ink note, asking for "a more
 vanilla apple style approach like the albums icon", then turned down white
