@@ -9,12 +9,12 @@
       "versions": [
         {
           "version": "1.0",
-          "date": "2026-11-14T08:16:59+00:00",
-          "localizedDescription": "Restart the background audio as soon as an interruption begins\n\nWhen something else took the audio (a call, Siri, an alarm, another app),\nAmmy waited up to 10 seconds to start its silent audio again, and iOS often\nsuspended it before then. Four of the last six deaths went that way. Ammy now\ntries straight away and again after 1 and 3 seconds, and its journal records\neach step of the restart.",
-          "downloadURL": "https://github.com/kaydenpmd/Ammy/releases/download/v1.0-b181/Ammy-1.0-b181-e90dea5.ipa",
-          "size": 591141,
-          "sha256": "a3ff379da40c0e78da5748148fba5888b9e6ee06edf36661aa6a188bb02585ba",
-          "buildVersion": "181",
+          "date": "2026-11-14T09:34:00+00:00",
+          "localizedDescription": "Send \"Apple Music\" as the name to show after \"Listening to\"\n\nEvery push now carries activity_name: \"Apple Music\", so the receiver\nshows what is playing it rather than a name of its own. It is fixed in\nthe app; nothing in Ammy's settings changes it.",
+          "downloadURL": "https://github.com/kaydenpmd/Ammy/releases/download/v1.0-b184/Ammy-1.0-b184-821f54b.ipa",
+          "size": 591220,
+          "sha256": "fea42d5d21a883b5052872c6e6d5af9fb395e9a2e9d2d352f687fd4ebc932e37",
+          "buildVersion": "184",
           "minOSVersion": "26.0"
         }
       ],
