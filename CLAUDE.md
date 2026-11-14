@@ -1329,8 +1329,16 @@ The pattern is a race: in the same journals, a `verify()` that happened to run
 nothing. **Since build 181** it tries at once and at +1 and +3 s
 (`KeepAlive.restartAfterBegan`, no background task), the journal writes
 `activating session` and `starting engine` before those calls in the first
-tries of a recovery, and the tick stamps before its check. Not yet seen on a
-device. If the next deaths end between `.began` and a restart's outcome, that
+tries of a recovery, and the tick stamps before its check. Released 14 Nov
+2026 at the owner's "Yes, release it" (GitHub Release v1.0-b181, in the
+source the same morning). Not yet seen on a device, nor installed as of that
+release. **Next: read Issun's log after a day or two on 181.** Per
+interruption the journal should now read `interruption began`, `after began
++0s: engine stopped, trying`, `activating session`, `starting engine`,
+`playing again ...`, then `after began +1s/+3s: still playing`. A death's
+`[keepalive] journal:` lines say how far that got. Also unanswered: what the
+owner was doing on the phone at 23:58, 01:19 and 01:47 on 13–14 Nov, which
+would name the interrupter. If the next deaths end between `.began` and a restart's outcome, that
 is the evidence for a short hold with the lab's fixes (at most ~5 s, opened
 only at `.began`, ended from a utility queue, never reopened until the silence
 has played or the app has been in front).
@@ -1904,6 +1912,13 @@ owner's Windows machine, so `git status`, `git add`, `git commit`, `git log` and
 `git push` all work against the clone directly — run them yourself instead of
 handing lines over to be pasted, and report what they printed. The same goes for
 `.github/workflows/`: it is an ordinary file here.
+
+**Pushing needs the GitHub CLI's sign-in, as of 14 Nov 2026.** Git has no
+`credential.helper` configured on this PC any more (most likely lost in the
+11 Nov malware cleanup), so a plain `git push` fails with "could not read
+Username". `gh` is signed in, and this works without changing any config:
+`git -c credential.helper= -c 'credential.helper=!gh auth git-credential' push`.
+Setting a helper permanently (`gh auth setup-git`) is the owner's call.
 
 **The hand-it-over rule was Cowork-only, and the reasoning still holds there.**
 Under local Cowork the shell is a separate Linux VM whose mount of host folders
