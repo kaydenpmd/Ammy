@@ -52,7 +52,7 @@ and to build 48 on 11 Nov 2026, which logs the keepalive journal (see
 Diagnostics).
 Since 12 Nov 2026 it has been replaced many more times by local publishes of
 Issun's unreleased `main` (`tools/install-local.ps1` there), build 142 on
-13 Nov 2026 and builds 146, 149 (the icon in Discord's colours) 155 (covers shrunk as Quick Settings does) and 158 (columns centred) on 14 Nov 2026 among them. Issun's CLAUDE.md records each update; ask
+13 Nov 2026 and builds 146, 149 (the icon in Discord's colours) 155 (covers shrunk as Quick Settings does) 158 (columns centred), 160 (covers fitted, not cropped) and 162 (one-line title and artist) on 14 Nov 2026 among them. Issun's CLAUDE.md records each update; ask
 `/version` for the current one.
 Updating stops the live receiver for a few seconds, so get a yes first; the
 procedure is in Issun's CLAUDE.md, "Updating the installed copy".
