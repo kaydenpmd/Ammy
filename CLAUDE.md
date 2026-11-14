@@ -1040,9 +1040,20 @@ What the app's side needs to know:
   must match the app's **Key** field. `X-Relay-Key` is the header;
   `X-Relay-Secret`, the old name, is still accepted, so an older build of the
   app keeps working.
-- **The Discord application stays named `Apple Music`**, not Ammy or Issun. Its
-  name is the text after "Listening to", and that should describe the source,
-  not the bridge.
+- **Ammy says what follows "Listening to", since 14 Nov 2026.** Every push
+  carries `"activity_name": "Apple Music"` (`PresenceRelay.push()`), fixed in
+  the code and changeable nowhere in the UI, the owner's choice: "update ammy
+  to send "Apple Music" for that field. also do not let that be changed
+  anywhere in ammy's ui". Issun sends it to Discord as the activity's name,
+  which replaces the application's on the card ("Listening to Apple Music").
+  It names the player Ammy reads, not a receiver, so the receiver-agnostic
+  rule holds. The same day Issun built in one Discord application ID for
+  everyone (the owner's own), with no field to change it, so nobody makes a
+  Discord application any more; the application's own name now shows only
+  when a source sends no `activity_name`, and the owner meant to rename it
+  from `Apple Music` to `Issun`. Issun's CLAUDE.md, "The Discord application
+  and "Listening to"", has the rest, including the test that showed a name
+  sent over the pipe replacing the application's.
 - **Public read** (Issun's `PublicRead` setting) serves `GET /now-playing` with
   no key and with CORS, so a web page can read the feed directly. Off by
   default, and a separate switch on purpose: it publishes what you are
@@ -1372,10 +1383,10 @@ branch; not yet seen on a device, and not yet scanned against Issun's code.
   Python script started by a Scheduled Task. See the self-provisioning-
   executable bullet below, which is a description of Issun.
 - **Autostart is Windows-only.**
-- **Each user needs their own Discord application**, which is a five-step detour
-  of its own. Note the application's *name* is the "Listening to" text, so it
-  stays `Apple Music` — that string describes the source, not the bridge. Fine
-  for one person; think hard before it is on hundreds of profiles.
+- ~~**Each user needs their own Discord application**, which is a five-step
+  detour of its own.~~ **Done 14 Nov 2026:** Issun builds in one application
+  ID, and the "Listening to" text comes from the source's `activity_name`
+  (see "The receiver on the PC").
 - Counted end to end, a stranger needs three accounts — Discord, Tailscale,
   Apple — and about eight steps. The biggest lever was packaging the receiver as
   one self-provisioning executable that generates its own key and registers its

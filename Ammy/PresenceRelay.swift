@@ -256,6 +256,14 @@ actor PresenceRelay {
             // "Ammy 1.0 (97)" rather than a bare number. A fact about this app,
             // not about any receiver, so it keeps Ammy receiver-agnostic.
             "app_name": Bundle.main.displayName,
+            // Where the music is playing: what a receiver shows after
+            // "Listening to" (Issun puts it on Discord's card since 14 Nov
+            // 2026), so the source decides it rather than the receiver. Fixed
+            // here and nowhere in the UI, by the owner's choice of that day:
+            // "update ammy to send "Apple Music" for that field. also do not let
+            // that be changed anywhere in ammy's ui". It names the player Ammy
+            // reads, never a receiver, so the rule against naming one holds.
+            "activity_name": "Apple Music",
 
             // Lets the receiver tell a late-arriving push from a newer one.
             // Each push is its own independent Task with no ordering guarantee
