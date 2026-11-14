@@ -1064,11 +1064,14 @@ What the app's side needs to know:
   (started 03:32:16); Ammy build 184 (821f54b) pushed at the owner's "do 1 and
   2", its release run 43581036534 still building at the handoff (check with
   `gh run list -R kaydenpmd/Ammy`, and that `public/source.json` lists 184).
-  Not yet on the phone, so not yet seen: the card reading "Listening to Apple
-  Music" from Ammy's own `activity_name`. The application's rename and its
-  1024 px icon (a square drawn by Issun's `tools/make_icon.py`, sent in chat,
-  copy at `local/issun-icon-1024.png`) are the owner's to put in the Developer
-  Portal.
+  **Seen on 14 Nov 2026 at 04:02**, with Ammy 184 on the phone and Issun 149:
+  the owner's card read "Listening to Apple Music" from Ammy's own
+  `activity_name` ("after updating ammy yayy"). Just before, on Ammy 181 with
+  no name sent, it read "Listening to Issun", the application's new name, once
+  Discord had been restarted (it had cached the old name). The application is
+  named Issun, and its icon is the blurple square from Issun's
+  `tools/make_icon.py --square` (copy at `local/issun-icon-1024.png`), both
+  checked through Discord's public API the same day.
 - **Public read** (Issun's `PublicRead` setting) serves `GET /now-playing` with
   no key and with CORS, so a web page can read the feed directly. Off by
   default, and a separate switch on purpose: it publishes what you are
