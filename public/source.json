@@ -9,12 +9,12 @@
       "versions": [
         {
           "version": "1.0",
-          "date": "2026-11-12T08:38:46+00:00",
-          "localizedDescription": "Keep the Restart button above the keyboard, and scan codes with only the address or only the key\n\nThe Stop and Restart buttons sit just above the keyboard again while\nthe endpoint or key is being edited. A receiver's QR code that carries\nonly the address, or only the key, now fills in just that field.",
-          "downloadURL": "https://github.com/kaydenpmd/Ammy/releases/download/v1.0-b177/Ammy-1.0-b177-55a1124.ipa",
-          "size": 588147,
-          "sha256": "61d4c29cf7dfe06022052724b104ba3e635821addbc81c5882e10170a4e5fdf3",
-          "buildVersion": "177",
+          "date": "2026-11-14T08:16:59+00:00",
+          "localizedDescription": "Restart the background audio as soon as an interruption begins\n\nWhen something else took the audio (a call, Siri, an alarm, another app),\nAmmy waited up to 10 seconds to start its silent audio again, and iOS often\nsuspended it before then. Four of the last six deaths went that way. Ammy now\ntries straight away and again after 1 and 3 seconds, and its journal records\neach step of the restart.",
+          "downloadURL": "https://github.com/kaydenpmd/Ammy/releases/download/v1.0-b181/Ammy-1.0-b181-e90dea5.ipa",
+          "size": 591141,
+          "sha256": "a3ff379da40c0e78da5748148fba5888b9e6ee06edf36661aa6a188bb02585ba",
+          "buildVersion": "181",
           "minOSVersion": "26.0"
         }
       ],
