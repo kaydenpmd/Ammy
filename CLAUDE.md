@@ -985,6 +985,14 @@ cost no extra requests. They are populated **only from the exact store-ID
 lookup, never from fuzzy matching** — a near-miss cover is a cosmetic
 annoyance, but a link that opens the wrong song is a broken promise.
 
+**One link per artist, as Spotify's card has, isn't possible here** (tested
+14 Nov 2026, after the owner pointed at "WHAT DO I SAY?", where Spotify's card
+underlines only the artist under the pointer). A session reported that
+Discord's pipe throws away the artist IDs Spotify's card is built from, and
+that a live test confirmed it; the findings and scripts are in the design
+library's `discord/rich-presence-card/` (`artist_links_test.py`). The artist
+line keeps its one `state_url`.
+
 Album name is `large_text`, which Discord renders as *both* the cover tooltip
 and a visible third line on the card — one field, two places, and they can't be
 separated. Issun never sends it: the owner locked the album line off on
