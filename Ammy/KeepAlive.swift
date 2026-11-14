@@ -213,6 +213,48 @@ final class KeepAlive {
 
     // MARK: - Recovery
 
+    /// Seconds after an interruption's `.began` at which to try the silence
+    /// again: at once, then twice more in case the system hadn't finished
+    /// stopping the engine when the notice arrived.
+    private let restartsAfterBegan: [TimeInterval] = [0, 1, 3]
+
+    /// Try to bring the silence back the moment an interruption begins,
+    /// rather than leaving it to the 10 s timer, the next push or `.ended`.
+    ///
+    /// Why, from the journal (13 and 14 Nov 2026, build 177): four deaths
+    /// ended "interruption began" and then nothing at all, with no tick after
+    /// it. A backgrounded app whose silence has stopped is suspended within
+    /// seconds, so the next tick or push never came, and three of the four
+    /// were gone by the time the silence warning had Ammy opened again. The
+    /// `.began` handler is the one moment the process is sure to be running.
+    /// Restarting during an interruption usually works: in the same journals,
+    /// a `verify()` that happened to run 0–5 s after `.began` played again
+    /// 12 times out of 14, and the two refusals ('!int') played again at the
+    /// `.ended` a second later.
+    ///
+    /// No background task: these are the same tries `verify()` makes, made
+    /// sooner. Holding one was parked for the ways it gets the app killed
+    /// (CLAUDE.md, "The keepalive hold, parked").
+    private func restartAfterBegan() {
+        for delay in restartsAfterBegan {
+            let attemptNow = { [weak self] in
+                guard let self, self.running else { return }
+                guard !(self.engine.isRunning && self.node.isPlaying) else {
+                    KeepAliveJournal.note("after began +\(Int(delay))s: still playing")
+                    return
+                }
+                if self.diag.downSince == nil { self.diag.downSince = Date() }
+                KeepAliveJournal.note("after began +\(Int(delay))s: engine \(self.engine.isRunning ? "running, node silent" : "stopped"), trying")
+                self.attempt()
+            }
+            if delay == 0 {
+                attemptNow()
+            } else {
+                DispatchQueue.main.asyncAfter(deadline: .now() + delay, execute: attemptNow)
+            }
+        }
+    }
+
     /// One try: from a new graph if the last one got as far as the engine and
     /// it refused, otherwise as `resume()` always has.
     private func attempt() {
@@ -233,6 +275,15 @@ final class KeepAlive {
 
         let session = AVAudioSession.sharedInstance()
 
+        // Each step of a recovery is written down before it runs, so a journal
+        // that stops after one of these lines says which call never returned
+        // (or which call iOS suspended the app in). 13 Nov 2026 07:04 ended
+        // "verify: engine stopped" with no outcome and no tick after it, and
+        // couldn't say. Only for the first few tries of a run: a long outage
+        // tries every few seconds and would push the rest out of the 400 lines.
+        let traceSteps = diag.downSince != nil && diag.failRun < 3
+        func step(_ text: String) { if traceSteps { KeepAliveJournal.note(text) } }
+
         // These were `try?` until Sept 2026. A session that refuses to activate
         // is the single most likely cause of a silent keepalive death, and
         // discarding the error meant there was nothing to read afterwards.
@@ -241,6 +292,7 @@ final class KeepAlive {
         } catch {
             return fail("setCategory", error)
         }
+        step("activating session")
         do {
             try session.setActive(true)
         } catch {
@@ -263,6 +315,7 @@ final class KeepAlive {
         }
         engine.mainMixerNode.outputVolume = 0
 
+        step("starting engine")
         do {
             try engine.start()
         } catch {
@@ -358,8 +411,8 @@ final class KeepAlive {
             else { return }
 
             if type == .began {
-                // Counted but not acted on: the engine is already stopped by
-                // the system. Worth recording because `.ended` is NOT
+                // Counted, and since Nov 2026 acted on at once (see
+                // `restartAfterBegan`). Worth counting because `.ended` is NOT
                 // guaranteed to arrive — if the interruption finishes while the
                 // app is suspended iOS may never send it. A began count that
                 // outruns the ended count is that happening, and is why
@@ -376,6 +429,7 @@ final class KeepAlive {
                 KeepAliveJournal.note("interruption began" + (onResume ? " (delivered late: the app had been suspended)" : "")
                     + ", reason \(self.diag.lastInterruptionReason.map(String.init) ?? "-")")
                 self.refreshDiagnostics()
+                self.restartAfterBegan()
                 return
             }
 
@@ -439,13 +493,15 @@ final class KeepAlive {
 
     /// Each tick also stamps the time and the engine's state on disk. A
     /// suspended or killed process writes nothing, so the last stamp says when
-    /// it stopped running, to within one tick.
+    /// it stopped running, to within one tick. Stamped before the check, since
+    /// Nov 2026: a check whose restart never returns used to take that tick's
+    /// stamp with it, so the stamp read 10 s early.
     private func startHealthTimer() {
         healthTimer?.invalidate()
         let timer = Timer(timeInterval: verifyInterval, repeats: true) { [weak self] _ in
             guard let self else { return }
-            self.verify()
             KeepAliveJournal.alive("engine=\(self.engine.isRunning ? "yes" : "no")")
+            self.verify()
         }
         // .common so it keeps firing while the UI is being scrolled.
         RunLoop.main.add(timer, forMode: .common)

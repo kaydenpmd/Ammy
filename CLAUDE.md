@@ -1238,8 +1238,10 @@ what they are for.
   with `lpm=yes` had made it look causal. It is not.
 - *Thermal.* Deaths have occurred at `nominal`, the coolest state.
 
-**Still unexplained: what ends a run.** Every death recorded since the fix but
-two (below) has carried `engine=yes want=yes` — a healthy audio engine — with no
+**Still unexplained: what ends a run** — partly explained since 14 Nov 2026 by
+the phone's journal: most deaths it has seen follow an interruption that froze
+the app before it could restart (see "What the journal showed", below). Every
+death recorded since the fix but two (below) has carried `engine=yes want=yes` — a healthy audio engine — with no
 correlate in any signal collected. It is now a roughly once-a-day event rather
 than an hourly one: build 158 (3 to 11 Nov 2026) died nine times in about eight
 and a half days, after runs of 2 to 24 hours. Whether that is worth chasing
@@ -1306,6 +1308,32 @@ phone of what follows an engine stop, and then with two guards at least: never
 begin a task in the background with under ~10 s of `backgroundTimeRemaining`,
 and release it a few seconds before the deadline rather than relying on the
 expiry handler alone.
+
+**What the journal showed, 14 Nov 2026 (build 177, 12–14 Nov).** Six deaths.
+Two were phone reboots with Low Power Mode on (12 Nov after 14:01, 13 Nov after
+03:12; the next launch's `devup` was hours, not days). The other four were the
+same thing: an interruption (reason 0 every time) stopped the silence and the
+process stopped running within seconds, before anything retried. 14 Nov at
+01:19 and 01:47 the journal ends `interruption began` and the last tick is 2–3
+s before it; 13 Nov 23:58 the audio came back and a second `.began` a second
+later was the end; 13 Nov 07:04 ends `verify: engine stopped` with no outcome,
+and the tick that ran that verify left no stamp. Three of the four gaps last
+15 minutes (15:14, 15:09, 15:59): the silence warning fired and the owner
+opened Ammy, which came up as a new process, so iOS had removed it while it
+was suspended (or it was swiped away; the log can't tell). Two other
+interruptions, 12 Nov 10:00 and 22:11, did the same and were still in memory
+at the 15-minute reopen: those are the `suspended, no pushes failed` gaps.
+The pattern is a race: in the same journals, a `verify()` that happened to run
+0–5 s after `.began` played again 12 times out of 14 (the two refusals were
+'!int', and played at `.ended` a second later). Until then `.began` did
+nothing. **Since build 181** it tries at once and at +1 and +3 s
+(`KeepAlive.restartAfterBegan`, no background task), the journal writes
+`activating session` and `starting engine` before those calls in the first
+tries of a recovery, and the tick stamps before its check. Not yet seen on a
+device. If the next deaths end between `.began` and a restart's outcome, that
+is the evidence for a short hold with the lab's fixes (at most ~5 s, opened
+only at `.began`, ended from a utility queue, never reopened until the silence
+has played or the app has been in front).
 
 ## Scanning a receiver's QR code
 
