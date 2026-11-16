@@ -2032,3 +2032,66 @@ clears the helper for github.com and names `gh.exe auth git-credential`
 instead, so Git Credential Manager is no longer asked for github.com, and a
 plain `git push --dry-run` answered "Everything up-to-date". The
 `-c credential.helper=...` flag on every push is no longer needed.
+
+## 16 Nov 2026: 184's first silence was the phone restarting, and so were 23 earlier deaths
+
+**184's first silence.** The gap that ended at 00:32:12 on 16 Nov 2026 (last
+seen 22:36:14 on 15 Nov) was logged "it died, last ran 22:36:11 engine=yes".
+It was the phone restarting. The death line had `devup=232063s`; the reopened
+process's `/diag` at about 01:18 had `devup=6214s` and `appup=2762s`, so the
+phone had booted by 23:34 at the latest (`devup` stops during sleep, so
+possibly earlier) and Ammy was opened at 00:32:12, at least 57 minutes later.
+Low Power Mode had come on at 21:31:37 and the phone had been at 'serious'
+heat until 21:33; the reopened process started at 'serious' heat with Low
+Power Mode off. A flat battery fits; nobody has confirmed it. Nothing in the
+keepalive came first: the journal's last event was a configuration change at
+19:05:42, and its 10 s stamp ran until 22:36:11 with the engine playing. The
+process from the 14 Nov 04:02 install ran 42.6 hours (`appup=153233s`) and
+never died.
+
+**The restart at `.began`, on the phone.** The journal tail Issun printed at
+00:32:12 shows build 181's restart working on the device for the first time.
+At 19:03:43 and again at 19:03:48 on 15 Nov: `interruption began, reason 0`,
+`after began +0s: engine stopped, trying`, `activating session`, `starting
+engine`, `playing again after 0 failed tries, down 0s`, `after began +1s:
+still playing`, `after began +3s: still playing`. The tail starts partway
+through the same sequence at 14:39:41. None of the three got `.ended`
+(`sinceended=58293s` at 22:36, so the last `.ended` was at 06:24 on 15 Nov).
+The reopened process had two interruptions by 01:21 on 16 Nov (00:53 and
+about 01:20), each with one refused `setActive` ('!int') before it played
+again.
+
+**Phone restarts among the deaths.** `devup` is `ProcessInfo.systemUptime`,
+which goes back only on a reboot (Diagnostics.swift keeps it to date reboots),
+so a death whose new process reports a smaller `devup` than the death line was
+the phone restarting. `local/reboot_census.ps1` sorts all 75 "it died" lines
+in `uptime.log` up to 16 Nov 2026 that way, after checking that the next
+"stopped checking in" line comes from the process that ended the gap (its
+launch, last seen less `appup`, within 20 minutes of the gap's end). Its
+output is `local/reboot-census-2026-11-16.txt`.
+
+- 23 were the phone restarting, 3 of them across an install as well.
+- 4 were the app never stopping: the next process had started before the
+  gap. They are the three known wrong lines (14 Sept 14:59, twice; 16 Oct
+  21:56:52; 8 Nov 16:11:50), found again by a second route.
+- 14 more were installs on the same boot (19 installs in all, as on 15 Nov).
+- 19 were deaths on the same boot with no install. A force quit or a
+  same-build reinstall reads the same.
+- 15 can't be told: `devup` rose but by less than the wall time between the
+  two lines (11), or the next line came from a later process (4).
+
+Since 1 Nov 2026 (21 lines): 8 phone restarts (1 Nov 17:25:03, across the
+143 to 145 install; 4 Nov 16:50:44; 6 Nov 23:08:18; 8 Nov 00:44:58; 9 Nov
+21:49:17; 12 Nov 16:32:19; 13 Nov 05:43:25; 16 Nov 00:32:12), 4 installs on
+the same boot, the 8 Nov 16:11:50 wrong line, 1 unclear (4 Nov 22:20:23), and
+7 deaths on the same boot: 3 Nov 12:11:20, 8 Nov 14:26:07, 9 Nov 16:19:14,
+10 Nov 15:32:42, and 14 Nov 00:13:38, 01:34:55 and 02:03:09 (build 177, the
+deaths that led to 181). Without the restarts, the app's own deaths ran about
+one every two days, not one a day. Some restarts left the phone off only
+briefly: on 7 Oct it had booted again by 14:00 after a last push at 13:58:30,
+on 19 Oct by 17:54 after 17:48:53.
+
+Issun's verdict doesn't look at `devup` (`PhoneDiagnostics.cs` only prints
+it), so each restart reads "it died". The installed Issun was still build 162
+on 16 Nov 2026, so installs read "it died" too; 166, released at 23:27 on
+15 Nov, has the "updated" verdict.

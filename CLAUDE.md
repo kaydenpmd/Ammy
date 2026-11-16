@@ -291,12 +291,16 @@ new build ended the gap, "updated, <old> -> <new>" (Issun's code since 15 Nov
 2026). A death line always shows `pushfail=0`; that's expected.
 
 - **A gap isn't proof iOS killed the app.** Rule out the phone being off and
-  the app not reopened after a reboot first.
-- Three wrong "it died" lines are in the history, to discount: 14 Sept 2026
-  14:59 (logged twice), 16 Oct 2026 21:56:52, 8 Nov 2026 16:11:50. Discount
-  too any "it died" whose stamp names a newer app build than the line before
-  it: an install ended that process or that gap (19 of the 74 up to 15 Nov
-  2026; HISTORY.md, same date).
+  the app not reopened after a reboot first. **If the new process reports a
+  smaller `devup` than the death line (on its next line, or in `/diag`), the
+  phone restarted**: `systemUptime` goes back only on a reboot. Issun's
+  verdict doesn't check this, so a restart reads "it died"; 23 of the 75 up to
+  16 Nov 2026 were restarts. `local/reboot_census.ps1` sorts every line.
+- Discount too the three wrong lines, where the next process had started
+  before the gap (14 Sept 2026 14:59, logged twice; 16 Oct 2026 21:56:52;
+  8 Nov 2026 16:11:50), and any "it died" whose stamp names a newer app build
+  than the line before it: an install ended that process or that gap (19 of
+  the 75; HISTORY.md, 15 Nov 2026).
 - **Don't split the log per version.** Lines are stamped
   `[issun <version> / app <build>]`; group them later.
 
@@ -427,27 +431,28 @@ hostname" so renaming the PC doesn't move the address.
 
 ## Where things stand
 
-As of 15 Nov 2026. Ammy 184 was on the owner's phone on 14 Nov 2026; Issun is
-a local build of its `main` (ask `/version`).
+As of 16 Nov 2026. Ammy 184 is on the owner's phone (installed 14 Nov 2026);
+Issun is a local build of its `main` (ask `/version`).
 
-**Deaths: about one a day.** The phone's journal (14 Nov 2026) showed most
-follow an interruption that freezes the app before it can restart the
-silence; a `verify()` that happened to run 0–5 s after `.began` recovered 12
-times in 14. Build 181's restart at `.began` is the answer to that, and it's in
-184.
+**Deaths.** Since 1 Nov 2026: seven on the same boot, the last three on the
+night of 13–14 Nov (build 177), and eight phone restarts, which end the app
+too and leave it closed until it's opened. The phone's journal (14 Nov 2026) showed most
+deaths follow an interruption that freezes the app before it can restart the
+silence. Build 181's restart at `.began` answers that, and on 15 Nov 2026 the
+journal showed it working on the phone: `engine stopped, trying`, `playing
+again after 0 failed tries, down 0s`, then `still playing` at +1 s and +3 s.
+184 hasn't died: its first process ran 42.6 hours, through 31 interruptions,
+until the phone restarted at about 22:36 on 15 Nov 2026.
 
-**Next: read Issun's log after a day or two on 184.** Per interruption the
-journal should read `interruption began`, `after began +0s: engine stopped,
-trying`, `activating session`, `starting engine`, `playing again ...`, then
-`after began +1s/+3s: still playing`. A death's `[keepalive] journal:` lines
-show how far it got. If deaths end between `.began` and a restart's outcome,
-that's the evidence for a short hold, built with the lab's guards. Still
-unknown: what the owner was doing on the phone at 23:58, 01:19 and 01:47 on
-13–14 Nov 2026, which would name the interrupter.
+**Next: keep reading Issun's log on 184.** On a death line, check `devup`
+first. A death's `[keepalive] journal:` lines show how far it got. If deaths
+end between `.began` and a restart's outcome, that's the evidence for a short
+hold, built with the lab's guards. Still unknown: what the owner was doing on
+the phone at 23:58, 01:19 and 01:47 on 13–14 Nov 2026, which would name the
+interrupter.
 
 **Not yet seen on a device**, as of the notes. Each of these was checked only
 in the simulator or not at all:
-- the restart at `.began` (builds 181 on; needs a log reading)
 - the bar above the keyboard (fixed 12 Nov 2026), and iPad's floating and hardware
   keyboards
 - History's 36 pt of room at the foot of the page (build 158)
