@@ -286,13 +286,17 @@ the code and its four characters (e.g. `[2003329396 'what']`).
 decide it on the gap line: `app_uptime_s` (same process if it advanced by
 about the gap) and `pushfail=consecutive/total` with `offline=Ns` (the app
 knew it was failing). Verdicts read "the path failed, not the app",
-"suspended, no pushes failed", "stopped on the phone" or "it died". A death
-line always shows `pushfail=0`; that's expected.
+"suspended, no pushes failed", "stopped on the phone", "it died", or, when a
+new build ended the gap, "updated, <old> -> <new>" (Issun's code since 15 Nov
+2026). A death line always shows `pushfail=0`; that's expected.
 
 - **A gap isn't proof iOS killed the app.** Rule out the phone being off and
   the app not reopened after a reboot first.
 - Three wrong "it died" lines are in the history, to discount: 14 Sept 2026
-  14:59 (logged twice), 16 Oct 2026 21:56:52, 8 Nov 2026 16:11:50.
+  14:59 (logged twice), 16 Oct 2026 21:56:52, 8 Nov 2026 16:11:50. Discount
+  too any "it died" whose stamp names a newer app build than the line before
+  it: an install ended that process or that gap (19 of the 74 up to 15 Nov
+  2026; HISTORY.md, same date).
 - **Don't split the log per version.** Lines are stamped
   `[issun <version> / app <build>]`; group them later.
 

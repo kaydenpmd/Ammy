@@ -1993,3 +1993,24 @@ owner says something works, believe them and go look. Also: GitHub's tree and
 contents API endpoints have served **stale cached listings** here, showing a
 week-old file set as current — fetch `raw.githubusercontent.com` directly
 instead of trusting a listing.
+
+## 15 Nov 2026: installs read as deaths, and 184's first long run
+
+**Installs.** Of the 74 "it died" verdicts in `uptime.log` up to 15 Nov 2026,
+19 cross a change of app build (the gap line's stamp names a newer build than
+the line before it). 12 of those are gaps of 16 minutes or less, the owner's
+installs, among them 14 Nov 02:21:47 (177 to 181) and 04:02:23 (181 to 184).
+The other 7 run from 37 minutes to 177 hours (15 Oct 2026 03:33:05), where
+the app may have died before the install. Issun's verdict never looked at the
+build; since 15 Nov 2026 its code says "updated, <old> -> <new>" for these
+(Issun's HISTORY.md, same date). A same-build reinstall, such as a SideStore
+refresh, still can't be told from a death.
+
+**184.** The process that started at the 14 Nov 04:02 install ran 42.6 hours
+(`appup=153233s`) before going quiet at 22:36:14 on 15 Nov 2026: 31
+interruptions began and 21 ended, 21 restarts failed and were recovered (at
+most 3 in a row; the last a refused `setActive`, '!int'), 23 configuration
+changes and 28 failed pushes, with Low Power Mode on and 80 memory warnings
+by the end. As of 22:59 it hadn't checked back in, so that silence's verdict
+was still to come. The longest run in `uptime.log` is 52.1 hours, ending
+18 Oct 2026.
