@@ -2099,4 +2099,5 @@ on 16 Nov 2026, so installs read "it died" too; 166, released at 23:27 on
 **Same day, in Issun.** At the owner's "Yes, do it here", Issun's gap verdict
 now compares `device_uptime_s` across the gap and writes "the phone
 restarted, devup <old>s -> <new>s" instead of "it died" (Issun's HISTORY.md,
-16 Nov 2026). Committed there, not yet released or installed.
+16 Nov 2026). At the owner's "Release and install" it went out as Issun 168
+and was installed on the PC at 01:49.
