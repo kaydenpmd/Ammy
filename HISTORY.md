@@ -2095,3 +2095,8 @@ Issun's verdict doesn't look at `devup` (`PhoneDiagnostics.cs` only prints
 it), so each restart reads "it died". The installed Issun was still build 162
 on 16 Nov 2026, so installs read "it died" too; 166, released at 23:27 on
 15 Nov, has the "updated" verdict.
+
+**Same day, in Issun.** At the owner's "Yes, do it here", Issun's gap verdict
+now compares `device_uptime_s` across the gap and writes "the phone
+restarted, devup <old>s -> <new>s" instead of "it died" (Issun's HISTORY.md,
+16 Nov 2026). Committed there, not yet released or installed.

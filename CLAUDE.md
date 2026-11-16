@@ -286,16 +286,17 @@ the code and its four characters (e.g. `[2003329396 'what']`).
 decide it on the gap line: `app_uptime_s` (same process if it advanced by
 about the gap) and `pushfail=consecutive/total` with `offline=Ns` (the app
 knew it was failing). Verdicts read "the path failed, not the app",
-"suspended, no pushes failed", "stopped on the phone", "it died", or, when a
-new build ended the gap, "updated, <old> -> <new>" (Issun's code since 15 Nov
-2026). A death line always shows `pushfail=0`; that's expected.
+"suspended, no pushes failed", "stopped on the phone", "it died", or, in
+Issun's code since 15 and 16 Nov 2026, "updated, <old> -> <new>" when a new
+build ended the gap and "the phone restarted, devup <old>s -> <new>s" when a
+new boot did. A death line always shows `pushfail=0`; that's expected.
 
 - **A gap isn't proof iOS killed the app.** Rule out the phone being off and
   the app not reopened after a reboot first. **If the new process reports a
   smaller `devup` than the death line (on its next line, or in `/diag`), the
-  phone restarted**: `systemUptime` goes back only on a reboot. Issun's
-  verdict doesn't check this, so a restart reads "it died"; 23 of the 75 up to
-  16 Nov 2026 were restarts. `local/reboot_census.ps1` sorts every line.
+  phone restarted**: `systemUptime` goes back only on a reboot. Issun builds
+  before 16 Nov 2026 don't check this and write "it died"; 23 of the 75 up to
+  that date were restarts. `local/reboot_census.ps1` sorts every line.
 - Discount too the three wrong lines, where the next process had started
   before the gap (14 Sept 2026 14:59, logged twice; 16 Oct 2026 21:56:52;
   8 Nov 2026 16:11:50), and any "it died" whose stamp names a newer app build
