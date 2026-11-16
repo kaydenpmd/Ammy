@@ -2014,3 +2014,14 @@ changes and 28 failed pushes, with Low Power Mode on and 80 memory warnings
 by the end. As of 22:59 it hadn't checked back in, so that silence's verdict
 was still to come. The longest run in `uptime.log` is 52.1 hours, ending
 18 Oct 2026.
+
+**Git's credential helper, corrected.** The 14 Nov note said git had no
+`credential.helper` any more, most likely lost in the malware cleanup. On
+15 Nov 2026 `git config --show-origin` showed `manager` (Git Credential
+Manager) in `C:/Program Files/Git/etc/gitconfig`, a file unchanged since
+12 July 2026, and `git credential-manager github list` listed `kaydenpmd`.
+So the helper was never lost; a plain push failing with "could not read
+Username" more likely means its stored sign-in no longer works (revoked or
+expired) and it can't ask again inside a session. The GitHub CLI was signed
+in as `kaydenpmd` (keyring; scopes gist, read:org, repo, workflow). Whether
+either token was replaced after the 11 Nov malware wasn't known.
