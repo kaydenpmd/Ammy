@@ -2025,3 +2025,10 @@ Username" more likely means its stored sign-in no longer works (revoked or
 expired) and it can't ask again inside a session. The GitHub CLI was signed
 in as `kaydenpmd` (keyring; scopes gist, read:org, repo, workflow). Whether
 either token was replaced after the 11 Nov malware wasn't known.
+
+**Same evening, plain pushes again.** The owner ran `gh auth setup-git`
+("it returned nothing", which is how it says it worked). `~/.gitconfig` now
+clears the helper for github.com and names `gh.exe auth git-credential`
+instead, so Git Credential Manager is no longer asked for github.com, and a
+plain `git push --dry-run` answered "Everything up-to-date". The
+`-c credential.helper=...` flag on every push is no longer needed.

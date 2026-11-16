@@ -505,12 +505,10 @@ The repo is at `C:\Users\links\Repos\Ammy`. Edit files in place, and **run
 git yourself** (status, commit, push) and report what it printed;
 `.github/workflows/` is an ordinary file here.
 
-**Pushing needs the GitHub CLI's sign-in**: a plain `git push` has failed
-with "could not read Username" since 14 Nov 2026, though Git Credential
-Manager is configured (Git's system config) and holds a `kaydenpmd` account,
-so its stored sign-in has probably stopped working. This works:
-`git -c credential.helper= -c 'credential.helper=!gh auth git-credential' push`.
-Setting a helper permanently (`gh auth setup-git`) is the owner's call.
+**Pushing uses the GitHub CLI's sign-in**: `~/.gitconfig` hands github.com
+to `gh` (`gh auth setup-git`, run by the owner on 15 Nov 2026), so a plain
+`git push` works. If one ever fails with "could not read Username", check
+`gh auth status` first.
 
 Under Cowork only (not Claude Code): its shell can't run git safely on this
 folder and can't touch `.github/workflows/`, so edit with file tools and hand
