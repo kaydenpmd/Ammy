@@ -36,7 +36,7 @@ jobs:
       # fetch-depth: 0 is load-bearing. The default checkout is shallow, and the
       # build number below is a commit count — against a shallow clone that
       # counts 1, and every build would claim to be build 1.
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
