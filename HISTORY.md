@@ -2101,3 +2101,47 @@ now compares `device_uptime_s` across the gap and writes "the phone
 restarted, devup <old>s -> <new>s" instead of "it died" (Issun's HISTORY.md,
 16 Nov 2026). At the owner's "Release and install" it went out as Issun 168
 and was installed on the PC at 01:49.
+
+## 16 Nov 2026: the workflows' actions move off Node 20
+
+Ammy's runs carried the same annotation as Issun's. On the last release run
+before this one (43581036534, 14 Nov 2026) the build job named
+`actions/checkout@v4` and the publish job `actions/checkout@v4,
+softprops/action-gh-release@v2` ("Node.js 20 is deprecated ... being forced to
+run on Node.js 24"). A tag's `action.yml` names its runtime (`runs.using`):
+checkout v5, v6 and v7 and action-gh-release v3 say `node24`; checkout v4 and
+action-gh-release v2 say `node20`. `upload-artifact@v7` and
+`download-artifact@v7` already said `node24`, so they stayed. download-artifact
+v8 exists (a hash mismatch now fails the download, and a non-zip upload isn't
+unzipped); PUBLISHING.md wants the download version to match the upload's, so it
+stays with upload-artifact.
+
+`build-ipa.yml` and `publish-source.yml` now use `checkout@v7`, and
+`publish-source.yml` uses `action-gh-release@v3`. No input changed (the release
+notes list none, and `action.yml` differs only in its `using` line). checkout
+v6 keeps the sign-in in a separate file under `$RUNNER_TEMP` instead of in
+`.git/config`, which matters to the publish job's `git push`.
+
+**Tried before pushing.** `build-ipa.yml` by hand from a branch, which builds
+without releasing: run 44021359074, 1 min 37 s, no Node warning, only the macOS
+queue notice. `publish-source.yml` can't be run by hand without publishing (it
+has no `main` guard, so it would make a release and push `source.json`), so a
+second branch ran a copy with `draft: true`, the tag `test-node24-<run id>` and
+the last step as `git push --dry-run origin main` (run 44021576689): the draft
+held the .ipa (591,219 bytes), no tag was created, and the dry run printed
+`5490776..3221a54  main -> main`, so checkout v7's sign-in works for the push
+that follows `git fetch origin main` and `git checkout -B main origin/main`. The
+draft and the branches were deleted afterwards.
+
+**Pushed at the owner's "Yes, push both"** as `7f39d4e`. Run 44024357955 passed
+(build 1 min 28 s, publish 14 s) with no "Node.js 20" line in its log. Its
+annotations were the macOS queue notice and a notice that the `ubuntu-latest`
+label moves to Ubuntu 26 from 19 Oct 2026 (the test run's publish job already
+ran on the Ubuntu 26 image, 20261111.196, and needed no change). It released
+`v1.0-b201` with the commit message as its notes. The bot committed `cfa1332
+source: publish 1.0 (build 201)` to `main` with checkout v7's sign-in, and
+`source.json` on `main` and on apps.kaydenpmd.net both list build 201 with those
+notes. Before the upload the log said "Release 448185442 is not yet
+discoverable by tag v1.0-b201, retrying... (2 retries remaining)"; the upload
+went through, so v3 evidently looks the release up by tag after creating it,
+and retries.
