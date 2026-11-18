@@ -93,7 +93,7 @@ def pip_report(d, screen_h):
                 rows.append(f"  {tag}: PiP {r['y']:.2f}-{r['maxY']:.2f} x {r['x']:.2f} ({screen_h - r['maxY']:.2f} from the bottom), "
                             f"{names} top {top}, PiP's bottom {gap} pt above it{extra}")
         tag = f"pip-{variant}-history"
-        for where in ("main", "history", "back"):
+        for where in ("main", "history", "historyBottomRight", "back"):
             r = pips.get(f"{tag}__{where}")
             if f"{tag}__{where}" in pips:
                 rows.append(f"  {tag}__{where}: " + (f"PiP {r['y']:.2f}-{r['maxY']:.2f} ({screen_h - r['maxY']:.2f} from the bottom)" if r else "no PiP"))
@@ -332,7 +332,7 @@ def sheets(d, setup, out):
     for corner in ("bottomRight", "bottomLeft", "kb"):
         sheet(d, [f"pip-{v}-{s}__{corner}" for s in ("idle", "running") for v in ("main", "fix")],
               out / f"sheet-{setup}-pip-{corner}.png")
-    sheet(d, [f"pip-{v}-history__{w}" for v in ("main", "fix") for w in ("history", "back")],
+    sheet(d, [f"pip-{v}-history__{w}" for v in ("main", "fix") for w in ("main", "history", "historyBottomRight", "back")],
           out / f"sheet-{setup}-pip-history.png")
     for field in ("URL", "Key"):
         sheet(d, [f"{v}__{s}__kb{field}" for s in ("running", "idle") for v in ("main", "fix")],

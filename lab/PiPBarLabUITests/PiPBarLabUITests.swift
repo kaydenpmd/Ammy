@@ -256,19 +256,28 @@ final class PiPBarLabUITests: XCTestCase {
                 app.terminate()
             }
 
+            // History: PiP parked at the bottom right over the main page
+            // first, then where it goes when History (no bar) slides in,
+            // where it rests there when dragged to the bottom right, and
+            // where it goes back to with the main page.
             let tag = "pip-\(variant)-history"
             let app = launch(variant, tag: tag, running: false)
             Thread.sleep(forTimeInterval: 1.0)
-            record("\(tag)__main")
+            answerAlerts()
             // History sits below the fold on an SE.
             app.swipeUp()
             Thread.sleep(forTimeInterval: 1.5)
+            dragPiP(toRight: true, in: app)
+            log("\(tag) \(bars(app))")
+            record("\(tag)__main")
             let history = app.buttons["History"]
             if history.waitForExistence(timeout: 5) {
                 history.tap()
                 Thread.sleep(forTimeInterval: 2.5)
                 log("\(tag) History bar=\(app.navigationBars["History"].exists) \(bars(app))")
                 record("\(tag)__history")
+                dragPiP(toRight: true, in: app)
+                record("\(tag)__historyBottomRight")
                 let back = app.navigationBars["History"].buttons.element(boundBy: 0)
                 if back.exists {
                     back.tap()
