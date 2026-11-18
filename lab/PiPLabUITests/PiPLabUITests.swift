@@ -2,17 +2,15 @@ import UIKit
 import XCTest
 
 /// pip-lab, never merged. PiPHost floats a magenta video in Picture in
-/// Picture; then the Home Screen and each app in turn come to the front, and
-/// the PiP window is found by its colour, measured where it arrives, dragged
-/// towards each corner and measured where it settles. The last corner is the
-/// bottom right, so every app after the first is reached with PiP resting
-/// there over the app before it: if PiP moved for an app's bar, its arrival
-/// would show it. The keyboard, which PiP is known to keep clear of, is the
-/// positive control at the end.
+/// Picture; then each app or Bars variant comes to the front in turn, and
+/// the PiP window's frame is read from SpringBoard's own element for it
+/// ("PIP-SBInteractionPassThroughView", found in run 44280673989): where it
+/// arrives (resting bottom right over the app before), then dragged to the
+/// bottom left, then back to the bottom right. The keyboard, which PiP is
+/// known to keep clear of, is the positive control at the end.
 ///
 /// Everything goes to LAB_OUT: pip.txt (one line per step, seconds since
-/// 1970), a screenshot per measurement, each app's accessibility tree, and
-/// SpringBoard's elements that name PiP.
+/// 1970), a screenshot per measurement, and each app's accessibility tree.
 final class PiPLabUITests: XCTestCase {
     private var outDir: String {
         ProcessInfo.processInfo.environment["LAB_OUT"] ?? NSTemporaryDirectory()
@@ -60,121 +58,75 @@ final class PiPLabUITests: XCTestCase {
         String(format: "x=%.1f y=%.1f w=%.1f h=%.1f maxY=%.1f", r.minX, r.minY, r.width, r.height, r.maxY)
     }
 
-    @MainActor
-    private func describe(_ element: XCUIElement, _ name: String) -> String {
-        guard element.exists else { return "\(name)=none" }
-        return "\(name)=[\(fmt(element.frame))]"
-    }
+    // MARK: The window and the bars
 
-    // MARK: Finding the window
-
-    /// The PiP window: the bounding box, in points, of the screen's magenta
-    /// pixels, and how much of that box is magenta (a lone window fills nearly
-    /// all of it; anything else magenta on screen would lower it). Nil when
-    /// fewer than 400 points' worth are found.
     @MainActor
-    private func findPiP(_ shot: XCUIScreenshot) -> (rect: CGRect, fill: Double)? {
-        guard let cg = shot.image.cgImage else { return nil }
-        let w = cg.width, h = cg.height
-        var pixels = [UInt8](repeating: 0, count: w * h * 4)
-        let drew: Bool = pixels.withUnsafeMutableBytes { buffer in
-            guard let space = CGColorSpace(name: CGColorSpace.sRGB),
-                  let context = CGContext(data: buffer.baseAddress, width: w, height: h, bitsPerComponent: 8,
-                                          bytesPerRow: w * 4, space: space,
-                                          bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue)
-            else { return false }
-            context.draw(cg, in: CGRect(x: 0, y: 0, width: w, height: h))
-            return true
-        }
-        guard drew else { return nil }
-        var minX = w, minY = h, maxX = -1, maxY = -1, count = 0
-        pixels.withUnsafeBufferPointer { p in
-            for y in 0..<h {
-                let row = y * w * 4
-                for x in 0..<w {
-                    let i = row + x * 4
-                    if p[i] > 200, p[i + 2] > 200, p[i + 1] < 70 {
-                        count += 1
-                        if x < minX { minX = x }
-                        if x > maxX { maxX = x }
-                        if y < minY { minY = y }
-                        if y > maxY { maxY = y }
-                    }
-                }
-            }
-        }
-        let scale = CGFloat(w) / max(screen.width, 1)
-        guard count > Int(400 * scale * scale), maxX >= minX, maxY >= minY else { return nil }
-        let box = Double((maxX - minX + 1) * (maxY - minY + 1))
-        let rect = CGRect(x: CGFloat(minX) / scale, y: CGFloat(minY) / scale,
-                          width: CGFloat(maxX - minX + 1) / scale, height: CGFloat(maxY - minY + 1) / scale)
-        return (rect, Double(count) / box)
-    }
-
-    /// SpringBoard's own elements whose identifier or label names PiP.
-    @MainActor
-    private func springboardPiPElements() -> String {
-        let query = springboard.descendants(matching: .any).matching(NSPredicate(format:
-            "identifier CONTAINS[c] 'pip' OR identifier CONTAINS[c] 'picture' OR identifier CONTAINS[c] 'pegasus' OR label CONTAINS[c] 'picture in picture'"))
-        let found = query.allElementsBoundByIndex.prefix(12).map { e in
-            "type \(e.elementType.rawValue) id '\(e.identifier)' label '\(e.label)' [\(fmt(e.frame))]"
-        }
-        return found.isEmpty ? "none" : found.joined(separator: " | ")
+    private func pipFrame() -> CGRect? {
+        let element = springboard.descendants(matching: .any)["PIP-SBInteractionPassThroughView"]
+        return element.exists ? element.frame : nil
     }
 
     @MainActor
     @discardableResult
-    private func measure(_ tag: String) -> CGRect? {
-        var shot = XCUIScreen.main.screenshot()
-        var found = findPiP(shot)
-        if found == nil {
-            // PiP's controls dim the video for a few seconds after a touch.
-            Thread.sleep(forTimeInterval: 3)
-            shot = XCUIScreen.main.screenshot()
-            found = findPiP(shot)
-        }
-        save(shot, tag)
-        if let found {
-            log("\(tag) pip=[\(fmt(found.rect))] fill=\(String(format: "%.3f", found.fill)) fromBottom=\(String(format: "%.1f", screen.height - found.rect.maxY))")
+    private func record(_ tag: String) -> CGRect? {
+        let frame = pipFrame()
+        save(XCUIScreen.main.screenshot(), tag)
+        if let frame {
+            log("\(tag) pip=[\(fmt(frame))] fromBottom=\(String(format: "%.1f", screen.height - frame.maxY))")
         } else {
             log("\(tag) pip=none")
         }
-        return found?.rect
+        return frame
+    }
+
+    /// Every tab bar and toolbar the app reports, and its Start or Stop.
+    @MainActor
+    private func bars(_ app: XCUIApplication) -> String {
+        var parts: [String] = []
+        for (name, query) in [("tabBar", app.tabBars), ("toolbar", app.toolbars)] {
+            for (i, element) in query.allElementsBoundByIndex.enumerated() where element.exists {
+                parts.append("\(name)\(i)=[\(fmt(element.frame))]")
+            }
+        }
+        for label in ["Start", "Stop", "Accessory"] {
+            let element = app.descendants(matching: .any)[label].firstMatch
+            if element.exists { parts.append("\(label)=[\(fmt(element.frame))]") }
+        }
+        return parts.joined(separator: " ")
+    }
+
+    /// Answers SpringBoard's alerts (Ammy asks for notifications when its
+    /// session starts) so they don't dim the screen for the rest of the run.
+    @MainActor
+    private func answerAlerts() {
+        for _ in 0..<3 {
+            let alert = springboard.alerts.firstMatch
+            guard alert.exists else { return }
+            let allow = alert.buttons["Allow"]
+            let button = allow.exists ? allow : alert.buttons.element(boundBy: alert.buttons.count - 1)
+            log("alert '\(alert.label)': tapping '\(button.label)'")
+            button.tap()
+            Thread.sleep(forTimeInterval: 1.0)
+        }
     }
 
     // MARK: Moving it
 
-    private let corners: [(name: String, right: Bool, bottom: Bool)] = [
-        ("topLeft", false, false), ("topRight", true, false), ("bottomLeft", false, true), ("bottomRight", true, true),
-    ]
-
     /// A slow drag with a pause before letting go, so PiP settles in the
     /// corner it's left nearest rather than being thrown.
     @MainActor
-    private func drag(in app: XCUIApplication, from: CGPoint, to: CGPoint) {
-        let origin = app.coordinate(withNormalizedOffset: .zero)
-        origin.withOffset(CGVector(dx: from.x, dy: from.y))
-            .press(forDuration: 0.15, thenDragTo: origin.withOffset(CGVector(dx: to.x, dy: to.y)),
-                   withVelocity: XCUIGestureVelocity(rawValue: 500), thenHoldForDuration: 0.3)
-    }
-
-    /// Drags the window towards each corner in turn: its centre to where a
-    /// window that size would sit 16 pt from the side and 64 pt from the top
-    /// or 40 pt from the bottom, then measures where the system lets it rest.
-    @MainActor
-    private func visitCorners(_ name: String, in app: XCUIApplication) {
-        for corner in corners {
-            guard let r = findPiP(XCUIScreen.main.screenshot())?.rect else {
-                log("\(name) \(corner.name): no window to drag")
-                continue
-            }
-            let target = CGPoint(x: corner.right ? screen.width - r.width / 2 - 16 : r.width / 2 + 16,
-                                 y: corner.bottom ? screen.height - r.height / 2 - 40 : r.height / 2 + 64)
-            log("\(name) drag \(corner.name) from (\(Int(r.midX)), \(Int(r.midY))) to (\(Int(target.x)), \(Int(target.y)))")
-            drag(in: app, from: CGPoint(x: r.midX, y: r.midY), to: target)
-            Thread.sleep(forTimeInterval: 2.0)
-            measure("\(name)__\(corner.name)")
+    private func dragPiP(toRight right: Bool, in app: XCUIApplication) {
+        guard let r = pipFrame() else {
+            log("no PiP to drag")
+            return
         }
+        let target = CGPoint(x: right ? screen.width - r.width / 2 - 16 : r.width / 2 + 16,
+                             y: screen.height - r.height / 2 - 40)
+        let origin = app.coordinate(withNormalizedOffset: .zero)
+        origin.withOffset(CGVector(dx: r.midX, dy: r.midY))
+            .press(forDuration: 0.15, thenDragTo: origin.withOffset(CGVector(dx: target.x, dy: target.y)),
+                   withVelocity: XCUIGestureVelocity(rawValue: 500), thenHoldForDuration: 0.3)
+        Thread.sleep(forTimeInterval: 2.0)
     }
 
     @MainActor
@@ -184,12 +136,16 @@ final class PiPLabUITests: XCTestCase {
         log("\(name) launching \(bundle) \(arguments.joined(separator: " "))")
         app.launch()
         let foreground = app.wait(for: .runningForeground, timeout: 20)
-        Thread.sleep(forTimeInterval: 2.5)
-        log("\(name) foreground=\(foreground) \(describe(app.tabBars.firstMatch, "tabBar")) \(describe(app.toolbars.firstMatch, "toolbar")) \(describe(app.buttons["Start"], "start"))")
+        Thread.sleep(forTimeInterval: 2.0)
+        answerAlerts()
+        Thread.sleep(forTimeInterval: 1.0)
+        log("\(name) foreground=\(foreground) \(bars(app))")
         write(app.debugDescription, to: "\(name)__tree.txt")
-        log("\(name) springboard: \(springboardPiPElements())")
-        measure("\(name)__arrive")
-        visitCorners(name, in: app)
+        record("\(name)__arrive")
+        dragPiP(toRight: false, in: app)
+        record("\(name)__bottomLeft")
+        dragPiP(toRight: true, in: app)
+        record("\(name)__bottomRight")
     }
 
     // MARK: The run
@@ -210,7 +166,6 @@ final class PiPLabUITests: XCTestCase {
             Thread.sleep(forTimeInterval: 0.5)
         }
         log("host possible=\(possible) status: \(status.exists ? status.label.replacingOccurrences(of: "\n", with: " / ") : "-")")
-        save(XCUIScreen.main.screenshot(), "host__ready")
         host.buttons["startPiP"].tap()
         var started = false
         for _ in 0..<30 {
@@ -220,25 +175,22 @@ final class PiPLabUITests: XCTestCase {
             }
             Thread.sleep(forTimeInterval: 0.5)
         }
-        log("host started=\(started) status: \(status.label.replacingOccurrences(of: "\n", with: " / "))")
+        log("host started=\(started)")
         Thread.sleep(forTimeInterval: 2)
-        measure("host__started")
+        record("host__started")
 
-        // Home. If the button didn't start PiP, leaving the app may: the host
-        // allows PiP to start on its own from inline playback.
         XCUIDevice.shared.press(.home)
         Thread.sleep(forTimeInterval: 3)
-        write(springboard.debugDescription, to: "home__springboard_tree.txt")
-        log("home springboard: \(springboardPiPElements())")
-        measure("home__arrive")
-        visitCorners("home", in: springboard)
+        record("home__arrive")
+        dragPiP(toRight: true, in: springboard)
+        record("home__bottomRight")
 
-        visit("ammy", bundle: "com.local.ammy", arguments: ["-relay_endpoint", "https://lab.invalid/now-playing"])
-        for variant in ["none", "tabbar", "accessory", "toolbar", "safeareabar"] {
+        let variants = ["none", "toolbar", "tabbar", "accessory", "safeareabar", "addlsafe", "tabbar-hidden",
+                        "toolbar-hidden", "toolbar-wide", "safeareainset", "uikit-edge", "uikit-toolbar"]
+        for variant in variants {
             visit("bars-\(variant)", bundle: "com.local.bars", arguments: ["-variant", variant])
         }
-        visit("files", bundle: "com.apple.DocumentsApp")
-        visit("photos", bundle: "com.apple.mobileslideshow")
+        visit("ammy", bundle: "com.local.ammy", arguments: ["-relay_endpoint", "https://lab.invalid/now-playing"])
         visit("settings", bundle: "com.apple.Preferences")
 
         // The positive control: PiP resting bottom right over Ammy, then the
@@ -247,14 +199,15 @@ final class PiPLabUITests: XCTestCase {
         ammy.activate()
         _ = ammy.wait(for: .runningForeground, timeout: 10)
         Thread.sleep(forTimeInterval: 2)
-        measure("ammy-keyboard__before")
+        answerAlerts()
+        record("ammy-keyboard__before")
         let url = ammy.textFields["URL"]
         if url.waitForExistence(timeout: 5) {
             url.tap()
             let shown = ammy.keyboards.firstMatch.waitForExistence(timeout: 5)
             Thread.sleep(forTimeInterval: 2)
-            log("ammy-keyboard shown=\(shown) \(describe(ammy.keyboards.firstMatch, "keyboard")) \(describe(ammy.buttons["Start"], "start"))")
-            measure("ammy-keyboard__up")
+            log("ammy-keyboard shown=\(shown) keyboard=\(ammy.keyboards.firstMatch.exists ? fmt(ammy.keyboards.firstMatch.frame) : "none") \(bars(ammy))")
+            record("ammy-keyboard__up")
         } else {
             log("ammy-keyboard: no URL field")
         }

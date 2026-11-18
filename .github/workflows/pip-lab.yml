@@ -8,11 +8,11 @@ name: PiP lab (the Picture in Picture window over the bar)
 # kind of bottom bar (lab/Bars)? And does the system have anything an app can
 # use to tell PiP where its controls are? In dark mode.
 #
-# Run 44275708353 (SE and 17e on iOS 27.0) found the iPhone simulators don't
-# support PiP at all (isPictureInPictureSupported false), so this run tries:
-#   ipad-ios27    an iPad Air 11-inch on iOS 27.0, which has PiP
-#   se-pip-ios27  a copy of the SE's device type claiming the iPad's PiP
-#                 capabilities (lab/fakepip.py), if it has any
+# Run 44275708353 (SE and 17e on iOS 27.0) found the iPhone simulators don't support PiP at all (isPictureInPictureSupported false). Run 44280673989 ran an iPad and a copy of the SE's device type given the iPad's two PiP capabilities (PiPPinned, PiPOverlay; lab/fakepip.py), and on both PiP rested above a tab bar, the tab view's accessory and a bottom toolbar, but not above a safeAreaBar or Ammy's bar.
+#
+# This run asks why, with more Bars variants (lab/Bars/BarsApp.swift), SpringBoard's own PiP log lines, and PiP's frame read from SpringBoard's element for it, on:
+#   se-pip-ios27   a copy of the iPhone SE (3rd generation) with PiP, iOS 27.0
+#   17e-pip-ios27  a copy of the Face ID iPhone 17e with PiP, iOS 27.0
 
 on:
   push:
@@ -59,15 +59,15 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - name: ipad-ios27
-            runner: xcode-27
-            xcode: /Applications/Xcode_27.2_Release_Candidate.app
-            device: "iPad Air 11"
-            runtime: "27.0"
           - name: se-pip-ios27
             runner: xcode-27
             xcode: /Applications/Xcode_27.2_Release_Candidate.app
-            device: fakepip
+            device: "fakepip:iPhone-SE-3rd-generation"
+            runtime: "27.0"
+          - name: 17e-pip-ios27
+            runner: xcode-27
+            xcode: /Applications/Xcode_27.2_Release_Candidate.app
+            device: "fakepip:iPhone-17e"
             runtime: "27.0"
     runs-on: ${{ matrix.runner }}
     timeout-minutes: 80
@@ -94,15 +94,17 @@ jobs:
           set -euo pipefail
           mkdir -p out
           WANT="${{ matrix.runtime }}"
-          if [ "${{ matrix.device }}" = "fakepip" ]; then
-            TYPE=$(python3 lab/fakepip.py "$PWD/out" || true)
+          DEVICE="${{ matrix.device }}"
+          if [ "${DEVICE%%:*}" = "fakepip" ]; then
+            BASE="${DEVICE#fakepip:}"
+            TYPE=$(python3 lab/fakepip.py "$PWD/out" "$BASE" || true)
             if [ -n "$TYPE" ]; then
               # CoreSimulator reads the user's device types when it starts.
               killall -9 com.apple.CoreSimulator.CoreSimulatorService 2>/dev/null || true
               sleep 3
               xcrun simctl list devicetypes | grep -i "PiP" || echo "the copy isn't listed"
             else
-              TYPE=com.apple.CoreSimulator.SimDeviceType.iPhone-SE-3rd-generation
+              TYPE="com.apple.CoreSimulator.SimDeviceType.$BASE"
             fi
           else
             TYPE=$(xcrun simctl list devicetypes -j | NAME="${{ matrix.device }}" python3 -c '
@@ -145,6 +147,8 @@ jobs:
                   print(json.dumps(r, indent=1))' > out/runtime.json
 
       - name: Look for anything an app could tell PiP
+        # Done in runs 44275708353 and 44280673989 (lab/results/); set strings: true in a matrix entry to search again.
+        if: ${{ matrix.strings }}
         run: |
           # Every string in UIKit, AVKit, SpringBoard and the PiP frameworks
           # (Pegasus) that names PiP beside a word about room or placement: a
@@ -227,6 +231,11 @@ jobs:
           T=PiPLabUITests/PiPLabUITests
           stamp() { python3 -c 'import time; print(time.time())'; }
           stamp > out/record-start.txt
+          # SpringBoard says what it bases PiP's room on ("Applying new edge insets ... safeAreaInsets ... extra content padding"), and the apps may say something too.
+          xcrun simctl spawn "$UDID" log stream --style compact --level debug \
+            --predicate '(process == "SpringBoard" AND (eventMessage CONTAINS[c] "PIP" OR eventMessage CONTAINS[c] "picture in picture" OR eventMessage CONTAINS[c] "dodg" OR eventMessage CONTAINS[c] "inset")) OR (eventMessage CONTAINS[c] "pictureinpicture" OR eventMessage CONTAINS[c] "PIPDodg")' \
+            > out/springboard-pip.log 2>&1 &
+          LOG=$!
           xcrun simctl io "$UDID" recordVideo --codec=h264 --force out/lab.mp4 > out/record.log 2>&1 &
           REC=$!
           sleep 3
@@ -245,6 +254,8 @@ jobs:
           done
           kill -INT $REC || true
           wait $REC || true
+          kill $LOG || true
+          wc -l out/springboard-pip.log
           ls out | wc -l
 
       - uses: actions/upload-artifact@v7
