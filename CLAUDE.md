@@ -101,6 +101,7 @@ Each has its full story in `HISTORY.md` under "Gotchas already paid for" or the 
 - `edgeGap = 21` is measured (Music's bars), since the system exposes no tab bar inset. `.padding(.horizontal)` with no argument is 16 pt, which is wrong.
 - **Don't draw a background behind the bar.** `safeAreaBar` applies the system's scroll edge effect, which iOS 27 changed and Ammy followed for free.
 - Rejected, not worth retrying: `safeAreaInset`, `contentMargins` with an overlay, `UIScrollEdgeElementContainerInteraction`, a `.bottomBar` toolbar.
+- **Picture in Picture covers the bar.** iOS rests PiP 10 pt above the bottom safe area the app reports to SpringBoard (`primaryWindowOverlayInsets`). Tab bars, bottom toolbars and `additionalSafeAreaInsets` count; `safeAreaBar` and `.safeAreaPadding` don't, so Ammy reports 0 (HISTORY.md, 18 Nov 2026; design library `apple/ios-pip-placement/`).
 
 **The main screen.**
 - No section headers under the large title (the owner chose "Option 1", 2 Nov 2026, build 158; HISTORY.md "No section headers on the main screen").
