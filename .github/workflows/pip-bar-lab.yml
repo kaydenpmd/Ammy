@@ -14,6 +14,10 @@ on:
     branches: [pip-bar-lab]
   workflow_dispatch:
 
+# Which tests the Run step runs. Run 44397032602 ran all five ("pip keyboard scroll ends history"); its PiP drags missed their corners, because the test runner's UIScreen.main said 320 x 480 on iOS 26.5, so the next run repeats the PiP test alone.
+env:
+  TESTS: "pip"
+
 jobs:
   compile:
     runs-on: macos-26
@@ -214,11 +218,15 @@ jobs:
           xcrun simctl io "$UDID" recordVideo --codec=h264 --force out/lab.mp4 > out/record.log 2>&1 &
           REC=$!
           sleep 3
-          run_tests pip test1PiP
-          run_tests keyboard test2Keyboard
-          run_tests scroll test3Scroll
-          run_tests ends test4Ends
-          run_tests history test5History
+          for t in $TESTS; do
+            case "$t" in
+              pip) run_tests pip test1PiP ;;
+              keyboard) run_tests keyboard test2Keyboard ;;
+              scroll) run_tests scroll test3Scroll ;;
+              ends) run_tests ends test4Ends ;;
+              history) run_tests history test5History ;;
+            esac
+          done
           kill -INT $REC || true
           wait $REC || true
           kill $LOG $SBLOG || true

@@ -64,7 +64,13 @@ final class PiPBarLabUITests: XCTestCase {
         String(format: "x=%.2f y=%.2f w=%.2f h=%.2f maxY=%.2f", r.minX, r.minY, r.width, r.height, r.maxY)
     }
 
-    @MainActor private var screen: CGSize { UIScreen.main.bounds.size }
+    /// The screen, from SpringBoard's own element. The test runner's
+    /// UIScreen.main said 320 x 480 on the 17e copy on iOS 26.5 (run
+    /// 44397032602), which threw every drag to the top of the screen.
+    @MainActor private var screen: CGSize {
+        let frames = [springboard.frame, springboard.windows.firstMatch.frame]
+        return frames.max(by: { $0.width * $0.height < $1.width * $1.height })?.size ?? UIScreen.main.bounds.size
+    }
 
     @MainActor private var springboard: XCUIApplication {
         XCUIApplication(bundleIdentifier: "com.apple.springboard")
@@ -189,7 +195,7 @@ final class PiPBarLabUITests: XCTestCase {
     /// has no bar, and back.
     @MainActor
     func test1PiP() {
-        log("screen \(screen.width) x \(screen.height) pt, scale \(UIScreen.main.scale)")
+        log("screen \(screen.width) x \(screen.height) pt (SpringBoard's), UIScreen.main \(UIScreen.main.bounds.size), scale \(UIScreen.main.scale)")
         let host = XCUIApplication()
         host.launchEnvironment = ["LAB_OUT": outDir]
         host.launch()
