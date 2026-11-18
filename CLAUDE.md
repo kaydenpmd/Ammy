@@ -95,13 +95,13 @@ Each has its full story in `HISTORY.md` under "Gotchas already paid for" or the 
 
 **The bottom bar.**
 - The bar is a `safeAreaBar` on the **`NavigationStack`, not the Form**. On the Form it makes the large title jump on collapse (a SwiftUI defect; lab on `jitter-lab`, Feedback report drafted there, waiting to be filed from the owner's account). Seen fixed on the owner's SE, build 150.
-- Because a stack doesn't pass its bar's inset to lists (FB23732628), the Form adds `.safeAreaPadding(.bottom, barHeight)`. Not `contentMargins`, which replaces the list's own 20 pt instead of adding to it.
-- The page carries a copy of the bar while sliding to and from History (`PageTransitions`, `viewWillDisappear` to `viewDidAppear`); the stack's bar steps aside without animating. **Don't fade the stack's bar**: tried in builds 150–154, looked worse.
+- Because a stack doesn't pass its bar's inset to lists (FB23732628), the page gets the bar's room as **UIKit** safe area: `BarRoom`, a view controller inside the page, sets `additionalSafeAreaInsets.bottom` on the view controller the navigation controller holds for the page, from the window's own inset up to the bar's top edge, the keyboard included while it's up (`barRoom`). Since build 208; builds 158–201 used `.safeAreaPadding(.bottom, barHeight)`, the same room for the Form but inside SwiftUI only. Not `contentMargins`, which replaces the list's own 20 pt instead of adding to it.
+- The page carries a copy of the bar while sliding to and from History (`PageTransitions`, `viewWillDisappear` to `viewDidAppear`); the stack's bar steps aside without animating. The copy lays out inside the page's safe area, which ends at the bar's top, so it's offset down by `barHeight`. **Don't fade the stack's bar**: tried in builds 150–154, looked worse.
 - `bottomSafeArea` is read from a `Color.clear` background with `.ignoresSafeArea(.keyboard)`, so it stays 0 or 34 while the keyboard is up. The bar pads `edgeGap` (21 pt) above the screen edge, or above the keyboard when it's up. Reading it without ignoring the keyboard hid the bar behind it from build 77 to 172. iOS leaves the keyboard out of screenshots while the secure Key field is focused; trust frames.
 - `edgeGap = 21` is measured (Music's bars), since the system exposes no tab bar inset. `.padding(.horizontal)` with no argument is 16 pt, which is wrong.
 - **Don't draw a background behind the bar.** `safeAreaBar` applies the system's scroll edge effect, which iOS 27 changed and Ammy followed for free.
 - Rejected, not worth retrying: `safeAreaInset`, `contentMargins` with an overlay, `UIScrollEdgeElementContainerInteraction`, a `.bottomBar` toolbar.
-- **Picture in Picture covers the bar.** iOS rests PiP 10 pt above the bottom safe area the app reports to SpringBoard (`primaryWindowOverlayInsets`). Tab bars, bottom toolbars and `additionalSafeAreaInsets` count; `safeAreaBar` and `.safeAreaPadding` don't, so Ammy reports 0 (HISTORY.md, 18 Nov 2026; design library `apple/ios-pip-placement/`).
+- **Picture in Picture rests above the bar** (build 208). iOS rests PiP 10 pt above the bottom safe area the app reports to SpringBoard (`primaryWindowOverlayInsets`; 24 pt on iPad), and only UIKit's safe area counts: tab bars, bottom toolbars and `additionalSafeAreaInsets`, never `safeAreaBar` or `.safeAreaPadding`. `BarRoom` is what reports the bar, so whatever reserves the bar's room has to stay in UIKit's safe area. With the keyboard up the room includes the keyboard, so PiP rests above Stop and Restart too; over History, which has no bar, it drops to the bottom (HISTORY.md, 18 Nov 2026; design library `apple/ios-pip-placement/`).
 
 **The main screen.**
 - No section headers under the large title (the owner chose "Option 1", 2 Nov 2026, build 158; HISTORY.md "No section headers on the main screen").
@@ -233,6 +233,7 @@ As of 16 Nov 2026. Ammy 184 is on the owner's phone (installed 14 Nov 2026); Iss
 
 **Not yet seen on a device**, as of the notes. Each of these was checked only in the simulator or not at all:
 - the bar above the keyboard (fixed 12 Nov 2026), and iPad's floating and hardware keyboards
+- Picture in Picture resting above the bar (build 208); the iPhone simulators only show PiP on device types given the iPad's PiP flags
 - History's 36 pt of room at the foot of the page (build 158)
 - the copy of the bar sliding with the page to History (build 156)
 - VoiceOver's "Now Playing" (build 164), not yet heard
