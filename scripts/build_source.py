@@ -22,6 +22,7 @@ Usage:
 import argparse
 import hashlib
 import json
+import re
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -30,6 +31,63 @@ from pathlib import Path
 def die(msg):
     print(f"error: {msg}", file=sys.stderr)
     sys.exit(1)
+
+
+# Lines that Markdown starts a block of its own with, so reflow() never joins
+# them onto the line above. A numbered item can break into a paragraph only
+# from 1, as in CommonMark, so a wrapped line that happens to begin "148. "
+# stays part of its sentence.
+_RULE = re.compile(r"([-*_=]\s*){3,}$")
+_OWN_LINE = re.compile(r"(#{1,6}(\s|$)|>|\|)")
+_BULLET = re.compile(r"[-*+]\s")
+_NUMBERED = re.compile(r"\d{1,9}[.)]\s")
+_FIRST_NUMBERED = re.compile(r"1[.)]\s")
+
+
+def reflow(text):
+    """
+    Join each paragraph's lines into one, so the reader's screen does the
+    wrapping. The newest commit message becomes What's New, and SideStore shows
+    it line for line: a body wrapped at 72 columns for git broke mid-sentence
+    on a phone (build 201, 18 Nov 2026). Blank lines, list items, headings,
+    quotes, tables, rules and code stay as written; a list item's own wrapped
+    lines are joined like a paragraph's.
+    """
+    out = []
+    last = None  # the line before: para, item, code, block or blank
+    fence = None
+    for line in text.replace("\r\n", "\n").split("\n"):
+        body = line.strip()
+        if fence:
+            out.append(line)
+            if body.startswith(fence):
+                fence, last = None, "block"
+            continue
+        if body.startswith(("```", "~~~")):
+            fence, last = body[:3], "block"
+            out.append(line)
+            continue
+        if not body:
+            out.append("")
+            last = "blank"
+            continue
+        if last in (None, "blank", "code") and line.startswith(("    ", "\t")):
+            out.append(line.rstrip())
+            last = "code"
+            continue
+        numbered = _FIRST_NUMBERED if last == "para" else _NUMBERED
+        if _RULE.match(body) or _OWN_LINE.match(body):
+            out.append(line.rstrip())
+            last = "block"
+        elif _BULLET.match(body) or numbered.match(body):
+            out.append(line.rstrip())
+            last = "item"
+        elif last in ("para", "item"):
+            out[-1] = out[-1].rstrip() + " " + body
+        else:
+            out.append(line.rstrip())
+            last = "para"
+    return "\n".join(out)
 
 
 def hex_color(value):
@@ -130,6 +188,7 @@ def main():
             changelog = cl_path.read_text(encoding="utf-8").strip()
     if not changelog:
         changelog = f"Version {args.version}"
+    changelog = reflow(changelog)
 
     date = args.date or datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S+00:00")
 

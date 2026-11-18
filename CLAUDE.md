@@ -376,7 +376,9 @@ hand builds without releasing.
 
 **Pushing to main is releasing.** The newest commit's message, minus
 trailers, becomes the release notes and SideStore's What's New. Get the
-owner's OK on that text first.
+owner's OK on that text first, and write each paragraph of it as one line: the
+GitHub Release shows the message as written. `build_source.py` joins a
+paragraph's lines into one for SideStore (`reflow()`, 18 Nov 2026).
 
 Albums is in this source too: its CI pushes `public/source.json` here, so
 `main` can move under you (`PUBLISHING.md`). The repo is public because macOS

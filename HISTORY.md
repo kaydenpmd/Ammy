@@ -2145,3 +2145,26 @@ notes. Before the upload the log said "Release 448185442 is not yet
 discoverable by tag v1.0-b201, retrying... (2 retries remaining)"; the upload
 went through, so v3 evidently looks the release up by tag after creating it,
 and retries.
+
+## 18 Nov 2026: What's New broke mid-sentence
+
+The owner sent a screenshot of SideStore's What's New for build 201: "you keep
+adding unnecessary line breaks in the middle of lines in ammy's release notes
+and possibly many other places". Commit message bodies were wrapped at about
+72 columns, git's habit, and the newest message becomes the notes as written.
+SideStore shows every line break, so on the phone each paragraph broke
+mid-sentence ("softprops/action-gh-release from", then "v2 to v3."). The
+GitHub Release does the same: the API's `body_html` for v1.0-b201 has a `<br>`
+at each wrap. 24 of Ammy's 40 releases and all 5 of Albums' have such a break.
+
+`build_source.py` now passes the changelog through `reflow()`, which joins
+each paragraph's lines and leaves blank lines, list items, headings, quotes,
+tables, rules and code as written (a numbered line breaks into a paragraph
+only from 1, as in CommonMark). Over the 73 release bodies of Ammy, Albums and
+Issun it changed no word, left no break inside a paragraph, and a second pass
+changed nothing. Albums' CI runs this script too, so it covers both apps. The
+two entries already in `source.json` (Ammy 201, Albums 6) were joined the same
+way. The workflows weren't changed, since a push to one releases a build, so
+the GitHub Release still shows the message as written: the global CLAUDE.md now
+says to write each paragraph as one line. The 73 bodies as they were are in
+`local/release-bodies-2026-11-18.json`.
