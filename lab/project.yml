@@ -1,0 +1,72 @@
+name: PiPLab
+
+# pip-lab only, never merged. Where iOS puts the Picture in Picture window
+# over an app's bottom controls. PiPHost floats a magenta video in PiP; Bars
+# shows one kind of bottom bar per launch (`-variant`); the UI tests drive
+# both, the real Ammy and Apple's own apps by bundle identifier.
+
+options:
+  bundleIdPrefix: com.local
+  deploymentTarget:
+    iOS: "26.0"
+
+targets:
+  PiPHost:
+    type: application
+    platform: iOS
+    sources:
+      - path: PiPHost
+    info:
+      path: PiPHost/Info.plist
+      properties:
+        CFBundleDisplayName: PiPHost
+        UILaunchScreen: {}
+        # PiP keeps playing only for an app that may play audio in the
+        # background.
+        UIBackgroundModes:
+          - audio
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.local.piphost
+        SWIFT_VERSION: "5.0"
+        GENERATE_INFOPLIST_FILE: NO
+        TARGETED_DEVICE_FAMILY: "1"
+    scheme:
+      testTargets:
+        - PiPLabUITests
+
+  Bars:
+    type: application
+    platform: iOS
+    sources:
+      - path: Bars
+    info:
+      path: Bars/Info.plist
+      properties:
+        CFBundleDisplayName: Bars
+        UILaunchScreen: {}
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.local.bars
+        SWIFT_VERSION: "5.0"
+        GENERATE_INFOPLIST_FILE: NO
+        TARGETED_DEVICE_FAMILY: "1"
+    scheme: {}
+
+  PiPLabUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources:
+      - path: PiPLabUITests
+    dependencies:
+      - target: PiPHost
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.local.piphost.uitests
+        SWIFT_VERSION: "5.0"
+        GENERATE_INFOPLIST_FILE: YES
+        TEST_TARGET_NAME: PiPHost
