@@ -1,0 +1,41 @@
+{
+ "supportedProductFamilyIDs": [
+  1
+ ],
+ "chromeIdentifier": "com.apple.dt.devicekit.chrome.phone",
+ "modelIdentifier": "iPhone14,6",
+ "productClass": "D49",
+ "createByDefaultForRuntimeVersions": {
+  "versionMax": "18.2",
+  "versionMin": "15.4"
+ },
+ "representedModelIdentifiers": [
+  "iPhone14,6"
+ ],
+ "minRuntimeVersion": "15.4",
+ "supportedArchs": [
+  "arm64",
+  "x86_64"
+ ],
+ "springBoardConfigName": "iPhone4Simulator",
+ "environment": {
+  "SIMULATOR_LEGACY_ASSET_SUFFIX": "iphone"
+ },
+ "supportedFeaturesConditionalOnRuntime": {
+  "com.apple.hid.applepay.authorize": true,
+  "com.apple.touch-id": true,
+  "com.apple.deviceIdentity": true,
+  "com.apple.display.ambient-overlay": true,
+  "com.apple.carplay": true,
+  "com.apple.watch.pairing.companion": true,
+  "com.apple.watch.pairing.qws": true,
+  "com.apple.CoreSimulator.display.resizableScene": true,
+  "com.apple.CoreSimulator.pairing": true
+ },
+ "supportedFeatures": {
+  "com.apple.hid.keyboard": true,
+  "com.apple.display.integrated": true,
+  "com.apple.display.supports-external": true,
+  "com.apple.hid.touch-screen": true
+ }
+}

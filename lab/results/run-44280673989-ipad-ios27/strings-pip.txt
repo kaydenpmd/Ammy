@@ -1,0 +1,86 @@
+SpringBoard: _insetRectForEdgeInsets:pipSize:containerBounds:
+SpringBoard: _pictureInPictureWindowMarginsOnWindowScene:
+SpringBoard: _pipPositionHyperregionComposer
+SpringBoard: _preferredPIPDodgingInsets
+SpringBoard: _updatePictureInPictureOverlayInsetsOnWindowScene:withCurrentLayoutState:toHomeScreen:toInterfaceOrientation:shouldUpdate:
+SpringBoard: _updatePIPInsetsForExpanseHUDForUnlockedEnvironmentMode:shouldConsiderPrimary:
+SpringBoard: -[SBPIPController _edgeInsetsDidChangeOnWindowScene:]
+SpringBoard: -homeScreenInitialPIPFrameForWindowScene inputs: windowInsets[%{public}@] fromOrientation[%{public}@] toOrientation[%{public}@] orientation[%{public}@] isContentViewAlignedLeft[%{bool}u] isContentViewAlignedTop[%{bool}u] homeScreenbounds[%{public}@]
+SpringBoard: [%p] [PIP Container] Applying new edge insets: %{public}@. Derived from picking maximum between safeAreaInsets: %{public}@, and our extra content padding: %{public}@, adjusted for interface orientation: %ld
+SpringBoard: [%p][Layout][Insets] Position Hyperregion Library couldn't satisfy required edge insets. Desired inset rect: %{public}@, minimum inset rect: %{public}@, pipSize: %{public}@, bounds: %{public}@, minimumPadding: %{public}@, using: %{public}@
+SpringBoard: [%p][Layout][Insets] Position Hyperregion Library couldn't satisfy required edge insets. Desired inset rect: %{public}@, stashed minimum inset rect: %{public}@, pipSize: %{public}@, bounds: %{public}@, minimumPadding: %{public}@, using: %{public}@
+SpringBoard: [%p][Layout][Insets] Position Hyperregion Library falling back to maximum rect size as inset rect is still too small. Desired inset rect: %{public}@, minimum inset rect: %{public}@, pipSize: %{public}@, bounds: %{public}@, minimumPadding: %{public}@, using: %{public}@
+SpringBoard: [%p][Layout][Insets] Validated container inset rect for stashed-sized PIP: validatedInsetRect%{public}@
+SpringBoard: {?="switcherGestureManagerForSwitcherContentController"b1"sceneRelevancyManagerForSwitcherContentController"b1"switcherIconZoomContextProviderForSwitcherContentController"b1"homeGestureSettingsForSwitcherContentController"b1"maximumNumberOfScenesOnStageForSwitcherContentController"b1"activeTransientOverlayPresentedAppLayoutForSwitcherContentController"b1"appLayoutForWorkspaceTransientOverlay"b1"viewControllerForTransientOverlayAppLayout"b1"createWorkspaceTransientOverlayForAppLayout"b1"matchingIconViewForIconView"b1"prioritizesSortOrderForAppLayout"b1"switcherContentControllerFrameForFloatingAppLayoutInInterfaceOrientationFloatingConfiguration"b1"switcherContentControllerFrameForCenterItemWithConfigurationInterfaceOrientation"b1"homeScreenInterfaceOrientationForContentController"b1"backdropInterfaceStyleForContentController"b1"switcherContentControllerShouldMorphToPIPForTransitionContext"b1"switcherContentControllerShouldMorphFromPIPForTransitionContext"b1"isInAppStatusBarRequestedHiddenForSwitcherContentController"b1"inAppStatusBarPartAlphasForSwitcherContentController"b1"leadingStatusBarPartFrameForSwitcherContentController"b1"trailingStatusBarPartFrameForSwitcherContentController"b1"centerStatusBarPartFrameShouldBeConsideredInWindowingLayoutForSwitcherContentController"b1"centerStatusBarPartFrameForSwitcherContentController"b1"switcherContentControllerVisibleAppLayoutsForBundleIdentifier"b1"switcherContentControllerVisibleDisplayItemsForBundleIdentifier"b1"switcherContentControllerHiddenAppLayoutsForBundleIdentifier"b1"switcherContentControllerReloadsSnapshotsForActiveInterfaceOrientationChange"b1"switcherContentControllerHasMultipleDisplays"b1"switcherContentControllerSupportsTitleItemsForAppLayout"b1"switcherContentControllerSupportsKillingOfAppLayout"b1"switcherContentControllerDisplayItemSupportsCenterRole"b1"switcherContentControllerIsKeyboardHomeAffordanceAssertionCurrentlyBeingTaken"b1"switcherContentControllerDeviceApplicationSceneHandleForDisplayItem"b1"isDisplayEmbeddedForSwitcherContentController"b1"windowManagementContextForSwitcherContentController"b1"switcherContentControllerDisplayItemIsClassic"b1"switcherContentControllerDisplayItemSupportsMedusa"b1"draggingAppLayoutsForWindowDragForSwitcherContentController"b1"proposedAppLayoutsForWindowDragForSwitcherContentController"b1"isSwitcherContentControllerEphemeral"b1"displayConfigurationsOfOtherDisplaysForSwitcherContentController"b1"guardedForegroundDisplayItemsForSwitcherContentController"b1"desktopSpaceItemsForSwitcherContentController"b1"slideOverItemForSwitcherContentController"b1"windowingConfigurationForSwitcherContentControllerCorrespondingToDisplayOrdinal"b1"appLayoutForSwitcherContentControllerCorrespondingToDisplayOrdinal"b1"genieGlassHighlightForSwitcherContentController"b1"isHiddenWindowsPillSupportedForSwitcherContentController"b1}
+SpringBoard: {CGPoint=dd}328@0:8Q16{CGPoint=dd}24{SBPIPPositionGeometryContext={CGSize=dd}{CGSize=dd}{CGSize=dd}{CGPoint=dd}{CGRect={CGPoint=dd}{CGSize=dd}}{UIEdgeInsets=dddd}{UIEdgeInsets=dddd}{UIEdgeInsets=dddd}QqB}40{SBPIPPositionInteractionStateContext=BBBB{CGPoint=dd}{CGPoint=dd}{CGPoint=dd}dd}256
+SpringBoard: {CGRect={CGPoint=dd}{CGSize=dd}}232@0:8{SBPIPPositionGeometryContext={CGSize=dd}{CGSize=dd}{CGSize=dd}{CGPoint=dd}{CGRect={CGPoint=dd}{CGSize=dd}}{UIEdgeInsets=dddd}{UIEdgeInsets=dddd}{UIEdgeInsets=dddd}QqB}16
+SpringBoard: {SBPIPPositionGeometryContext="pipCurrentSize"{CGSize="width"d"height"d}"pipLastSteadySize"{CGSize="width"d"height"d}"pipStashedSize"{CGSize="width"d"height"d}"pipAnchorPointOffset"{CGPoint="x"d"y"d}"containerBounds"{CGRect="origin"{CGPoint="x"d"y"d}"size"{CGSize="width"d"height"d}}"edgeInsets"{UIEdgeInsets="top"d"left"d"bottom"d"right"d}"minimumPadding"{UIEdgeInsets="top"d"left"d"bottom"d"right"d}"stashedMinimumPadding"{UIEdgeInsets="top"d"left"d"bottom"d"right"d}"offscreenCorners"Q"orientation"q"isContinuity"B}
+SpringBoard: {SBPIPPositionGeometryContext={CGSize=dd}{CGSize=dd}{CGSize=dd}{CGPoint=dd}{CGRect={CGPoint=dd}{CGSize=dd}}{UIEdgeInsets=dddd}{UIEdgeInsets=dddd}{UIEdgeInsets=dddd}QqB}16@0:8
+SpringBoard: {SBPIPPositionGeometryContext={CGSize=dd}{CGSize=dd}{CGSize=dd}{CGPoint=dd}{CGRect={CGPoint=dd}{CGSize=dd}}{UIEdgeInsets=dddd}{UIEdgeInsets=dddd}{UIEdgeInsets=dddd}QqB}240@0:8{SBPIPPositionGeometryContext={CGSize=dd}{CGSize=dd}{CGSize=dd}{CGPoint=dd}{CGRect={CGPoint=dd}{CGSize=dd}}{UIEdgeInsets=dddd}{UIEdgeInsets=dddd}{UIEdgeInsets=dddd}QqB}16@232
+SpringBoard: {SBPIPPositionGeometryContext={CGSize=dd}{CGSize=dd}{CGSize=dd}{CGPoint=dd}{CGRect={CGPoint=dd}{CGSize=dd}}{UIEdgeInsets=dddd}{UIEdgeInsets=dddd}{UIEdgeInsets=dddd}QqB}248@0:8@"<SBPIPPositionHyperregionComposing>"16{SBPIPPositionGeometryContext={CGSize=dd}{CGSize=dd}{CGSize=dd}{CGPoint=dd}{CGRect={CGPoint=dd}{CGSize=dd}}{UIEdgeInsets=dddd}{UIEdgeInsets=dddd}{UIEdgeInsets=dddd}QqB}24@"SBWindowScene"240
+SpringBoard: {SBPIPPositionGeometryContext={CGSize=dd}{CGSize=dd}{CGSize=dd}{CGPoint=dd}{CGRect={CGPoint=dd}{CGSize=dd}}{UIEdgeInsets=dddd}{UIEdgeInsets=dddd}{UIEdgeInsets=dddd}QqB}248@0:8@16{SBPIPPositionGeometryContext={CGSize=dd}{CGSize=dd}{CGSize=dd}{CGPoint=dd}{CGRect={CGPoint=dd}{CGSize=dd}}{UIEdgeInsets=dddd}{UIEdgeInsets=dddd}{UIEdgeInsets=dddd}QqB}24@240
+SpringBoard: {UIEdgeInsets=dddd}32@0:8@"SBPIPInteractionController"16@"SBWindowScene"24
+SpringBoard: @"_UIHyperregionUnion"240@0:8q16{SBPIPPositionGeometryContext={CGSize=dd}{CGSize=dd}{CGSize=dd}{CGPoint=dd}{CGRect={CGPoint=dd}{CGSize=dd}}{UIEdgeInsets=dddd}{UIEdgeInsets=dddd}{UIEdgeInsets=dddd}QqB}24
+SpringBoard: @"<SBPIPPositionHyperregionComposerDelegate>"
+SpringBoard: @"<SBPIPPositionHyperregionComposerDelegate>"16@0:8
+SpringBoard: @"NSDictionary"312@0:8@"NSDictionary"16{SBPIPPositionGeometryContext={CGSize=dd}{CGSize=dd}{CGSize=dd}{CGPoint=dd}{CGRect={CGPoint=dd}{CGSize=dd}}{UIEdgeInsets=dddd}{UIEdgeInsets=dddd}{UIEdgeInsets=dddd}QqB}24{SBPIPPositionInteractionStateContext=BBBB{CGPoint=dd}{CGPoint=dd}{CGPoint=dd}dd}240
+SpringBoard: @"SBKeyboardFocusResolutionPipeline"
+SpringBoard: @"SBKeyboardFocusResolutionPipeline"16@0:8
+SpringBoard: @"SBPIPEdgeResizeAnchorPointSettings"
+SpringBoard: @"SBPIPEdgeResizeSettings"
+SpringBoard: @"SBPIPMultidisplayHyperregionComposer"
+SpringBoard: @"SBPIPPositionHyperregionLibrary"
+SpringBoard: @"SBWindowScene"24@0:8@"<SBPIPPositionHyperregionComposing>"16
+SpringBoard: @232@0:8{SBPIPPositionGeometryContext={CGSize=dd}{CGSize=dd}{CGSize=dd}{CGPoint=dd}{CGRect={CGPoint=dd}{CGSize=dd}}{UIEdgeInsets=dddd}{UIEdgeInsets=dddd}{UIEdgeInsets=dddd}QqB}16
+SpringBoard: @240@0:8q16{SBPIPPositionGeometryContext={CGSize=dd}{CGSize=dd}{CGSize=dd}{CGPoint=dd}{CGRect={CGPoint=dd}{CGSize=dd}}{UIEdgeInsets=dddd}{UIEdgeInsets=dddd}{UIEdgeInsets=dddd}QqB}24
+SpringBoard: @312@0:8@16{SBPIPPositionGeometryContext={CGSize=dd}{CGSize=dd}{CGSize=dd}{CGPoint=dd}{CGRect={CGPoint=dd}{CGSize=dd}}{UIEdgeInsets=dddd}{UIEdgeInsets=dddd}{UIEdgeInsets=dddd}QqB}24{SBPIPPositionInteractionStateContext=BBBB{CGPoint=dd}{CGPoint=dd}{CGPoint=dd}dd}240
+SpringBoard: %{public}@ pipRequiresMedusaKeyboard is YES so keyboardIsForMedusa is YES
+SpringBoard: applyPictureInPictureInsets:forSource:
+SpringBoard: applyStashedPictureInPicturePadding:forPIPSource:
+SpringBoard: homeScreenInitialPIPFrameForWindowScene:withContentViewSize:position:padding:fromOrientation:toOrientation:shouldUpdate:gestureInitiated:
+SpringBoard: inCallClientPresentationSessionResolvedPIPDodgingInsets:
+SpringBoard: initWithSceneHandle:workspace:bannerManager:deactivationManager:mainSwitcherCoordinator:keyboardFocusController:springBoard:setupManager:magSafeSleeveController:pipCoordinator:lockoutStateProvider:
+SpringBoard: isPresentingPictureInPictureRequiringFullScreenKeyboard
+SpringBoard: isPresentingPictureInPictureRequiringMedusaKeyboard
+SpringBoard: Keyboard will be hosted outside app scene - pipRequiresFullScreenKeyboard: %{BOOL}d
+SpringBoard: PictureInPicture - SBSystemNotesPositionHyperregionComposer - %p
+SpringBoard: pictureInPictureWindowMarginsOnWindowScene:
+SpringBoard: PIP Edge Resize
+SpringBoard: preferredPIPDodgingInsets
+SpringBoard: presentingPictureInPictureRequiringFullScreenKeyboard
+SpringBoard: Preventing the switcher live resize gesture because covered by keyboard or PiP.
+SpringBoard: Q328@0:8{CGPoint=dd}16Q32{SBPIPPositionGeometryContext={CGSize=dd}{CGSize=dd}{CGSize=dd}{CGPoint=dd}{CGRect={CGPoint=dd}{CGSize=dd}}{UIEdgeInsets=dddd}{UIEdgeInsets=dddd}{UIEdgeInsets=dddd}QqB}40{SBPIPPositionInteractionStateContext=BBBB{CGPoint=dd}{CGPoint=dd}{CGPoint=dd}dd}256
+SpringBoard: SBKeyboardFocusPolicyEnforcerPipeline
+SpringBoard: SBKeyboardFocusResolutionPipeline
+SpringBoard: SBKeyboardFocusResolutionPipelineFactory
+SpringBoard: SBPIP_allowsEdgeAntialiasing
+SpringBoard: SBPIP_setAllowsEdgeAntialiasing:
+SpringBoard: SBPIPControllerInsetOverrideAssertion
+SpringBoard: SBPIPDefaultPositionHyperregionComposer
+SpringBoard: SBPIPEdgeResizeAnchorPointSettings
+SpringBoard: SBPIPEdgeResizeSettings
+SpringBoard: SBPIPMultidisplayHyperregionComposer
+SpringBoard: SBPIPPositionHyperregionComposerDelegate
+SpringBoard: SBPIPPositionHyperregionComposing
+SpringBoard: SBPIPPositionHyperregionLibrary
+SpringBoard: SBPIPPositionHyperregionLibrary.m
+SpringBoard: SBPIPPositionHyperregionProviding
+SpringBoard: T{SBPIPPositionGeometryContext={CGSize=dd}{CGSize=dd}{CGSize=dd}{CGPoint=dd}{CGRect={CGPoint=dd}{CGSize=dd}}{UIEdgeInsets=dddd}{UIEdgeInsets=dddd}{UIEdgeInsets=dddd}QqB},N,V_extendedGeometryContext
+SpringBoard: T{SBPIPPositionGeometryContext={CGSize=dd}{CGSize=dd}{CGSize=dd}{CGPoint=dd}{CGRect={CGPoint=dd}{CGSize=dd}}{UIEdgeInsets=dddd}{UIEdgeInsets=dddd}{UIEdgeInsets=dddd}QqB},N,V_mainGeometryContext
+SpringBoard: T{UIEdgeInsets=dddd},R,N,V_preferredPIPDodgingInsets
+SpringBoard: T@"<SBPIPPositionHyperregionComposerDelegate>",W,N
+SpringBoard: T@"<SBPIPPositionHyperregionComposerDelegate>",W,N,V_delegate
+SpringBoard: T@"SBKeyboardFocusResolutionPipeline",&,N,V_pipeline
+SpringBoard: T@"SBPIPEdgeResizeAnchorPointSettings",&,N,V_anchorPointSettings
+SpringBoard: T@"SBPIPEdgeResizeSettings",&,N,V_edgeResizeSettings
+SpringBoard: TB,N,SSBPIP_setAllowsEdgeAntialiasing:
+SpringBoard: TB,R,N,GisPresentingPictureInPictureRequiringFullScreenKeyboard
+SpringBoard: v16@?0@"<SBPIPPositionHyperregionComposing>"8
+SpringBoard: v232@0:8{SBPIPPositionGeometryContext={CGSize=dd}{CGSize=dd}{CGSize=dd}{CGPoint=dd}{CGRect={CGPoint=dd}{CGSize=dd}}{UIEdgeInsets=dddd}{UIEdgeInsets=dddd}{UIEdgeInsets=dddd}QqB}16
+SpringBoard: v24@0:8@"<SBPIPPositionHyperregionComposerDelegate>"16
+SpringBoard: v24@0:8@"<SBPIPPositionHyperregionComposing>"16
+SpringBoard: v240@0:8@16{SBPIPPositionGeometryContext={CGSize=dd}{CGSize=dd}{CGSize=dd}{CGPoint=dd}{CGRect={CGPoint=dd}{CGSize=dd}}{UIEdgeInsets=dddd}{UIEdgeInsets=dddd}{UIEdgeInsets=dddd}QqB}24
+SpringBoard: v248@0:8q16{SBPIPPositionGeometryContext={CGSize=dd}{CGSize=dd}{CGSize=dd}{CGPoint=dd}{CGRect={CGPoint=dd}{CGSize=dd}}{UIEdgeInsets=dddd}{UIEdgeInsets=dddd}{UIEdgeInsets=dddd}QqB}24@240
+SpringBoard: v28@0:8@"<SBPIPPositionHyperregionComposing>"16i24
+SpringBoard: v304@0:8{SBPIPPositionGeometryContext={CGSize=dd}{CGSize=dd}{CGSize=dd}{CGPoint=dd}{CGRect={CGPoint=dd}{CGSize=dd}}{UIEdgeInsets=dddd}{UIEdgeInsets=dddd}{UIEdgeInsets=dddd}QqB}16{SBPIPPositionInteractionStateContext=BBBB{CGPoint=dd}{CGPoint=dd}{CGPoint=dd}dd}232
+SpringBoard: v312@0:8@16{SBPIPPositionGeometryContext={CGSize=dd}{CGSize=dd}{CGSize=dd}{CGPoint=dd}{CGRect={CGPoint=dd}{CGSize=dd}}{UIEdgeInsets=dddd}{UIEdgeInsets=dddd}{UIEdgeInsets=dddd}QqB}24{SBPIPPositionInteractionStateContext=BBBB{CGPoint=dd}{CGPoint=dd}{CGPoint=dd}dd}240

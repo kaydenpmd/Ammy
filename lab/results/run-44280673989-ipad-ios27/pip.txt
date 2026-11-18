@@ -1,0 +1,90 @@
+1794997225.870 screen 820.0 x 1180.0 pt, scale 2.0
+1794997245.521 host possible=true status: launched, iOS 27.0 / audio session active / supported=true / movie written / possible=false / possible=true
+1794997249.413 host started=true status: supported=true / movie written / possible=false / possible=true / start tapped, possible=true / willStart / didStart / active=true
+1794997252.742 host__started pip=[x=461.0 y=32.0 w=335.0 h=188.0 maxY=220.0] fill=0.987 fromBottom=960.0
+1794997260.543 home springboard: type 4 id 'PIP-SBInteractionPassThroughView' label 'Picture in Picture' [x=461.0 y=32.0 w=335.0 h=188.5 maxY=220.5] | type 44 id 'PiPHost' label 'PiPHost' [x=561.5 y=1084.5 w=68.0 h=68.0 maxY=1152.5] | type 1 id 'SBHLibraryCategoryStackView-innerIcon-2:com.local.piphost.uitests.xctrunner' label '' [x=658.0 y=1121.0 w=22.5 h=22.5 maxY=1143.5] | type 44 id 'PiPLabUITests-Runner' label 'PiPLabUITests-Runner' [x=619.0 y=252.5 w=109.0 h=99.5 maxY=352.0] | type 44 id 'PiPHost' label 'PiPHost' [x=110.0 y=415.0 w=72.0 h=95.5 maxY=510.5]
+1794997262.355 home__arrive pip=[x=130.0 y=32.0 w=666.0 h=238.0 maxY=270.0] fill=0.392 fromBottom=910.0
+1794997263.896 home drag topLeft from (463, 151) to (349, 183)
+1794997270.574 home__topLeft pip=[x=130.0 y=32.0 w=666.0 h=238.0 maxY=270.0] fill=0.392 fromBottom=910.0
+1794997272.872 home drag topRight from (463, 151) to (471, 183)
+1794997278.700 home__topRight pip=[x=130.0 y=32.0 w=666.0 h=238.0 maxY=270.0] fill=0.392 fromBottom=910.0
+1794997280.551 home drag bottomLeft from (463, 151) to (349, 1021)
+1794997287.919 home__bottomLeft pip=[x=130.0 y=261.5 w=666.0 h=778.5 maxY=1040.0] fill=0.120 fromBottom=140.0
+1794997289.594 home drag bottomRight from (463, 650) to (471, 750)
+1794997304.404 home__bottomRight pip=[x=130.0 y=261.5 w=666.0 h=778.5 maxY=1040.0] fill=0.120 fromBottom=140.0
+1794997304.674 ammy launching com.local.ammy -relay_endpoint https://lab.invalid/now-playing
+1794997330.903 ammy foreground=true tabBar=none toolbar=[x=0.0 y=0.0 w=820.0 h=1180.0 maxY=1180.0] start=[x=21.0 y=1108.5 w=778.0 h=50.5 maxY=1159.0]
+1794997333.840 ammy springboard: type 4 id 'PIP-SBInteractionPassThroughView' label 'Picture in Picture' [x=461.0 y=947.5 w=335.0 h=188.5 maxY=1136.0]
+1794997340.719 ammy__arrive pip=none
+1794997343.778 ammy topLeft: no window to drag
+1794997344.996 ammy topRight: no window to drag
+1794997347.722 ammy bottomLeft: no window to drag
+1794997349.610 ammy bottomRight: no window to drag
+1794997349.652 bars-none launching com.local.bars -variant none
+1794997381.405 bars-none foreground=true tabBar=none toolbar=[x=0.0 y=0.0 w=820.0 h=1180.0 maxY=1180.0] start=none
+1794997382.587 bars-none springboard: type 4 id 'PIP-SBInteractionPassThroughView' label 'Picture in Picture' [x=461.0 y=947.5 w=335.0 h=188.5 maxY=1136.0]
+1794997388.579 bars-none__arrive pip=none
+1794997390.127 bars-none topLeft: no window to drag
+1794997392.010 bars-none topRight: no window to drag
+1794997393.299 bars-none bottomLeft: no window to drag
+1794997394.876 bars-none bottomRight: no window to drag
+1794997394.879 bars-tabbar launching com.local.bars -variant tabbar
+1794997416.381 bars-tabbar foreground=true tabBar=none toolbar=[x=0.0 y=0.0 w=820.0 h=1180.0 maxY=1180.0] start=none
+1794997418.020 bars-tabbar springboard: type 4 id 'PIP-SBInteractionPassThroughView' label 'Picture in Picture' [x=461.0 y=947.5 w=335.0 h=188.5 maxY=1136.0]
+1794997423.739 bars-tabbar__arrive pip=none
+1794997425.310 bars-tabbar topLeft: no window to drag
+1794997426.755 bars-tabbar topRight: no window to drag
+1794997428.340 bars-tabbar bottomLeft: no window to drag
+1794997429.787 bars-tabbar bottomRight: no window to drag
+1794997429.795 bars-accessory launching com.local.bars -variant accessory
+1794997449.889 bars-accessory foreground=true tabBar=none toolbar=[x=0.0 y=0.0 w=820.0 h=1180.0 maxY=1180.0] start=none
+1794997452.151 bars-accessory springboard: type 4 id 'PIP-SBInteractionPassThroughView' label 'Picture in Picture' [x=461.0 y=899.5 w=335.0 h=188.5 maxY=1088.0]
+1794997457.499 bars-accessory__arrive pip=none
+1794997459.009 bars-accessory topLeft: no window to drag
+1794997460.250 bars-accessory topRight: no window to drag
+1794997461.527 bars-accessory bottomLeft: no window to drag
+1794997462.662 bars-accessory bottomRight: no window to drag
+1794997462.669 bars-toolbar launching com.local.bars -variant toolbar
+1794997481.412 bars-toolbar foreground=true tabBar=none toolbar=[x=0.0 y=0.0 w=820.0 h=1180.0 maxY=1180.0] start=[x=379.5 y=1120.0 w=61.5 h=36.0 maxY=1156.0]
+1794997482.944 bars-toolbar springboard: type 4 id 'PIP-SBInteractionPassThroughView' label 'Picture in Picture' [x=461.0 y=893.5 w=335.0 h=188.5 maxY=1082.0]
+1794997488.445 bars-toolbar__arrive pip=none
+1794997490.094 bars-toolbar topLeft: no window to drag
+1794997491.403 bars-toolbar topRight: no window to drag
+1794997492.609 bars-toolbar bottomLeft: no window to drag
+1794997493.878 bars-toolbar bottomRight: no window to drag
+1794997493.881 bars-safeareabar launching com.local.bars -variant safeareabar
+1794997511.008 bars-safeareabar foreground=true tabBar=none toolbar=[x=0.0 y=0.0 w=820.0 h=1180.0 maxY=1180.0] start=[x=21.0 y=1109.5 w=778.0 h=50.5 maxY=1160.0]
+1794997512.716 bars-safeareabar springboard: type 4 id 'PIP-SBInteractionPassThroughView' label 'Picture in Picture' [x=461.0 y=947.5 w=335.0 h=188.5 maxY=1136.0]
+1794997518.167 bars-safeareabar__arrive pip=none
+1794997519.670 bars-safeareabar topLeft: no window to drag
+1794997520.960 bars-safeareabar topRight: no window to drag
+1794997522.409 bars-safeareabar bottomLeft: no window to drag
+1794997523.610 bars-safeareabar bottomRight: no window to drag
+1794997523.622 files launching com.apple.DocumentsApp 
+1794997541.434 files foreground=true tabBar=none toolbar=[x=0.0 y=0.0 w=820.0 h=1180.0 maxY=1180.0] start=none
+1794997542.513 files springboard: type 4 id 'PIP-SBInteractionPassThroughView' label 'Picture in Picture' [x=461.0 y=947.5 w=335.0 h=188.5 maxY=1136.0]
+1794997547.927 files__arrive pip=none
+1794997549.074 files topLeft: no window to drag
+1794997550.312 files topRight: no window to drag
+1794997551.581 files bottomLeft: no window to drag
+1794997552.814 files bottomRight: no window to drag
+1794997552.825 photos launching com.apple.mobileslideshow 
+1794997573.889 photos foreground=true tabBar=none toolbar=[x=0.0 y=0.0 w=820.0 h=1180.0 maxY=1180.0] start=none
+1794997575.032 photos springboard: type 4 id 'PIP-SBInteractionPassThroughView' label 'Picture in Picture' [x=461.0 y=947.5 w=335.0 h=188.5 maxY=1136.0]
+1794997581.963 photos__arrive pip=none
+1794997586.853 photos topLeft: no window to drag
+1794997590.658 photos topRight: no window to drag
+1794997594.450 photos bottomLeft: no window to drag
+1794997597.649 photos bottomRight: no window to drag
+1794997597.756 settings launching com.apple.Preferences 
+1794997622.858 settings foreground=true tabBar=none toolbar=[x=0.0 y=0.0 w=820.0 h=1180.0 maxY=1180.0] start=none
+1794997629.485 settings springboard: type 4 id 'PIP-SBInteractionPassThroughView' label 'Picture in Picture' [x=461.0 y=947.5 w=335.0 h=188.5 maxY=1136.0]
+1794997637.199 settings__arrive pip=none
+1794997639.241 settings topLeft: no window to drag
+1794997640.573 settings topRight: no window to drag
+1794997641.948 settings bottomLeft: no window to drag
+1794997643.091 settings bottomRight: no window to drag
+1794997651.919 ammy-keyboard__before pip=none
+1794997663.648 ammy-keyboard shown=true keyboard=[x=0.0 y=898.0 w=820.0 h=279.0 maxY=1177.0] start=none
+1794997666.037 ammy-keyboard__up pip=[x=461.0 y=630.5 w=335.0 h=188.0 maxY=818.5] fill=0.987 fromBottom=361.5
+1794997666.050 done

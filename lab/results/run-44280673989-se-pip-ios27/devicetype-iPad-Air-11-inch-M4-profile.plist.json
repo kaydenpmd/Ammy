@@ -1,0 +1,39 @@
+{
+ "supportedProductFamilyIDs": [
+  2,
+  1
+ ],
+ "modelIdentifier": "iPad16,9",
+ "chromeIdentifier": "com.apple.dt.devicekit.chrome.tablet4",
+ "productClass": "J708",
+ "createByDefaultForRuntimeVersions": {
+  "versionMax": "99.99",
+  "versionMin": "26.3"
+ },
+ "representedModelIdentifiers": [
+  "iPad16,8",
+  "iPad16,9"
+ ],
+ "minRuntimeVersion": "26.3",
+ "framebufferMask": "1D05B7BF-7313-48A6-B2DF-964AAE76A0DC",
+ "supportedArchs": [
+  "arm64",
+  "x86_64"
+ ],
+ "springBoardConfigName": "iPadSimulatorHiDPI",
+ "environment": {
+  "SIMULATOR_LEGACY_ASSET_SUFFIX": "ipad"
+ },
+ "supportedFeatures": {
+  "com.apple.touch-id": true,
+  "com.apple.hid.keyboard": true,
+  "com.apple.display.integrated": true,
+  "com.apple.display.supports-external": true,
+  "com.apple.hid.touch-screen": true
+ },
+ "supportedFeaturesConditionalOnRuntime": {
+  "com.apple.hid.pointer.system": true,
+  "com.apple.deviceIdentity": true,
+  "com.apple.hid.applepay.authorize": true
+ }
+}
