@@ -682,12 +682,20 @@ struct ContentView: View {
 
     /// The bar's own height. A stack doesn't pass its bar's inset down to the
     /// lists inside it (FB23732628, Apple Developer Forums thread 837946), so
-    /// the Form adds it to its own safe area instead, as the bar did when it
-    /// was the Form's, and the list keeps its own room below the last row on
-    /// top of that. Content margins (builds 150 to 156) replaced that room
-    /// instead of adding to it: History ended 16 pt above the button, where
-    /// the bar on the Form leaves 36 in the simulator.
+    /// the page is given it again, in UIKit's safe area (`barRoom`), and the
+    /// list keeps its own room below the last row on top of that, as it did
+    /// when the bar was the Form's. Content margins (builds 150 to 156)
+    /// replaced that room instead of adding to it: History ended 16 pt above
+    /// the button, where the bar on the Form leaves 36 in the simulator.
     @State private var barHeight: CGFloat = 0
+
+    /// What the page is told the bar takes (`BarRoom`): from what the window
+    /// reserves at the bottom up to the bar's top edge, the keyboard included
+    /// while it's up, since the bar then rides on top of it. So the page's
+    /// safe area ends where the bar begins, with the keyboard up or down.
+    private var barRoom: CGFloat {
+        max(0, bottomWithKeyboard - bottomSafeArea) + barHeight
+    }
 
     /// SwiftUI's own `.padding()` amount, spelled out because the bar subtracts
     /// from it rather than simply applying it.
@@ -725,14 +733,16 @@ struct ContentView: View {
     var body: some View {
         NavigationStack {
             form
-                .safeAreaPadding(.bottom, barHeight)
                 // The page's own copy of the bar, for its slides to History
                 // and back: it goes with the page and under History, as the
                 // bar did when it was the Form's. Fading the stack's bar
                 // instead (builds 150 to 154) left a murky half-transparent
                 // capsule over History, then the edge effect switching off.
+                // It's laid out inside the page's safe area, which ends at
+                // the bar's top (BarRoom, below), so it moves down by its
+                // own height to sit where the stack's bar is.
                 .overlay(alignment: .bottom) {
-                    if barOnPage { bar }
+                    if barOnPage { bar.offset(y: barHeight) }
                 }
                 // UIKit says when this page starts to give way to History and
                 // when it has settled back. SwiftUI's onAppear and onDisappear
@@ -745,6 +755,18 @@ struct ContentView: View {
                                     didAppear: { barOnPage = false })
                         .frame(width: 0, height: 0)
                 }
+                // The bar's room, given to the page in UIKit's own safe area
+                // rather than SwiftUI's. The Form takes it from there as it
+                // takes the home indicator's, and iOS hears of it too:
+                // Picture in Picture rests 10 pt above the bottom safe area
+                // the page reports, so it floats above Start and Stop as it
+                // does above a tab bar. `.safeAreaPadding` (builds 158 to
+                // 201) gave the Form the same room inside SwiftUI only, and
+                // PiP sat over the bar (HISTORY.md, 18 Nov 2026).
+                .overlay {
+                    BarRoom(height: barRoom)
+                        .frame(width: 0, height: 0)
+                }
         }
         // safeAreaBar, not safeAreaInset. Both reserve the space — which
         // is what keeps the last row scrollable clear of the button
@@ -754,8 +776,8 @@ struct ContentView: View {
         // here: a hard fill would be doing badly what the system already
         // does properly, and it is what made the first attempt look stuck
         // on rather than floating. On the stack, the space it reserves
-        // doesn't reach the Form, so the Form reserves it again for itself:
-        // the safeAreaPadding above.
+        // doesn't reach the Form, so the page is given it again: BarRoom,
+        // above.
         //
         // Start/Stop lives here because it is the only control on this
         // screen anyone touches twice, and the only one that used to
@@ -1211,6 +1233,70 @@ private struct PageTransitions: UIViewControllerRepresentable {
         override func viewDidAppear(_ animated: Bool) {
             super.viewDidAppear(animated)
             didAppear?()
+        }
+    }
+}
+
+/// Gives the page it sits in the bar's room as UIKit safe area, on the view
+/// controller the navigation controller holds for the page. iOS rests Picture
+/// in Picture 10 pt above the bottom safe area an app's page reports to
+/// SpringBoard, and room that SwiftUI reserves by itself (safeAreaBar,
+/// safeAreaInset, safeAreaPadding) never reaches UIKit, so PiP covered the
+/// bar. Only the main page gets it: History has no bar.
+private struct BarRoom: UIViewControllerRepresentable {
+    var height: CGFloat
+
+    func makeUIViewController(context: Context) -> Setter { Setter() }
+
+    func updateUIViewController(_ setter: Setter, context: Context) {
+        setter.height = height
+    }
+
+    final class Setter: UIViewController {
+        private static let log = Logger(subsystem: "com.local.ammy", category: "bar")
+
+        var height: CGFloat = 0 {
+            didSet { if height != oldValue { apply() } }
+        }
+
+        override func loadView() {
+            view = UIView()
+            view.isUserInteractionEnabled = false
+        }
+
+        override func didMove(toParent parent: UIViewController?) {
+            super.didMove(toParent: parent)
+            if parent != nil { apply() }
+        }
+
+        override func viewIsAppearing(_ animated: Bool) {
+            super.viewIsAppearing(animated)
+            apply()
+        }
+
+        /// The view controller the navigation controller holds, with this one
+        /// somewhere inside it.
+        private var page: UIViewController? {
+            var candidate = parent
+            while let controller = candidate {
+                if controller.parent is UINavigationController { return controller }
+                candidate = controller.parent
+            }
+            return nil
+        }
+
+        private func apply() {
+            guard let page else {
+                let chain = sequence(first: self as UIViewController, next: \.parent)
+                    .map { String(String(describing: type(of: $0)).prefix(40)) }
+                    .joined(separator: " < ")
+                Self.log.notice("bar room \(self.height, privacy: .public) pt: no page to give it to yet (\(chain, privacy: .public))")
+                return
+            }
+            let old = page.additionalSafeAreaInsets.bottom
+            guard old != height else { return }
+            page.additionalSafeAreaInsets.bottom = height
+            Self.log.notice("bar room \(old, privacy: .public) -> \(self.height, privacy: .public) pt, page \(String(String(describing: type(of: page)).prefix(40)), privacy: .public)")
         }
     }
 }
