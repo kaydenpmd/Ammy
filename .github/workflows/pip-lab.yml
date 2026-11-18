@@ -6,9 +6,13 @@ name: PiP lab (the Picture in Picture window over the bar)
 # window over an app's bottom controls: over Ammy as released (main, built as
 # build-ipa.yml builds it), over Apple's apps with a tab bar, and over each
 # kind of bottom bar (lab/Bars)? And does the system have anything an app can
-# use to tell PiP where its controls are? In dark mode, on:
-#   se-ios27   an iPhone SE on iOS 27.0
-#   17e-ios27  a Face ID iPhone 17e on iOS 27.0
+# use to tell PiP where its controls are? In dark mode.
+#
+# Run 44275708353 (SE and 17e on iOS 27.0) found the iPhone simulators don't
+# support PiP at all (isPictureInPictureSupported false), so this run tries:
+#   ipad-ios27    an iPad Air 11-inch on iOS 27.0, which has PiP
+#   se-pip-ios27  a copy of the SE's device type claiming the iPad's PiP
+#                 capabilities (lab/fakepip.py), if it has any
 
 on:
   push:
@@ -55,15 +59,15 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - name: se-ios27
+          - name: ipad-ios27
             runner: xcode-27
             xcode: /Applications/Xcode_27.2_Release_Candidate.app
-            device: iPhone-SE-3rd-generation
+            device: "iPad Air 11"
             runtime: "27.0"
-          - name: 17e-ios27
+          - name: se-pip-ios27
             runner: xcode-27
             xcode: /Applications/Xcode_27.2_Release_Candidate.app
-            device: iPhone-17e
+            device: fakepip
             runtime: "27.0"
     runs-on: ${{ matrix.runner }}
     timeout-minutes: 80
@@ -88,8 +92,25 @@ jobs:
         id: sim
         run: |
           set -euo pipefail
-          TYPE="${{ matrix.device }}"
+          mkdir -p out
           WANT="${{ matrix.runtime }}"
+          if [ "${{ matrix.device }}" = "fakepip" ]; then
+            TYPE=$(python3 lab/fakepip.py "$PWD/out" || true)
+            if [ -n "$TYPE" ]; then
+              # CoreSimulator reads the user's device types when it starts.
+              killall -9 com.apple.CoreSimulator.CoreSimulatorService 2>/dev/null || true
+              sleep 3
+              xcrun simctl list devicetypes | grep -i "PiP" || echo "the copy isn't listed"
+            else
+              TYPE=com.apple.CoreSimulator.SimDeviceType.iPhone-SE-3rd-generation
+            fi
+          else
+            TYPE=$(xcrun simctl list devicetypes -j | NAME="${{ matrix.device }}" python3 -c '
+          import json, os, sys
+          ts = [t for t in json.load(sys.stdin)["devicetypes"] if os.environ["NAME"] in t["name"]]
+          print(ts[-1]["identifier"])')
+          fi
+          echo "device type: $TYPE"
           UDID=""
           for RUNTIME in $(xcrun simctl list runtimes -j | WANT="$WANT" python3 -c '
           import json, os, sys
@@ -98,7 +119,7 @@ jobs:
           rs.sort(key=lambda r: (r["version"] == want or r["version"].startswith(want + "."),
                                  [int(x) for x in r["version"].split(".")]), reverse=True)
           print(" ".join(r["identifier"] for r in rs))'); do
-            if UDID=$(xcrun simctl create "Lab $TYPE" "com.apple.CoreSimulator.SimDeviceType.$TYPE" "$RUNTIME" 2>/dev/null); then
+            if UDID=$(xcrun simctl create "Lab ${{ matrix.name }}" "$TYPE" "$RUNTIME" 2>/dev/null); then
               echo "device: $TYPE on $RUNTIME"
               echo "runtime=$RUNTIME" >> "$GITHUB_OUTPUT"
               break
@@ -108,10 +129,15 @@ jobs:
           [ -n "$UDID" ] || { echo "no usable simulator"; exit 1; }
           echo "udid=$UDID" >> "$GITHUB_OUTPUT"
           xcrun simctl boot "$UDID"
-          xcrun simctl bootstatus "$UDID" -b
+          # simctl itself crashed here once (devicePair, run 44275708353's SE
+          # job) with the simulator booting fine underneath, so ask again.
+          for attempt in 1 2 3; do
+            if xcrun simctl bootstatus "$UDID" -b; then break; fi
+            echo "bootstatus failed (attempt $attempt)"
+            sleep 10
+          done
           xcrun simctl ui "$UDID" appearance dark
-          mkdir -p out
-          { echo "device: $TYPE"; echo "runtime: $RUNTIME"; echo "test runner:"; xcodebuild -version; } > out/device.txt
+          { echo "device type: $TYPE"; echo "runtime: $RUNTIME"; echo "test runner:"; xcodebuild -version; } > out/device.txt
           xcrun simctl list runtimes -j | RT="$RUNTIME" python3 -c '
           import json, os, sys
           for r in json.load(sys.stdin)["runtimes"]:
@@ -144,9 +170,25 @@ jobs:
           while IFS= read -r f; do
             strings -a -n 6 "$f" \
               | grep -E 'PIP|PiP|[a-z]Pip|pip[A-Z]|[Pp]ictureInPicture|Pegasus' \
-              | grep -iE 'inset|avoid|exclu|obstruct|occlu|margin|region|padding|safearea|keyboard|tabbar|toolbar|bottom|edge' \
+              | grep -iE 'inset|avoid|exclu|obstruct|occlu|margin|region|padding|safearea|keyboard|tabbar|toolbar|bottom|edge|dodg' \
               | sort -u | sed "s|^|$(basename "$f"): |" >> out/strings-pip.txt || true
           done < out/strings-files.txt
+          # UIKit, AVKit and the Pegasus frameworks weren't loose files in run
+          # 44275708353's runtime: they live in the shared cache. The cache
+          # doesn't say which framework a string is from, so look only for
+          # the words a way to steer PiP would use.
+          find "$ROOT" /Library/Developer/CoreSimulator "$HOME/Library/Developer/CoreSimulator/Caches" \
+              -name 'dyld_sim_shared_cache_*' -not -name '*.map' -not -name '*.atlas' 2>/dev/null \
+              | sort -u > out/strings-caches.txt || true
+          cat out/strings-caches.txt | tee -a out/strings-where.txt
+          : > out/strings-cache-pip.txt
+          while IFS= read -r f; do
+            strings -a -n 6 "$f" \
+              | grep -E '[Dd]odg|PIPInset|PiPInset|pipInset|PictureInPictureInset|pictureInPictureInset|PictureInPictureMargin|pictureInPictureMargin|PIPMargin|PIPAvoid|pipAvoid|PictureInPictureAvoid|pictureInPictureAvoid|PictureInPictureExclu|pictureInPictureExclu|PIPExclu|pipExclu|PictureInPicturePadding|pictureInPicturePadding' \
+              | sort -u | sed "s|^|$(basename "$f"): |" >> out/strings-cache-pip.txt || true
+          done < out/strings-caches.txt
+          wc -l out/strings-cache-pip.txt
+          head -150 out/strings-cache-pip.txt
           wc -l out/strings-pip.txt
           head -150 out/strings-pip.txt
 

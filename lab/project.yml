@@ -27,12 +27,18 @@ targets:
           - audio
         UISupportedInterfaceOrientations:
           - UIInterfaceOrientationPortrait
+        "UISupportedInterfaceOrientations~ipad":
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationPortraitUpsideDown
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.local.piphost
         SWIFT_VERSION: "5.0"
         GENERATE_INFOPLIST_FILE: NO
-        TARGETED_DEVICE_FAMILY: "1"
+        # iPad too: the iPhone simulators don't support PiP (run 44275708353).
+        TARGETED_DEVICE_FAMILY: "1,2"
     scheme:
       testTargets:
         - PiPLabUITests
@@ -49,12 +55,17 @@ targets:
         UILaunchScreen: {}
         UISupportedInterfaceOrientations:
           - UIInterfaceOrientationPortrait
+        "UISupportedInterfaceOrientations~ipad":
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationPortraitUpsideDown
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.local.bars
         SWIFT_VERSION: "5.0"
         GENERATE_INFOPLIST_FILE: NO
-        TARGETED_DEVICE_FAMILY: "1"
+        TARGETED_DEVICE_FAMILY: "1,2"
     scheme: {}
 
   PiPLabUITests:
