@@ -1,0 +1,86 @@
+1794995000.187 screen 390.0 x 844.0 pt, scale 3.0
+1794995084.517 host possible=false status: launched, iOS 27.0 / audio session active / supported=false / movie written / no PiP controller
+1794995103.508 host started=false status: launched, iOS 27.0 / audio session active / supported=false / movie written / no PiP controller / start tapped, possible=false
+1794995107.073 host__started pip=[x=0.0 y=312.3 w=390.0 h=219.3 maxY=531.7] fill=1.000 fromBottom=312.3
+1794995113.292 home springboard: type 44 id 'PiPLabUITests-Runner' label 'PiPLabUITests-Runner' [x=97.7 y=261.0 w=104.0 h=90.7 maxY=351.7] | type 44 id 'PiPHost' label 'PiPHost' [x=206.0 y=261.0 w=68.0 h=90.7 maxY=351.7]
+1794995118.266 home__arrive pip=none
+1794995119.227 home topLeft: no window to drag
+1794995120.193 home topRight: no window to drag
+1794995121.326 home bottomLeft: no window to drag
+1794995122.498 home bottomRight: no window to drag
+1794995122.530 ammy launching com.local.ammy -relay_endpoint https://lab.invalid/now-playing
+1794995141.287 ammy foreground=true tabBar=none toolbar=[x=0.0 y=0.0 w=390.0 h=844.0 maxY=844.0] start=[x=21.0 y=772.7 w=348.0 h=50.3 maxY=823.0]
+1794995142.042 ammy springboard: none
+1794995147.081 ammy__arrive pip=none
+1794995147.996 ammy topLeft: no window to drag
+1794995148.745 ammy topRight: no window to drag
+1794995149.636 ammy bottomLeft: no window to drag
+1794995150.556 ammy bottomRight: no window to drag
+1794995150.575 bars-none launching com.local.bars -variant none
+1794995171.649 bars-none foreground=true tabBar=none toolbar=[x=0.0 y=0.0 w=390.0 h=844.0 maxY=844.0] start=none
+1794995172.478 bars-none springboard: none
+1794995177.451 bars-none__arrive pip=none
+1794995178.296 bars-none topLeft: no window to drag
+1794995179.214 bars-none topRight: no window to drag
+1794995180.125 bars-none bottomLeft: no window to drag
+1794995180.960 bars-none bottomRight: no window to drag
+1794995180.964 bars-tabbar launching com.local.bars -variant tabbar
+1794995199.021 bars-tabbar foreground=true tabBar=[x=0.0 y=761.0 w=390.0 h=83.0 maxY=844.0] toolbar=[x=0.0 y=0.0 w=390.0 h=844.0 maxY=844.0] start=none
+1794995200.487 bars-tabbar springboard: none
+1794995205.646 bars-tabbar__arrive pip=none
+1794995206.473 bars-tabbar topLeft: no window to drag
+1794995207.323 bars-tabbar topRight: no window to drag
+1794995208.401 bars-tabbar bottomLeft: no window to drag
+1794995209.445 bars-tabbar bottomRight: no window to drag
+1794995209.450 bars-accessory launching com.local.bars -variant accessory
+1794995227.188 bars-accessory foreground=true tabBar=[x=0.0 y=761.0 w=390.0 h=83.0 maxY=844.0] toolbar=[x=0.0 y=0.0 w=390.0 h=844.0 maxY=844.0] start=none
+1794995228.245 bars-accessory springboard: none
+1794995233.359 bars-accessory__arrive pip=none
+1794995234.652 bars-accessory topLeft: no window to drag
+1794995236.340 bars-accessory topRight: no window to drag
+1794995237.390 bars-accessory bottomLeft: no window to drag
+1794995238.124 bars-accessory bottomRight: no window to drag
+1794995238.130 bars-toolbar launching com.local.bars -variant toolbar
+1794995253.548 bars-toolbar foreground=true tabBar=none toolbar=[x=0.0 y=0.0 w=390.0 h=844.0 maxY=844.0] start=[x=165.3 y=774.0 w=59.3 h=36.0 maxY=810.0]
+1794995254.570 bars-toolbar springboard: none
+1794995259.384 bars-toolbar__arrive pip=none
+1794995260.272 bars-toolbar topLeft: no window to drag
+1794995261.143 bars-toolbar topRight: no window to drag
+1794995262.074 bars-toolbar bottomLeft: no window to drag
+1794995262.868 bars-toolbar bottomRight: no window to drag
+1794995262.874 bars-safeareabar launching com.local.bars -variant safeareabar
+1794995279.153 bars-safeareabar foreground=true tabBar=none toolbar=[x=0.0 y=0.0 w=390.0 h=844.0 maxY=844.0] start=[x=21.0 y=759.7 w=348.0 h=50.3 maxY=810.0]
+1794995279.910 bars-safeareabar springboard: none
+1794995285.400 bars-safeareabar__arrive pip=none
+1794995286.364 bars-safeareabar topLeft: no window to drag
+1794995287.100 bars-safeareabar topRight: no window to drag
+1794995287.915 bars-safeareabar bottomLeft: no window to drag
+1794995288.924 bars-safeareabar bottomRight: no window to drag
+1794995288.959 files launching com.apple.DocumentsApp 
+1794995307.367 files foreground=true tabBar=[x=0.0 y=761.0 w=390.0 h=83.0 maxY=844.0] toolbar=[x=0.0 y=0.0 w=390.0 h=844.0 maxY=844.0] start=none
+1794995308.645 files springboard: none
+1794995313.497 files__arrive pip=none
+1794995314.194 files topLeft: no window to drag
+1794995315.214 files topRight: no window to drag
+1794995316.027 files bottomLeft: no window to drag
+1794995316.821 files bottomRight: no window to drag
+1794995316.835 photos launching com.apple.mobileslideshow 
+1794995336.079 photos foreground=true tabBar=[x=0.0 y=761.0 w=390.0 h=83.0 maxY=844.0] toolbar=[x=0.0 y=0.0 w=390.0 h=844.0 maxY=844.0] start=none
+1794995337.397 photos springboard: none
+1794995342.763 photos__arrive pip=none
+1794995343.887 photos topLeft: no window to drag
+1794995344.671 photos topRight: no window to drag
+1794995345.602 photos bottomLeft: no window to drag
+1794995346.438 photos bottomRight: no window to drag
+1794995346.466 settings launching com.apple.Preferences 
+1794995362.742 settings foreground=true tabBar=none toolbar=[x=0.0 y=0.0 w=390.0 h=844.0 maxY=844.0] start=none
+1794995364.617 settings springboard: none
+1794995370.102 settings__arrive pip=none
+1794995370.908 settings topLeft: no window to drag
+1794995371.800 settings topRight: no window to drag
+1794995372.603 settings bottomLeft: no window to drag
+1794995373.586 settings bottomRight: no window to drag
+1794995381.167 ammy-keyboard__before pip=none
+1794995393.589 ammy-keyboard shown=true keyboard=[x=0.0 y=560.0 w=390.0 h=226.0 maxY=786.0] start=none
+1794995399.038 ammy-keyboard__up pip=none
+1794995399.040 done
