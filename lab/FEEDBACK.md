@@ -1,8 +1,7 @@
 # Feedback Assistant report, ready to file
 
 Filed from: Feedback Assistant → iOS & iPadOS → Developer Technologies & SDKs → SwiftUI.
-Attach: SafeAreaBarLargeTitle.zip (the Xcode project from the "Jitter repro" CI run on the
-jitter-lab branch), and a screen recording of the repro (optional but helpful).
+Attach: SafeAreaBarLargeTitle.zip (the Xcode project from the "Jitter repro" CI run on the jitter-lab branch), and a screen recording of the repro (optional but helpful).
 
 ---
 
