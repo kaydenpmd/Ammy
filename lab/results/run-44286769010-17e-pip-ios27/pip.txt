@@ -1,0 +1,81 @@
+1794998722.592 screen 390.0 x 844.0 pt, scale 3.0
+1794998739.840 host possible=true status: launched, iOS 27.0 / audio session active / supported=true / movie written / possible=false / possible=true
+1794998744.852 host started=true
+1794998747.534 host__started pip=[x=110.0 y=47.0 w=270.0 h=152.0 maxY=199.0] fromBottom=645.0
+1794998751.579 home__arrive pip=[x=110.0 y=47.0 w=270.0 h=152.0 maxY=199.0] fromBottom=645.0
+1794998757.228 home__bottomRight pip=[x=110.0 y=574.0 w=270.0 h=152.0 maxY=726.0] fromBottom=118.0
+1794998757.241 bars-none launching com.local.bars -variant none
+1794998782.928 bars-none foreground=true toolbar0=[x=0.0 y=0.0 w=390.0 h=844.0 maxY=844.0]
+1794998784.583 bars-none__arrive pip=[x=110.0 y=648.0 w=270.0 h=152.0 maxY=800.0] fromBottom=44.0
+1794998789.042 bars-none__bottomLeft pip=[x=10.0 y=648.0 w=270.0 h=152.0 maxY=800.0] fromBottom=44.0
+1794998793.074 bars-none__bottomRight pip=[x=110.0 y=648.0 w=270.0 h=152.0 maxY=800.0] fromBottom=44.0
+1794998793.075 bars-toolbar launching com.local.bars -variant toolbar
+1794998811.738 bars-toolbar foreground=true toolbar0=[x=0.0 y=0.0 w=390.0 h=844.0 maxY=844.0] Start=[x=165.3 y=774.0 w=59.3 h=36.0 maxY=810.0]
+1794998812.875 bars-toolbar__arrive pip=[x=110.0 y=596.0 w=270.0 h=152.0 maxY=748.0] fromBottom=96.0
+1794998816.947 bars-toolbar__bottomLeft pip=[x=10.0 y=596.0 w=270.0 h=152.0 maxY=748.0] fromBottom=96.0
+1794998821.539 bars-toolbar__bottomRight pip=[x=110.0 y=596.0 w=270.0 h=152.0 maxY=748.0] fromBottom=96.0
+1794998821.545 bars-tabbar launching com.local.bars -variant tabbar
+1794998836.583 bars-tabbar foreground=true tabBar0=[x=0.0 y=761.0 w=390.0 h=83.0 maxY=844.0] toolbar0=[x=0.0 y=0.0 w=390.0 h=844.0 maxY=844.0]
+1794998837.465 bars-tabbar__arrive pip=[x=110.0 y=599.0 w=270.0 h=152.0 maxY=751.0] fromBottom=93.0
+1794998841.218 bars-tabbar__bottomLeft pip=[x=10.0 y=599.0 w=270.0 h=152.0 maxY=751.0] fromBottom=93.0
+1794998844.892 bars-tabbar__bottomRight pip=[x=110.0 y=599.0 w=270.0 h=152.0 maxY=751.0] fromBottom=93.0
+1794998844.894 bars-accessory launching com.local.bars -variant accessory
+1794998858.590 bars-accessory foreground=true tabBar0=[x=0.0 y=761.0 w=390.0 h=83.0 maxY=844.0] toolbar0=[x=0.0 y=0.0 w=390.0 h=844.0 maxY=844.0] Accessory=[x=155.3 y=718.8 w=79.3 h=20.3 maxY=739.2]
+1794998859.757 bars-accessory__arrive pip=[x=110.0 y=543.0 w=270.0 h=152.0 maxY=695.0] fromBottom=149.0
+1794998863.761 bars-accessory__bottomLeft pip=[x=10.0 y=543.0 w=270.0 h=152.0 maxY=695.0] fromBottom=149.0
+1794998867.801 bars-accessory__bottomRight pip=[x=110.0 y=543.0 w=270.0 h=152.0 maxY=695.0] fromBottom=149.0
+1794998867.807 bars-safeareabar launching com.local.bars -variant safeareabar
+1794998926.562 bars-safeareabar foreground=true toolbar0=[x=0.0 y=0.0 w=390.0 h=844.0 maxY=844.0] Start=[x=21.0 y=759.7 w=348.0 h=50.3 maxY=810.0]
+1794998928.417 bars-safeareabar__arrive pip=[x=110.0 y=648.0 w=270.0 h=152.0 maxY=800.0] fromBottom=44.0
+1794998938.810 bars-safeareabar__bottomLeft pip=[x=10.0 y=648.0 w=270.0 h=152.0 maxY=800.0] fromBottom=44.0
+1794998946.990 bars-safeareabar__bottomRight pip=[x=110.0 y=648.0 w=270.0 h=152.0 maxY=800.0] fromBottom=44.0
+1794998946.994 bars-addlsafe launching com.local.bars -variant addlsafe
+1794998978.172 bars-addlsafe foreground=true toolbar0=[x=0.0 y=0.0 w=390.0 h=844.0 maxY=844.0]
+1794998979.026 bars-addlsafe__arrive pip=[x=110.0 y=568.0 w=270.0 h=152.0 maxY=720.0] fromBottom=124.0
+1794998983.417 bars-addlsafe__bottomLeft pip=[x=10.0 y=568.0 w=270.0 h=152.0 maxY=720.0] fromBottom=124.0
+1794998987.159 bars-addlsafe__bottomRight pip=[x=110.0 y=568.0 w=270.0 h=152.0 maxY=720.0] fromBottom=124.0
+1794998987.161 bars-tabbar-hidden launching com.local.bars -variant tabbar-hidden
+1794999000.707 bars-tabbar-hidden foreground=true toolbar0=[x=0.0 y=0.0 w=390.0 h=844.0 maxY=844.0]
+1794999001.392 bars-tabbar-hidden__arrive pip=[x=110.0 y=648.0 w=270.0 h=152.0 maxY=800.0] fromBottom=44.0
+1794999004.911 bars-tabbar-hidden__bottomLeft pip=[x=10.0 y=648.0 w=270.0 h=152.0 maxY=800.0] fromBottom=44.0
+1794999008.533 bars-tabbar-hidden__bottomRight pip=[x=110.0 y=648.0 w=270.0 h=152.0 maxY=800.0] fromBottom=44.0
+1794999008.538 bars-toolbar-hidden launching com.local.bars -variant toolbar-hidden
+1794999030.891 bars-toolbar-hidden foreground=true toolbar0=[x=0.0 y=0.0 w=390.0 h=844.0 maxY=844.0]
+1794999031.656 bars-toolbar-hidden__arrive pip=[x=110.0 y=648.0 w=270.0 h=152.0 maxY=800.0] fromBottom=44.0
+1794999035.291 bars-toolbar-hidden__bottomLeft pip=[x=10.0 y=648.0 w=270.0 h=152.0 maxY=800.0] fromBottom=44.0
+1794999038.775 bars-toolbar-hidden__bottomRight pip=[x=110.0 y=648.0 w=270.0 h=152.0 maxY=800.0] fromBottom=44.0
+1794999038.776 bars-toolbar-wide launching com.local.bars -variant toolbar-wide
+1794999066.161 bars-toolbar-wide foreground=true toolbar0=[x=0.0 y=0.0 w=390.0 h=844.0 maxY=844.0] Start=[x=164.7 y=774.0 w=60.7 h=36.0 maxY=810.0]
+1794999066.840 bars-toolbar-wide__arrive pip=[x=110.0 y=596.0 w=270.0 h=152.0 maxY=748.0] fromBottom=96.0
+1794999070.708 bars-toolbar-wide__bottomLeft pip=[x=10.0 y=596.0 w=270.0 h=152.0 maxY=748.0] fromBottom=96.0
+1794999074.385 bars-toolbar-wide__bottomRight pip=[x=110.0 y=596.0 w=270.0 h=152.0 maxY=748.0] fromBottom=96.0
+1794999074.387 bars-safeareainset launching com.local.bars -variant safeareainset
+1794999094.710 bars-safeareainset foreground=true toolbar0=[x=0.0 y=0.0 w=390.0 h=844.0 maxY=844.0] Start=[x=21.0 y=759.7 w=348.0 h=50.3 maxY=810.0]
+1794999095.579 bars-safeareainset__arrive pip=[x=110.0 y=648.0 w=270.0 h=152.0 maxY=800.0] fromBottom=44.0
+1794999099.551 bars-safeareainset__bottomLeft pip=[x=10.0 y=648.0 w=270.0 h=152.0 maxY=800.0] fromBottom=44.0
+1794999103.251 bars-safeareainset__bottomRight pip=[x=110.0 y=648.0 w=270.0 h=152.0 maxY=800.0] fromBottom=44.0
+1794999103.252 bars-uikit-edge launching com.local.bars -variant uikit-edge
+1794999118.968 bars-uikit-edge foreground=true toolbar0=[x=0.0 y=0.0 w=390.0 h=844.0 maxY=844.0] Start=[x=21.0 y=751.7 w=348.0 h=50.3 maxY=802.0]
+1794999120.321 bars-uikit-edge__arrive pip=[x=110.0 y=648.0 w=270.0 h=152.0 maxY=800.0] fromBottom=44.0
+1794999123.901 bars-uikit-edge__bottomLeft pip=[x=10.0 y=648.0 w=270.0 h=152.0 maxY=800.0] fromBottom=44.0
+1794999127.567 bars-uikit-edge__bottomRight pip=[x=110.0 y=648.0 w=270.0 h=152.0 maxY=800.0] fromBottom=44.0
+1794999127.570 bars-uikit-toolbar launching com.local.bars -variant uikit-toolbar
+1794999145.024 bars-uikit-toolbar foreground=true toolbar0=[x=0.0 y=0.0 w=390.0 h=844.0 maxY=844.0] Start=[x=21.0 y=773.0 w=348.0 h=38.0 maxY=811.0]
+1794999146.082 bars-uikit-toolbar__arrive pip=[x=110.0 y=596.0 w=270.0 h=152.0 maxY=748.0] fromBottom=96.0
+1794999149.732 bars-uikit-toolbar__bottomLeft pip=[x=10.0 y=596.0 w=270.0 h=152.0 maxY=748.0] fromBottom=96.0
+1794999153.485 bars-uikit-toolbar__bottomRight pip=[x=110.0 y=596.0 w=270.0 h=152.0 maxY=748.0] fromBottom=96.0
+1794999153.490 ammy launching com.local.ammy -relay_endpoint https://lab.invalid/now-playing
+1794999163.925 alert '“Ammy” Would Like to Send You Notifications': tapping 'Allow'
+1794999169.119 ammy foreground=true toolbar0=[x=0.0 y=0.0 w=390.0 h=844.0 maxY=844.0] Stop=[x=21.0 y=772.7 w=170.0 h=50.3 maxY=823.0]
+1794999170.656 ammy__arrive pip=[x=110.0 y=648.0 w=270.0 h=152.0 maxY=800.0] fromBottom=44.0
+1794999174.875 ammy__bottomLeft pip=[x=10.0 y=648.0 w=270.0 h=152.0 maxY=800.0] fromBottom=44.0
+1794999179.550 ammy__bottomRight pip=[x=110.0 y=648.0 w=270.0 h=152.0 maxY=800.0] fromBottom=44.0
+1794999179.558 settings launching com.apple.Preferences 
+1794999196.567 settings foreground=true toolbar0=[x=0.0 y=0.0 w=390.0 h=844.0 maxY=844.0] toolbar1=[x=0.0 y=0.0 w=390.0 h=844.0 maxY=844.0]
+1794999197.832 settings__arrive pip=[x=110.0 y=596.0 w=270.0 h=152.0 maxY=748.0] fromBottom=96.0
+1794999201.618 settings__bottomLeft pip=[x=10.0 y=596.0 w=270.0 h=152.0 maxY=748.0] fromBottom=96.0
+1794999205.504 settings__bottomRight pip=[x=110.0 y=596.0 w=270.0 h=152.0 maxY=748.0] fromBottom=96.0
+1794999213.575 ammy-keyboard__before pip=[x=110.0 y=648.0 w=270.0 h=152.0 maxY=800.0] fromBottom=44.0
+1794999226.864 ammy-keyboard shown=true keyboard=x=0.0 y=560.0 w=390.0 h=226.0 maxY=786.0 toolbar0=[x=0.0 y=0.0 w=390.0 h=844.0 maxY=844.0] Stop=[x=21.0 y=444.7 w=170.0 h=50.3 maxY=495.0]
+1794999230.000 ammy-keyboard__up pip=[x=110.0 y=354.0 w=270.0 h=152.0 maxY=506.0] fromBottom=338.0
+1794999230.002 done
