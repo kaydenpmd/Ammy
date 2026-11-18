@@ -1,0 +1,40 @@
+1795036775.947 screen 320.0 x 480.0 pt, scale 3.0
+1795036788.705 host possible=true status: launched, iOS 26.5 / audio session active / supported=true / movie written / possible=false / possible=true
+1795036790.631 host started=true
+1795036793.436 host__started pip=[x=110.00 y=47.00 w=270.00 h=152.00 maxY=199.00] fromBottom=281.00
+1795036802.050 home__bottomRight pip=[x=10.00 y=574.00 w=270.00 h=152.00 maxY=726.00] fromBottom=-246.00
+1795036812.246 pip-main-idle Start=[x=21.00 y=772.67 w=348.00 h=50.33 maxY=823.00] URL=[x=32.00 y=312.33 w=326.00 h=22.00 maxY=334.33]
+1795036813.533 pip-main-idle__arrive pip=[x=10.00 y=648.00 w=270.00 h=152.00 maxY=800.00] fromBottom=-320.00
+1795036817.805 pip-main-idle__bottomLeft pip=[x=10.00 y=47.00 w=270.00 h=152.00 maxY=199.00] fromBottom=281.00
+1795036822.107 pip-main-idle__bottomRight pip=[x=10.00 y=47.00 w=270.00 h=152.00 maxY=199.00] fromBottom=281.00
+1795036830.233 pip-main-idle__kb shown=true Start=[x=21.00 y=437.67 w=348.00 h=50.33 maxY=488.00] keyboard=[x=0.00 y=553.00 w=390.00 h=233.00 maxY=786.00] URL=[x=32.00 y=312.33 w=326.00 h=22.00 maxY=334.33]
+1795036830.724 pip-main-idle__kb pip=[x=10.00 y=47.00 w=270.00 h=152.00 maxY=199.00] fromBottom=281.00
+1795036847.999 pip-main-running Stop=[x=21.00 y=772.67 w=348.00 h=50.33 maxY=823.00] URL=[x=32.00 y=312.33 w=326.00 h=22.00 maxY=334.33]
+1795036849.332 pip-main-running__arrive pip=[x=10.00 y=47.00 w=270.00 h=152.00 maxY=199.00] fromBottom=281.00
+1795036853.487 pip-main-running__bottomLeft pip=[x=10.00 y=47.00 w=270.00 h=152.00 maxY=199.00] fromBottom=281.00
+1795036860.925 pip-main-running__bottomRight pip=[x=10.00 y=47.00 w=270.00 h=152.00 maxY=199.00] fromBottom=281.00
+1795036870.321 pip-main-running__kb shown=true Stop=[x=21.00 y=437.67 w=170.00 h=50.33 maxY=488.00] Restart=[x=199.00 y=437.67 w=170.00 h=50.33 maxY=488.00] keyboard=[x=0.00 y=553.00 w=390.00 h=233.00 maxY=786.00] URL=[x=32.00 y=312.33 w=326.00 h=22.00 maxY=334.33]
+1795036870.708 pip-main-running__kb pip=[x=10.00 y=47.00 w=270.00 h=152.00 maxY=199.00] fromBottom=281.00
+1795036882.063 pip-main-history__main pip=[x=10.00 y=47.00 w=270.00 h=152.00 maxY=199.00] fromBottom=281.00
+1795036891.214 pip-main-history History bar=true 
+1795036891.762 pip-main-history__history pip=[x=10.00 y=47.00 w=270.00 h=152.00 maxY=199.00] fromBottom=281.00
+1795036895.093 pip-main-history back 
+1795036895.426 pip-main-history__back pip=[x=10.00 y=47.00 w=270.00 h=152.00 maxY=199.00] fromBottom=281.00
+1795036905.632 pip-fix-idle Start=[x=21.00 y=772.67 w=348.00 h=50.33 maxY=823.00] URL=[x=32.00 y=312.33 w=326.00 h=22.00 maxY=334.33]
+1795036906.635 pip-fix-idle__arrive pip=[x=10.00 y=47.00 w=270.00 h=152.00 maxY=199.00] fromBottom=281.00
+1795036910.562 pip-fix-idle__bottomLeft pip=[x=10.00 y=594.00 w=270.00 h=152.00 maxY=746.00] fromBottom=-266.00
+1795036914.578 pip-fix-idle__bottomRight pip=[x=10.00 y=47.00 w=270.00 h=152.00 maxY=199.00] fromBottom=281.00
+1795036921.131 pip-fix-idle__kb shown=true Start=[x=21.00 y=437.67 w=348.00 h=50.33 maxY=488.00] keyboard=[x=0.00 y=553.00 w=390.00 h=233.00 maxY=786.00] URL=[x=32.00 y=312.33 w=326.00 h=22.00 maxY=334.33]
+1795036921.435 pip-fix-idle__kb pip=[x=10.00 y=47.00 w=270.00 h=152.00 maxY=199.00] fromBottom=281.00
+1795036933.816 pip-fix-running Stop=[x=21.00 y=772.67 w=348.00 h=50.33 maxY=823.00] URL=[x=32.00 y=312.33 w=326.00 h=22.00 maxY=334.33]
+1795036934.823 pip-fix-running__arrive pip=[x=10.00 y=47.00 w=270.00 h=152.00 maxY=199.00] fromBottom=281.00
+1795036938.673 pip-fix-running__bottomLeft pip=[x=10.00 y=594.00 w=270.00 h=152.00 maxY=746.00] fromBottom=-266.00
+1795036942.648 pip-fix-running__bottomRight pip=[x=10.00 y=47.00 w=270.00 h=152.00 maxY=199.00] fromBottom=281.00
+1795036951.372 pip-fix-running__kb shown=true Stop=[x=21.00 y=437.67 w=170.00 h=50.33 maxY=488.00] Restart=[x=199.00 y=437.67 w=170.00 h=50.33 maxY=488.00] keyboard=[x=0.00 y=553.00 w=390.00 h=233.00 maxY=786.00] URL=[x=32.00 y=312.33 w=326.00 h=22.00 maxY=334.33]
+1795036951.878 pip-fix-running__kb pip=[x=10.00 y=47.00 w=270.00 h=152.00 maxY=199.00] fromBottom=281.00
+1795036975.637 pip-fix-history__main pip=[x=10.00 y=47.00 w=270.00 h=152.00 maxY=199.00] fromBottom=281.00
+1795036984.496 pip-fix-history History bar=true 
+1795036984.803 pip-fix-history__history pip=[x=10.00 y=47.00 w=270.00 h=152.00 maxY=199.00] fromBottom=281.00
+1795036988.368 pip-fix-history back 
+1795036988.682 pip-fix-history__back pip=[x=10.00 y=47.00 w=270.00 h=152.00 maxY=199.00] fromBottom=281.00
+1795036992.764 done

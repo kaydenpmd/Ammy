@@ -1,0 +1,18 @@
+1795037739.675 top
+Stop exists=true hittable=true frame=(21.0, 588.5, 333.0, 57.5)
+Restart exists=false hittable=false frame=-
+Start exists=false hittable=false frame=-
+keyboard exists=false hittable=false frame=-
+URL exists=true hittable=true frame=(32.0, 294.5, 311.0, 29.0)
+Key exists=true hittable=true frame=(32.0, 385.0, 311.0, 28.0)
+History exists=false hittable=false frame=-
+window frame=(0.0, 0.0, 375.0, 667.0)
+1795037749.881 end
+Stop exists=true hittable=true frame=(21.0, 588.5, 333.0, 57.5)
+Restart exists=false hittable=false frame=-
+Start exists=false hittable=false frame=-
+keyboard exists=false hittable=false frame=-
+URL exists=true hittable=true frame=(32.0, 108.5, 311.0, 29.0)
+Key exists=true hittable=true frame=(32.0, 199.0, 311.0, 28.0)
+History exists=true hittable=true frame=(16.0, 493.5, 343.0, 59.0)
+window frame=(0.0, 0.0, 375.0, 667.0)

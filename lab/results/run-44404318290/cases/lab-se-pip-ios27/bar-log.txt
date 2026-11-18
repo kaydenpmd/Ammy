@@ -1,0 +1,34 @@
+getpwuid_r did not find a match for uid 501
+Filtering the log data using "subsystem == "com.local.ammy" AND category == "bar""
+Timestamp               Ty Process[PID:TID]
+2026-11-18 22:36:26.778 Df Ammy[8763:845d] [com.local.ammy:bar] bottom edge without the keyboard: 0.000000 pt
+2026-11-18 22:36:26.778 Df Ammy[8763:845d] [com.local.ammy:bar] bottom edge with the keyboard: 0.000000 pt, keyboard down
+2026-11-18 22:36:48.199 Df Ammy[8763:845d] [com.local.ammy:bar] bottom edge with the keyboard: 233.000000 pt, keyboard up
+2026-11-18 22:36:48.486 Df Ammy[8763:845d] [com.local.ammy:bar] bottom edge with the keyboard: 260.000000 pt, keyboard up
+2026-11-18 22:37:02.113 Df Ammy[9110:8963] [com.local.ammy:bar] bottom edge without the keyboard: 0.000000 pt
+2026-11-18 22:37:02.113 Df Ammy[9110:8963] [com.local.ammy:bar] bottom edge with the keyboard: 0.000000 pt, keyboard down
+2026-11-18 22:37:28.338 Df Ammy[9110:8963] [com.local.ammy:bar] bottom edge with the keyboard: 233.000000 pt, keyboard up
+2026-11-18 22:37:28.780 Df Ammy[9110:8963] [com.local.ammy:bar] bottom edge with the keyboard: 260.000000 pt, keyboard up
+2026-11-18 22:38:05.964 Df Ammy[9352:9034] [com.local.ammy:bar] bottom edge without the keyboard: 0.000000 pt
+2026-11-18 22:38:05.964 Df Ammy[9352:9034] [com.local.ammy:bar] bottom edge with the keyboard: 0.000000 pt, keyboard down
+2026-11-18 22:38:40.377 Df Ammy[9549:944f] [com.local.ammy:bar] bottom edge without the keyboard: 0.000000 pt
+2026-11-18 22:38:40.377 Df Ammy[9549:944f] [com.local.ammy:bar] bottom edge with the keyboard: 0.000000 pt, keyboard down
+2026-11-18 22:38:40.392 Df Ammy[9549:944f] [com.local.ammy:bar] bar room 87.500000 pt: no page to give it to yet (Setter)
+2026-11-18 22:38:40.469 Df Ammy[9549:944f] [com.local.ammy:bar] bar room 0.000000 -> 87.500000 pt, page NavigationStackHostingController<AnyView
+2026-11-18 22:38:57.632 Df Ammy[9549:944f] [com.local.ammy:bar] bottom edge with the keyboard: 233.000000 pt, keyboard up
+2026-11-18 22:38:57.645 Df Ammy[9549:944f] [com.local.ammy:bar] bar room 87.500000 -> 320.500000 pt, page NavigationStackHostingController<AnyView
+2026-11-18 22:38:57.811 Df Ammy[9549:944f] [com.local.ammy:bar] bottom edge with the keyboard: 260.000000 pt, keyboard up
+2026-11-18 22:38:57.815 Df Ammy[9549:944f] [com.local.ammy:bar] bar room 320.500000 -> 347.500000 pt, page NavigationStackHostingController<AnyView
+2026-11-18 22:39:07.902 Df Ammy[9588:96eb] [com.local.ammy:bar] bottom edge without the keyboard: 0.000000 pt
+2026-11-18 22:39:07.902 Df Ammy[9588:96eb] [com.local.ammy:bar] bottom edge with the keyboard: 0.000000 pt, keyboard down
+2026-11-18 22:39:07.930 Df Ammy[9588:96eb] [com.local.ammy:bar] bar room 87.500000 pt: no page to give it to yet (Setter)
+2026-11-18 22:39:08.013 Df Ammy[9588:96eb] [com.local.ammy:bar] bar room 0.000000 -> 87.500000 pt, page NavigationStackHostingController<AnyView
+2026-11-18 22:39:23.154 Df Ammy[9588:96eb] [com.local.ammy:bar] bottom edge with the keyboard: 233.000000 pt, keyboard up
+2026-11-18 22:39:23.164 Df Ammy[9588:96eb] [com.local.ammy:bar] bar room 87.500000 -> 320.500000 pt, page NavigationStackHostingController<AnyView
+2026-11-18 22:39:23.273 Df Ammy[9588:96eb] [com.local.ammy:bar] bottom edge with the keyboard: 260.000000 pt, keyboard up
+2026-11-18 22:39:23.276 Df Ammy[9588:96eb] [com.local.ammy:bar] bar room 320.500000 -> 347.500000 pt, page NavigationStackHostingController<AnyView
+2026-11-18 22:39:35.123 Df Ammy[9672:9bba] [com.local.ammy:bar] bottom edge without the keyboard: 0.000000 pt
+2026-11-18 22:39:35.123 Df Ammy[9672:9bba] [com.local.ammy:bar] bottom edge with the keyboard: 0.000000 pt, keyboard down
+2026-11-18 22:39:35.146 Df Ammy[9672:9bba] [com.local.ammy:bar] bar room 87.500000 pt: no page to give it to yet (Setter)
+2026-11-18 22:39:35.232 Df Ammy[9672:9bba] [com.local.ammy:bar] bar room 0.000000 -> 87.500000 pt, page NavigationStackHostingController<AnyView
+Child process terminated with signal 15: Terminated

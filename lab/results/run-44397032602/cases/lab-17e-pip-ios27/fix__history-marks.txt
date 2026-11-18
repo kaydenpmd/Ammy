@@ -1,0 +1,15 @@
+1795038154.635 scrolled | Stop exists=true hittable=true frame=(21.0, 772.6666666666666, 348.0, 50.33333333333337) | History bar=false
+1795038154.921 push 1 | Stop exists=true hittable=true frame=(21.0, 772.6666666666666, 348.0, 50.33333333333337) | History bar=false
+1795038157.972 History shown | Stop exists=false hittable=false frame=- | History bar=true
+1795038158.003 back | Stop exists=false hittable=false frame=- | History bar=true
+1795038161.199 back, settled | Stop exists=true hittable=true frame=(21.0, 772.6666666666666, 348.0, 50.33333333333337) | History bar=false
+1795038161.322 push 2 | Stop exists=true hittable=true frame=(21.0, 772.6666666666666, 348.0, 50.33333333333337) | History bar=false
+1795038164.118 History shown | Stop exists=false hittable=false frame=- | History bar=true
+1795038164.168 swipe all the way | Stop exists=false hittable=false frame=- | History bar=true
+1795038167.655 after the full swipe | Stop exists=true hittable=true frame=(21.0, 772.6666666666666, 348.0, 50.33333333333337) | History bar=false
+1795038167.844 push 3 | Stop exists=true hittable=true frame=(21.0, 772.6666666666666, 348.0, 50.33333333333337) | History bar=false
+1795038170.675 History shown | Stop exists=false hittable=false frame=- | History bar=true
+1795038170.720 swipe let go | Stop exists=false hittable=false frame=- | History bar=true
+1795038174.587 after the let-go swipe | Stop exists=false hittable=false frame=- | History bar=true
+1795038174.660 back after the let-go swipe | Stop exists=false hittable=false frame=- | History bar=true
+1795038178.013 end | Stop exists=true hittable=true frame=(21.0, 772.6666666666666, 348.0, 50.33333333333337) | History bar=false

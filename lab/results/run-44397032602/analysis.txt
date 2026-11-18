@@ -1,0 +1,919 @@
+=== 17e-pip-ios26
+  device type: com.apple.CoreSimulator.SimDeviceType.iPhone-17e-PiP-lab | runtime: com.apple.CoreSimulator.SimRuntime.iOS-26-5 | test runner: | Xcode 26.6 | Build version 17F113 | Ammy built with: | "CFBundleVersion" => "1" | "DTPlatformVersion" => "26.5" | "DTSDKName" => "iphonesimulator26.5" | "DTXcode" => "2660" | "DTXcodeBuild" => "17F113" | "MinimumOSVersion" => "26.0"
+Picture in Picture over Ammy:
+  pip-main-idle__arrive: PiP 648.00-800.00 x 10.00 (-320.00 from the bottom), Start top 772.67, PiP's bottom -27.33 pt above it
+  pip-main-idle__bottomLeft: PiP 47.00-199.00 x 10.00 (281.00 from the bottom), Start top 772.67, PiP's bottom +573.67 pt above it
+  pip-main-idle__bottomRight: PiP 47.00-199.00 x 10.00 (281.00 from the bottom), Start top 772.67, PiP's bottom +573.67 pt above it
+  pip-main-idle__kb: PiP 47.00-199.00 x 10.00 (281.00 from the bottom), Start top 437.67, PiP's bottom +238.67 pt above it, keyboard top 553.00
+  pip-main-running__arrive: PiP 47.00-199.00 x 10.00 (281.00 from the bottom), Stop top 772.67, PiP's bottom +573.67 pt above it
+  pip-main-running__bottomLeft: PiP 47.00-199.00 x 10.00 (281.00 from the bottom), Stop top 772.67, PiP's bottom +573.67 pt above it
+  pip-main-running__bottomRight: PiP 47.00-199.00 x 10.00 (281.00 from the bottom), Stop top 772.67, PiP's bottom +573.67 pt above it
+  pip-main-running__kb: PiP 47.00-199.00 x 10.00 (281.00 from the bottom), Stop+Restart top 437.67, PiP's bottom +238.67 pt above it, keyboard top 553.00
+  pip-main-history__main: PiP 47.00-199.00 (281.00 from the bottom)
+  pip-main-history__history: PiP 47.00-199.00 (281.00 from the bottom)
+  pip-main-history__back: PiP 47.00-199.00 (281.00 from the bottom)
+  pip-fix-idle__arrive: PiP 47.00-199.00 x 10.00 (281.00 from the bottom), Start top 772.67, PiP's bottom +573.67 pt above it
+  pip-fix-idle__bottomLeft: PiP 594.00-746.00 x 10.00 (-266.00 from the bottom), Start top 772.67, PiP's bottom +26.67 pt above it
+  pip-fix-idle__bottomRight: PiP 47.00-199.00 x 10.00 (281.00 from the bottom), Start top 772.67, PiP's bottom +573.67 pt above it
+  pip-fix-idle__kb: PiP 47.00-199.00 x 10.00 (281.00 from the bottom), Start top 437.67, PiP's bottom +238.67 pt above it, keyboard top 553.00
+  pip-fix-running__arrive: PiP 47.00-199.00 x 10.00 (281.00 from the bottom), Stop top 772.67, PiP's bottom +573.67 pt above it
+  pip-fix-running__bottomLeft: PiP 594.00-746.00 x 10.00 (-266.00 from the bottom), Stop top 772.67, PiP's bottom +26.67 pt above it
+  pip-fix-running__bottomRight: PiP 47.00-199.00 x 10.00 (281.00 from the bottom), Stop top 772.67, PiP's bottom +573.67 pt above it
+  pip-fix-running__kb: PiP 47.00-199.00 x 10.00 (281.00 from the bottom), Stop+Restart top 437.67, PiP's bottom +238.67 pt above it, keyboard top 553.00
+  pip-fix-history__main: PiP 47.00-199.00 (281.00 from the bottom)
+  pip-fix-history__history: PiP 47.00-199.00 (281.00 from the bottom)
+  pip-fix-history__back: PiP 47.00-199.00 (281.00 from the bottom)
+SpringBoard's room for PiP:
+  21:19:49.373 after host: edge insets {47, 0, 34, 0} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 34, 0}
+  21:19:49.457 after host: edge insets {47, 10, 44, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 34, 0}
+  21:19:53.726 after host__started: edge insets {47, 10, 118, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 108, 0}
+  21:20:02.313 after home__bottomRight: edge insets {47, 10, 34, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 0, 0}
+  21:20:06.125 after home__bottomRight: edge insets {47, 10, 44, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 34, 0}
+  21:20:26.041 after pip-main-idle__bottomRight: edge insets {47, 10, 335, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 325, 0}
+  21:20:26.189 after pip-main-idle__bottomRight: edge insets {47, 10, 318, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 308, 0}
+  21:20:26.287 after pip-main-idle__bottomRight: edge insets {47, 10, 345, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 335, 0}
+  21:20:30.758 after pip-main-idle__kb: edge insets {47, 10, 44, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 34, 0}
+  21:20:30.983 after pip-main-idle__kb: edge insets {47, 10, 118, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 108, 0}
+  21:20:34.186 after pip-main-idle__kb: edge insets {47, 10, 34, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 0, 0}
+  21:20:38.912 after pip-main-idle__kb: edge insets {47, 10, 44, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 34, 0}
+  21:21:03.538 after pip-main-running__bottomRight: edge insets {47, 10, 335, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 325, 0}
+  21:21:03.783 after pip-main-running__bottomRight: edge insets {47, 10, 318, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 308, 0}
+  21:21:03.911 after pip-main-running__bottomRight: edge insets {47, 10, 345, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 335, 0}
+  21:21:10.744 after pip-main-running__kb: edge insets {47, 10, 44, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 34, 0}
+  21:21:11.007 after pip-main-running__kb: edge insets {47, 10, 118, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 108, 0}
+  21:21:12.603 after pip-main-running__kb: edge insets {47, 10, 34, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 0, 0}
+  21:21:16.617 after pip-main-running__kb: edge insets {47, 10, 44, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 34, 0}
+  21:21:23.006 after pip-main-history__main: edge insets {47, 10, 44.000000000000114, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 34.000000000000114, 0}
+  21:21:23.018 after pip-main-history__main: edge insets {47, 10, 44, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 34, 0}
+  21:21:23.036 after pip-main-history__main: edge insets {47, 10, 44.000000000000114, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 34.000000000000114, 0}
+  21:21:23.057 after pip-main-history__main: edge insets {47, 10, 44, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 34, 0}
+  21:21:23.065 after pip-main-history__main: edge insets {47, 10, 44.000000000000114, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 34.000000000000114, 0}
+  21:21:23.082 after pip-main-history__main: edge insets {47, 10, 44, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 34, 0}
+  21:21:35.739 after pip-main-history__back: edge insets {47, 10, 118, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 108, 0}
+  21:21:36.804 after pip-main-history__back: edge insets {47, 10, 34, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 0, 0}
+  21:21:39.845 after pip-main-history__back: edge insets {47, 10, 97.333333333333258, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 87.333333333333258, 0}
+  21:21:56.959 after pip-fix-idle__bottomRight: edge insets {47, 10, 335, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 325, 0}
+  21:21:57.086 after pip-fix-idle__bottomRight: edge insets {47, 10, 318, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 308, 0}
+  21:21:57.214 after pip-fix-idle__bottomRight: edge insets {47, 10, 345, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 335, 0}
+  21:21:57.313 after pip-fix-idle__bottomRight: edge insets {47, 10, 432.33333333333326, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 422.33333333333326, 0}
+  21:22:01.727 after pip-fix-idle__kb: edge insets {47, 10, 118, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 108, 0}
+  21:22:04.061 after pip-fix-idle__kb: edge insets {47, 10, 34, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 0, 0}
+  21:22:07.837 after pip-fix-idle__kb: edge insets {47, 10, 97.333333333333258, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 87.333333333333258, 0}
+  21:22:25.050 after pip-fix-running__bottomRight: edge insets {47, 10, 335, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 325, 0}
+  21:22:25.241 after pip-fix-running__bottomRight: edge insets {47, 10, 318, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 308, 0}
+  21:22:25.306 after pip-fix-running__bottomRight: edge insets {47, 10, 345, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 335, 0}
+  21:22:25.402 after pip-fix-running__bottomRight: edge insets {47, 10, 432.33333333333326, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 422.33333333333326, 0}
+  21:22:32.179 after pip-fix-running__kb: edge insets {47, 10, 118, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 108, 0}
+  21:22:46.080 after pip-fix-running__kb: edge insets {47, 10, 34, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 0, 0}
+  21:22:49.903 after pip-fix-running__kb: edge insets {47, 10, 97.333333333333258, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 87.333333333333258, 0}
+  21:22:56.312 after pip-fix-history__main: edge insets {47, 10, 97.333333333333371, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 87.333333333333371, 0}
+  21:22:56.324 after pip-fix-history__main: edge insets {47, 10, 97.333333333333258, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 87.333333333333258, 0}
+  21:22:56.334 after pip-fix-history__main: edge insets {47, 10, 97.333333333333144, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 87.333333333333144, 0}
+  21:22:56.369 after pip-fix-history__main: edge insets {47, 10, 97.333333333333258, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 87.333333333333258, 0}
+  21:22:56.650 after pip-fix-history__main: edge insets {47, 10, 97.333333333333144, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 87.333333333333144, 0}
+  21:22:56.688 after pip-fix-history__main: edge insets {47, 10, 97.333333333333371, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 87.333333333333371, 0}
+  21:22:56.702 after pip-fix-history__main: edge insets {47, 10, 97.333333333333258, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 87.333333333333258, 0}
+  21:22:56.727 after pip-fix-history__main: edge insets {47, 10, 97.333333333333371, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 87.333333333333371, 0}
+  21:22:56.789 after pip-fix-history__main: edge insets {47, 10, 97.333333333333258, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 87.333333333333258, 0}
+  21:22:56.811 after pip-fix-history__main: edge insets {47, 10, 97.333333333333371, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 87.333333333333371, 0}
+  21:22:56.843 after pip-fix-history__main: edge insets {47, 10, 97.333333333333258, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 87.333333333333258, 0}
+  21:22:56.875 after pip-fix-history__main: edge insets {47, 10, 97.333333333333371, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 87.333333333333371, 0}
+  21:22:56.910 after pip-fix-history__main: edge insets {47, 10, 97.333333333333258, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 87.333333333333258, 0}
+  21:22:56.923 after pip-fix-history__main: edge insets {47, 10, 97.333333333333371, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 87.333333333333371, 0}
+  21:22:56.935 after pip-fix-history__main: edge insets {47, 10, 97.333333333333258, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 87.333333333333258, 0}
+  21:22:56.957 after pip-fix-history__main: edge insets {47, 10, 97.333333333333371, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 87.333333333333371, 0}
+  21:22:56.969 after pip-fix-history__main: edge insets {47, 10, 97.333333333333258, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 87.333333333333258, 0}
+  21:22:56.988 after pip-fix-history__main: edge insets {47, 10, 97.333333333333371, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 87.333333333333371, 0}
+  21:22:57.038 after pip-fix-history__main: edge insets {47, 10, 97.333333333333258, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 87.333333333333258, 0}
+  21:22:57.088 after pip-fix-history__main: edge insets {47, 10, 97.333333333333371, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 87.333333333333371, 0}
+  21:22:57.140 after pip-fix-history__main: edge insets {47, 10, 97.333333333333258, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 87.333333333333258, 0}
+  21:23:01.816 after pip-fix-history__main: edge insets {47, 10, 44, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 34, 0}
+  21:23:09.374 after pip-fix-history__back: edge insets {47, 10, 118, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 108, 0}
+BarRoom (probe):
+  pip-fix-history: room 0->53.3333 [page safe bottom 87.3333, top 153]
+  pip-fix-idle: room 0->53.3333 [page safe bottom 87.3333, top 153] room 53.3333->327.333 room 327.333->361.333 room 361.333->388.333 [page safe bottom 422.333, top 153] [page safe bottom 422.333, top 153] [page safe bottom 422.333, top 153]
+  pip-fix-running: room 0->53.3333 [page safe bottom 87.3333, top 153] room 53.3333->327.333 room 327.333->361.333 room 361.333->388.333 [page safe bottom 422.333, top 153] [page safe bottom 422.333, top 153] [page safe bottom 422.333, top 153]
+  fix__ends: room 0->53.3333 [page safe bottom 87.3333, top 153]
+keyboard cases:
+  fix__idle__kbKey
+    rest Start y=772.67-823.00 (21.00 from the edge)
+    focused: kb top 509.00, Start 437.67-488.00 gap +21.00 hit=y, Key 388.67-409.67, +12.00 above the bar's top
+    typed: kb top 509.00, Start 437.67-488.00 gap +21.00 hit=y, Key 388.67-409.00, +12.67 above the bar's top
+  fix__idle__kbURL
+    rest Start y=772.67-823.00 (21.00 from the edge)
+    focused: kb top 509.00, Start 437.67-488.00 gap +21.00 hit=y, URL 312.33-334.33, +87.33 above the bar's top
+    typed: kb top 509.00, Start 437.67-488.00 gap +21.00 hit=y, URL 312.33-334.33, +87.33 above the bar's top
+  fix__running__kbKey
+    rest Stop y=772.67-823.00 (21.00 from the edge)
+    focused: kb top 509.00, Stop 437.67-488.00 gap +21.00 hit=y, Key 388.67-409.67, +12.00 above the bar's top
+    typed: kb top 509.00, Stop 437.67-488.00 gap +21.00 hit=y, Restart 437.67-488.00 gap +21.00 hit=y, Key 388.67-409.00, +12.67 above the bar's top
+  fix__running__kbURL
+    rest Stop y=772.67-823.00 (21.00 from the edge)
+    focused: kb top 509.00, Stop 437.67-488.00 gap +21.00 hit=y, URL 312.33-334.33, +87.33 above the bar's top
+    typed: kb top 509.00, Stop 437.67-488.00 gap +21.00 hit=y, Restart 437.67-488.00 gap +21.00 hit=y, URL 312.33-334.33, +87.33 above the bar's top
+  main__idle__kbKey
+    rest Start y=772.67-823.00 (21.00 from the edge)
+    focused: kb top 509.00, Start 437.67-488.00 gap +21.00 hit=y, Key 388.67-409.67, +12.00 above the bar's top
+    typed: kb top 509.00, Start 437.67-488.00 gap +21.00 hit=y, Key 388.67-409.00, +12.67 above the bar's top
+  main__idle__kbURL
+    rest Start y=772.67-823.00 (21.00 from the edge)
+    focused: kb top 509.00, Start 437.67-488.00 gap +21.00 hit=y, URL 312.33-334.33, +87.33 above the bar's top
+    typed: kb top 509.00, Start 437.67-488.00 gap +21.00 hit=y, URL 312.33-334.33, +87.33 above the bar's top
+  main__running__kbKey
+    rest Stop y=772.67-823.00 (21.00 from the edge)
+    focused: kb top 509.00, Stop 437.67-488.00 gap +21.00 hit=y, Key 388.67-409.67, +12.00 above the bar's top
+    typed: kb top 509.00, Stop 437.67-488.00 gap +21.00 hit=y, Restart 437.67-488.00 gap +21.00 hit=y, Key 388.67-409.00, +12.67 above the bar's top
+  main__running__kbURL
+    rest Stop y=772.67-823.00 (21.00 from the edge)
+    focused: kb top 509.00, Stop 437.67-488.00 gap +21.00 hit=y, URL 312.33-334.33, +87.33 above the bar's top
+    typed: kb top 509.00, Stop 437.67-488.00 gap +21.00 hit=y, Restart 437.67-488.00 gap +21.00 hit=y, URL 312.33-334.33, +87.33 above the bar's top
+readings (probe):
+  fix__idle__kbKey: without=34 with=34 room=53.3333 (page 87.3333) with=308 room=327.333 room=361.333 [kb 536+308, list inset 395.33] with=335 room=388.333 (page 422.333) (page 422.333) (page 422.333) [kb 509+335, list inset 422.33] [kb 509+335, list inset 422.33]
+  fix__idle__kbURL: without=34 with=34 room=53.3333 (page 87.3333) with=308 room=327.333 room=361.333 [kb 536+308, list inset 395.33] with=335 room=388.333 (page 422.333) (page 422.333) (page 422.333) [kb 509+335, list inset 422.33] [kb 509+335, list inset 422.33]
+  fix__running__kbKey: without=34 with=34 room=53.3333 (page 87.3333) with=308 room=327.333 room=361.333 [kb 536+308, list inset 395.33] with=335 room=388.333 (page 422.333) (page 422.333) (page 422.333) [kb 509+335, list inset 422.33] [kb 509+335, list inset 422.33]
+  fix__running__kbURL: without=34 with=34 room=53.3333 (page 87.3333) with=308 room=327.333 room=361.333 [kb 536+308, list inset 395.33] with=335 room=388.333 (page 422.333) (page 422.333) (page 422.333) [kb 509+335, list inset 422.33] [kb 509+335, list inset 422.33]
+  main__idle__kbKey: without=34 with=34 with=308 [kb 536+308, list inset 395.33] with=335 [kb 509+335, list inset 422.33] [kb 509+335, list inset 422.33]
+  main__idle__kbURL: without=34 with=34 with=308 [kb 536+308, list inset 395.33] with=335 [kb 509+335, list inset 422.33] [kb 509+335, list inset 422.33]
+  main__running__kbKey: without=34 with=34 with=308 [kb 536+308, list inset 395.33] with=335 [kb 509+335, list inset 422.33] [kb 509+335, list inset 422.33]
+  main__running__kbURL: without=34 with=34 with=308 [kb 536+308, list inset 395.33] with=335 [kb 509+335, list inset 422.33] [kb 509+335, list inset 422.33]
+fix against main, pixels:
+  running__rest: 0 differing pixels below the status bar
+  idle__rest: 0 differing pixels below the status bar
+  ends__top: 0 differing pixels below the status bar
+  ends__end: 0 differing pixels below the status bar
+  endsXXXL__top: 16 differing pixels below the status bar, rows 2296-2467 px, largest step 1
+  endsXXXL__end: 0 differing pixels below the status bar
+scrolls:
+  scroll-fix__drag: 63 frames, finger -364.3 pt, content ahead of the finger by at most +173.7 pt, biggest one-frame change 16.0 pt
+  scroll-fix__dragXXXL: 63 frames, finger -364.3 pt, content ahead of the finger by at most +169.0 pt, biggest one-frame change 11.0 pt
+  scroll-fix__flick: 9 frames, finger -134.3 pt, content ahead of the finger by at most +54.7 pt, biggest one-frame change 28.3 pt
+  scroll-fix__slow: 89 frames, finger -156.7 pt, content ahead of the finger by at most +51.3 pt, biggest one-frame change 4.0 pt
+  scroll-fix__slowXXXL: 79 frames, finger -156.7 pt, content ahead of the finger by at most +50.7 pt, biggest one-frame change 4.7 pt
+  scroll-form148__drag: 64 frames, finger -364.3 pt, content ahead of the finger by at most +159.3 pt, biggest one-frame change 9.0 pt
+  scroll-form148__dragXXXL: 62 frames, finger -364.3 pt, content ahead of the finger by at most +155.7 pt, biggest one-frame change 20.7 pt
+  scroll-form148__flick: 10 frames, finger -143.7 pt, content ahead of the finger by at most +42.7 pt, biggest one-frame change 43.0 pt
+  scroll-form148__slow: 89 frames, finger -156.7 pt, content ahead of the finger by at most +33.7 pt, biggest one-frame change 12.0 pt
+  scroll-form148__slowXXXL: 85 frames, finger -156.7 pt, content ahead of the finger by at most -39.0 pt, biggest one-frame change 33.0 pt
+  scroll-main__drag: 60 frames, finger -364.3 pt, content ahead of the finger by at most +170.3 pt, biggest one-frame change 12.0 pt
+  scroll-main__dragXXXL: 58 frames, finger -364.3 pt, content ahead of the finger by at most +172.0 pt, biggest one-frame change 14.3 pt
+  scroll-main__flick: 10 frames, finger -143.7 pt, content ahead of the finger by at most +58.7 pt, biggest one-frame change 17.3 pt
+  scroll-main__slow: 87 frames, finger -156.7 pt, content ahead of the finger by at most +52.3 pt, biggest one-frame change 5.7 pt
+  scroll-main__slowXXXL: 87 frames, finger -156.7 pt, content ahead of the finger by at most +50.0 pt, biggest one-frame change 5.7 pt
+ends of the page:
+  fix__ends: History ends 679.00, Stop's top 772.67: 93.67 pt between, list's bottom inset 87.33 (safe area 87.33, content inset 0), scroll bar's track ends 753.67
+  fix__endsXXXL: History ends 712.67, Stop's top 765.33: 52.67 pt between, list's bottom inset 94.67 (safe area 94.67, content inset 0), scroll bar's track ends 746.34
+  main__ends: History ends 679.00, Stop's top 772.67: 93.67 pt between, list's bottom inset 87.33 (safe area 87.33, content inset 0), scroll bar's track ends 753.67
+  main__endsXXXL: History ends 712.67, Stop's top 765.33: 52.67 pt between, list's bottom inset 94.67 (safe area 94.67, content inset 0), scroll bar's track ends 746.34
+History:
+  fix__history:
+    stack: 5 layouts, y [722.67, 756.67], height [53.33, 87.33], x from 0 to 0
+    page: 28 layouts, y [756.67], height [53.33], x from -117 to 0
+    pageOuter: 28 layouts, y [703.33], height [53.33], x from -117 to 0
+  main__history:
+    stack: 5 layouts, y [722.67, 756.67], height [53.33, 87.33], x from 0 to 0
+    page: 25 layouts, y [756.67], height [53.33], x from -117 to 0
+  fix__history-marks:
+    scrolled | Stop exists=true hittable=true frame=(21.0, 772.6666666666666, 348.0, 50.33333333333337) | History bar=false
+    push 1 | Stop exists=true hittable=true frame=(21.0, 772.6666666666666, 348.0, 50.33333333333337) | History bar=false
+    History shown | Stop exists=false hittable=false frame=- | History bar=true
+    back | Stop exists=false hittable=false frame=- | History bar=true
+    back, settled | Stop exists=true hittable=true frame=(21.0, 772.6666666666666, 348.0, 50.33333333333337) | History bar=false
+    push 2 | Stop exists=true hittable=true frame=(21.0, 772.6666666666666, 348.0, 50.33333333333337) | History bar=false
+    History shown | Stop exists=false hittable=false frame=- | History bar=true
+    swipe all the way | Stop exists=false hittable=false frame=- | History bar=true
+    after the full swipe | Stop exists=true hittable=true frame=(21.0, 772.6666666666666, 348.0, 50.33333333333337) | History bar=false
+    push 3 | Stop exists=true hittable=true frame=(21.0, 772.6666666666666, 348.0, 50.33333333333337) | History bar=false
+    History shown | Stop exists=false hittable=false frame=- | History bar=true
+    swipe let go | Stop exists=false hittable=false frame=- | History bar=true
+    after the let-go swipe | Stop exists=false hittable=false frame=- | History bar=true
+    back after the let-go swipe | Stop exists=false hittable=false frame=- | History bar=true
+    end | Stop exists=true hittable=true frame=(21.0, 772.6666666666666, 348.0, 50.33333333333337) | History bar=false
+  main__history-marks:
+    scrolled | Stop exists=true hittable=true frame=(21.0, 772.6666666666666, 348.0, 50.33333333333337) | History bar=false
+    push 1 | Stop exists=true hittable=true frame=(21.0, 772.6666666666666, 348.0, 50.33333333333337) | History bar=false
+    History shown | Stop exists=false hittable=false frame=- | History bar=true
+    back | Stop exists=false hittable=false frame=- | History bar=true
+    back, settled | Stop exists=true hittable=true frame=(21.0, 772.6666666666666, 348.0, 50.33333333333337) | History bar=false
+    push 2 | Stop exists=true hittable=true frame=(21.0, 772.6666666666666, 348.0, 50.33333333333337) | History bar=false
+    History shown | Stop exists=false hittable=false frame=- | History bar=true
+    swipe all the way | Stop exists=false hittable=false frame=- | History bar=true
+    after the full swipe | Stop exists=true hittable=true frame=(21.0, 772.6666666666666, 348.0, 50.33333333333337) | History bar=false
+    push 3 | Stop exists=true hittable=true frame=(21.0, 772.6666666666666, 348.0, 50.33333333333337) | History bar=false
+    History shown | Stop exists=false hittable=false frame=- | History bar=true
+    swipe let go | Stop exists=false hittable=false frame=- | History bar=true
+    after the let-go swipe | Stop exists=false hittable=false frame=- | History bar=true
+    back after the let-go swipe | Stop exists=false hittable=false frame=- | History bar=true
+    end | Stop exists=true hittable=true frame=(21.0, 772.6666666666666, 348.0, 50.33333333333337) | History bar=false
+=== 17e-pip-ios27
+  device type: com.apple.CoreSimulator.SimDeviceType.iPhone-17e-PiP-lab | runtime: com.apple.CoreSimulator.SimRuntime.iOS-27-0 | test runner: | Xcode 27.1 | Build version 27A9275 | Ammy built with: | "CFBundleVersion" => "1" | "DTPlatformVersion" => "26.5" | "DTSDKName" => "iphonesimulator26.5" | "DTXcode" => "2660" | "DTXcodeBuild" => "17F113" | "MinimumOSVersion" => "26.0"
+Picture in Picture over Ammy:
+  pip-main-idle__arrive: PiP 648.00-800.00 x 110.00 (44.00 from the bottom), Start top 772.67, PiP's bottom -27.33 pt above it
+  pip-main-idle__bottomLeft: PiP 648.00-800.00 x 10.00 (44.00 from the bottom), Start top 772.67, PiP's bottom -27.33 pt above it
+  pip-main-idle__bottomRight: PiP 648.00-800.00 x 110.00 (44.00 from the bottom), Start top 772.67, PiP's bottom -27.33 pt above it
+  pip-main-idle__kb: PiP 354.00-506.00 x 110.00 (338.00 from the bottom), Start top 444.67, PiP's bottom -61.33 pt above it, keyboard top 560.00
+  pip-main-running__arrive: PiP 648.00-800.00 x 110.00 (44.00 from the bottom), Stop top 772.67, PiP's bottom -27.33 pt above it
+  pip-main-running__bottomLeft: PiP 648.00-800.00 x 10.00 (44.00 from the bottom), Stop top 772.67, PiP's bottom -27.33 pt above it
+  pip-main-running__bottomRight: PiP 648.00-800.00 x 110.00 (44.00 from the bottom), Stop top 772.67, PiP's bottom -27.33 pt above it
+  pip-main-running__kb: PiP 354.00-506.00 x 110.00 (338.00 from the bottom), Stop+Restart top 444.67, PiP's bottom -61.33 pt above it, keyboard top 560.00
+  pip-main-history__main: PiP 648.00-800.00 (44.00 from the bottom)
+  pip-main-history__history: PiP 648.00-800.00 (44.00 from the bottom)
+  pip-main-history__back: PiP 648.00-800.00 (44.00 from the bottom)
+  pip-fix-idle__arrive: PiP 594.67-746.67 x 110.00 (97.33 from the bottom), Start top 772.67, PiP's bottom +26.00 pt above it
+  pip-fix-idle__bottomLeft: PiP 594.00-746.00 x 10.00 (98.00 from the bottom), Start top 772.67, PiP's bottom +26.67 pt above it
+  pip-fix-idle__bottomRight: PiP 594.00-746.00 x 110.00 (98.00 from the bottom), Start top 772.67, PiP's bottom +26.67 pt above it
+  pip-fix-idle__kb: PiP 266.67-418.67 x 110.00 (425.33 from the bottom), Start top 444.67, PiP's bottom +26.00 pt above it, keyboard top 560.00
+  pip-fix-running__arrive: PiP 594.67-746.67 x 110.00 (97.33 from the bottom), Stop top 772.67, PiP's bottom +26.00 pt above it
+  pip-fix-running__bottomLeft: PiP 594.00-746.00 x 10.00 (98.00 from the bottom), Stop top 772.67, PiP's bottom +26.67 pt above it
+  pip-fix-running__bottomRight: PiP 594.00-746.00 x 110.00 (98.00 from the bottom), Stop top 772.67, PiP's bottom +26.67 pt above it
+  pip-fix-running__kb: PiP 266.67-418.67 x 110.00 (425.33 from the bottom), Stop+Restart top 444.67, PiP's bottom +26.00 pt above it, keyboard top 560.00
+  pip-fix-history__main: PiP 594.67-746.67 (97.33 from the bottom)
+  pip-fix-history__history: PiP 594.67-746.67 (97.33 from the bottom)
+  pip-fix-history__back: PiP 594.67-746.67 (97.33 from the bottom)
+SpringBoard's room for PiP:
+  21:21:57.360 after host: edge insets {47, 0, 34, 0} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 34, 0}
+  21:21:57.423 after host: edge insets {47, 10, 44, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 34, 0}
+  21:22:02.262 after host__started: edge insets {47, 10, 118, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 108, 0}
+  21:22:11.929 after home__bottomRight: edge insets {47, 10, 34, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 0, 0}
+  21:22:23.256 after home__bottomRight: edge insets {47, 10, 44, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 34, 0}
+  21:23:21.178 after pip-main-idle__bottomRight: edge insets {47, 10, 335, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 325, 0}
+  21:23:21.976 after pip-main-idle__bottomRight: edge insets {47, 10, 311, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 301, 0}
+  21:23:22.385 after pip-main-idle__bottomRight: edge insets {47, 10, 338, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 328, 0}
+  21:23:31.603 after pip-main-idle__kb: edge insets {47, 10, 118, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 108, 0}
+  21:23:35.891 after pip-main-idle__kb: edge insets {47, 10, 34, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 0, 0}
+  21:23:47.229 after pip-main-idle__kb: edge insets {47, 10, 44, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 34, 0}
+  21:24:09.413 after pip-main-running__bottomRight: edge insets {47, 10, 335, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 325, 0}
+  21:24:09.687 after pip-main-running__bottomRight: edge insets {47, 10, 311, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 301, 0}
+  21:24:09.955 after pip-main-running__bottomRight: edge insets {47, 10, 338, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 328, 0}
+  21:24:19.490 after pip-main-running__kb: edge insets {47, 10, 34, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 0, 0}
+  21:24:29.372 after pip-main-running__kb: edge insets {47, 10, 44, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 34, 0}
+  21:24:35.100 after pip-main-history__main: edge insets {47, 10, 44.000000000000114, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 34.000000000000114, 0}
+  21:24:35.111 after pip-main-history__main: edge insets {47, 10, 44, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 34, 0}
+  21:24:35.156 after pip-main-history__main: edge insets {47, 10, 44.000000000000114, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 34.000000000000114, 0}
+  21:24:35.173 after pip-main-history__main: edge insets {47, 10, 44, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 34, 0}
+  21:24:44.418 after pip-main-history__back: edge insets {47, 10, 118, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 108, 0}
+  21:24:45.451 after pip-main-history__back: edge insets {47, 10, 34, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 0, 0}
+  21:24:55.699 after pip-main-history__back: edge insets {47, 10, 97.333333333333258, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 87.333333333333258, 0}
+  21:25:14.331 after pip-fix-idle__bottomRight: edge insets {47, 10, 335, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 325, 0}
+  21:25:14.621 after pip-fix-idle__bottomRight: edge insets {47, 10, 311, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 301, 0}
+  21:25:14.873 after pip-fix-idle__bottomRight: edge insets {47, 10, 398.33333333333326, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 388.33333333333326, 0}
+  21:25:15.027 after pip-fix-idle__bottomRight: edge insets {47, 10, 425.33333333333326, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 415.33333333333326, 0}
+  21:25:26.097 after pip-fix-idle__kb: edge insets {47, 10, 338, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 328, 0}
+  21:25:27.123 after pip-fix-idle__kb: edge insets {47, 10, 118, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 108, 0}
+  21:25:28.364 after pip-fix-idle__kb: edge insets {47, 10, 34, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 0, 0}
+  21:25:40.333 after pip-fix-idle__kb: edge insets {47, 10, 97.333333333333258, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 87.333333333333258, 0}
+  21:26:18.913 after pip-fix-running__bottomRight: edge insets {47, 10, 335, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 325, 0}
+  21:26:19.432 after pip-fix-running__bottomRight: edge insets {47, 10, 311, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 301, 0}
+  21:26:19.622 after pip-fix-running__bottomRight: edge insets {47, 10, 398.33333333333326, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 388.33333333333326, 0}
+  21:26:19.905 after pip-fix-running__bottomRight: edge insets {47, 10, 425.33333333333326, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 415.33333333333326, 0}
+  21:26:26.592 after pip-fix-running__kb: edge insets {47, 10, 338, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 328, 0}
+  21:26:27.579 after pip-fix-running__kb: edge insets {47, 10, 34, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 0, 0}
+  21:26:35.586 after pip-fix-running__kb: edge insets {47, 10, 97.333333333333258, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 87.333333333333258, 0}
+  21:26:41.105 after pip-fix-history__main: edge insets {47, 10, 97.333333333333371, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 87.333333333333371, 0}
+  21:26:41.118 after pip-fix-history__main: edge insets {47, 10, 97.333333333333258, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 87.333333333333258, 0}
+  21:26:41.451 after pip-fix-history__main: edge insets {47, 10, 97.333333333333144, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 87.333333333333144, 0}
+  21:26:41.487 after pip-fix-history__main: edge insets {47, 10, 97.333333333333258, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 87.333333333333258, 0}
+  21:26:41.503 after pip-fix-history__main: edge insets {47, 10, 97.333333333333371, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 87.333333333333371, 0}
+  21:26:41.520 after pip-fix-history__main: edge insets {47, 10, 97.333333333333258, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 87.333333333333258, 0}
+  21:26:41.553 after pip-fix-history__main: edge insets {47, 10, 97.333333333333371, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 87.333333333333371, 0}
+  21:26:41.570 after pip-fix-history__main: edge insets {47, 10, 97.333333333333258, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 87.333333333333258, 0}
+  21:26:41.601 after pip-fix-history__main: edge insets {47, 10, 97.333333333333371, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 87.333333333333371, 0}
+  21:26:41.618 after pip-fix-history__main: edge insets {47, 10, 97.333333333333258, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 87.333333333333258, 0}
+  21:26:41.637 after pip-fix-history__main: edge insets {47, 10, 97.333333333333371, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 87.333333333333371, 0}
+  21:26:41.720 after pip-fix-history__main: edge insets {47, 10, 97.333333333333258, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 87.333333333333258, 0}
+  21:26:41.732 after pip-fix-history__main: edge insets {47, 10, 97.333333333333371, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 87.333333333333371, 0}
+  21:26:41.755 after pip-fix-history__main: edge insets {47, 10, 97.333333333333258, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 87.333333333333258, 0}
+  21:26:41.771 after pip-fix-history__main: edge insets {47, 10, 97.333333333333371, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 87.333333333333371, 0}
+  21:26:41.870 after pip-fix-history__main: edge insets {47, 10, 97.333333333333258, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 87.333333333333258, 0}
+  21:26:41.903 after pip-fix-history__main: edge insets {47, 10, 97.333333333333371, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 87.333333333333371, 0}
+  21:26:41.957 after pip-fix-history__main: edge insets {47, 10, 97.333333333333258, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 87.333333333333258, 0}
+  21:26:49.160 after pip-fix-history__back: edge insets {47, 10, 118, 10} from safe area {47, 0, 34, 0} and the app's padding {0, 0, 108, 0}
+BarRoom (probe):
+  pip-fix-history: room 0->53.3333 [page safe bottom 87.3333, top 153]
+  pip-fix-idle: room 0->53.3333 [page safe bottom 87.3333, top 153] room 53.3333->320.333 room 320.333->354.333 [page safe bottom 388.333, top 153] [page safe bottom 388.333, top 153] room 354.333->381.333 [page safe bottom 415.333, top 153]
+  pip-fix-running: room 0->53.3333 [page safe bottom 87.3333, top 153] room 53.3333->320.333 room 320.333->354.333 [page safe bottom 388.333, top 153] [page safe bottom 388.333, top 153] room 354.333->381.333 [page safe bottom 415.333, top 153]
+  fix__ends: room 0->53.3333 [page safe bottom 87.3333, top 153]
+keyboard cases:
+  fix__idle__kbKey
+    rest Start y=772.67-823.00 (21.00 from the edge)
+    focused: kb top 516.00, Start 444.67-495.00 gap +21.00 hit=y, Key 388.67-409.67, +19.00 above the bar's top
+    typed: kb top 516.00, Start 444.67-495.00 gap +21.00 hit=y, Key 388.67-409.00, +19.67 above the bar's top
+  fix__idle__kbURL
+    rest Start y=772.67-823.00 (21.00 from the edge)
+    focused: kb top 516.00, Start 444.67-495.00 gap +21.00 hit=y, URL 312.33-334.33, +94.33 above the bar's top
+    typed: kb top 516.00, Start 444.67-495.00 gap +21.00 hit=y, URL 312.33-334.33, +94.33 above the bar's top
+  fix__running__kbKey
+    rest Stop y=772.67-823.00 (21.00 from the edge)
+    focused: kb top 516.00, Stop 444.67-495.00 gap +21.00 hit=y, Key 388.67-409.67, +19.00 above the bar's top
+    typed: kb top 516.00, Stop 444.67-495.00 gap +21.00 hit=y, Restart 444.67-495.00 gap +21.00 hit=y, Key 388.67-409.00, +19.67 above the bar's top
+  fix__running__kbURL
+    rest Stop y=772.67-823.00 (21.00 from the edge)
+    focused: kb top 516.00, Stop 444.67-495.00 gap +21.00 hit=y, URL 312.33-334.33, +94.33 above the bar's top
+    typed: kb top 516.00, Stop 444.67-495.00 gap +21.00 hit=y, Restart 444.67-495.00 gap +21.00 hit=y, URL 312.33-334.33, +94.33 above the bar's top
+  main__idle__kbKey
+    rest Start y=772.67-823.00 (21.00 from the edge)
+    focused: kb top 516.00, Start 444.67-495.00 gap +21.00 hit=y, Key 388.67-409.67, +19.00 above the bar's top
+    typed: kb top 516.00, Start 444.67-495.00 gap +21.00 hit=y, Key 388.67-409.00, +19.67 above the bar's top
+  main__idle__kbURL
+    rest Start y=772.67-823.00 (21.00 from the edge)
+    focused: kb top 516.00, Start 444.67-495.00 gap +21.00 hit=y, URL 312.33-334.33, +94.33 above the bar's top
+    typed: kb top 516.00, Start 444.67-495.00 gap +21.00 hit=y, URL 312.33-334.33, +94.33 above the bar's top
+  main__running__kbKey
+    rest Stop y=772.67-823.00 (21.00 from the edge)
+    focused: kb top 516.00, Stop 444.67-495.00 gap +21.00 hit=y, Key 388.67-409.67, +19.00 above the bar's top
+    typed: kb top 516.00, Stop 444.67-495.00 gap +21.00 hit=y, Restart 444.67-495.00 gap +21.00 hit=y, Key 388.67-409.00, +19.67 above the bar's top
+  main__running__kbURL
+    rest Stop y=772.67-823.00 (21.00 from the edge)
+    focused: kb top 516.00, Stop 444.67-495.00 gap +21.00 hit=y, URL 312.33-334.33, +94.33 above the bar's top
+    typed: kb top 516.00, Stop 444.67-495.00 gap +21.00 hit=y, Restart 444.67-495.00 gap +21.00 hit=y, URL 312.33-334.33, +94.33 above the bar's top
+readings (probe):
+  fix__idle__kbKey: without=34 with=34 room=53.3333 (page 87.3333) with=301 room=320.333 room=354.333 (page 388.333) (page 388.333) [kb 516+328, list inset 388.33] with=328 room=381.333 (page 415.333) [kb 516+328, list inset 415.33]
+  fix__idle__kbURL: without=34 with=34 room=53.3333 (page 87.3333) with=301 room=320.333 room=354.333 (page 388.333) (page 388.333) [kb 516+328, list inset 388.33] with=328 room=381.333 (page 415.333) [kb 516+328, list inset 415.33]
+  fix__running__kbKey: without=34 with=34 room=53.3333 (page 87.3333) with=301 room=320.333 room=354.333 (page 388.333) (page 388.333) [kb 516+328, list inset 388.33] with=328 room=381.333 (page 415.333) [kb 516+328, list inset 415.33]
+  fix__running__kbURL: without=34 with=34 room=53.3333 (page 87.3333) with=301 room=320.333 room=354.333 (page 388.333) (page 388.333) [kb 516+328, list inset 388.33] with=328 room=381.333 (page 415.333) [kb 516+328, list inset 415.33]
+  main__idle__kbKey: without=34 with=34 with=301 [kb 516+328, list inset 388.33] with=328 [kb 516+328, list inset 415.33]
+  main__idle__kbURL: without=34 with=34 with=301 [kb 516+328, list inset 388.33] with=328 [kb 516+328, list inset 415.33]
+  main__running__kbKey: without=34 with=34 with=301 [kb 516+328, list inset 388.33] with=328 [kb 516+328, list inset 415.33]
+  main__running__kbURL: without=34 with=34 with=301 [kb 516+328, list inset 388.33] with=328 [kb 516+328, list inset 415.33]
+fix against main, pixels:
+  running__rest: 0 differing pixels below the status bar
+  idle__rest: 0 differing pixels below the status bar
+  ends__top: 0 differing pixels below the status bar
+  ends__end: 0 differing pixels below the status bar
+  endsXXXL__top: 0 differing pixels below the status bar
+  endsXXXL__end: 0 differing pixels below the status bar
+scrolls:
+  scroll-fix__drag: 63 frames, finger -364.3 pt, content ahead of the finger by at most +170.3 pt, biggest one-frame change 27.0 pt
+  scroll-fix__dragXXXL: 64 frames, finger -364.3 pt, content ahead of the finger by at most +168.3 pt, biggest one-frame change 22.7 pt
+  scroll-fix__flick: 8 frames, finger -143.7 pt, content ahead of the finger by at most +64.0 pt, biggest one-frame change 25.7 pt
+  scroll-fix__slow: 88 frames, finger -156.7 pt, content ahead of the finger by at most +50.0 pt, biggest one-frame change 6.0 pt
+  scroll-fix__slowXXXL: 89 frames, finger -156.7 pt, content ahead of the finger by at most +49.7 pt, biggest one-frame change 4.3 pt
+  scroll-form148__drag: 63 frames, finger -355.7 pt, content ahead of the finger by at most +152.7 pt, biggest one-frame change 39.0 pt
+  scroll-form148__dragXXXL: 63 frames, finger -364.3 pt, content ahead of the finger by at most +157.0 pt, biggest one-frame change 22.3 pt
+  scroll-form148__flick: 10 frames, finger -143.7 pt, content ahead of the finger by at most +38.7 pt, biggest one-frame change 13.7 pt
+  scroll-form148__slow: 89 frames, finger -156.7 pt, content ahead of the finger by at most +33.7 pt, biggest one-frame change 9.7 pt
+  scroll-form148__slowXXXL: 82 frames, finger -156.7 pt, content ahead of the finger by at most +33.0 pt, biggest one-frame change 21.3 pt
+  scroll-main__drag: 64 frames, finger -355.7 pt, content ahead of the finger by at most +161.7 pt, biggest one-frame change 17.7 pt
+  scroll-main__dragXXXL: 65 frames, finger -364.3 pt, content ahead of the finger by at most +168.3 pt, biggest one-frame change 21.0 pt
+  scroll-main__flick: 10 frames, finger -131.0 pt, content ahead of the finger by at most +42.3 pt, biggest one-frame change 13.7 pt
+  scroll-main__slow: 77 frames, finger -156.7 pt, content ahead of the finger by at most +50.0 pt, biggest one-frame change 8.7 pt
+  scroll-main__slowXXXL: 89 frames, finger -156.7 pt, content ahead of the finger by at most +50.0 pt, biggest one-frame change 2.7 pt
+ends of the page:
+  fix__ends: History ends 679.00, Stop's top 772.67: 93.67 pt between, list's bottom inset 87.33 (safe area 87.33, content inset 0), scroll bar's track ends 753.67
+  fix__endsXXXL: History ends 712.67, Stop's top 765.33: 52.67 pt between, list's bottom inset 94.67 (safe area 94.67, content inset 0), scroll bar's track ends 746.34
+  main__ends: History ends 679.00, Stop's top 772.67: 93.67 pt between, list's bottom inset 87.33 (safe area 87.33, content inset 0), scroll bar's track ends 753.67
+  main__endsXXXL: History ends 712.67, Stop's top 765.33: 52.67 pt between, list's bottom inset 94.67 (safe area 94.67, content inset 0), scroll bar's track ends 746.34
+History:
+  fix__history:
+    stack: 5 layouts, y [722.67, 756.67], height [53.33, 87.33], x from 0 to 0
+    page: 26 layouts, y [756.67], height [53.33], x from -117 to 0
+    pageOuter: 26 layouts, y [703.33], height [53.33], x from -117 to 0
+  main__history:
+    stack: 5 layouts, y [722.67, 756.67], height [53.33, 87.33], x from 0 to 0
+    page: 25 layouts, y [756.67], height [53.33], x from -117 to 0
+  fix__history-marks:
+    scrolled | Stop exists=true hittable=true frame=(21.0, 772.6666666666666, 348.0, 50.33333333333337) | History bar=false
+    push 1 | Stop exists=true hittable=true frame=(21.0, 772.6666666666666, 348.0, 50.33333333333337) | History bar=false
+    History shown | Stop exists=false hittable=false frame=- | History bar=true
+    back | Stop exists=false hittable=false frame=- | History bar=true
+    back, settled | Stop exists=true hittable=true frame=(21.0, 772.6666666666666, 348.0, 50.33333333333337) | History bar=false
+    push 2 | Stop exists=true hittable=true frame=(21.0, 772.6666666666666, 348.0, 50.33333333333337) | History bar=false
+    History shown | Stop exists=false hittable=false frame=- | History bar=true
+    swipe all the way | Stop exists=false hittable=false frame=- | History bar=true
+    after the full swipe | Stop exists=true hittable=true frame=(21.0, 772.6666666666666, 348.0, 50.33333333333337) | History bar=false
+    push 3 | Stop exists=true hittable=true frame=(21.0, 772.6666666666666, 348.0, 50.33333333333337) | History bar=false
+    History shown | Stop exists=false hittable=false frame=- | History bar=true
+    swipe let go | Stop exists=false hittable=false frame=- | History bar=true
+    after the let-go swipe | Stop exists=false hittable=false frame=- | History bar=true
+    back after the let-go swipe | Stop exists=false hittable=false frame=- | History bar=true
+    end | Stop exists=true hittable=true frame=(21.0, 772.6666666666666, 348.0, 50.33333333333337) | History bar=false
+  main__history-marks:
+    scrolled | Stop exists=true hittable=true frame=(21.0, 772.6666666666666, 348.0, 50.33333333333337) | History bar=false
+    push 1 | Stop exists=true hittable=true frame=(21.0, 772.6666666666666, 348.0, 50.33333333333337) | History bar=false
+    History shown | Stop exists=false hittable=false frame=- | History bar=true
+    back | Stop exists=false hittable=false frame=- | History bar=true
+    back, settled | Stop exists=true hittable=true frame=(21.0, 772.6666666666666, 348.0, 50.33333333333337) | History bar=false
+    push 2 | Stop exists=true hittable=true frame=(21.0, 772.6666666666666, 348.0, 50.33333333333337) | History bar=false
+    History shown | Stop exists=false hittable=false frame=- | History bar=true
+    swipe all the way | Stop exists=false hittable=false frame=- | History bar=true
+    after the full swipe | Stop exists=true hittable=true frame=(21.0, 772.6666666666666, 348.0, 50.33333333333337) | History bar=false
+    push 3 | Stop exists=true hittable=true frame=(21.0, 772.6666666666666, 348.0, 50.33333333333337) | History bar=false
+    History shown | Stop exists=false hittable=false frame=- | History bar=true
+    swipe let go | Stop exists=false hittable=false frame=- | History bar=true
+    after the let-go swipe | Stop exists=false hittable=false frame=- | History bar=true
+    back after the let-go swipe | Stop exists=false hittable=false frame=- | History bar=true
+    end | Stop exists=true hittable=true frame=(21.0, 772.6666666666666, 348.0, 50.33333333333337) | History bar=false
+=== ipad-ios27
+  device type: com.apple.CoreSimulator.SimDeviceType.iPad-Air-11-inch-M2 | runtime: com.apple.CoreSimulator.SimRuntime.iOS-27-0 | test runner: | Xcode 27.1 | Build version 27A9275 | Ammy built with: | "CFBundleVersion" => "1" | "DTPlatformVersion" => "26.5" | "DTSDKName" => "iphonesimulator26.5" | "DTXcode" => "2660" | "DTXcodeBuild" => "17F113" | "MinimumOSVersion" => "26.0"
+Picture in Picture over Ammy:
+  pip-main-idle__arrive: PiP 947.50-1136.00 x 461.00 (44.00 from the bottom), Start top 1108.50, PiP's bottom -27.50 pt above it
+  pip-main-idle__bottomLeft: PiP 947.00-1135.50 x 24.00 (44.50 from the bottom), Start top 1108.50, PiP's bottom -27.00 pt above it
+  pip-main-idle__bottomRight: PiP 947.00-1135.50 x 461.00 (44.50 from the bottom), Start top 1108.50, PiP's bottom -27.00 pt above it
+  pip-main-idle__kb: PiP 630.50-819.00 x 461.00 (361.00 from the bottom), Start top 771.50, PiP's bottom -47.50 pt above it, keyboard top 898.00
+  pip-main-running__arrive: PiP 947.50-1136.00 x 461.00 (44.00 from the bottom), Stop top 1108.50, PiP's bottom -27.50 pt above it
+  pip-main-running__bottomLeft: PiP 947.00-1135.50 x 24.00 (44.50 from the bottom), Stop top 1108.50, PiP's bottom -27.00 pt above it
+  pip-main-running__bottomRight: PiP 947.00-1135.50 x 461.00 (44.50 from the bottom), Stop top 1108.50, PiP's bottom -27.00 pt above it
+  pip-main-running__kb: PiP 630.50-819.00 x 461.00 (361.00 from the bottom), Stop+Restart top 771.50, PiP's bottom -47.50 pt above it, keyboard top 898.00
+  pip-main-history__main: PiP 947.50-1136.00 (44.00 from the bottom)
+  pip-main-history__history: PiP 947.50-1136.00 (44.00 from the bottom)
+  pip-main-history__back: PiP 947.50-1136.00 (44.00 from the bottom)
+  pip-fix-idle__arrive: PiP 880.00-1068.50 x 461.00 (111.50 from the bottom), Start top 1108.50, PiP's bottom +40.00 pt above it
+  pip-fix-idle__bottomLeft: PiP 880.00-1068.50 x 24.00 (111.50 from the bottom), Start top 1108.50, PiP's bottom +40.00 pt above it
+  pip-fix-idle__bottomRight: PiP 880.00-1068.50 x 461.00 (111.50 from the bottom), Start top 1108.50, PiP's bottom +40.00 pt above it
+  pip-fix-idle__kb: PiP 543.00-731.50 x 461.00 (448.50 from the bottom), Start top 771.50, PiP's bottom +40.00 pt above it, keyboard top 898.00
+  pip-fix-running__arrive: PiP 880.00-1068.50 x 461.00 (111.50 from the bottom), Stop top 1108.50, PiP's bottom +40.00 pt above it
+  pip-fix-running__bottomLeft: PiP 880.00-1068.50 x 24.00 (111.50 from the bottom), Stop top 1108.50, PiP's bottom +40.00 pt above it
+  pip-fix-running__bottomRight: PiP 880.00-1068.50 x 461.00 (111.50 from the bottom), Stop top 1108.50, PiP's bottom +40.00 pt above it
+  pip-fix-running__kb: PiP 543.00-731.50 x 461.00 (448.50 from the bottom), Stop+Restart top 771.50, PiP's bottom +40.00 pt above it, keyboard top 898.00
+  pip-fix-history__main: PiP 880.00-1068.50 (111.50 from the bottom)
+  pip-fix-history__history: PiP 947.50-1136.00 (44.00 from the bottom)
+  pip-fix-history__back: PiP 880.00-1068.50 (111.50 from the bottom)
+SpringBoard's room for PiP:
+  21:22:04.539 after host: edge insets {32, 0, 25, 0} from safe area {0, 0, 25, 0} and the app's padding {0, 0, 20, 0}
+  21:22:04.632 after host: edge insets {32, 24, 44, 24} from safe area {0, 0, 25, 0} and the app's padding {0, 0, 20, 0}
+  21:22:09.029 after host__started: edge insets {32, 24, 25, 24} from safe area {0, 0, 25, 0} and the app's padding {0, 0, 0, 0}
+  21:22:09.172 after host__started: edge insets {32, 24, 139, 24} from safe area {0, 0, 25, 0} and the app's padding {0, 0, 115, 0}
+  21:22:19.186 after home__bottomRight: edge insets {32, 24, 25, 24} from safe area {0, 0, 25, 0} and the app's padding {0, 0, 0, 0}
+  21:22:29.036 after home__bottomRight: edge insets {32, 24, 44, 24} from safe area {0, 0, 25, 0} and the app's padding {0, 0, 20, 0}
+  21:22:53.101 after pip-main-idle__bottomRight: edge insets {32, 24, 388, 24} from safe area {0, 0, 25, 0} and the app's padding {0, 0, 364, 0}
+  21:22:53.950 after pip-main-idle__bottomRight: edge insets {32, 24, 361, 24} from safe area {0, 0, 25, 0} and the app's padding {0, 0, 337, 0}
+  21:23:10.359 after pip-main-idle__kb: edge insets {32, 24, 139, 24} from safe area {0, 0, 25, 0} and the app's padding {0, 0, 115, 0}
+  21:23:10.622 after pip-main-idle__kb: edge insets {32, 24, 25, 24} from safe area {0, 0, 25, 0} and the app's padding {0, 0, 0, 0}
+  21:23:20.842 after pip-main-idle__kb: edge insets {32, 24, 44, 24} from safe area {0, 0, 25, 0} and the app's padding {0, 0, 20, 0}
+  21:23:41.644 after pip-main-running__bottomRight: edge insets {32, 24, 388, 24} from safe area {0, 0, 25, 0} and the app's padding {0, 0, 364, 0}
+  21:23:42.350 after pip-main-running__bottomRight: edge insets {32, 24, 361, 24} from safe area {0, 0, 25, 0} and the app's padding {0, 0, 337, 0}
+  21:23:56.584 after pip-main-running__kb: edge insets {32, 24, 139, 24} from safe area {0, 0, 25, 0} and the app's padding {0, 0, 115, 0}
+  21:23:56.912 after pip-main-running__kb: edge insets {32, 24, 25, 24} from safe area {0, 0, 25, 0} and the app's padding {0, 0, 0, 0}
+  21:24:23.549 after pip-main-running__kb: edge insets {32, 24, 44, 24} from safe area {0, 0, 25, 0} and the app's padding {0, 0, 20, 0}
+  21:24:52.838 after pip-main-history__back: edge insets {32, 24, 25, 24} from safe area {0, 0, 25, 0} and the app's padding {0, 0, 0, 0}
+  21:24:53.924 after pip-main-history__back: edge insets {32, 24, 139, 24} from safe area {0, 0, 25, 0} and the app's padding {0, 0, 115, 0}
+  21:24:55.587 after pip-main-history__back: edge insets {32, 24, 25, 24} from safe area {0, 0, 25, 0} and the app's padding {0, 0, 0, 0}
+  21:25:14.608 after pip-main-history__back: edge insets {32, 24, 111.5, 24} from safe area {0, 0, 25, 0} and the app's padding {0, 0, 87.5, 0}
+  21:25:44.462 after pip-fix-idle__bottomRight: edge insets {32, 24, 388, 24} from safe area {0, 0, 25, 0} and the app's padding {0, 0, 364, 0}
+  21:25:45.079 after pip-fix-idle__bottomRight: edge insets {32, 24, 361, 24} from safe area {0, 0, 25, 0} and the app's padding {0, 0, 337, 0}
+  21:25:45.193 after pip-fix-idle__bottomRight: edge insets {32, 24, 448.5, 24} from safe area {0, 0, 25, 0} and the app's padding {0, 0, 424.5, 0}
+  21:25:50.968 after pip-fix-idle__kb: edge insets {32, 24, 361, 24} from safe area {0, 0, 25, 0} and the app's padding {0, 0, 337, 0}
+  21:25:53.539 after pip-fix-idle__kb: edge insets {32, 24, 139, 24} from safe area {0, 0, 25, 0} and the app's padding {0, 0, 115, 0}
+  21:25:53.725 after pip-fix-idle__kb: edge insets {32, 24, 25, 24} from safe area {0, 0, 25, 0} and the app's padding {0, 0, 0, 0}
+  21:26:06.534 after pip-fix-idle__kb: edge insets {32, 24, 111.5, 24} from safe area {0, 0, 25, 0} and the app's padding {0, 0, 87.5, 0}
+  21:26:27.106 after pip-fix-running__bottomRight: edge insets {32, 24, 388, 24} from safe area {0, 0, 25, 0} and the app's padding {0, 0, 364, 0}
+  21:26:27.760 after pip-fix-running__bottomRight: edge insets {32, 24, 361, 24} from safe area {0, 0, 25, 0} and the app's padding {0, 0, 337, 0}
+  21:26:27.879 after pip-fix-running__bottomRight: edge insets {32, 24, 448.5, 24} from safe area {0, 0, 25, 0} and the app's padding {0, 0, 424.5, 0}
+  21:26:35.689 after pip-fix-running__kb: edge insets {32, 24, 361, 24} from safe area {0, 0, 25, 0} and the app's padding {0, 0, 337, 0}
+  21:26:51.288 after pip-fix-running__kb: edge insets {32, 24, 111.5, 24} from safe area {0, 0, 25, 0} and the app's padding {0, 0, 87.5, 0}
+  21:27:03.757 after pip-fix-history__main: edge insets {32, 24, 44, 24} from safe area {0, 0, 25, 0} and the app's padding {0, 0, 20, 0}
+  21:27:07.923 after pip-fix-history__history: edge insets {32, 24, 111.5, 24} from safe area {0, 0, 25, 0} and the app's padding {0, 0, 87.5, 0}
+  21:27:12.411 after pip-fix-history__back: edge insets {32, 24, 25, 24} from safe area {0, 0, 25, 0} and the app's padding {0, 0, 0, 0}
+  21:27:13.094 after pip-fix-history__back: edge insets {32, 24, 139, 24} from safe area {0, 0, 25, 0} and the app's padding {0, 0, 115, 0}
+BarRoom (probe):
+  pip-fix-history: room 0->67.5 [page safe bottom 87.5, top 138]
+  pip-fix-idle: room 0->67.5 [page safe bottom 87.5, top 138] room 67.5->384.5 room 384.5->404.5 [page safe bottom 424.5, top 138] [page safe bottom 424.5, top 138]
+  pip-fix-running: room 0->67.5 [page safe bottom 87.5, top 138] room 67.5->384.5 room 384.5->404.5 [page safe bottom 424.5, top 138] [page safe bottom 424.5, top 138]
+  fix__ends: room 0->67.5 [page safe bottom 87.5, top 138]
+keyboard cases:
+  fix__idle__kbKey
+    rest Start y=1108.50-1159.00 (21.00 from the edge)
+    focused: kb top 843.00, Start 771.50-822.00 gap +21.00 hit=y, Key 374.00-395.00, +360.50 above the bar's top
+    typed: kb top 843.00, Start 771.50-822.00 gap +21.00 hit=y, Key 374.00-396.00, +359.50 above the bar's top
+  fix__idle__kbURL
+    rest Start y=1108.50-1159.00 (21.00 from the edge)
+    focused: kb top 843.00, Start 771.50-822.00 gap +21.00 hit=y, URL 297.50-319.50, +436.00 above the bar's top
+    typed: kb top 843.00, Start 771.50-822.00 gap +21.00 hit=y, URL 297.50-319.50, +436.00 above the bar's top
+  fix__running__kbKey
+    rest Stop y=1108.50-1159.00 (21.00 from the edge)
+    focused: kb top 843.00, Stop 771.50-822.00 gap +21.00 hit=y, Key 374.00-395.00, +360.50 above the bar's top
+    typed: kb top 843.00, Stop 771.50-822.00 gap +21.00 hit=y, Restart 771.50-822.00 gap +21.00 hit=y, Key 374.00-396.00, +359.50 above the bar's top
+  fix__running__kbURL
+    rest Stop y=1108.50-1159.00 (21.00 from the edge)
+    focused: kb top 843.00, Stop 771.50-822.00 gap +21.00 hit=y, URL 297.50-319.50, +436.00 above the bar's top
+    typed: kb top 843.00, Stop 771.50-822.00 gap +21.00 hit=y, Restart 771.50-822.00 gap +21.00 hit=y, URL 297.50-319.50, +436.00 above the bar's top
+  main__idle__kbKey
+    rest Start y=1108.50-1159.00 (21.00 from the edge)
+    focused: kb top 843.00, Start 771.50-822.00 gap +21.00 hit=y, Key 374.00-395.00, +360.50 above the bar's top
+    typed: kb top 843.00, Start 771.50-822.00 gap +21.00 hit=y, Key 374.00-396.00, +359.50 above the bar's top
+  main__idle__kbURL
+    rest Start y=1108.50-1159.00 (21.00 from the edge)
+    focused: kb top 843.00, Start 771.50-822.00 gap +21.00 hit=y, URL 297.50-319.50, +436.00 above the bar's top
+    typed: kb top 843.00, Start 771.50-822.00 gap +21.00 hit=y, URL 297.50-319.50, +436.00 above the bar's top
+  main__running__kbKey
+    rest Stop y=1108.50-1159.00 (21.00 from the edge)
+    focused: kb top 843.00, Stop 771.50-822.00 gap +21.00 hit=y, Key 374.00-395.00, +360.50 above the bar's top
+    typed: kb top 843.00, Stop 771.50-822.00 gap +21.00 hit=y, Restart 771.50-822.00 gap +21.00 hit=y, Key 374.00-396.00, +359.50 above the bar's top
+  main__running__kbURL
+    rest Stop y=1108.50-1159.00 (21.00 from the edge)
+    focused: kb top 843.00, Stop 771.50-822.00 gap +21.00 hit=y, URL 297.50-319.50, +436.00 above the bar's top
+    typed: kb top 843.00, Stop 771.50-822.00 gap +21.00 hit=y, Restart 771.50-822.00 gap +21.00 hit=y, URL 297.50-319.50, +436.00 above the bar's top
+readings (probe):
+  fix__idle__kbKey: without=20 with=20 room=67.5 (page 87.5) with=337 room=384.5 room=404.5 (page 424.5) (page 424.5) [kb 843+337, list inset 424.5]
+  fix__idle__kbURL: without=20 with=20 room=67.5 (page 87.5) with=337 room=384.5 room=404.5 (page 424.5) (page 424.5) [kb 843+337, list inset 424.5]
+  fix__running__kbKey: without=20 with=20 room=67.5 (page 87.5) with=337 room=384.5 room=404.5 (page 424.5) (page 424.5) [kb 843+337, list inset 424.5]
+  fix__running__kbURL: without=20 with=20 room=67.5 (page 87.5) with=337 room=384.5 room=404.5 (page 424.5) (page 424.5) [kb 843+337, list inset 424.5]
+  main__idle__kbKey: without=20 with=20 with=337 [kb 843+337, list inset 424.5]
+  main__idle__kbURL: without=20 with=20 with=337 [kb 843+337, list inset 424.5]
+  main__running__kbKey: without=20 with=20 with=337 [kb 843+337, list inset 424.5]
+  main__running__kbURL: without=20 with=20 with=337 [kb 843+337, list inset 424.5]
+fix against main, pixels:
+  running__rest: 0 differing pixels below the status bar
+  idle__rest: 0 differing pixels below the status bar
+  ends__top: 0 differing pixels below the status bar
+  ends__end: 0 differing pixels below the status bar
+  endsXXXL__top: 0 differing pixels below the status bar
+  endsXXXL__end: 0 differing pixels below the status bar
+scrolls:
+  scroll-fix__drag: 75 frames, finger -516.0 pt, content ahead of the finger by at most +258.5 pt, biggest one-frame change 23.0 pt
+  scroll-fix__dragXXXL: 71 frames, finger -490.0 pt, content ahead of the finger by at most +238.5 pt, biggest one-frame change 49.5 pt
+  scroll-fix__flick: 9 frames, finger -184.0 pt, content ahead of the finger by at most +69.0 pt, biggest one-frame change 56.5 pt
+  scroll-fix__slow: 113 frames, finger -224.5 pt, content ahead of the finger by at most +86.0 pt, biggest one-frame change 6.0 pt
+  scroll-fix__slowXXXL: 113 frames, finger -224.5 pt, content ahead of the finger by at most +85.0 pt, biggest one-frame change 6.0 pt
+  scroll-form148__drag: 78 frames, finger -508.0 pt, content ahead of the finger by at most +241.0 pt, biggest one-frame change 23.0 pt
+  scroll-form148__dragXXXL: 76 frames, finger -516.0 pt, content ahead of the finger by at most +248.0 pt, biggest one-frame change 23.0 pt
+  scroll-form148__flick: 10 frames, finger -197.0 pt, content ahead of the finger by at most +62.0 pt, biggest one-frame change 32.0 pt
+  scroll-form148__slow: 111 frames, finger -224.5 pt, content ahead of the finger by at most +70.5 pt, biggest one-frame change 17.5 pt
+  scroll-form148__slowXXXL: 113 frames, finger -222.0 pt, content ahead of the finger by at most +67.0 pt, biggest one-frame change 10.5 pt
+  scroll-main__drag: 76 frames, finger -516.0 pt, content ahead of the finger by at most +258.5 pt, biggest one-frame change 22.5 pt
+  scroll-main__dragXXXL: 77 frames, finger -516.0 pt, content ahead of the finger by at most +255.0 pt, biggest one-frame change 22.5 pt
+  scroll-main__flick: 9 frames, finger -197.0 pt, content ahead of the finger by at most +75.0 pt, biggest one-frame change 38.5 pt
+  scroll-main__slow: 111 frames, finger -224.5 pt, content ahead of the finger by at most +86.5 pt, biggest one-frame change 10.5 pt
+  scroll-main__slowXXXL: 114 frames, finger -224.5 pt, content ahead of the finger by at most +85.0 pt, biggest one-frame change 5.5 pt
+ends of the page:
+  fix__ends: History ends 648.00, Stop's top 1108.50: 460.50 pt between, list's bottom inset 87.5 (safe area 87.5, content inset 0), scroll bar's track ends 1089.50
+  fix__endsXXXL: History ends 728.00, Stop's top 1101.50: 373.50 pt between, list's bottom inset 94.5 (safe area 94.5, content inset 0), scroll bar's track ends 1082.50
+  main__ends: History ends 648.00, Stop's top 1108.50: 460.50 pt between, list's bottom inset 87.5 (safe area 87.5, content inset 0), scroll bar's track ends 1089.50
+  main__endsXXXL: History ends 728.00, Stop's top 1101.50: 373.50 pt between, list's bottom inset 94.5 (safe area 94.5, content inset 0), scroll bar's track ends 1082.50
+History:
+  fix__history:
+    stack: 5 layouts, y [1072.5, 1092.5], height [67.5, 87.5], x from 0 to 0
+    page: 50 layouts, y [1092.5], height [67.5], x from -246 to 0
+    pageOuter: 50 layouts, y [1025], height [67.5], x from -246 to 0
+  main__history:
+    stack: 5 layouts, y [1072.5, 1092.5], height [67.5, 87.5], x from 0 to 0
+    page: 58 layouts, y [1092.5], height [67.5], x from -246 to 0
+  fix__history-marks:
+    scrolled | Stop exists=true hittable=true frame=(21.0, 1108.5, 778.0, 50.5) | History bar=false
+    push 1 | Stop exists=true hittable=true frame=(21.0, 1108.5, 778.0, 50.5) | History bar=false
+    History shown | Stop exists=false hittable=false frame=- | History bar=true
+    back | Stop exists=false hittable=false frame=- | History bar=true
+    back, settled | Stop exists=true hittable=true frame=(21.0, 1108.5, 778.0, 50.5) | History bar=false
+    push 2 | Stop exists=true hittable=true frame=(21.0, 1108.5, 778.0, 50.5) | History bar=false
+    History shown | Stop exists=false hittable=false frame=- | History bar=true
+    swipe all the way | Stop exists=false hittable=false frame=- | History bar=true
+    after the full swipe | Stop exists=true hittable=true frame=(21.0, 1108.5, 778.0, 50.5) | History bar=false
+    push 3 | Stop exists=true hittable=true frame=(21.0, 1108.5, 778.0, 50.5) | History bar=false
+    History shown | Stop exists=false hittable=false frame=- | History bar=true
+    swipe let go | Stop exists=false hittable=false frame=- | History bar=true
+    after the let-go swipe | Stop exists=false hittable=false frame=- | History bar=true
+    back after the let-go swipe | Stop exists=false hittable=false frame=- | History bar=true
+    end | Stop exists=true hittable=true frame=(21.0, 1108.5, 778.0, 50.5) | History bar=false
+  main__history-marks:
+    scrolled | Stop exists=true hittable=true frame=(21.0, 1108.5, 778.0, 50.5) | History bar=false
+    push 1 | Stop exists=true hittable=true frame=(21.0, 1108.5, 778.0, 50.5) | History bar=false
+    History shown | Stop exists=false hittable=false frame=- | History bar=true
+    back | Stop exists=false hittable=false frame=- | History bar=true
+    back, settled | Stop exists=true hittable=true frame=(21.0, 1108.5, 778.0, 50.5) | History bar=false
+    push 2 | Stop exists=true hittable=true frame=(21.0, 1108.5, 778.0, 50.5) | History bar=false
+    History shown | Stop exists=false hittable=false frame=- | History bar=true
+    swipe all the way | Stop exists=false hittable=false frame=- | History bar=true
+    after the full swipe | Stop exists=true hittable=true frame=(21.0, 1108.5, 778.0, 50.5) | History bar=false
+    push 3 | Stop exists=true hittable=true frame=(21.0, 1108.5, 778.0, 50.5) | History bar=false
+    History shown | Stop exists=false hittable=false frame=- | History bar=true
+    swipe let go | Stop exists=false hittable=false frame=- | History bar=true
+    after the let-go swipe | Stop exists=false hittable=false frame=- | History bar=true
+    back after the let-go swipe | Stop exists=false hittable=false frame=- | History bar=true
+    end | Stop exists=true hittable=true frame=(21.0, 1108.5, 778.0, 50.5) | History bar=false
+=== se-pip-ios26
+  device type: com.apple.CoreSimulator.SimDeviceType.iPhone-SE-3rd-generation-PiP-lab | runtime: com.apple.CoreSimulator.SimRuntime.iOS-26-5 | test runner: | Xcode 26.6 | Build version 17F113 | Ammy built with: | "CFBundleVersion" => "1" | "DTPlatformVersion" => "26.5" | "DTSDKName" => "iphonesimulator26.5" | "DTXcode" => "2660" | "DTXcodeBuild" => "17F113" | "MinimumOSVersion" => "26.0"
+Picture in Picture over Ammy:
+  pip-main-idle__arrive: PiP 511.50-657.00 x 10.00 (-177.00 from the bottom), Start top 595.50, PiP's bottom -61.50 pt above it
+  pip-main-idle__bottomLeft: PiP 511.00-656.50 x 10.00 (-176.50 from the bottom), Start top 595.50, PiP's bottom -61.00 pt above it
+  pip-main-idle__bottomRight: PiP 20.00-165.50 x 10.00 (314.50 from the bottom), Start top 595.50, PiP's bottom +430.00 pt above it
+  pip-main-idle__kb: PiP 20.00-165.50 x 10.00 (314.50 from the bottom), Start top 335.50, PiP's bottom +170.00 pt above it, keyboard top 451.00
+  pip-main-running__arrive: PiP 20.00-165.50 x 10.00 (314.50 from the bottom), Stop top 595.50, PiP's bottom +430.00 pt above it
+  pip-main-running__bottomLeft: PiP 511.00-656.50 x 10.00 (-176.50 from the bottom), Stop top 595.50, PiP's bottom -61.00 pt above it
+  pip-main-running__bottomRight: PiP 20.00-165.50 x 10.00 (314.50 from the bottom), Stop top 595.50, PiP's bottom +430.00 pt above it
+  pip-main-running__kb: PiP 20.00-165.50 x 10.00 (314.50 from the bottom), Stop+Restart top 335.50, PiP's bottom +170.00 pt above it, keyboard top 451.00
+  pip-main-history__main: PiP 20.00-165.50 (314.50 from the bottom)
+  pip-main-history__history: PiP 20.00-165.50 (314.50 from the bottom)
+  pip-main-history__back: PiP 20.00-165.50 (314.50 from the bottom)
+  pip-fix-idle__arrive: PiP 20.00-165.50 x 10.00 (314.50 from the bottom), Start top 595.50, PiP's bottom +430.00 pt above it
+  pip-fix-idle__bottomLeft: PiP 424.00-569.50 x 10.00 (-89.50 from the bottom), Start top 595.50, PiP's bottom +26.00 pt above it
+  pip-fix-idle__bottomRight: PiP 424.00-569.50 x 10.00 (-89.50 from the bottom), Start top 595.50, PiP's bottom +26.00 pt above it
+  pip-fix-idle__kb: PiP 164.00-309.50 x 10.00 (170.50 from the bottom), Start top 335.50, PiP's bottom +26.00 pt above it, keyboard top 451.00
+  pip-fix-running__arrive: PiP 424.00-569.50 x 10.00 (-89.50 from the bottom), Stop top 595.50, PiP's bottom +26.00 pt above it
+  pip-fix-running__bottomLeft: PiP 424.00-569.50 x 10.00 (-89.50 from the bottom), Stop top 595.50, PiP's bottom +26.00 pt above it
+  pip-fix-running__bottomRight: PiP 424.00-569.50 x 10.00 (-89.50 from the bottom), Stop top 595.50, PiP's bottom +26.00 pt above it
+  pip-fix-running__kb: PiP 164.00-309.50 x 10.00 (170.50 from the bottom), Stop+Restart top 335.50, PiP's bottom +26.00 pt above it, keyboard top 451.00
+  pip-fix-history__main: PiP 424.00-569.50 (-89.50 from the bottom)
+  pip-fix-history__history: PiP 20.00-165.50 (314.50 from the bottom)
+  pip-fix-history__back: PiP 20.00-165.50 (314.50 from the bottom)
+SpringBoard's room for PiP:
+  21:22:33.936 after host: edge insets {20, 0, 0, 0} from safe area {0, 0, 0, 0} and the app's padding {0, 0, 0, 0}
+  21:22:33.976 after host: edge insets {20, 10, 10, 10} from safe area {0, 0, 0, 0} and the app's padding {0, 0, 0, 0}
+  21:22:38.657 after host__started: edge insets {20, 10, 106, 10} from safe area {0, 0, 0, 0} and the app's padding {0, 0, 96, 0}
+  21:22:49.529 after home__bottomRight: edge insets {20, 10, 10, 10} from safe area {0, 0, 0, 0} and the app's padding {0, 0, 0, 0}
+  21:23:17.462 after pip-main-idle__bottomRight: edge insets {20, 10, 243, 10} from safe area {0, 0, 0, 0} and the app's padding {0, 0, 233, 0}
+  21:23:17.682 after pip-main-idle__bottomRight: edge insets {20, 10, 270, 10} from safe area {0, 0, 0, 0} and the app's padding {0, 0, 260, 0}
+  21:23:21.581 after pip-main-idle__kb: edge insets {20, 10, 10, 10} from safe area {0, 0, 0, 0} and the app's padding {0, 0, 0, 0}
+  21:23:21.878 after pip-main-idle__kb: edge insets {20, 10, 106, 10} from safe area {0, 0, 0, 0} and the app's padding {0, 0, 96, 0}
+  21:23:28.391 after pip-main-idle__kb: edge insets {20, 10, 10, 10} from safe area {0, 0, 0, 0} and the app's padding {0, 0, 0, 0}
+  21:23:53.011 after pip-main-running__bottomRight: edge insets {20, 10, 243, 10} from safe area {0, 0, 0, 0} and the app's padding {0, 0, 233, 0}
+  21:23:53.247 after pip-main-running__bottomRight: edge insets {20, 10, 270, 10} from safe area {0, 0, 0, 0} and the app's padding {0, 0, 260, 0}
+  21:23:59.923 after pip-main-running__kb: edge insets {20, 10, 10, 10} from safe area {0, 0, 0, 0} and the app's padding {0, 0, 0, 0}
+  21:24:00.108 after pip-main-running__kb: edge insets {20, 10, 106, 10} from safe area {0, 0, 0, 0} and the app's padding {0, 0, 96, 0}
+  21:24:01.246 after pip-main-running__kb: edge insets {20, 10, 10, 10} from safe area {0, 0, 0, 0} and the app's padding {0, 0, 0, 0}
+  21:24:52.561 after pip-main-history__back: edge insets {20, 10, 106, 10} from safe area {0, 0, 0, 0} and the app's padding {0, 0, 96, 0}
+  21:24:53.698 after pip-main-history__back: edge insets {20, 10, 10, 10} from safe area {0, 0, 0, 0} and the app's padding {0, 0, 0, 0}
+  21:24:56.825 after pip-main-history__back: edge insets {20, 10, 97.5, 10} from safe area {0, 0, 0, 0} and the app's padding {0, 0, 87.5, 0}
+  21:25:13.190 after pip-fix-idle__bottomRight: edge insets {20, 10, 243, 10} from safe area {0, 0, 0, 0} and the app's padding {0, 0, 233, 0}
+  21:25:13.368 after pip-fix-idle__bottomRight: edge insets {20, 10, 270, 10} from safe area {0, 0, 0, 0} and the app's padding {0, 0, 260, 0}
+  21:25:13.438 after pip-fix-idle__bottomRight: edge insets {20, 10, 357.5, 10} from safe area {0, 0, 0, 0} and the app's padding {0, 0, 347.5, 0}
+  21:25:17.254 after pip-fix-idle__kb: edge insets {20, 10, 106, 10} from safe area {0, 0, 0, 0} and the app's padding {0, 0, 96, 0}
+  21:25:18.436 after pip-fix-idle__kb: edge insets {20, 10, 10, 10} from safe area {0, 0, 0, 0} and the app's padding {0, 0, 0, 0}
+  21:25:21.084 after pip-fix-idle__kb: edge insets {20, 10, 97.5, 10} from safe area {0, 0, 0, 0} and the app's padding {0, 0, 87.5, 0}
+  21:25:37.063 after pip-fix-running__bottomRight: edge insets {20, 10, 243, 10} from safe area {0, 0, 0, 0} and the app's padding {0, 0, 233, 0}
+  21:25:37.254 after pip-fix-running__bottomRight: edge insets {20, 10, 270, 10} from safe area {0, 0, 0, 0} and the app's padding {0, 0, 260, 0}
+  21:25:37.337 after pip-fix-running__bottomRight: edge insets {20, 10, 357.5, 10} from safe area {0, 0, 0, 0} and the app's padding {0, 0, 347.5, 0}
+  21:25:43.336 after pip-fix-running__kb: edge insets {20, 10, 106, 10} from safe area {0, 0, 0, 0} and the app's padding {0, 0, 96, 0}
+  21:25:44.624 after pip-fix-running__kb: edge insets {20, 10, 10, 10} from safe area {0, 0, 0, 0} and the app's padding {0, 0, 0, 0}
+  21:25:48.292 after pip-fix-running__kb: edge insets {20, 10, 97.5, 10} from safe area {0, 0, 0, 0} and the app's padding {0, 0, 87.5, 0}
+  21:26:04.589 after pip-fix-history__back: edge insets {20, 10, 106, 10} from safe area {0, 0, 0, 0} and the app's padding {0, 0, 96, 0}
+BarRoom (probe):
+  pip-fix-history: room 0->87.5 [page safe bottom 87.5, top 126]
+  pip-fix-idle: room 0->87.5 [page safe bottom 87.5, top 126] room 87.5->320.5 room 320.5->347.5 [page safe bottom 347.5, top 126] [page safe bottom 347.5, top 126]
+  pip-fix-running: room 0->87.5 [page safe bottom 87.5, top 126] room 87.5->320.5 room 320.5->347.5 [page safe bottom 347.5, top 126] [page safe bottom 347.5, top 126]
+  fix__ends: room 0->87.5 [page safe bottom 87.5, top 126]
+keyboard cases:
+  fix__idle__kbKey
+    rest Start y=595.50-646.00 (21.00 from the edge)
+    focused: kb top 407.00, Start 335.50-386.00 gap +21.00 hit=y, Key 298.50-319.50, +0.00 above the bar's top
+    typed: kb top 407.00, Start 335.50-386.00 gap +21.00 hit=y, Key 298.50-319.00, +0.50 above the bar's top
+  fix__idle__kbURL
+    rest Start y=595.50-646.00 (21.00 from the edge)
+    focused: kb top 407.00, Start 335.50-386.00 gap +21.00 hit=y, URL 285.50-307.50, +12.00 above the bar's top
+    typed: kb top 407.00, Start 335.50-386.00 gap +21.00 hit=y, URL 285.50-307.50, +12.00 above the bar's top
+  fix__running__kbKey
+    rest Stop y=595.50-646.00 (21.00 from the edge)
+    focused: kb top 407.00, Stop 335.50-386.00 gap +21.00 hit=y, Key 298.50-319.50, +0.00 above the bar's top
+    typed: kb top 407.00, Stop 335.50-386.00 gap +21.00 hit=y, Restart 335.50-386.00 gap +21.00 hit=y, Key 298.50-319.00, +0.50 above the bar's top
+  fix__running__kbURL
+    rest Stop y=595.50-646.00 (21.00 from the edge)
+    focused: kb top 407.00, Stop 335.50-386.00 gap +21.00 hit=y, URL 285.50-307.50, +12.00 above the bar's top
+    typed: kb top 407.00, Stop 335.50-386.00 gap +21.00 hit=y, Restart 335.50-386.00 gap +21.00 hit=y, URL 285.50-307.50, +12.00 above the bar's top
+  main__idle__kbKey
+    rest Start y=595.50-646.00 (21.00 from the edge)
+    focused: kb top 407.00, Start 335.50-386.00 gap +21.00 hit=y, Key 298.50-319.50, +0.00 above the bar's top
+    typed: kb top 407.00, Start 335.50-386.00 gap +21.00 hit=y, Key 298.50-319.00, +0.50 above the bar's top
+  main__idle__kbURL
+    rest Start y=595.50-646.00 (21.00 from the edge)
+    focused: kb top 407.00, Start 335.50-386.00 gap +21.00 hit=y, URL 285.50-307.50, +12.00 above the bar's top
+    typed: kb top 407.00, Start 335.50-386.00 gap +21.00 hit=y, URL 285.50-307.50, +12.00 above the bar's top
+  main__running__kbKey
+    rest Stop y=595.50-646.00 (21.00 from the edge)
+    focused: kb top 407.00, Stop 335.50-386.00 gap +21.00 hit=y, Key 298.50-319.50, +0.00 above the bar's top
+    typed: kb top 407.00, Stop 335.50-386.00 gap +21.00 hit=y, Restart 335.50-386.00 gap +21.00 hit=y, Key 298.50-319.00, +0.50 above the bar's top
+  main__running__kbURL
+    rest Stop y=595.50-646.00 (21.00 from the edge)
+    focused: kb top 407.00, Stop 335.50-386.00 gap +21.00 hit=y, URL 285.50-307.50, +12.00 above the bar's top
+    typed: kb top 407.00, Stop 335.50-386.00 gap +21.00 hit=y, Restart 335.50-386.00 gap +21.00 hit=y, URL 285.50-307.50, +12.00 above the bar's top
+readings (probe):
+  fix__idle__kbKey: without=0 with=0 room=87.5 (page 87.5) with=233 room=320.5 [kb 434+233, list inset 320.5] with=260 room=347.5 (page 347.5) (page 347.5) [kb 407+260, list inset 347.5] [kb 407+260, list inset 347.5]
+  fix__idle__kbURL: without=0 with=0 room=87.5 (page 87.5) with=233 room=320.5 [kb 434+233, list inset 320.5] with=260 room=347.5 (page 347.5) (page 347.5) [kb 407+260, list inset 347.5] [kb 407+260, list inset 347.5]
+  fix__running__kbKey: without=0 with=0 room=87.5 (page 87.5) with=233 room=320.5 [kb 434+233, list inset 320.5] with=260 room=347.5 (page 347.5) (page 347.5) [kb 407+260, list inset 347.5] [kb 407+260, list inset 347.5]
+  fix__running__kbURL: without=0 with=0 room=87.5 (page 87.5) with=233 room=320.5 [kb 434+233, list inset 320.5] with=260 room=347.5 (page 347.5) (page 347.5) [kb 407+260, list inset 347.5] [kb 407+260, list inset 347.5]
+  main__idle__kbKey: without=0 with=0 with=233 [kb 434+233, list inset 320.5] with=260 [kb 407+260, list inset 347.5] [kb 407+260, list inset 347.5]
+  main__idle__kbURL: without=0 with=0 with=233 [kb 434+233, list inset 320.5] with=260 [kb 407+260, list inset 347.5] [kb 407+260, list inset 347.5]
+  main__running__kbKey: without=0 with=0 with=233 [kb 434+233, list inset 320.5] with=260 [kb 407+260, list inset 347.5] [kb 407+260, list inset 347.5]
+  main__running__kbURL: without=0 with=0 with=233 [kb 434+233, list inset 320.5] with=260 [kb 407+260, list inset 347.5] [kb 407+260, list inset 347.5]
+fix against main, pixels:
+  running__rest: 635058 differing pixels below the status bar, rows 172-1304 px, largest step 255
+  idle__rest: 0 differing pixels below the status bar
+  ends__top: 44 differing pixels below the status bar, rows 1191-1291 px, largest step 2
+  ends__end: 0 differing pixels below the status bar
+  endsXXXL__top: 95 differing pixels below the status bar, rows 1177-1291 px, largest step 3
+  endsXXXL__end: 0 differing pixels below the status bar
+scrolls:
+  scroll-fix__drag: 57 frames, finger -284.0 pt, content ahead of the finger by at most +101.0 pt, biggest one-frame change 6.0 pt
+  scroll-fix__dragXXXL: 54 frames, finger -284.0 pt, content ahead of the finger by at most +48.0 pt, biggest one-frame change 12.5 pt
+  scroll-fix__flick: 4 frames, finger -106.0 pt, content ahead of the finger by at most +17.5 pt, biggest one-frame change 17.5 pt
+  scroll-fix__slow: 75 frames, finger -123.0 pt, content ahead of the finger by at most +15.5 pt, biggest one-frame change 5.0 pt
+  scroll-fix__slowXXXL: 67 frames, finger -123.0 pt, content ahead of the finger by at most +3.0 pt, biggest one-frame change 1.5 pt
+  scroll-form148__drag: 56 frames, finger -284.0 pt, content ahead of the finger by at most +79.5 pt, biggest one-frame change 39.5 pt
+  scroll-form148__dragXXXL: 55 frames, finger -284.0 pt, content ahead of the finger by at most -60.0 pt, biggest one-frame change 49.0 pt
+  scroll-form148__flick: 7 frames, finger -118.0 pt, content ahead of the finger by at most -52.0 pt, biggest one-frame change 52.0 pt
+  scroll-form148__slow: 62 frames, finger -80.5 pt, content ahead of the finger by at most -39.0 pt, biggest one-frame change 37.5 pt
+  scroll-form148__slowXXXL: 62 frames, finger -123.0 pt, content ahead of the finger by at most -54.5 pt, biggest one-frame change 39.5 pt
+  scroll-main__drag: 53 frames, finger -284.0 pt, content ahead of the finger by at most +105.5 pt, biggest one-frame change 25.0 pt
+  scroll-main__dragXXXL: 48 frames, finger -265.5 pt, content ahead of the finger by at most +38.0 pt, biggest one-frame change 45.5 pt
+  scroll-main__flick: 7 frames, finger -118.0 pt, content ahead of the finger by at most +28.5 pt, biggest one-frame change 28.5 pt
+  scroll-main__slow: 74 frames, finger -123.0 pt, content ahead of the finger by at most +15.5 pt, biggest one-frame change 5.5 pt
+  scroll-main__slowXXXL: 75 frames, finger -121.0 pt, content ahead of the finger by at most +4.0 pt, biggest one-frame change 6.0 pt
+ends of the page:
+  fix__ends: History ends 559.50, Stop's top 595.50: 36.00 pt between, list's bottom inset 87.5 (safe area 87.5, content inset 0), scroll bar's track ends 576.50
+  fix__endsXXXL: History ends 552.50, Stop's top 588.50: 36.00 pt between, list's bottom inset 94.5 (safe area 94.5, content inset 0), scroll bar's track ends 569.50
+  main__ends: History ends 559.50, Stop's top 595.50: 36.00 pt between, list's bottom inset 87.5 (safe area 87.5, content inset 0), scroll bar's track ends 576.50
+  main__endsXXXL: History ends 552.50, Stop's top 588.50: 36.00 pt between, list's bottom inset 94.5 (safe area 94.5, content inset 0), scroll bar's track ends 569.50
+History:
+  fix__history:
+    stack: 4 layouts, y [579.5], height [87.5], x from 0 to 0
+    page: 24 layouts, y [579.5], height [87.5], x from -112 to 0
+    pageOuter: 24 layouts, y [492], height [87.5], x from -112 to 0
+  main__history:
+    stack: 4 layouts, y [579.5], height [87.5], x from 0 to 0
+    page: 23 layouts, y [579.5], height [87.5], x from -112 to 0
+  fix__history-marks:
+    scrolled | Stop exists=true hittable=true frame=(21.0, 595.5, 333.0, 50.5) | History bar=false
+    push 1 | Stop exists=true hittable=true frame=(21.0, 595.5, 333.0, 50.5) | History bar=false
+    History shown | Stop exists=false hittable=false frame=- | History bar=true
+    back | Stop exists=false hittable=false frame=- | History bar=true
+    back, settled | Stop exists=true hittable=true frame=(21.0, 595.5, 333.0, 50.5) | History bar=false
+    push 2 | Stop exists=true hittable=true frame=(21.0, 595.5, 333.0, 50.5) | History bar=false
+    History shown | Stop exists=false hittable=false frame=- | History bar=true
+    swipe all the way | Stop exists=false hittable=false frame=- | History bar=true
+    after the full swipe | Stop exists=true hittable=true frame=(21.0, 595.5, 333.0, 50.5) | History bar=false
+    push 3 | Stop exists=true hittable=true frame=(21.0, 595.5, 333.0, 50.5) | History bar=false
+    History shown | Stop exists=false hittable=false frame=- | History bar=true
+    swipe let go | Stop exists=false hittable=false frame=- | History bar=true
+    after the let-go swipe | Stop exists=false hittable=false frame=- | History bar=true
+    back after the let-go swipe | Stop exists=false hittable=false frame=- | History bar=true
+    end | Stop exists=true hittable=true frame=(21.0, 595.5, 333.0, 50.5) | History bar=false
+  main__history-marks:
+    scrolled | Stop exists=true hittable=true frame=(21.0, 595.5, 333.0, 50.5) | History bar=false
+    push 1 | Stop exists=true hittable=true frame=(21.0, 595.5, 333.0, 50.5) | History bar=false
+    History shown | Stop exists=false hittable=false frame=- | History bar=true
+    back | Stop exists=false hittable=false frame=- | History bar=true
+    back, settled | Stop exists=true hittable=true frame=(21.0, 595.5, 333.0, 50.5) | History bar=false
+    push 2 | Stop exists=true hittable=true frame=(21.0, 595.5, 333.0, 50.5) | History bar=false
+    History shown | Stop exists=false hittable=false frame=- | History bar=true
+    swipe all the way | Stop exists=false hittable=false frame=- | History bar=true
+    after the full swipe | Stop exists=true hittable=true frame=(21.0, 595.5, 333.0, 50.5) | History bar=false
+    push 3 | Stop exists=true hittable=true frame=(21.0, 595.5, 333.0, 50.5) | History bar=false
+    History shown | Stop exists=false hittable=false frame=- | History bar=true
+    swipe let go | Stop exists=false hittable=false frame=- | History bar=true
+    after the let-go swipe | Stop exists=false hittable=false frame=- | History bar=true
+    back after the let-go swipe | Stop exists=false hittable=false frame=- | History bar=true
+    end | Stop exists=true hittable=true frame=(21.0, 595.5, 333.0, 50.5) | History bar=false
+=== se-pip-ios27
+  device type: com.apple.CoreSimulator.SimDeviceType.iPhone-SE-3rd-generation-PiP-lab | runtime: com.apple.CoreSimulator.SimRuntime.iOS-27-0 | test runner: | Xcode 27.1 | Build version 27A9275 | Ammy built with: | "CFBundleVersion" => "1" | "DTPlatformVersion" => "26.5" | "DTSDKName" => "iphonesimulator26.5" | "DTXcode" => "2660" | "DTXcodeBuild" => "17F113" | "MinimumOSVersion" => "26.0"
+Picture in Picture over Ammy:
+  pip-main-idle__arrive: PiP 511.50-657.00 x 106.00 (10.00 from the bottom), Start top 595.50, PiP's bottom -61.50 pt above it
+  pip-main-idle__bottomLeft: PiP 511.00-656.50 x 10.00 (10.50 from the bottom), Start top 595.50, PiP's bottom -61.00 pt above it
+  pip-main-idle__bottomRight: PiP 511.00-656.50 x 106.00 (10.50 from the bottom), Start top 595.50, PiP's bottom -61.00 pt above it
+  pip-main-idle__kb: PiP 251.50-397.00 x 106.00 (270.00 from the bottom), Start top 335.50, PiP's bottom -61.50 pt above it, keyboard top 451.00
+  pip-main-running__arrive: PiP 511.50-657.00 x 106.00 (10.00 from the bottom), Stop top 595.50, PiP's bottom -61.50 pt above it
+  pip-main-running__bottomLeft: PiP 511.00-656.50 x 10.00 (10.50 from the bottom), Stop top 595.50, PiP's bottom -61.00 pt above it
+  pip-main-running__bottomRight: PiP 511.00-656.50 x 106.00 (10.50 from the bottom), Stop top 595.50, PiP's bottom -61.00 pt above it
+  pip-main-running__kb: PiP 251.50-397.00 x 106.00 (270.00 from the bottom), Stop+Restart top 335.50, PiP's bottom -61.50 pt above it, keyboard top 451.00
+  pip-main-history__main: PiP 511.50-657.00 (10.00 from the bottom)
+  pip-main-history__history: PiP 511.50-657.00 (10.00 from the bottom)
+  pip-main-history__back: PiP 511.50-657.00 (10.00 from the bottom)
+  pip-fix-idle__arrive: PiP 424.00-569.50 x 106.00 (97.50 from the bottom), Start top 595.50, PiP's bottom +26.00 pt above it
+  pip-fix-idle__bottomLeft: PiP 424.00-569.50 x 10.00 (97.50 from the bottom), Start top 595.50, PiP's bottom +26.00 pt above it
+  pip-fix-idle__bottomRight: PiP 424.00-569.50 x 106.00 (97.50 from the bottom), Start top 595.50, PiP's bottom +26.00 pt above it
+  pip-fix-idle__kb: PiP 164.00-309.50 x 106.00 (357.50 from the bottom), Start top 335.50, PiP's bottom +26.00 pt above it, keyboard top 451.00
+  pip-fix-running__arrive: PiP 424.00-569.50 x 106.00 (97.50 from the bottom), Stop top 595.50, PiP's bottom +26.00 pt above it
+  pip-fix-running__bottomLeft: PiP 424.00-569.50 x 10.00 (97.50 from the bottom), Stop top 595.50, PiP's bottom +26.00 pt above it
+  pip-fix-running__bottomRight: PiP 424.00-569.50 x 106.00 (97.50 from the bottom), Stop top 595.50, PiP's bottom +26.00 pt above it
+  pip-fix-running__kb: PiP 164.00-309.50 x 106.00 (357.50 from the bottom), Stop+Restart top 335.50, PiP's bottom +26.00 pt above it, keyboard top 451.00
+  pip-fix-history__main: PiP 424.00-569.50 (97.50 from the bottom)
+  pip-fix-history__history: PiP 20.00-165.50 (501.50 from the bottom)
+  pip-fix-history__back: PiP 20.00-165.50 (501.50 from the bottom)
+SpringBoard's room for PiP:
+  21:20:46.209 after host: edge insets {20, 0, 0, 0} from safe area {0, 0, 0, 0} and the app's padding {0, 0, 0, 0}
+  21:20:46.253 after host: edge insets {20, 10, 10, 10} from safe area {0, 0, 0, 0} and the app's padding {0, 0, 0, 0}
+  21:20:50.775 after host__started: edge insets {20, 10, 106, 10} from safe area {0, 0, 0, 0} and the app's padding {0, 0, 96, 0}
+  21:20:59.587 after home__bottomRight: edge insets {20, 10, 10, 10} from safe area {0, 0, 0, 0} and the app's padding {0, 0, 0, 0}
+  21:21:47.854 after pip-main-idle__bottomRight: edge insets {20, 10, 243, 10} from safe area {0, 0, 0, 0} and the app's padding {0, 0, 233, 0}
+  21:21:48.679 after pip-main-idle__bottomRight: edge insets {20, 10, 270, 10} from safe area {0, 0, 0, 0} and the app's padding {0, 0, 260, 0}
+  21:21:54.790 after pip-main-idle__kb: edge insets {20, 10, 10, 10} from safe area {0, 0, 0, 0} and the app's padding {0, 0, 0, 0}
+  21:22:19.519 after pip-main-running__bottomRight: edge insets {20, 10, 243, 10} from safe area {0, 0, 0, 0} and the app's padding {0, 0, 233, 0}
+  21:22:19.952 after pip-main-running__bottomRight: edge insets {20, 10, 270, 10} from safe area {0, 0, 0, 0} and the app's padding {0, 0, 260, 0}
+  21:22:38.757 after pip-main-running__kb: edge insets {20, 10, 10, 10} from safe area {0, 0, 0, 0} and the app's padding {0, 0, 0, 0}
+  21:23:02.144 after pip-main-history__back: edge insets {20, 10, 106, 10} from safe area {0, 0, 0, 0} and the app's padding {0, 0, 96, 0}
+  21:23:03.052 after pip-main-history__back: edge insets {20, 10, 10, 10} from safe area {0, 0, 0, 0} and the app's padding {0, 0, 0, 0}
+  21:23:09.888 after pip-main-history__back: edge insets {20, 10, 97.5, 10} from safe area {0, 0, 0, 0} and the app's padding {0, 0, 87.5, 0}
+  21:23:26.440 after pip-fix-idle__bottomRight: edge insets {20, 10, 243, 10} from safe area {0, 0, 0, 0} and the app's padding {0, 0, 233, 0}
+  21:23:26.771 after pip-fix-idle__bottomRight: edge insets {20, 10, 330.5, 10} from safe area {0, 0, 0, 0} and the app's padding {0, 0, 320.5, 0}
+  21:23:26.972 after pip-fix-idle__bottomRight: edge insets {20, 10, 357.5, 10} from safe area {0, 0, 0, 0} and the app's padding {0, 0, 347.5, 0}
+  21:23:31.750 after pip-fix-idle__kb: edge insets {20, 10, 270, 10} from safe area {0, 0, 0, 0} and the app's padding {0, 0, 260, 0}
+  21:23:32.842 after pip-fix-idle__kb: edge insets {20, 10, 10, 10} from safe area {0, 0, 0, 0} and the app's padding {0, 0, 0, 0}
+  21:23:44.049 after pip-fix-idle__kb: edge insets {20, 10, 97.5, 10} from safe area {0, 0, 0, 0} and the app's padding {0, 0, 87.5, 0}
+  21:24:01.546 after pip-fix-running__bottomRight: edge insets {20, 10, 243, 10} from safe area {0, 0, 0, 0} and the app's padding {0, 0, 233, 0}
+  21:24:02.036 after pip-fix-running__bottomRight: edge insets {20, 10, 330.5, 10} from safe area {0, 0, 0, 0} and the app's padding {0, 0, 320.5, 0}
+  21:24:02.181 after pip-fix-running__bottomRight: edge insets {20, 10, 357.5, 10} from safe area {0, 0, 0, 0} and the app's padding {0, 0, 347.5, 0}
+  21:24:08.907 after pip-fix-running__kb: edge insets {20, 10, 270, 10} from safe area {0, 0, 0, 0} and the app's padding {0, 0, 260, 0}
+  21:24:09.799 after pip-fix-running__kb: edge insets {20, 10, 10, 10} from safe area {0, 0, 0, 0} and the app's padding {0, 0, 0, 0}
+  21:24:18.958 after pip-fix-running__kb: edge insets {20, 10, 97.5, 10} from safe area {0, 0, 0, 0} and the app's padding {0, 0, 87.5, 0}
+  21:24:33.268 after pip-fix-history__back: edge insets {20, 10, 106, 10} from safe area {0, 0, 0, 0} and the app's padding {0, 0, 96, 0}
+BarRoom (probe):
+  pip-fix-history: room 0->87.5 [page safe bottom 87.5, top 126]
+  pip-fix-idle: room 0->87.5 [page safe bottom 87.5, top 126] room 87.5->320.5 [page safe bottom 320.5, top 126] room 320.5->347.5 [page safe bottom 347.5, top 126]
+  pip-fix-running: room 0->87.5 [page safe bottom 87.5, top 126] room 87.5->320.5 [page safe bottom 320.5, top 126] room 320.5->347.5 [page safe bottom 347.5, top 126]
+  fix__ends: room 0->87.5 [page safe bottom 87.5, top 126]
+keyboard cases:
+  fix__idle__kbKey
+    rest Start y=595.50-646.00 (21.00 from the edge)
+    focused: kb top 407.00, Start 335.50-386.00 gap +21.00 hit=y, Key 298.50-319.50, +0.00 above the bar's top
+    typed: kb top 407.00, Start 335.50-386.00 gap +21.00 hit=y, Key 298.50-319.00, +0.50 above the bar's top
+  fix__idle__kbURL
+    rest Start y=595.50-646.00 (21.00 from the edge)
+    focused: kb top 407.00, Start 335.50-386.00 gap +21.00 hit=y, URL 285.50-307.50, +12.00 above the bar's top
+    typed: kb top 407.00, Start 335.50-386.00 gap +21.00 hit=y, URL 285.50-307.50, +12.00 above the bar's top
+  fix__running__kbKey
+    rest Stop y=595.50-646.00 (21.00 from the edge)
+    focused: kb top 407.00, Stop 335.50-386.00 gap +21.00 hit=y, Key 298.50-319.50, +0.00 above the bar's top
+    typed: kb top 407.00, Stop 335.50-386.00 gap +21.00 hit=y, Restart 335.50-386.00 gap +21.00 hit=y, Key 298.50-320.50, -1.00 above the bar's top
+  fix__running__kbURL
+    rest Stop y=595.50-646.00 (21.00 from the edge)
+    focused: kb top 407.00, Stop 335.50-386.00 gap +21.00 hit=y, URL 285.50-307.50, +12.00 above the bar's top
+    typed: kb top 407.00, Stop 335.50-386.00 gap +21.00 hit=y, Restart 335.50-386.00 gap +21.00 hit=y, URL 285.50-307.50, +12.00 above the bar's top
+  main__idle__kbKey
+    rest Start y=595.50-646.00 (21.00 from the edge)
+    focused: kb top 407.00, Start 335.50-386.00 gap +21.00 hit=y, Key 298.50-319.50, +0.00 above the bar's top
+    typed: kb top 407.00, Start 335.50-386.00 gap +21.00 hit=y, Key 298.50-320.50, -1.00 above the bar's top
+  main__idle__kbURL
+    rest Start y=595.50-646.00 (21.00 from the edge)
+    focused: kb top 407.00, Start 335.50-386.00 gap +21.00 hit=y, URL 285.50-307.50, +12.00 above the bar's top
+    typed: kb top 407.00, Start 335.50-386.00 gap +21.00 hit=y, URL 285.50-307.50, +12.00 above the bar's top
+  main__running__kbKey
+    rest Stop y=595.50-646.00 (21.00 from the edge)
+    focused: kb top 407.00, Stop 335.50-386.00 gap +21.00 hit=y, Key 298.50-319.50, +0.00 above the bar's top
+    typed: kb top 407.00, Stop 335.50-386.00 gap +21.00 hit=y, Restart 335.50-386.00 gap +21.00 hit=y, Key 298.50-320.50, -1.00 above the bar's top
+  main__running__kbURL
+    rest Stop y=595.50-646.00 (21.00 from the edge)
+    focused: kb top 407.00, Stop 335.50-386.00 gap +21.00 hit=y, URL 285.50-307.50, +12.00 above the bar's top
+    typed: kb top 407.00, Stop 335.50-386.00 gap +21.00 hit=y, Restart 335.50-386.00 gap +21.00 hit=y, URL 285.50-307.50, +12.00 above the bar's top
+readings (probe):
+  fix__idle__kbKey: without=0 with=0 room=87.5 (page 87.5) with=233 room=320.5 (page 320.5) [kb 407+260, list inset 320.5] with=260 room=347.5 (page 347.5) [kb 407+260, list inset 347.5]
+  fix__idle__kbURL: without=0 with=0 room=87.5 (page 87.5) with=233 room=320.5 (page 320.5) [kb 407+260, list inset 320.5] with=260 room=347.5 (page 347.5) [kb 407+260, list inset 347.5]
+  fix__running__kbKey: without=0 with=0 room=87.5 (page 87.5) with=233 room=320.5 (page 320.5) [kb 407+260, list inset 320.5] with=260 room=347.5 (page 347.5) [kb 407+260, list inset 347.5]
+  fix__running__kbURL: without=0 with=0 room=87.5 (page 87.5) with=233 room=320.5 (page 320.5) [kb 407+260, list inset 320.5] with=260 room=347.5 (page 347.5) [kb 407+260, list inset 347.5]
+  main__idle__kbKey: without=0 with=0 with=233 [kb 407+260, list inset 320.5] with=260 [kb 407+260, list inset 347.5]
+  main__idle__kbURL: without=0 with=0 with=233 [kb 407+260, list inset 320.5] with=260 [kb 407+260, list inset 347.5]
+  main__running__kbKey: without=0 with=0 with=233 [kb 407+260, list inset 320.5] with=260 [kb 407+260, list inset 347.5]
+  main__running__kbURL: without=0 with=0 with=233 [kb 407+260, list inset 320.5] with=260 [kb 407+260, list inset 347.5]
+fix against main, pixels:
+  running__rest: 0 differing pixels below the status bar
+  idle__rest: 0 differing pixels below the status bar
+  ends__top: 0 differing pixels below the status bar
+  ends__end: 0 differing pixels below the status bar
+  endsXXXL__top: 0 differing pixels below the status bar
+  endsXXXL__end: 0 differing pixels below the status bar
+scrolls:
+  scroll-fix__drag: 55 frames, finger -284.0 pt, content ahead of the finger by at most +100.0 pt, biggest one-frame change 23.0 pt
+  scroll-fix__dragXXXL: 48 frames, finger -284.0 pt, content ahead of the finger by at most +47.5 pt, biggest one-frame change 14.5 pt
+  scroll-fix__flick: 3 frames, finger -106.0 pt, content ahead of the finger by at most +36.0 pt, biggest one-frame change 36.0 pt
+  scroll-fix__slow: 74 frames, finger -123.0 pt, content ahead of the finger by at most +14.0 pt, biggest one-frame change 8.0 pt
+  scroll-fix__slowXXXL: 77 frames, finger -123.0 pt, content ahead of the finger by at most +5.5 pt, biggest one-frame change 6.0 pt
+  scroll-form148__drag: 53 frames, finger -284.0 pt, content ahead of the finger by at most +89.5 pt, biggest one-frame change 25.0 pt
+  scroll-form148__dragXXXL: 54 frames, finger -284.0 pt, content ahead of the finger by at most +38.5 pt, biggest one-frame change 20.0 pt
+  scroll-form148__flick: 7 frames, finger -106.0 pt, content ahead of the finger by at most +15.5 pt, biggest one-frame change 28.5 pt
+  scroll-form148__slow: 69 frames, finger -121.0 pt, content ahead of the finger by at most -36.5 pt, biggest one-frame change 17.5 pt
+  scroll-form148__slowXXXL: 71 frames, finger -123.0 pt, content ahead of the finger by at most -36.5 pt, biggest one-frame change 13.5 pt
+  scroll-main__drag: 53 frames, finger -284.0 pt, content ahead of the finger by at most +101.0 pt, biggest one-frame change 34.0 pt
+  scroll-main__dragXXXL: 54 frames, finger -284.0 pt, content ahead of the finger by at most +47.5 pt, biggest one-frame change 23.0 pt
+  scroll-main__flick: 5 frames, finger -107.5 pt, content ahead of the finger by at most +51.5 pt, biggest one-frame change 25.5 pt
+  scroll-main__slow: 74 frames, finger -123.0 pt, content ahead of the finger by at most +14.0 pt, biggest one-frame change 5.5 pt
+  scroll-main__slowXXXL: 72 frames, finger -123.0 pt, content ahead of the finger by at most +8.0 pt, biggest one-frame change 5.5 pt
+ends of the page:
+  fix__ends: History ends 559.50, Stop's top 595.50: 36.00 pt between, list's bottom inset 87.5 (safe area 87.5, content inset 0), scroll bar's track ends 576.50
+  fix__endsXXXL: History ends 552.50, Stop's top 588.50: 36.00 pt between, list's bottom inset 94.5 (safe area 94.5, content inset 0), scroll bar's track ends 569.50
+  main__ends: History ends 559.50, Stop's top 595.50: 36.00 pt between, list's bottom inset 87.5 (safe area 87.5, content inset 0), scroll bar's track ends 576.50
+  main__endsXXXL: History ends 552.50, Stop's top 588.50: 36.00 pt between, list's bottom inset 94.5 (safe area 94.5, content inset 0), scroll bar's track ends 569.50
+History:
+  fix__history:
+    stack: 4 layouts, y [579.5], height [87.5], x from 0 to 0
+    page: 25 layouts, y [579.5], height [87.5], x from -112 to 0
+    pageOuter: 25 layouts, y [492], height [87.5], x from -112 to 0
+  main__history:
+    stack: 4 layouts, y [579.5], height [87.5], x from 0 to 0
+    page: 25 layouts, y [579.5], height [87.5], x from -112 to 0
+  fix__history-marks:
+    scrolled | Stop exists=true hittable=true frame=(21.0, 595.5, 333.0, 50.5) | History bar=false
+    push 1 | Stop exists=true hittable=true frame=(21.0, 595.5, 333.0, 50.5) | History bar=false
+    History shown | Stop exists=false hittable=false frame=- | History bar=true
+    back | Stop exists=false hittable=false frame=- | History bar=true
+    back, settled | Stop exists=true hittable=true frame=(21.0, 595.5, 333.0, 50.5) | History bar=false
+    push 2 | Stop exists=true hittable=true frame=(21.0, 595.5, 333.0, 50.5) | History bar=false
+    History shown | Stop exists=false hittable=false frame=- | History bar=true
+    swipe all the way | Stop exists=false hittable=false frame=- | History bar=true
+    after the full swipe | Stop exists=true hittable=true frame=(21.0, 595.5, 333.0, 50.5) | History bar=false
+    push 3 | Stop exists=true hittable=true frame=(21.0, 595.5, 333.0, 50.5) | History bar=false
+    History shown | Stop exists=false hittable=false frame=- | History bar=true
+    swipe let go | Stop exists=false hittable=false frame=- | History bar=true
+    after the let-go swipe | Stop exists=false hittable=false frame=- | History bar=true
+    back after the let-go swipe | Stop exists=false hittable=false frame=- | History bar=true
+    end | Stop exists=true hittable=true frame=(21.0, 595.5, 333.0, 50.5) | History bar=false
+  main__history-marks:
+    scrolled | Stop exists=true hittable=true frame=(21.0, 595.5, 333.0, 50.5) | History bar=false
+    push 1 | Stop exists=true hittable=true frame=(21.0, 595.5, 333.0, 50.5) | History bar=false
+    History shown | Stop exists=false hittable=false frame=- | History bar=true
+    back | Stop exists=false hittable=false frame=- | History bar=true
+    back, settled | Stop exists=true hittable=true frame=(21.0, 595.5, 333.0, 50.5) | History bar=false
+    push 2 | Stop exists=true hittable=true frame=(21.0, 595.5, 333.0, 50.5) | History bar=false
+    History shown | Stop exists=false hittable=false frame=- | History bar=true
+    swipe all the way | Stop exists=false hittable=false frame=- | History bar=true
+    after the full swipe | Stop exists=true hittable=true frame=(21.0, 595.5, 333.0, 50.5) | History bar=false
+    push 3 | Stop exists=true hittable=true frame=(21.0, 595.5, 333.0, 50.5) | History bar=false
+    History shown | Stop exists=false hittable=false frame=- | History bar=true
+    swipe let go | Stop exists=false hittable=false frame=- | History bar=true
+    after the let-go swipe | Stop exists=false hittable=false frame=- | History bar=true
+    back after the let-go swipe | Stop exists=false hittable=false frame=- | History bar=true
+    end | Stop exists=true hittable=true frame=(21.0, 595.5, 333.0, 50.5) | History bar=false

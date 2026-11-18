@@ -1,0 +1,9 @@
+== iPhone SE (3rd generation) (com.apple.CoreSimulator.SimDeviceType.iPhone-SE-3rd-generation) /Library/Developer/CoreSimulator/Profiles/DeviceTypes/iPhone SE (3rd generation).simdevicetype/Contents/Resources
+capabilities.plist: capabilities/PiPPinned = False
+capabilities.plist: capabilities/PiPOverlay = False
+== iPad Air 11-inch (M4) (com.apple.CoreSimulator.SimDeviceType.iPad-Air-11-inch-M4) /Library/Developer/CoreSimulator/Profiles/DeviceTypes/iPad Air 11-inch (M4).simdevicetype/Contents/Resources
+capabilities.plist: capabilities/PiPPinned = True
+capabilities.plist: capabilities/PiPOverlay = True
+copy: capabilities.plist: capabilities/PiPPinned: False -> True
+copy: capabilities.plist: capabilities/PiPOverlay: False -> True
+copy written: /Users/runner/Library/Developer/CoreSimulator/Profiles/DeviceTypes/iPhone SE (3rd generation) PiP lab.simdevicetype as com.apple.CoreSimulator.SimDeviceType.iPhone-SE-3rd-generation-PiP-lab
