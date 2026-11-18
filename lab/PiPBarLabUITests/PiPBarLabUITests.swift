@@ -264,15 +264,22 @@ final class PiPBarLabUITests: XCTestCase {
             let app = launch(variant, tag: tag, running: false)
             Thread.sleep(forTimeInterval: 1.0)
             answerAlerts()
-            // History sits below the fold on an SE.
-            app.swipeUp()
+            // History sits below the fold on an SE. A flick from high on the
+            // screen: run 44397032602's swipeUp started on PiP where the fix
+            // raises it, and flung PiP to the top.
+            app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.4))
+                .press(forDuration: 0.05, thenDragTo: app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.1)),
+                       withVelocity: .fast, thenHoldForDuration: 0)
             Thread.sleep(forTimeInterval: 1.5)
             dragPiP(toRight: true, in: app)
-            log("\(tag) \(bars(app))")
+            log("\(tag) \(bars(app)) History=[\(app.buttons["History"].exists ? fmt(app.buttons["History"].frame) : "-")]")
             record("\(tag)__main")
             let history = app.buttons["History"]
             if history.waitForExistence(timeout: 5) {
-                history.tap()
+                // Near the row's leading end, clear of PiP at the bottom
+                // right, which covers the row's middle once it rests above
+                // the bar.
+                history.coordinate(withNormalizedOffset: CGVector(dx: 0.08, dy: 0.5)).tap()
                 Thread.sleep(forTimeInterval: 2.5)
                 log("\(tag) History bar=\(app.navigationBars["History"].exists) \(bars(app))")
                 record("\(tag)__history")
