@@ -1,0 +1,232 @@
+name: PiP bar lab (Picture in Picture above the bar, and nothing else moved)
+
+# Runs only on the pip-bar-lab branch, never on main, and releases nothing.
+# The question, 18 Nov 2026: the pip-bar branch gives the bottom bar's room to the main page's UIKit safe area (BarRoom) instead of SwiftUI's (.safeAreaPadding), so that iOS rests Picture in Picture above Start and Stop, as pip-lab found it does above a tab bar. Does PiP now rest above the bar, and is everything else about the bar as build 201 had it: the keyboard, the large title's jump, the end of the page and the copy of the bar in the slides to History?
+# The real Ammy is built once, as build-ipa.yml builds a release (macos-26's default Xcode), with keyboard-lab's probe in it and the bar picked at launch (fix, main, form148; Ammy/LabProbe.swift), in dark mode, on:
+#   se-pip-ios27   a copy of the iPhone SE (3rd generation) given the iPad's two PiP capabilities (lab/fakepip.py), iOS 27.0
+#   17e-pip-ios27  the same for the Face ID iPhone 17e, iOS 27.0
+#   ipad-ios27     an iPad Air 11-inch, which has PiP as it is, iOS 27.0
+#   se-pip-ios26   the SE copy on iOS 26.5
+#   17e-pip-ios26  the 17e copy on iOS 26.5
+
+on:
+  push:
+    branches: [pip-bar-lab]
+  workflow_dispatch:
+
+jobs:
+  compile:
+    runs-on: macos-26
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Show the default Xcode, as build-ipa.yml uses it
+        run: |
+          xcode-select -p
+          xcodebuild -version
+          xcrun --sdk iphonesimulator --show-sdk-version
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Build Ammy for the simulator
+        run: |
+          set -o pipefail
+          xcodegen generate
+          xcodebuild build \
+            -project Ammy.xcodeproj -scheme Ammy -configuration Release \
+            -destination 'generic/platform=iOS Simulator' \
+            -derivedDataPath build-ammy \
+            CODE_SIGNING_ALLOWED=NO 2>&1 | grep -E "error|warning: .*(AmmyApp|LabProbe|PresenceController)|BUILD" | tail -40
+          P=build-ammy/Build/Products/Release-iphonesimulator/Ammy.app
+          plutil -p "$P/Info.plist" | grep -E "DTSDKName|DTXcode|DTPlatformVersion|MinimumOSVersion|CFBundleIdentifier"
+          tar -czf Ammy-sim.tgz -C build-ammy/Build/Products/Release-iphonesimulator Ammy.app
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: ammy-sim
+          path: Ammy-sim.tgz
+
+  lab:
+    needs: compile
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: se-pip-ios27
+            runner: xcode-27
+            xcode: /Applications/Xcode_27.2_Release_Candidate.app
+            device: "fakepip:iPhone-SE-3rd-generation"
+            runtime: "27.0"
+          - name: 17e-pip-ios27
+            runner: xcode-27
+            xcode: /Applications/Xcode_27.2_Release_Candidate.app
+            device: "fakepip:iPhone-17e"
+            runtime: "27.0"
+          - name: ipad-ios27
+            runner: xcode-27
+            xcode: /Applications/Xcode_27.2_Release_Candidate.app
+            device: "iPad Air 11"
+            runtime: "27.0"
+          - name: se-pip-ios26
+            runner: macos-26
+            xcode: /Applications/Xcode_26.6.app
+            device: "fakepip:iPhone-SE-3rd-generation"
+            runtime: "26.5"
+          - name: 17e-pip-ios26
+            runner: macos-26
+            xcode: /Applications/Xcode_26.6.app
+            device: "fakepip:iPhone-17e"
+            runtime: "26.5"
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 90
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Select Xcode
+        run: |
+          X="${{ matrix.xcode }}"
+          [ -d "$X" ] || X=/Applications/Xcode.app
+          sudo xcode-select -s "$X"
+          xcodebuild -version
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Generate the lab project
+        run: cd lab && xcodegen generate
+
+      - name: Create and boot the simulator
+        id: sim
+        run: |
+          set -euo pipefail
+          mkdir -p out
+          # The software keyboard, not a hardware one.
+          defaults write com.apple.iphonesimulator ConnectHardwareKeyboard -bool false || true
+          WANT="${{ matrix.runtime }}"
+          DEVICE="${{ matrix.device }}"
+          if [ "${DEVICE%%:*}" = "fakepip" ]; then
+            BASE="${DEVICE#fakepip:}"
+            TYPE=$(python3 lab/fakepip.py "$PWD/out" "$BASE" || true)
+            if [ -n "$TYPE" ]; then
+              # CoreSimulator reads the user's device types when it starts.
+              killall -9 com.apple.CoreSimulator.CoreSimulatorService 2>/dev/null || true
+              sleep 3
+              xcrun simctl list devicetypes | grep -i "PiP" || echo "the copy isn't listed"
+            else
+              TYPE="com.apple.CoreSimulator.SimDeviceType.$BASE"
+            fi
+          else
+            TYPE=$(xcrun simctl list devicetypes -j | NAME="$DEVICE" python3 -c '
+          import json, os, sys
+          ts = [t for t in json.load(sys.stdin)["devicetypes"] if os.environ["NAME"] in t["name"]]
+          print(ts[-1]["identifier"])')
+          fi
+          echo "device type: $TYPE"
+          UDID=""
+          for RUNTIME in $(xcrun simctl list runtimes -j | WANT="$WANT" python3 -c '
+          import json, os, sys
+          want = os.environ["WANT"]
+          rs = [r for r in json.load(sys.stdin)["runtimes"] if r["platform"] == "iOS" and r["isAvailable"]]
+          rs.sort(key=lambda r: (r["version"] == want or r["version"].startswith(want + "."),
+                                 [int(x) for x in r["version"].split(".")]), reverse=True)
+          print(" ".join(r["identifier"] for r in rs))'); do
+            if UDID=$(xcrun simctl create "Lab ${{ matrix.name }}" "$TYPE" "$RUNTIME" 2>/dev/null); then
+              echo "device: $TYPE on $RUNTIME"
+              echo "runtime=$RUNTIME" >> "$GITHUB_OUTPUT"
+              break
+            fi
+            UDID=""
+          done
+          [ -n "$UDID" ] || { echo "no usable simulator"; exit 1; }
+          echo "udid=$UDID" >> "$GITHUB_OUTPUT"
+          xcrun simctl boot "$UDID"
+          # simctl itself crashed here once (devicePair, pip-lab run 44275708353) with the simulator booting fine underneath, so ask again.
+          for attempt in 1 2 3; do
+            if xcrun simctl bootstatus "$UDID" -b; then break; fi
+            echo "bootstatus failed (attempt $attempt)"
+            sleep 10
+          done
+          xcrun simctl ui "$UDID" appearance dark
+          { echo "device type: $TYPE"; echo "runtime: $RUNTIME"; echo "test runner:"; xcodebuild -version; } > out/device.txt
+
+      - name: Build the lab app and UI tests
+        run: |
+          set -o pipefail
+          cd lab
+          xcodebuild build-for-testing \
+            -project PiPBarLab.xcodeproj -scheme PiPHost \
+            -destination "id=${{ steps.sim.outputs.udid }}" \
+            -derivedDataPath dd \
+            CODE_SIGNING_ALLOWED=NO 2>&1 | grep -E "error|BUILD" | tail -30
+
+      - uses: actions/download-artifact@v7
+        with:
+          name: ammy-sim
+
+      - name: Install Ammy
+        run: |
+          UDID="${{ steps.sim.outputs.udid }}"
+          mkdir -p ammy-app && tar -xzf Ammy-sim.tgz -C ammy-app
+          { echo "Ammy built with:"; plutil -p ammy-app/Ammy.app/Info.plist | grep -E "DTSDKName|DTXcode|DTPlatformVersion|MinimumOSVersion|CFBundleVersion"; } | tee -a out/device.txt
+          xcrun simctl install "$UDID" ammy-app/Ammy.app
+          xcrun simctl privacy "$UDID" grant media-library com.local.ammy || true
+
+      - name: Run
+        run: |
+          UDID="${{ steps.sim.outputs.udid }}"
+          T=PiPBarLabUITests/PiPBarLabUITests
+          stamp() { python3 -c 'import time; print(time.time())'; }
+          run_tests() {
+            local label="$1" only="$2"
+            for attempt in 1 2; do
+              echo "$(stamp) begin $label (attempt $attempt)" >> out/phases.txt
+              TEST_RUNNER_LAB_OUT="$PWD/out" xcodebuild test-without-building \
+                -project lab/PiPBarLab.xcodeproj -scheme PiPHost \
+                -destination "id=$UDID" \
+                -derivedDataPath lab/dd \
+                -parallel-testing-enabled NO \
+                -only-testing:"$T/$only" \
+                CODE_SIGNING_ALLOWED=NO > "out/xcodebuild-$label-$attempt.log" 2>&1 || echo "$label: tests exited $?"
+              echo "$(stamp) end $label (attempt $attempt)" >> out/phases.txt
+              xcrun simctl terminate "$UDID" com.local.ammy > /dev/null 2>&1 || true
+              xcrun simctl terminate "$UDID" com.local.piphost > /dev/null 2>&1 || true
+              echo "== $label (attempt $attempt)"
+              grep -E "Test Case|error:|failed|\[lab\]" "out/xcodebuild-$label-$attempt.log" | tail -60 || true
+              if grep -q "Test Case '-\[" "out/xcodebuild-$label-$attempt.log"; then break; fi
+            done
+          }
+          xcrun simctl launch "$UDID" com.local.ammy > /dev/null 2>&1 || true
+          sleep 8
+          xcrun simctl terminate "$UDID" com.local.ammy > /dev/null 2>&1 || true
+          # The app's own log lines ("bar" category: the two readings and BarRoom's room).
+          xcrun simctl spawn "$UDID" log stream --style compact --level info \
+            --predicate 'subsystem == "com.local.ammy" AND category == "bar"' > out/bar-log.txt 2>&1 &
+          LOG=$!
+          # SpringBoard's PiP lines, among them the insets it rests PiP inside and what they were derived from.
+          xcrun simctl spawn "$UDID" log stream --style compact --level debug \
+            --predicate 'process == "SpringBoard" AND (eventMessage CONTAINS[c] "PIP" OR eventMessage CONTAINS[c] "picture in picture" OR eventMessage CONTAINS[c] "dodg")' \
+            > out/springboard-pip.log 2>&1 &
+          SBLOG=$!
+          stamp > out/record-start.txt
+          xcrun simctl io "$UDID" recordVideo --codec=h264 --force out/lab.mp4 > out/record.log 2>&1 &
+          REC=$!
+          sleep 3
+          run_tests pip test1PiP
+          run_tests keyboard test2Keyboard
+          run_tests scroll test3Scroll
+          run_tests ends test4Ends
+          run_tests history test5History
+          kill -INT $REC || true
+          wait $REC || true
+          kill $LOG $SBLOG || true
+          wc -l out/bar-log.txt out/springboard-pip.log
+          ls out | wc -l
+
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: lab-${{ matrix.name }}
+          path: out

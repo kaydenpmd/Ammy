@@ -26,6 +26,14 @@ extension Bundle {
 struct AmmyApp: App {
     @StateObject private var controller = PresenceController()
 
+    init() {
+        // Lab only (pip-bar-lab): the per-frame probe, when the UI test asks.
+        let env = ProcessInfo.processInfo.environment
+        if let dir = env["LAB_OUT"], let tag = env["LAB_TAG"] {
+            Probe.shared.start(directory: dir, tag: tag)
+        }
+    }
+
     var body: some Scene {
         WindowGroup {
             ContentView().environmentObject(controller)
@@ -731,8 +739,55 @@ struct ContentView: View {
     }
 
     var body: some View {
+        labStack
+        // Lab: the readings moved here from the stack, outside every variant,
+        // as keyboard-lab had them.
+        .onGeometryChange(for: CGFloat.self) { proxy in
+            proxy.safeAreaInsets.bottom
+        } action: { inset in
+            bottomWithKeyboard = inset
+            Self.barLog.notice("bottom edge with the keyboard: \(inset, privacy: .public) pt, keyboard \(keyboardUp ? "up" : "down", privacy: .public)")
+            Probe.shared.note(["k": "inset", "with": Double(inset)])
+        }
+        .background {
+            Color.clear
+                .onGeometryChange(for: CGFloat.self) { proxy in
+                    proxy.safeAreaInsets.bottom
+                } action: { inset in
+                    bottomSafeArea = inset
+                    Self.barLog.notice("bottom edge without the keyboard: \(inset, privacy: .public) pt")
+                    Probe.shared.note(["k": "inset", "without": Double(inset)])
+                }
+                .ignoresSafeArea(.keyboard)
+        }
+        .task {
+            if UserDefaults.standard.bool(forKey: "labRunning") { controller.labPretendRunning() }
+        }
+    }
+
+    /// Lab only: build 148's arrangement, the bar on the Form and nothing
+    /// reserved by hand, for "form148" (the jump's positive control);
+    /// otherwise this branch's stack, as "fix" or as build 201 ("main").
+    @ViewBuilder private var labStack: some View {
+        if Lab.variant == "form148" {
+            NavigationStack {
+                form
+                    .safeAreaBar(edge: .bottom) { bar.labFrame("form") }
+            }
+            .task {
+                controller.appDidBecomeActive()
+                await controller.monitor.start()
+            }
+        } else {
+            mainStack
+        }
+    }
+
+    @ViewBuilder private var mainStack: some View {
         NavigationStack {
             form
+                // Lab: build 201's room for the bar, for "main" only.
+                .safeAreaPadding(.bottom, Lab.variant == "main" ? barHeight : 0)
                 // The page's own copy of the bar, for its slides to History
                 // and back: it goes with the page and under History, as the
                 // bar did when it was the Form's. Fading the stack's bar
@@ -742,7 +797,15 @@ struct ContentView: View {
                 // the bar's top (BarRoom, below), so it moves down by its
                 // own height to sit where the stack's bar is.
                 .overlay(alignment: .bottom) {
-                    if barOnPage { bar.offset(y: barHeight) }
+                    // Lab: "page" is read inside the offset, where the copy is
+                    // drawn; "pageOuter" outside it, where it's laid out.
+                    if barOnPage {
+                        if Lab.variant == "main" {
+                            bar.labFrame("page")
+                        } else {
+                            bar.labFrame("page").offset(y: barHeight).labFrame("pageOuter")
+                        }
+                    }
                 }
                 // UIKit says when this page starts to give way to History and
                 // when it has settled back. SwiftUI's onAppear and onDisappear
@@ -764,7 +827,8 @@ struct ContentView: View {
                 // 201) gave the Form the same room inside SwiftUI only, and
                 // PiP sat over the bar (HISTORY.md, 18 Nov 2026).
                 .overlay {
-                    BarRoom(height: barRoom)
+                    // Lab: none for build 201 ("main").
+                    BarRoom(height: Lab.variant == "main" ? 0 : barRoom)
                         .frame(width: 0, height: 0)
                 }
         }
@@ -797,43 +861,11 @@ struct ContentView: View {
         .safeAreaBar(edge: .bottom) {
             if !barOnPage {
                 bar
+                    .labFrame("stack")
                     .onGeometryChange(for: CGFloat.self) { $0.size.height } action: { barHeight = $0 }
             }
         }
-        // Attached after the stack's bottom bar, deliberately: `safeAreaBar`
-        // extends the safe area of whatever it modifies, so a reading taken
-        // inside the bar, or on the stack beneath it, is measuring the bar.
-        // Out here it reports what the window reserves.
-        //
-        // Two readings, because the keyboard counts too: while it is up, this
-        // one reads the keyboard's whole height (260 pt on an SE, 328 on a
-        // 17e), and from build 77 to build 172 the bar's padding, edgeGap
-        // minus it, took the bar 66 pt down behind the keyboard: Start, or
-        // Stop and Restart, vanished while the URL or Key was being edited.
-        // So this one only says whether the keyboard is up; the background
-        // below ignores the keyboard and gives the home indicator's inset
-        // alone. CLAUDE.md, "The bar went behind the keyboard", has the
-        // measurements.
-        //
-        // onGeometryChange rather than a one-shot read of the key window, since
-        // iPad rotates and Split View resizes; and rather than a GeometryReader,
-        // which would take over the layout of everything inside it.
-        .onGeometryChange(for: CGFloat.self) { proxy in
-            proxy.safeAreaInsets.bottom
-        } action: { inset in
-            bottomWithKeyboard = inset
-            Self.barLog.notice("bottom edge with the keyboard: \(inset, privacy: .public) pt, keyboard \(keyboardUp ? "up" : "down", privacy: .public)")
-        }
-        .background {
-            Color.clear
-                .onGeometryChange(for: CGFloat.self) { proxy in
-                    proxy.safeAreaInsets.bottom
-                } action: { inset in
-                    bottomSafeArea = inset
-                    Self.barLog.notice("bottom edge without the keyboard: \(inset, privacy: .public) pt")
-                }
-                .ignoresSafeArea(.keyboard)
-        }
+        // Lab: the two readings are on the body, outside every variant.
         .task {
             // The monitor reads the device, not the relay, so it runs whether
             // or not a session does. That is what lets Now Playing and the
@@ -1196,6 +1228,8 @@ struct ContentView: View {
     /// stored address has already been resolved by an interactive start.
     @MainActor
     private func autoStartIfPossible() async {
+        // Lab: never start a real session; the tests pretend one.
+        if UserDefaults.standard.string(forKey: "labBar") != nil { return }
         guard !stoppedByUser, !controller.isRunning, canAutoStart else { return }
         await controller.start()
     }
@@ -1297,6 +1331,17 @@ private struct BarRoom: UIViewControllerRepresentable {
             guard old != height else { return }
             page.additionalSafeAreaInsets.bottom = height
             Self.log.notice("bar room \(old, privacy: .public) -> \(self.height, privacy: .public) pt, page \(String(String(describing: type(of: page)).prefix(40)), privacy: .public)")
+            // Lab: what was set, and the page's safe area once UIKit has
+            // laid it out.
+            Probe.shared.note(["k": "room", "old": Double(old), "new": Double(height),
+                               "page": String(String(describing: type(of: page)).prefix(80)),
+                               "nav": String(describing: page.parent.map { type(of: $0) })])
+            Task { @MainActor [weak page] in
+                guard let page else { return }
+                Probe.shared.note(["k": "roomSafe", "add": Double(page.additionalSafeAreaInsets.bottom),
+                                   "safeBottom": Double(page.view.safeAreaInsets.bottom),
+                                   "safeTop": Double(page.view.safeAreaInsets.top)])
+            }
         }
     }
 }

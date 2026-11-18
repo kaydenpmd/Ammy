@@ -1,0 +1,54 @@
+name: PiPBarLab
+
+# pip-bar-lab only, never merged. PiPHost (from pip-lab) floats a magenta video in Picture in Picture; the UI tests drive it, the real Ammy (built from this branch with its probe, the bar picked at launch by -labBar) and SpringBoard by bundle identifier.
+
+options:
+  bundleIdPrefix: com.local
+  deploymentTarget:
+    iOS: "26.0"
+
+targets:
+  PiPHost:
+    type: application
+    platform: iOS
+    sources:
+      - path: PiPHost
+    info:
+      path: PiPHost/Info.plist
+      properties:
+        CFBundleDisplayName: PiPHost
+        UILaunchScreen: {}
+        # PiP keeps playing only for an app that may play audio in the background.
+        UIBackgroundModes:
+          - audio
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+        "UISupportedInterfaceOrientations~ipad":
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationPortraitUpsideDown
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.local.piphost
+        SWIFT_VERSION: "5.0"
+        GENERATE_INFOPLIST_FILE: NO
+        TARGETED_DEVICE_FAMILY: "1,2"
+    scheme:
+      testTargets:
+        - PiPBarLabUITests
+
+  PiPBarLabUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources:
+      - path: PiPBarLabUITests
+    dependencies:
+      - target: PiPHost
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.local.piphost.uitests
+        SWIFT_VERSION: "5.0"
+        GENERATE_INFOPLIST_FILE: YES
+        TEST_TARGET_NAME: PiPHost
+        TARGETED_DEVICE_FAMILY: "1,2"
