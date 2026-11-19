@@ -185,6 +185,57 @@ final class WideBarUITests: XCTestCase {
         }
     }
 
+    /// Taps the first element whose label contains `text`, whatever its type.
+    @MainActor
+    private func tapLabel(_ app: XCUIApplication, containing text: String, _ tag: String) -> Bool {
+        let match = app.descendants(matching: .any).matching(NSPredicate(format: "label CONTAINS[c] %@", text)).firstMatch
+        guard match.waitForExistence(timeout: 6) else {
+            log("\(tag): nothing labelled '\(text)'")
+            return false
+        }
+        log("\(tag): tapping '\(match.label.prefix(60))' [\(fmt(match.frame))]")
+        match.tap()
+        Thread.sleep(forTimeInterval: 3.5)
+        return true
+    }
+
+    // MARK: 3. Settings' Apple Account sheets, with the keyboard
+
+    /// Run 44527315193 reached the Apple Account sheet and stopped: its two choices are cards, not buttons named for them. This goes on through each: Sign in Manually, whose page has an address field, and Don't have an Apple Account?, whose pages have name fields. Every page is photographed and listed, and the first field on each is tapped so the keyboard comes up.
+    @MainActor
+    func test3SignIn() {
+        logName = "frames-signin.txt"
+        let settings = XCUIApplication(bundleIdentifier: "com.apple.Preferences")
+        for (flow, choice) in [("manual", "Sign in Manually"), ("create", "have an Apple Account")] {
+            settings.launch()
+            _ = settings.wait(for: .runningForeground, timeout: 20)
+            Thread.sleep(forTimeInterval: 3)
+            guard tapLabel(settings, containing: "Sign in to access", flow) else {
+                settings.terminate()
+                continue
+            }
+            shot("\(flow)__1_sheet")
+            dump(settings, "\(flow)__1_sheet")
+            _ = tapLabel(settings, containing: choice, flow)
+            shot("\(flow)__2")
+            dump(settings, "\(flow)__2")
+            if !tryKeyboard(settings, "\(flow)__2") {
+                // A page in between (a choice of whose account, say): press on and try again.
+                for step in 3...5 {
+                    guard let label = ["Continue", "Next", "Create", "Myself", "OK"].first(where: { settings.buttons[$0].firstMatch.exists && settings.buttons[$0].firstMatch.isHittable }) else { break }
+                    log("\(flow) step \(step): pressing '\(label)'")
+                    settings.buttons[label].firstMatch.tap()
+                    Thread.sleep(forTimeInterval: 3)
+                    shot("\(flow)__\(step)")
+                    dump(settings, "\(flow)__\(step)")
+                    if tryKeyboard(settings, "\(flow)__\(step)") { break }
+                }
+            }
+            settings.terminate()
+        }
+        log("done")
+    }
+
     @MainActor
     func test2Reference() {
         logName = "frames-reference.txt"

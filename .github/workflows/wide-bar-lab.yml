@@ -9,6 +9,10 @@ on:
     branches: [wide-bar-lab]
   workflow_dispatch:
 
+# Which tests the Run step runs. Run 44527315193 ran test1Ammy and test2Reference; its reference walk stopped at the Apple Account sheet, so this run goes through that sheet alone.
+env:
+  TESTS: "test3SignIn"
+
 jobs:
   compile:
     runs-on: macos-26
@@ -128,7 +132,7 @@ jobs:
       - name: Run
         run: |
           UDID="${{ steps.sim.outputs.udid }}"
-          for only in test1Ammy test2Reference; do
+          for only in $TESTS; do
             for attempt in 1 2; do
               TEST_RUNNER_LAB_OUT="$PWD/out" TEST_RUNNER_LAB_APPS="${{ steps.sim.outputs.apps }}" xcodebuild test-without-building \
                 -project lab/WideBarLab.xcodeproj -scheme Host \
@@ -139,7 +143,8 @@ jobs:
                 CODE_SIGNING_ALLOWED=NO > "out/xcodebuild-$only-$attempt.log" 2>&1 || echo "$only: tests exited $?"
               xcrun simctl terminate "$UDID" com.local.ammy > /dev/null 2>&1 || true
               grep -E "Test Case|error:" "out/xcodebuild-$only-$attempt.log" | tail -20 || true
-              if grep -q "Test Case '-\[" "out/xcodebuild-$only-$attempt.log"; then break; fi
+              # A launch that XCUITest loses ("does not have a process ID") fails the test at once, so only a pass ends the tries.
+              if grep -q "' passed" "out/xcodebuild-$only-$attempt.log"; then break; fi
             done
           done
           ls out | wc -l
