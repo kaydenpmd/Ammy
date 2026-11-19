@@ -1,0 +1,145 @@
+name: Bar width lab (how wide iOS makes each kind of bottom element)
+
+# Runs only on the bar-width-lab branch, never on main, and releases nothing.
+# The question, 18 Nov 2026, from the owner: are bottom buttons usually the search bar's width, the tab bar's, or a width of their own? The owner's iPhone SE (iOS 27.2) put the tab bar and Music's mini player 20.5 pt from the sides, bottom toolbar items 27.5, and buttons in Apple's sheets 37.5 to 40 (design library, apple/ios-bottom-bar-widths). This lab asks the same of other screen sizes and of light mode: SwiftUI's own tab bars and toolbars (lab/Widths), the real Ammy as released, and Apple's own apps, on iOS 27.0.
+
+on:
+  push:
+    branches: [bar-width-lab]
+  workflow_dispatch:
+
+jobs:
+  compile:
+    runs-on: macos-26
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Build Ammy for the simulator, as build-ipa.yml builds it
+        run: |
+          set -o pipefail
+          xcodebuild -version
+          xcodegen generate
+          xcodebuild build \
+            -project Ammy.xcodeproj -scheme Ammy -configuration Release \
+            -destination 'generic/platform=iOS Simulator' \
+            -derivedDataPath build-ammy \
+            CODE_SIGNING_ALLOWED=NO 2>&1 | grep -E "error|BUILD" | tail -20
+          tar -czf Ammy-sim.tgz -C build-ammy/Build/Products/Release-iphonesimulator Ammy.app
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: ammy-sim
+          path: Ammy-sim.tgz
+
+  lab:
+    needs: compile
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: se-ios27
+            device: "iPhone SE (3rd generation)"
+          - name: 17e-ios27
+            device: "iPhone 17e"
+          - name: 17promax-ios27
+            device: "iPhone 17 Pro Max"
+          - name: ipad-ios27
+            device: "iPad Air 11"
+    runs-on: xcode-27
+    timeout-minutes: 80
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Select Xcode
+        run: |
+          X=/Applications/Xcode_27.2_Release_Candidate.app
+          [ -d "$X" ] || X=/Applications/Xcode.app
+          sudo xcode-select -s "$X"
+          xcodebuild -version
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Generate the lab project
+        run: cd lab && xcodegen generate
+
+      - name: Create and boot the simulator
+        id: sim
+        run: |
+          set -euo pipefail
+          mkdir -p out
+          TYPE=$(xcrun simctl list devicetypes -j | NAME="${{ matrix.device }}" python3 -c '
+          import json, os, sys
+          ts = [t for t in json.load(sys.stdin)["devicetypes"] if t["name"].startswith(os.environ["NAME"])]
+          print(ts[-1]["identifier"])')
+          RUNTIME=$(xcrun simctl list runtimes -j | python3 -c '
+          import json, sys
+          rs = [r for r in json.load(sys.stdin)["runtimes"] if r["platform"] == "iOS" and r["isAvailable"] and r["version"].startswith("27.0")]
+          print(rs[-1]["identifier"])')
+          UDID=$(xcrun simctl create "Lab ${{ matrix.name }}" "$TYPE" "$RUNTIME")
+          echo "udid=$UDID" >> "$GITHUB_OUTPUT"
+          xcrun simctl boot "$UDID"
+          for attempt in 1 2 3; do
+            if xcrun simctl bootstatus "$UDID" -b; then break; fi
+            sleep 10
+          done
+          { echo "device type: $TYPE"; echo "runtime: $RUNTIME"; echo "test runner:"; xcodebuild -version; } > out/device.txt
+          xcrun simctl list runtimes -j | RT="$RUNTIME" python3 -c '
+          import json, os, sys
+          for r in json.load(sys.stdin)["runtimes"]:
+              if r["identifier"] == os.environ["RT"]:
+                  print(json.dumps(r, indent=1))' > out/runtime.json
+          cat out/device.txt
+
+      - name: Build the lab app and UI tests
+        run: |
+          set -o pipefail
+          cd lab
+          xcodebuild build-for-testing \
+            -project WidthsLab.xcodeproj -scheme Widths \
+            -destination "id=${{ steps.sim.outputs.udid }}" \
+            -derivedDataPath dd \
+            CODE_SIGNING_ALLOWED=NO 2>&1 | grep -E "error|BUILD" | tail -30
+
+      - uses: actions/download-artifact@v7
+        with:
+          name: ammy-sim
+
+      - name: Install Ammy
+        run: |
+          UDID="${{ steps.sim.outputs.udid }}"
+          mkdir -p ammy-app && tar -xzf Ammy-sim.tgz -C ammy-app
+          { echo "Ammy built with:"; plutil -p ammy-app/Ammy.app/Info.plist | grep -E "DTSDKName|DTXcode|DTPlatformVersion|CFBundleVersion"; } | tee -a out/device.txt
+          xcrun simctl install "$UDID" ammy-app/Ammy.app
+          xcrun simctl privacy "$UDID" grant media-library com.local.ammy || true
+
+      - name: Run, dark then light
+        run: |
+          UDID="${{ steps.sim.outputs.udid }}"
+          for mode in dark light; do
+            xcrun simctl ui "$UDID" appearance "$mode"
+            sleep 2
+            for attempt in 1 2; do
+              TEST_RUNNER_LAB_OUT="$PWD/out" TEST_RUNNER_LAB_SUFFIX="-$mode" xcodebuild test-without-building \
+                -project lab/WidthsLab.xcodeproj -scheme Widths \
+                -destination "id=$UDID" \
+                -derivedDataPath lab/dd \
+                -parallel-testing-enabled NO \
+                -only-testing:"WidthsUITests/WidthsUITests/testWidths" \
+                CODE_SIGNING_ALLOWED=NO > "out/xcodebuild-$mode-$attempt.log" 2>&1 || echo "$mode: tests exited $?"
+              grep -E "Test Case|error:" "out/xcodebuild-$mode-$attempt.log" | tail -20 || true
+              if grep -q "Test Case '-\[" "out/xcodebuild-$mode-$attempt.log"; then break; fi
+            done
+          done
+          ls out | wc -l
+
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: lab-${{ matrix.name }}
+          path: out

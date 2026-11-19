@@ -1,0 +1,51 @@
+name: WidthsLab
+
+# bar-width-lab only, never merged. Widths shows one kind of bottom element per launch (`-variant`); the UI tests photograph it, the real Ammy and Apple's own apps.
+
+options:
+  bundleIdPrefix: com.local
+  deploymentTarget:
+    iOS: "26.0"
+
+targets:
+  Widths:
+    type: application
+    platform: iOS
+    sources:
+      - path: Widths
+    info:
+      path: Widths/Info.plist
+      properties:
+        CFBundleDisplayName: Widths
+        UILaunchScreen: {}
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+        "UISupportedInterfaceOrientations~ipad":
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationPortraitUpsideDown
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.local.widths
+        SWIFT_VERSION: "5.0"
+        GENERATE_INFOPLIST_FILE: NO
+        TARGETED_DEVICE_FAMILY: "1,2"
+    scheme:
+      testTargets:
+        - WidthsUITests
+
+  WidthsUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources:
+      - path: WidthsUITests
+    dependencies:
+      - target: Widths
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.local.widths.uitests
+        SWIFT_VERSION: "5.0"
+        GENERATE_INFOPLIST_FILE: YES
+        TEST_TARGET_NAME: Widths
+        TARGETED_DEVICE_FAMILY: "1,2"
