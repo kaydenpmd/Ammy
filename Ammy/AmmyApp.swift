@@ -701,23 +701,36 @@ struct ContentView: View {
     /// from it rather than simply applying it.
     private static let barGap: CGFloat = 16
 
-    /// Total distance from the button's bottom edge to the true screen edge on
-    /// a Face ID phone — not the full 34pt home-indicator inset. The 17 Sept
-    /// fix (`max(0, barGap - bottomSafeArea)`) correctly stops adding *extra*
-    /// padding on top of the inset, but that still leaves the button sitting
-    /// at the full 34pt, and on-screen that reads as too high. Measured
-    /// pixel-for-pixel against Shortcuts' own floating tab bar (Library/
-    /// Automation/Gallery) on an iPhone 16 Pro Max screenshot 18 Sept: its
-    /// pill sits 21.3pt above the true edge, not 34pt — system bars intrude
-    /// into part of the reserved zone rather than stopping at its top. This
-    /// constant pins the button there regardless of `bottomSafeArea`, since
-    /// `bottomSafeArea + (edgeGap - bottomSafeArea) == edgeGap` always — no
-    /// clamp needed, unlike the old formula.
-    ///
-    /// **Not yet touched on a real device** — screenshot measurement only.
-    /// Check this on both a Face ID phone and the SE before trusting it; it
-    /// may need tuning either direction once someone actually looks at it.
-    private static let edgeGap: CGFloat = 21
+    /// From the buttons' bottom edge to the true screen edge, with no keyboard:
+    /// where iOS puts its own wide bottom button, the Continue on its Welcome
+    /// and What's New sheets. Measured, since the system exposes no value for
+    /// it: 38 pt on every iPhone, with a home indicator or without (iOS 27.0
+    /// simulators and the owner's SE, 18 and 19 Nov 2026; design library,
+    /// apple/ios-bottom-bar-widths). The owner's choice, 19 Nov 2026. Until
+    /// build 208 this was 21, the floating tab bar's distance. The bar pads
+    /// by this less `bottomSafeArea`, so the total is the same on every
+    /// phone whatever the window reserves.
+    private static let edgeGap: CGFloat = 38
+
+    /// From each side of the screen to the buttons, with no keyboard: the
+    /// same wide button's 38 pt, measured with `edgeGap` (21, the tab bar's,
+    /// until build 208). With two buttons it's the pair that spans this
+    /// width.
+    private static let sideGap: CGFloat = 38
+
+    /// The same with the keyboard up: the width the bar had until build 208,
+    /// 21 pt from each side, as a floating tab bar sits. The owner's choice,
+    /// 19 Nov 2026, after seeing the narrower buttons over the keyboard:
+    /// "let's make em the previous wider width when the keyboard is up".
+    private static let keyboardSideGap: CGFloat = 21
+
+    /// From the buttons' bottom edge to the keyboard's top while it's up.
+    /// iOS's wide button has no place there (on its sign-in page the keyboard
+    /// covers it), so this is what iOS does float above the keyboard: the
+    /// bottom search bar of Settings and Contacts, 10 pt above it, its
+    /// suggestions strip counted. Measured on iOS 27.0, as above; 21 until
+    /// build 208.
+    private static let keyboardGap: CGFloat = 10
 
     /// The fields have drifted from what is actually being sent, and there is a
     /// session for that to matter to. Both halves are the controller's to know
@@ -1138,22 +1151,20 @@ struct ContentView: View {
         // slightly springy without wobbling. Raise it for more rubber.
         .animation(.spring(duration: 0.4, bounce: 0.15), value: controller.isRunning)
         .animation(.spring(duration: 0.4, bounce: 0.15), value: isEdited)
-        // The gap above the button is a constant. The gap below it
-        // targets `edgeGap` from the true screen edge regardless of
-        // device — see the doc comment on `edgeGap` for why 34pt (the
-        // raw home-indicator inset, and what the first fix here
-        // produced) still read as too high. This subtracts whatever
-        // `bottomSafeArea` already provides, going negative on a Face
-        // ID phone to pull the button into part of the reserved zone;
-        // no clamp needed, since the two `bottomSafeArea` terms cancel
-        // and the total is pinned at `edgeGap` no matter what it reads.
+        // The gap above the buttons is a constant. The gap below them
+        // targets `edgeGap` from the true screen edge on every device:
+        // this subtracts whatever `bottomSafeArea` already provides, so
+        // the two `bottomSafeArea` terms cancel and the total is pinned
+        // at `edgeGap` whatever it reads.
         //
         // With the keyboard up the bar sits on the keyboard's top edge, which
-        // has no reserved zone beneath it, so the gap is `edgeGap` from that
-        // edge on every phone, as it always was on a home-button one.
+        // has no reserved zone beneath it, so the gap is `keyboardGap` from
+        // that edge on every phone, and the buttons take their wider span,
+        // `keyboardSideGap` from each side. One button or two, the rules are
+        // the same.
         .padding(.top, Self.barGap)
-        .padding(.bottom, keyboardUp ? Self.edgeGap : Self.edgeGap - bottomSafeArea)
-        .padding(.horizontal, 21)
+        .padding(.bottom, keyboardUp ? Self.keyboardGap : Self.edgeGap - bottomSafeArea)
+        .padding(.horizontal, keyboardUp ? Self.keyboardSideGap : Self.sideGap)
     }
 
     @MainActor
