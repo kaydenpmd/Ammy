@@ -158,6 +158,18 @@ final class WideBarUITests: XCTestCase {
         log("\(tag) keyboard shown=\(shown)")
         shot("\(tag)__keyboard")
         dump(app, "\(tag)__keyboard")
+        // A new simulator's first keyboard comes up under a card about sliding to type (run 44531445473); its Continue sits inside the keyboard's frame. Press it, so the keyboard itself shows.
+        if shown {
+            let top = app.keyboards.firstMatch.frame.minY
+            let tips = app.buttons.matching(NSPredicate(format: "label == 'Continue'")).allElementsBoundByIndex
+            if let tip = tips.first(where: { $0.exists && $0.frame.minY > top && $0.frame.height < 40 }) {
+                log("\(tag) pressing the keyboard card's Continue [\(fmt(tip.frame))]")
+                tip.tap()
+                Thread.sleep(forTimeInterval: 1.5)
+                shot("\(tag)__keyboard_clear")
+                dump(app, "\(tag)__keyboard_clear", tree: false)
+            }
+        }
         if shown {
             field.typeText("a")
             Thread.sleep(forTimeInterval: 1.0)
@@ -206,7 +218,8 @@ final class WideBarUITests: XCTestCase {
     func test3SignIn() {
         logName = "frames-signin.txt"
         let settings = XCUIApplication(bundleIdentifier: "com.apple.Preferences")
-        for (flow, choice) in [("manual", "Sign in Manually"), ("create", "have an Apple Account")] {
+        // "Apple Account" is written with a no-break space, so the second label is matched by its start (run 44531445473 found nothing labelled "have an Apple Account").
+        for (flow, choice) in [("manual", "Sign in Manually"), ("create", "t have an")] {
             settings.launch()
             _ = settings.wait(for: .runningForeground, timeout: 20)
             Thread.sleep(forTimeInterval: 3)
