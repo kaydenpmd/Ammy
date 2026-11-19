@@ -1,0 +1,479 @@
+=== 17e-ios27
+  device type: com.apple.CoreSimulator.SimDeviceType.iPhone-17e | runtime: com.apple.CoreSimulator.SimRuntime.iOS-27-0 | test runner: | Xcode 27.1 | Build version 27A9275 | Ammy built with: | "CFBundleVersion" => "1" | "DTPlatformVersion" => "26.5" | "DTSDKName"
+ dark, screen 390 x 844 pt
+  widths-accessory-dark (page grey (128, 128, 128)):
+    x 40.33 to 349.67 (309.33 wide; 40.33 from the left, 40.33 from the right), y 705.00 to 709.00 (4.00 tall; 135.00 from the bottom), widest at y 705.67
+    x 335.33 to 351.33 (16.00 wide; 335.33 from the left, 38.67 from the right), y 706.00 to 709.00 (3.00 tall; 135.00 from the bottom), widest at y 706.00
+    x 37.00 to 69.00 (32.00 wide; 37.00 from the left, 321.00 from the right), y 713.00 to 745.00 (32.00 tall; 99.00 from the bottom), widest at y 717.33
+    x 307.00 to 319.67 (12.67 wide; 307.00 from the left, 70.33 from the right), y 722.67 to 735.67 (13.00 tall; 108.33 from the bottom), widest at y 728.67
+    x 330.00 to 352.67 (22.67 wide; 330.00 from the left, 37.33 from the right), y 723.33 to 735.33 (12.00 tall; 108.67 from the bottom), widest at y 728.67
+    x 341.00 to 350.67 (9.67 wide; 341.00 from the left, 39.33 from the right), y 723.67 to 727.67 (4.00 tall; 116.33 from the bottom), widest at y 727.33
+    x 78.33 to 83.00 (4.67 wide; 78.33 from the left, 307.00 from the right), y 724.33 to 727.67 (3.33 tall; 116.33 from the bottom), widest at y 727.33
+    x 83.33 to 88.33 (5.00 wide; 83.33 from the left, 301.67 from the right), y 730.67 to 734.33 (3.67 tall; 109.67 from the bottom), widest at y 730.67
+    x 341.00 to 350.67 (9.67 wide; 341.00 from the left, 39.33 from the right), y 731.00 to 735.00 (4.00 tall; 109.00 from the bottom), widest at y 731.00
+    x 105.67 to 109.67 (4.00 wide; 105.67 from the left, 280.33 from the right), y 731.33 to 734.33 (3.00 tall; 109.67 from the bottom), widest at y 731.33
+    x 40.33 to 349.67 (309.33 wide; 40.33 from the left, 40.33 from the right), y 749.00 to 753.00 (4.00 tall; 91.00 from the bottom), widest at y 752.00
+    x 342.00 to 351.33 (9.33 wide; 342.00 from the left, 38.67 from the right), y 749.00 to 752.00 (3.00 tall; 92.00 from the bottom), widest at y 751.67
+    x 47.33 to 342.67 (295.33 wide; 47.33 from the left, 47.33 from the right), y 761.00 to 765.67 (4.67 tall; 78.33 from the bottom), widest at y 761.67
+    x 332.00 to 344.67 (12.67 wide; 332.00 from the left, 45.33 from the right), y 762.00 to 765.67 (3.67 tall; 78.33 from the bottom), widest at y 762.00
+    x 25.00 to 109.00 (84.00 wide; 25.00 from the left, 281.00 from the right), y 765.00 to 819.00 (54.00 tall; 25.00 from the bottom), widest at y 789.33
+    x 262.33 to 270.67 (8.33 wide; 262.33 from the left, 119.33 from the right), y 774.00 to 781.00 (7.00 tall; 63.00 from the bottom), widest at y 775.67
+    x 315.33 to 327.00 (11.67 wide; 315.33 from the left, 63.00 from the right), y 774.00 to 780.00 (6.00 tall; 64.00 from the bottom), widest at y 775.67
+    x 120.67 to 130.33 (9.67 wide; 120.67 from the left, 259.67 from the right), y 774.33 to 784.00 (9.67 tall; 60.00 from the bottom), widest at y 775.67
+    x 132.00 to 141.67 (9.67 wide; 132.00 from the left, 248.33 from the right), y 774.33 to 784.00 (9.67 tall; 60.00 from the bottom), widest at y 775.33
+    x 321.67 to 327.33 (5.67 wide; 321.67 from the left, 62.67 from the right), y 776.00 to 779.67 (3.67 tall; 64.33 from the bottom), widest at y 776.00
+    x 192.67 to 197.33 (4.67 wide; 192.67 from the left, 192.67 from the right), y 783.00 to 787.00 (4.00 tall; 57.00 from the bottom), widest at y 784.67
+    x 120.67 to 130.33 (9.67 wide; 120.67 from the left, 259.67 from the right), y 785.67 to 795.33 (9.67 tall; 48.67 from the bottom), widest at y 787.00
+    x 132.00 to 141.67 (9.67 wide; 132.00 from the left, 248.33 from the right), y 785.67 to 795.33 (9.67 tall; 48.67 from the bottom), widest at y 786.67
+    x 322.00 to 330.00 (8.00 wide; 322.00 from the left, 60.00 from the right), y 786.33 to 790.00 (3.67 tall; 54.00 from the bottom), widest at y 789.67
+    x 315.33 to 330.33 (15.00 wide; 315.33 from the left, 59.67 from the right), y 786.67 to 792.00 (5.33 tall; 52.00 from the bottom), widest at y 790.00
+    x 256.67 to 264.33 (7.67 wide; 256.67 from the left, 125.67 from the right), y 789.67 to 796.67 (7.00 tall; 47.33 from the bottom), widest at y 792.00
+    x 326.67 to 331.33 (4.67 wide; 326.67 from the left, 58.67 from the right), y 791.00 to 796.00 (5.00 tall; 48.00 from the bottom), widest at y 791.00
+    x 121.00 to 127.00 (6.00 wide; 121.00 from the left, 263.00 from the right), y 804.33 to 808.00 (3.67 tall; 36.00 from the bottom), widest at y 805.67
+    x 309.67 to 318.00 (8.33 wide; 309.67 from the left, 72.00 from the right), y 805.33 to 809.67 (4.33 tall; 34.33 from the bottom), widest at y 806.67
+    x 47.67 to 342.33 (294.67 wide; 47.67 from the left, 47.67 from the right), y 818.00 to 823.00 (5.00 tall; 21.00 from the bottom), widest at y 822.00
+    x 332.00 to 344.67 (12.67 wide; 332.00 from the left, 45.33 from the right), y 818.00 to 822.00 (4.00 tall; 22.00 from the bottom), widest at y 821.67
+  widths-tab2-dark (page grey (128, 128, 128)):
+    x 127.33 to 262.67 (135.33 wide; 127.33 from the left, 127.33 from the right), y 761.00 to 765.67 (4.67 tall; 78.33 from the bottom), widest at y 761.67
+    x 245.00 to 264.67 (19.67 wide; 245.00 from the left, 125.33 from the right), y 762.00 to 765.67 (3.67 tall; 78.33 from the bottom), widest at y 762.00
+    x 105.00 to 199.00 (94.00 wide; 105.00 from the left, 191.00 from the right), y 765.00 to 819.00 (54.00 tall; 25.00 from the bottom), widest at y 789.33
+    x 241.33 to 249.67 (8.33 wide; 241.33 from the left, 140.33 from the right), y 774.00 to 781.00 (7.00 tall; 63.00 from the bottom), widest at y 775.67
+    x 235.67 to 243.33 (7.67 wide; 235.67 from the left, 146.67 from the right), y 789.67 to 796.67 (7.00 tall; 47.33 from the bottom), widest at y 792.00
+    x 127.67 to 262.33 (134.67 wide; 127.67 from the left, 127.67 from the right), y 818.00 to 823.00 (5.00 tall; 21.00 from the bottom), widest at y 822.00
+    x 252.00 to 264.67 (12.67 wide; 252.00 from the left, 125.33 from the right), y 818.00 to 822.00 (4.00 tall; 22.00 from the bottom), widest at y 821.67
+  widths-tab3-dark (page grey (128, 128, 128)):
+    x 67.33 to 322.67 (255.33 wide; 67.33 from the left, 67.33 from the right), y 761.00 to 765.67 (4.67 tall; 78.33 from the bottom), widest at y 761.67
+    x 305.00 to 324.67 (19.67 wide; 305.00 from the left, 65.33 from the right), y 762.00 to 765.67 (3.67 tall; 78.33 from the bottom), widest at y 762.00
+    x 45.00 to 150.33 (105.33 wide; 45.00 from the left, 239.67 from the right), y 765.00 to 819.00 (54.00 tall; 25.00 from the bottom), widest at y 789.33
+    x 181.00 to 209.00 (28.00 wide; 181.00 from the left, 181.00 from the right), y 773.67 to 795.33 (21.67 tall; 48.67 from the bottom), widest at y 779.00
+    x 293.67 to 303.00 (9.33 wide; 293.67 from the left, 87.00 from the right), y 774.67 to 784.67 (10.00 tall; 59.33 from the bottom), widest at y 778.67
+    x 281.33 to 289.33 (8.00 wide; 281.33 from the left, 100.67 from the right), y 776.33 to 785.00 (8.67 tall; 59.00 from the bottom), widest at y 779.00
+    x 196.67 to 209.00 (12.33 wide; 196.67 from the left, 181.00 from the right), y 779.67 to 791.67 (12.00 tall; 52.33 from the bottom), widest at y 791.33
+    x 190.33 to 199.33 (9.00 wide; 190.33 from the left, 190.67 from the right), y 781.33 to 790.00 (8.67 tall; 54.00 from the bottom), widest at y 784.67
+    x 277.00 to 308.00 (31.00 wide; 277.00 from the left, 82.00 from the right), y 786.67 to 795.33 (8.67 tall; 48.67 from the bottom), widest at y 792.67
+    x 289.00 to 308.00 (19.00 wide; 289.00 from the left, 82.00 from the right), y 786.67 to 792.67 (6.00 tall; 51.33 from the bottom), widest at y 792.00
+    x 177.33 to 182.33 (5.00 wide; 177.33 from the left, 207.67 from the right), y 806.33 to 809.67 (3.33 tall; 34.33 from the bottom), widest at y 808.67
+    x 295.00 to 305.00 (10.00 wide; 295.00 from the left, 85.00 from the right), y 806.33 to 809.67 (3.33 tall; 34.33 from the bottom), widest at y 808.67
+    x 67.67 to 322.33 (254.67 wide; 67.67 from the left, 67.67 from the right), y 818.00 to 823.00 (5.00 tall; 21.00 from the bottom), widest at y 822.00
+    x 312.00 to 324.67 (12.67 wide; 312.00 from the left, 65.33 from the right), y 818.00 to 822.00 (4.00 tall; 22.00 from the bottom), widest at y 821.67
+  widths-tab4search-dark (page grey (128, 128, 128)):
+    x 47.33 to 342.67 (295.33 wide; 47.33 from the left, 47.33 from the right), y 761.00 to 765.67 (4.67 tall; 78.33 from the bottom), widest at y 761.67
+    x 325.00 to 344.67 (19.67 wide; 325.00 from the left, 45.33 from the right), y 762.00 to 765.67 (3.67 tall; 78.33 from the bottom), widest at y 762.00
+    x 25.00 to 109.00 (84.00 wide; 25.00 from the left, 281.00 from the right), y 765.00 to 819.00 (54.00 tall; 25.00 from the bottom), widest at y 789.33
+    x 262.33 to 270.67 (8.33 wide; 262.33 from the left, 119.33 from the right), y 774.00 to 781.00 (7.00 tall; 63.00 from the bottom), widest at y 775.67
+    x 315.33 to 327.00 (11.67 wide; 315.33 from the left, 63.00 from the right), y 774.00 to 780.00 (6.00 tall; 64.00 from the bottom), widest at y 775.67
+    x 120.67 to 130.33 (9.67 wide; 120.67 from the left, 259.67 from the right), y 774.33 to 784.00 (9.67 tall; 60.00 from the bottom), widest at y 775.67
+    x 132.00 to 141.67 (9.67 wide; 132.00 from the left, 248.33 from the right), y 774.33 to 784.00 (9.67 tall; 60.00 from the bottom), widest at y 775.33
+    x 321.67 to 327.33 (5.67 wide; 321.67 from the left, 62.67 from the right), y 776.00 to 779.67 (3.67 tall; 64.33 from the bottom), widest at y 776.00
+    x 192.67 to 197.33 (4.67 wide; 192.67 from the left, 192.67 from the right), y 783.00 to 787.00 (4.00 tall; 57.00 from the bottom), widest at y 784.67
+    x 120.67 to 130.33 (9.67 wide; 120.67 from the left, 259.67 from the right), y 785.67 to 795.33 (9.67 tall; 48.67 from the bottom), widest at y 787.00
+    x 132.00 to 141.67 (9.67 wide; 132.00 from the left, 248.33 from the right), y 785.67 to 795.33 (9.67 tall; 48.67 from the bottom), widest at y 786.67
+    x 322.00 to 330.00 (8.00 wide; 322.00 from the left, 60.00 from the right), y 786.33 to 790.00 (3.67 tall; 54.00 from the bottom), widest at y 789.67
+    x 315.33 to 330.33 (15.00 wide; 315.33 from the left, 59.67 from the right), y 786.67 to 792.00 (5.33 tall; 52.00 from the bottom), widest at y 790.00
+    x 256.67 to 264.33 (7.67 wide; 256.67 from the left, 125.67 from the right), y 789.67 to 796.67 (7.00 tall; 47.33 from the bottom), widest at y 792.00
+    x 326.67 to 331.33 (4.67 wide; 326.67 from the left, 58.67 from the right), y 791.00 to 796.00 (5.00 tall; 48.00 from the bottom), widest at y 791.00
+    x 121.00 to 127.00 (6.00 wide; 121.00 from the left, 263.00 from the right), y 804.33 to 808.00 (3.67 tall; 36.00 from the bottom), widest at y 805.67
+    x 309.67 to 318.00 (8.33 wide; 309.67 from the left, 72.00 from the right), y 805.33 to 809.67 (4.33 tall; 34.33 from the bottom), widest at y 806.67
+    x 47.67 to 342.33 (294.67 wide; 47.67 from the left, 47.67 from the right), y 818.00 to 823.00 (5.00 tall; 21.00 from the bottom), widest at y 822.00
+    x 332.00 to 344.67 (12.67 wide; 332.00 from the left, 45.33 from the right), y 818.00 to 822.00 (4.00 tall; 22.00 from the bottom), widest at y 821.67
+  widths-tab5-dark (page grey (128, 128, 128)):
+    x 47.33 to 342.67 (295.33 wide; 47.33 from the left, 47.33 from the right), y 761.00 to 765.67 (4.67 tall; 78.33 from the bottom), widest at y 761.67
+    x 325.00 to 344.67 (19.67 wide; 325.00 from the left, 45.33 from the right), y 762.00 to 765.67 (3.67 tall; 78.33 from the bottom), widest at y 762.00
+    x 25.00 to 109.00 (84.00 wide; 25.00 from the left, 281.00 from the right), y 765.00 to 819.00 (54.00 tall; 25.00 from the bottom), widest at y 789.33
+    x 262.33 to 270.67 (8.33 wide; 262.33 from the left, 119.33 from the right), y 774.00 to 781.00 (7.00 tall; 63.00 from the bottom), widest at y 775.67
+    x 315.33 to 327.00 (11.67 wide; 315.33 from the left, 63.00 from the right), y 774.00 to 780.00 (6.00 tall; 64.00 from the bottom), widest at y 775.67
+    x 120.67 to 130.33 (9.67 wide; 120.67 from the left, 259.67 from the right), y 774.33 to 784.00 (9.67 tall; 60.00 from the bottom), widest at y 775.67
+    x 132.00 to 141.67 (9.67 wide; 132.00 from the left, 248.33 from the right), y 774.33 to 784.00 (9.67 tall; 60.00 from the bottom), widest at y 775.33
+    x 321.67 to 327.33 (5.67 wide; 321.67 from the left, 62.67 from the right), y 776.00 to 779.67 (3.67 tall; 64.33 from the bottom), widest at y 776.00
+    x 192.67 to 197.33 (4.67 wide; 192.67 from the left, 192.67 from the right), y 783.00 to 787.00 (4.00 tall; 57.00 from the bottom), widest at y 784.67
+    x 120.67 to 130.33 (9.67 wide; 120.67 from the left, 259.67 from the right), y 785.67 to 795.33 (9.67 tall; 48.67 from the bottom), widest at y 787.00
+    x 132.00 to 141.67 (9.67 wide; 132.00 from the left, 248.33 from the right), y 785.67 to 795.33 (9.67 tall; 48.67 from the bottom), widest at y 786.67
+    x 322.00 to 330.00 (8.00 wide; 322.00 from the left, 60.00 from the right), y 786.33 to 790.00 (3.67 tall; 54.00 from the bottom), widest at y 789.67
+    x 315.33 to 330.33 (15.00 wide; 315.33 from the left, 59.67 from the right), y 786.67 to 792.00 (5.33 tall; 52.00 from the bottom), widest at y 790.00
+    x 256.67 to 264.33 (7.67 wide; 256.67 from the left, 125.67 from the right), y 789.67 to 796.67 (7.00 tall; 47.33 from the bottom), widest at y 792.00
+    x 326.67 to 331.33 (4.67 wide; 326.67 from the left, 58.67 from the right), y 791.00 to 796.00 (5.00 tall; 48.00 from the bottom), widest at y 791.00
+    x 121.00 to 127.00 (6.00 wide; 121.00 from the left, 263.00 from the right), y 804.33 to 808.00 (3.67 tall; 36.00 from the bottom), widest at y 805.67
+    x 309.67 to 318.00 (8.33 wide; 309.67 from the left, 72.00 from the right), y 805.33 to 809.67 (4.33 tall; 34.33 from the bottom), widest at y 806.67
+    x 47.67 to 342.33 (294.67 wide; 47.67 from the left, 47.67 from the right), y 818.00 to 823.00 (5.00 tall; 21.00 from the bottom), widest at y 822.00
+    x 332.00 to 344.67 (12.67 wide; 332.00 from the left, 45.33 from the right), y 818.00 to 822.00 (4.00 tall; 22.00 from the bottom), widest at y 821.67
+  widths-toolbar1-dark (page grey (128, 128, 128)):
+    x 179.33 to 210.67 (31.33 wide; 179.33 from the left, 179.33 from the right), y 768.00 to 772.00 (4.00 tall; 72.00 from the bottom), widest at y 768.67
+    x 196.33 to 212.33 (16.00 wide; 196.33 from the left, 177.67 from the right), y 769.00 to 772.00 (3.00 tall; 72.00 from the bottom), widest at y 769.00
+    x 179.00 to 184.67 (5.67 wide; 179.00 from the left, 205.33 from the right), y 790.67 to 793.67 (3.00 tall; 50.33 from the bottom), widest at y 792.00
+    x 179.33 to 210.67 (31.33 wide; 179.33 from the left, 179.33 from the right), y 812.00 to 816.00 (4.00 tall; 28.00 from the bottom), widest at y 815.00
+    x 203.67 to 212.33 (8.67 wide; 203.67 from the left, 177.67 from the right), y 812.00 to 815.00 (3.00 tall; 29.00 from the bottom), widest at y 814.67
+  widths-toolbar2-dark (page grey (128, 128, 128)):
+    x 45.67 to 58.33 (12.67 wide; 45.67 from the left, 331.67 from the right), y 768.00 to 772.00 (4.00 tall; 72.00 from the bottom), widest at y 768.67
+    x 331.67 to 344.33 (12.67 wide; 331.67 from the left, 45.67 from the right), y 768.00 to 772.00 (4.00 tall; 72.00 from the bottom), widest at y 768.67
+    x 54.67 to 59.33 (4.67 wide; 54.67 from the left, 330.67 from the right), y 769.00 to 772.00 (3.00 tall; 72.00 from the bottom), widest at y 769.00
+    x 340.67 to 345.33 (4.67 wide; 340.67 from the left, 44.67 from the right), y 769.00 to 772.00 (3.00 tall; 72.00 from the bottom), widest at y 769.00
+    x 42.00 to 54.00 (12.00 wide; 42.00 from the left, 336.00 from the right), y 782.00 to 786.67 (4.67 tall; 57.33 from the bottom), widest at y 784.67
+    x 50.67 to 63.00 (12.33 wide; 50.67 from the left, 327.00 from the right), y 782.67 to 787.33 (4.67 tall; 56.67 from the bottom), widest at y 785.00
+    x 40.67 to 56.00 (15.33 wide; 40.67 from the left, 334.00 from the right), y 797.67 to 802.33 (4.67 tall; 41.67 from the bottom), widest at y 799.67
+    x 49.33 to 61.00 (11.67 wide; 49.33 from the left, 329.00 from the right), y 798.00 to 802.67 (4.67 tall; 41.33 from the bottom), widest at y 800.00
+    x 45.67 to 58.33 (12.67 wide; 45.67 from the left, 331.67 from the right), y 812.00 to 816.00 (4.00 tall; 28.00 from the bottom), widest at y 815.00
+    x 54.67 to 59.33 (4.67 wide; 54.67 from the left, 330.67 from the right), y 812.00 to 815.00 (3.00 tall; 29.00 from the bottom), widest at y 814.67
+    x 331.67 to 344.33 (12.67 wide; 331.67 from the left, 45.67 from the right), y 812.00 to 816.00 (4.00 tall; 28.00 from the bottom), widest at y 815.00
+    x 340.67 to 345.33 (4.67 wide; 340.67 from the left, 44.67 from the right), y 812.00 to 815.00 (3.00 tall; 29.00 from the bottom), widest at y 814.67
+  widths-toolbarsearch-dark (page grey (128, 128, 128)):
+    x 47.33 to 342.67 (295.33 wide; 47.33 from the left, 47.33 from the right), y 768.00 to 772.00 (4.00 tall; 72.00 from the bottom), widest at y 768.67
+    x 328.33 to 344.33 (16.00 wide; 328.33 from the left, 45.67 from the right), y 769.00 to 772.00 (3.00 tall; 72.00 from the bottom), widest at y 769.00
+    x 44.00 to 53.33 (9.33 wide; 44.00 from the left, 336.67 from the right), y 783.33 to 787.00 (3.67 tall; 57.00 from the bottom), widest at y 785.00
+    x 75.00 to 88.00 (13.00 wide; 75.00 from the left, 302.00 from the right), y 790.67 to 795.67 (5.00 tall; 48.33 from the bottom), widest at y 793.33
+    x 44.00 to 55.67 (11.67 wide; 44.00 from the left, 334.33 from the right), y 794.00 to 797.00 (3.00 tall; 47.00 from the bottom), widest at y 795.00
+    x 53.00 to 57.00 (4.00 wide; 53.00 from the left, 333.00 from the right), y 796.33 to 799.33 (3.00 tall; 44.67 from the bottom), widest at y 796.33
+    x 47.33 to 342.67 (295.33 wide; 47.33 from the left, 47.33 from the right), y 812.00 to 816.00 (4.00 tall; 28.00 from the bottom), widest at y 815.00
+    x 335.00 to 344.33 (9.33 wide; 335.00 from the left, 45.67 from the right), y 812.00 to 815.00 (3.00 tall; 29.00 from the bottom), widest at y 814.67
+  ammy-dark (page grey (0, 0, 0)):
+    x 16.00 to 374.00 (358.00 wide; 16.00 from the left, 16.00 from the right), y 523.00 to 592.00 (69.00 tall; 252.00 from the bottom), widest at y 523.00
+    x 16.00 to 374.00 (358.00 wide; 16.00 from the left, 16.00 from the right), y 627.00 to 679.00 (52.00 tall; 165.00 from the bottom), widest at y 650.00
+    x 21.00 to 369.00 (348.00 wide; 21.00 from the left, 21.00 from the right), y 772.67 to 823.00 (50.33 tall; 21.00 from the bottom), widest at y 794.33
+ light, screen 390 x 844 pt
+  widths-accessory-light (page grey (128, 128, 128)):
+    x 21.67 to 368.33 (346.67 wide; 21.67 from the left, 21.67 from the right), y 705.00 to 753.67 (48.67 tall; 90.33 from the bottom), widest at y 720.67
+    x 69.00 to 369.67 (300.67 wide; 69.00 from the left, 20.33 from the right), y 721.33 to 745.00 (23.67 tall; 99.00 from the bottom), widest at y 726.67
+    x 20.33 to 369.67 (349.33 wide; 20.33 from the left, 20.33 from the right), y 760.33 to 823.67 (63.33 tall; 20.33 from the bottom), widest at y 789.33
+  widths-tab2-light (page grey (128, 128, 128)):
+    x 100.33 to 289.67 (189.33 wide; 100.33 from the left, 100.33 from the right), y 761.00 to 823.67 (62.67 tall; 20.33 from the bottom), widest at y 789.33
+  widths-tab3-light (page grey (128, 128, 128)):
+    x 40.33 to 349.67 (309.33 wide; 40.33 from the left, 40.33 from the right), y 761.00 to 823.67 (62.67 tall; 20.33 from the bottom), widest at y 789.33
+  widths-tab4search-light (page grey (128, 128, 128)):
+    x 20.33 to 369.67 (349.33 wide; 20.33 from the left, 20.33 from the right), y 761.00 to 823.67 (62.67 tall; 20.33 from the bottom), widest at y 789.33
+  widths-tab5-light (page grey (128, 128, 128)):
+    x 20.33 to 369.67 (349.33 wide; 20.33 from the left, 20.33 from the right), y 761.00 to 823.67 (62.67 tall; 20.33 from the bottom), widest at y 789.33
+  widths-toolbar1-light (page grey (128, 128, 128)):
+    x 159.67 to 230.33 (70.67 wide; 159.67 from the left, 159.67 from the right), y 768.00 to 816.00 (48.00 tall; 28.00 from the bottom), widest at y 789.67
+  widths-toolbar2-light (page grey (128, 128, 128)):
+    x 27.33 to 76.67 (49.33 wide; 27.33 from the left, 313.33 from the right), y 767.67 to 816.33 (48.67 tall; 27.67 from the bottom), widest at y 789.67
+    x 313.33 to 362.67 (49.33 wide; 313.33 from the left, 27.33 from the right), y 767.67 to 816.33 (48.67 tall; 27.67 from the bottom), widest at y 789.67
+  widths-toolbarsearch-light (page grey (128, 128, 128)):
+    x 27.33 to 362.67 (335.33 wide; 27.33 from the left, 27.33 from the right), y 768.00 to 816.67 (48.67 tall; 27.33 from the bottom), widest at y 789.67
+  ammy-light (page grey (242, 242, 247)):
+    x 350.67 to 353.67 (3.00 wide; 350.67 from the left, 36.33 from the right), y 648.33 to 653.00 (4.67 tall; 191.00 from the bottom), widest at y 650.33
+    x 352.33 to 355.33 (3.00 wide; 352.33 from the left, 34.67 from the right), y 653.33 to 658.00 (4.67 tall; 186.00 from the bottom), widest at y 653.67
+    x 20.33 to 369.67 (349.33 wide; 20.33 from the left, 20.33 from the right), y 772.00 to 823.67 (51.67 tall; 20.33 from the bottom), widest at y 795.00
+=== 17promax-ios27
+  device type: com.apple.CoreSimulator.SimDeviceType.iPhone-17-Pro-Max | runtime: com.apple.CoreSimulator.SimRuntime.iOS-27-0 | test runner: | Xcode 27.1 | Build version 27A9275 | Ammy built with: | "CFBundleVersion" => "1" | "DTPlatformVersion" => "26.5" | "DTS
+ dark, screen 440 x 956 pt
+  widths-accessory-dark (page grey (128, 128, 128)):
+    x 40.33 to 399.67 (359.33 wide; 40.33 from the left, 40.33 from the right), y 817.00 to 821.00 (4.00 tall; 135.00 from the bottom), widest at y 817.67
+    x 385.33 to 401.33 (16.00 wide; 385.33 from the left, 38.67 from the right), y 818.00 to 821.00 (3.00 tall; 135.00 from the bottom), widest at y 818.00
+    x 37.00 to 69.00 (32.00 wide; 37.00 from the left, 371.00 from the right), y 825.00 to 857.00 (32.00 tall; 99.00 from the bottom), widest at y 829.33
+    x 357.00 to 369.67 (12.67 wide; 357.00 from the left, 70.33 from the right), y 834.67 to 847.67 (13.00 tall; 108.33 from the bottom), widest at y 840.67
+    x 380.00 to 402.67 (22.67 wide; 380.00 from the left, 37.33 from the right), y 835.33 to 847.33 (12.00 tall; 108.67 from the bottom), widest at y 840.67
+    x 391.00 to 400.67 (9.67 wide; 391.00 from the left, 39.33 from the right), y 835.67 to 839.67 (4.00 tall; 116.33 from the bottom), widest at y 839.33
+    x 78.33 to 83.00 (4.67 wide; 78.33 from the left, 357.00 from the right), y 836.33 to 839.67 (3.33 tall; 116.33 from the bottom), widest at y 839.33
+    x 83.33 to 88.33 (5.00 wide; 83.33 from the left, 351.67 from the right), y 842.67 to 846.33 (3.67 tall; 109.67 from the bottom), widest at y 842.67
+    x 391.00 to 400.67 (9.67 wide; 391.00 from the left, 39.33 from the right), y 843.00 to 847.00 (4.00 tall; 109.00 from the bottom), widest at y 843.00
+    x 105.67 to 109.67 (4.00 wide; 105.67 from the left, 330.33 from the right), y 843.33 to 846.33 (3.00 tall; 109.67 from the bottom), widest at y 843.33
+    x 40.33 to 399.67 (359.33 wide; 40.33 from the left, 40.33 from the right), y 861.00 to 865.00 (4.00 tall; 91.00 from the bottom), widest at y 864.00
+    x 392.00 to 401.33 (9.33 wide; 392.00 from the left, 38.67 from the right), y 861.00 to 864.00 (3.00 tall; 92.00 from the bottom), widest at y 863.67
+    x 47.33 to 392.67 (345.33 wide; 47.33 from the left, 47.33 from the right), y 873.00 to 877.67 (4.67 tall; 78.33 from the bottom), widest at y 873.67
+    x 382.00 to 394.67 (12.67 wide; 382.00 from the left, 45.33 from the right), y 874.00 to 877.67 (3.67 tall; 78.33 from the bottom), widest at y 874.00
+    x 25.00 to 109.33 (84.33 wide; 25.00 from the left, 330.67 from the right), y 877.00 to 931.00 (54.00 tall; 25.00 from the bottom), widest at y 901.33
+    x 299.67 to 308.00 (8.33 wide; 299.67 from the left, 132.00 from the right), y 886.00 to 893.00 (7.00 tall; 63.00 from the bottom), widest at y 887.67
+    x 364.67 to 376.33 (11.67 wide; 364.67 from the left, 63.67 from the right), y 886.00 to 894.33 (8.33 tall; 61.67 from the bottom), widest at y 887.67
+    x 133.00 to 142.67 (9.67 wide; 133.00 from the left, 297.33 from the right), y 886.33 to 896.00 (9.67 tall; 60.00 from the bottom), widest at y 887.33
+    x 144.33 to 154.00 (9.67 wide; 144.33 from the left, 286.00 from the right), y 886.33 to 896.00 (9.67 tall; 60.00 from the bottom), widest at y 887.33
+    x 371.33 to 376.67 (5.33 wide; 371.33 from the left, 63.33 from the right), y 888.00 to 893.67 (5.67 tall; 62.33 from the bottom), widest at y 888.00
+    x 217.33 to 222.00 (4.67 wide; 217.33 from the left, 218.00 from the right), y 895.00 to 899.00 (4.00 tall; 57.00 from the bottom), widest at y 896.67
+    x 364.67 to 380.00 (15.33 wide; 364.67 from the left, 60.00 from the right), y 895.67 to 904.00 (8.33 tall; 52.00 from the bottom), widest at y 902.00
+    x 371.33 to 379.67 (8.33 wide; 371.33 from the left, 60.33 from the right), y 896.33 to 902.00 (5.67 tall; 54.00 from the bottom), widest at y 901.67
+    x 133.00 to 142.67 (9.67 wide; 133.00 from the left, 297.33 from the right), y 897.67 to 907.33 (9.67 tall; 48.67 from the bottom), widest at y 898.67
+    x 144.33 to 154.00 (9.67 wide; 144.33 from the left, 286.00 from the right), y 897.67 to 907.33 (9.67 tall; 48.67 from the bottom), widest at y 898.67
+    x 293.67 to 301.67 (8.00 wide; 293.67 from the left, 138.33 from the right), y 901.67 to 908.67 (7.00 tall; 47.33 from the bottom), widest at y 905.00
+    x 376.00 to 381.00 (5.00 wide; 376.00 from the left, 59.00 from the right), y 903.00 to 908.00 (5.00 tall; 48.00 from the bottom), widest at y 903.00
+    x 133.33 to 139.33 (6.00 wide; 133.33 from the left, 300.67 from the right), y 916.00 to 920.00 (4.00 tall; 36.00 from the bottom), widest at y 917.67
+    x 216.00 to 227.00 (11.00 wide; 216.00 from the left, 213.00 from the right), y 916.33 to 921.67 (5.33 tall; 34.33 from the bottom), widest at y 920.33
+    x 219.00 to 227.00 (8.00 wide; 219.00 from the left, 213.00 from the right), y 916.33 to 920.33 (4.00 tall; 35.67 from the bottom), widest at y 917.33
+    x 279.33 to 292.67 (13.33 wide; 279.33 from the left, 147.33 from the right), y 916.33 to 921.67 (5.33 tall; 34.33 from the bottom), widest at y 920.67
+    x 294.33 to 302.67 (8.33 wide; 294.33 from the left, 137.33 from the right), y 916.33 to 921.67 (5.33 tall; 34.33 from the bottom), widest at y 917.00
+    x 359.67 to 373.00 (13.33 wide; 359.67 from the left, 67.00 from the right), y 917.33 to 921.67 (4.33 tall; 34.33 from the bottom), widest at y 919.00
+    x 47.67 to 392.33 (344.67 wide; 47.67 from the left, 47.67 from the right), y 930.00 to 935.00 (5.00 tall; 21.00 from the bottom), widest at y 934.00
+    x 382.00 to 394.67 (12.67 wide; 382.00 from the left, 45.33 from the right), y 930.00 to 934.00 (4.00 tall; 22.00 from the bottom), widest at y 933.67
+  widths-tab2-dark (page grey (128, 128, 128)):
+    x 152.33 to 287.67 (135.33 wide; 152.33 from the left, 152.33 from the right), y 873.00 to 877.67 (4.67 tall; 78.33 from the bottom), widest at y 873.67
+    x 270.00 to 289.67 (19.67 wide; 270.00 from the left, 150.33 from the right), y 874.00 to 877.67 (3.67 tall; 78.33 from the bottom), widest at y 874.00
+    x 130.00 to 224.00 (94.00 wide; 130.00 from the left, 216.00 from the right), y 877.00 to 931.00 (54.00 tall; 25.00 from the bottom), widest at y 901.33
+    x 266.33 to 274.67 (8.33 wide; 266.33 from the left, 165.33 from the right), y 886.00 to 893.00 (7.00 tall; 63.00 from the bottom), widest at y 887.67
+    x 260.67 to 268.33 (7.67 wide; 260.67 from the left, 171.67 from the right), y 901.67 to 908.67 (7.00 tall; 47.33 from the bottom), widest at y 904.00
+    x 152.67 to 287.33 (134.67 wide; 152.67 from the left, 152.67 from the right), y 930.00 to 935.00 (5.00 tall; 21.00 from the bottom), widest at y 934.00
+    x 277.00 to 289.67 (12.67 wide; 277.00 from the left, 150.33 from the right), y 930.00 to 934.00 (4.00 tall; 22.00 from the bottom), widest at y 933.67
+  widths-tab3-dark (page grey (128, 128, 128)):
+    x 92.33 to 347.67 (255.33 wide; 92.33 from the left, 92.33 from the right), y 873.00 to 877.67 (4.67 tall; 78.33 from the bottom), widest at y 873.67
+    x 330.00 to 349.67 (19.67 wide; 330.00 from the left, 90.33 from the right), y 874.00 to 877.67 (3.67 tall; 78.33 from the bottom), widest at y 874.00
+    x 70.00 to 175.33 (105.33 wide; 70.00 from the left, 264.67 from the right), y 877.00 to 931.00 (54.00 tall; 25.00 from the bottom), widest at y 901.33
+    x 206.00 to 234.00 (28.00 wide; 206.00 from the left, 206.00 from the right), y 885.67 to 907.33 (21.67 tall; 48.67 from the bottom), widest at y 891.00
+    x 318.67 to 328.00 (9.33 wide; 318.67 from the left, 112.00 from the right), y 886.67 to 896.67 (10.00 tall; 59.33 from the bottom), widest at y 890.67
+    x 306.33 to 314.33 (8.00 wide; 306.33 from the left, 125.67 from the right), y 888.33 to 897.00 (8.67 tall; 59.00 from the bottom), widest at y 891.00
+    x 221.67 to 234.00 (12.33 wide; 221.67 from the left, 206.00 from the right), y 891.67 to 903.67 (12.00 tall; 52.33 from the bottom), widest at y 903.33
+    x 215.33 to 224.33 (9.00 wide; 215.33 from the left, 215.67 from the right), y 893.33 to 902.00 (8.67 tall; 54.00 from the bottom), widest at y 896.67
+    x 302.00 to 333.00 (31.00 wide; 302.00 from the left, 107.00 from the right), y 898.67 to 907.33 (8.67 tall; 48.67 from the bottom), widest at y 904.67
+    x 314.00 to 333.00 (19.00 wide; 314.00 from the left, 107.00 from the right), y 898.67 to 904.67 (6.00 tall; 51.33 from the bottom), widest at y 904.00
+    x 202.33 to 207.33 (5.00 wide; 202.33 from the left, 232.67 from the right), y 918.33 to 921.67 (3.33 tall; 34.33 from the bottom), widest at y 920.67
+    x 320.00 to 330.00 (10.00 wide; 320.00 from the left, 110.00 from the right), y 918.33 to 921.67 (3.33 tall; 34.33 from the bottom), widest at y 920.67
+    x 92.67 to 347.33 (254.67 wide; 92.67 from the left, 92.67 from the right), y 930.00 to 935.00 (5.00 tall; 21.00 from the bottom), widest at y 934.00
+    x 337.00 to 349.67 (12.67 wide; 337.00 from the left, 90.33 from the right), y 930.00 to 934.00 (4.00 tall; 22.00 from the bottom), widest at y 933.67
+  widths-tab4search-dark (page grey (128, 128, 128)):
+    x 47.33 to 392.67 (345.33 wide; 47.33 from the left, 47.33 from the right), y 873.00 to 877.67 (4.67 tall; 78.33 from the bottom), widest at y 873.67
+    x 375.00 to 394.67 (19.67 wide; 375.00 from the left, 45.33 from the right), y 874.00 to 877.67 (3.67 tall; 78.33 from the bottom), widest at y 874.00
+    x 25.00 to 109.33 (84.33 wide; 25.00 from the left, 330.67 from the right), y 877.00 to 931.00 (54.00 tall; 25.00 from the bottom), widest at y 901.33
+    x 299.67 to 308.00 (8.33 wide; 299.67 from the left, 132.00 from the right), y 886.00 to 893.00 (7.00 tall; 63.00 from the bottom), widest at y 887.67
+    x 364.67 to 376.33 (11.67 wide; 364.67 from the left, 63.67 from the right), y 886.00 to 894.33 (8.33 tall; 61.67 from the bottom), widest at y 887.67
+    x 133.00 to 142.67 (9.67 wide; 133.00 from the left, 297.33 from the right), y 886.33 to 896.00 (9.67 tall; 60.00 from the bottom), widest at y 887.33
+    x 144.33 to 154.00 (9.67 wide; 144.33 from the left, 286.00 from the right), y 886.33 to 896.00 (9.67 tall; 60.00 from the bottom), widest at y 887.33
+    x 371.33 to 376.67 (5.33 wide; 371.33 from the left, 63.33 from the right), y 888.00 to 893.67 (5.67 tall; 62.33 from the bottom), widest at y 888.00
+    x 217.33 to 222.00 (4.67 wide; 217.33 from the left, 218.00 from the right), y 895.00 to 899.00 (4.00 tall; 57.00 from the bottom), widest at y 896.67
+    x 364.67 to 380.00 (15.33 wide; 364.67 from the left, 60.00 from the right), y 895.67 to 904.00 (8.33 tall; 52.00 from the bottom), widest at y 902.00
+    x 371.33 to 379.67 (8.33 wide; 371.33 from the left, 60.33 from the right), y 896.33 to 902.00 (5.67 tall; 54.00 from the bottom), widest at y 901.67
+    x 133.00 to 142.67 (9.67 wide; 133.00 from the left, 297.33 from the right), y 897.67 to 907.33 (9.67 tall; 48.67 from the bottom), widest at y 898.67
+    x 144.33 to 154.00 (9.67 wide; 144.33 from the left, 286.00 from the right), y 897.67 to 907.33 (9.67 tall; 48.67 from the bottom), widest at y 898.67
+    x 293.67 to 301.67 (8.00 wide; 293.67 from the left, 138.33 from the right), y 901.67 to 908.67 (7.00 tall; 47.33 from the bottom), widest at y 905.00
+    x 376.00 to 381.00 (5.00 wide; 376.00 from the left, 59.00 from the right), y 903.00 to 908.00 (5.00 tall; 48.00 from the bottom), widest at y 903.00
+    x 133.33 to 139.33 (6.00 wide; 133.33 from the left, 300.67 from the right), y 916.00 to 920.00 (4.00 tall; 36.00 from the bottom), widest at y 917.67
+    x 216.00 to 227.00 (11.00 wide; 216.00 from the left, 213.00 from the right), y 916.33 to 921.67 (5.33 tall; 34.33 from the bottom), widest at y 920.33
+    x 219.00 to 227.00 (8.00 wide; 219.00 from the left, 213.00 from the right), y 916.33 to 920.33 (4.00 tall; 35.67 from the bottom), widest at y 917.33
+    x 279.33 to 292.67 (13.33 wide; 279.33 from the left, 147.33 from the right), y 916.33 to 921.67 (5.33 tall; 34.33 from the bottom), widest at y 920.67
+    x 294.33 to 302.67 (8.33 wide; 294.33 from the left, 137.33 from the right), y 916.33 to 921.67 (5.33 tall; 34.33 from the bottom), widest at y 917.00
+    x 359.67 to 373.00 (13.33 wide; 359.67 from the left, 67.00 from the right), y 917.33 to 921.67 (4.33 tall; 34.33 from the bottom), widest at y 919.00
+    x 47.67 to 392.33 (344.67 wide; 47.67 from the left, 47.67 from the right), y 930.00 to 935.00 (5.00 tall; 21.00 from the bottom), widest at y 934.00
+    x 382.00 to 394.67 (12.67 wide; 382.00 from the left, 45.33 from the right), y 930.00 to 934.00 (4.00 tall; 22.00 from the bottom), widest at y 933.67
+  widths-tab5-dark (page grey (128, 128, 128)):
+    x 47.33 to 392.67 (345.33 wide; 47.33 from the left, 47.33 from the right), y 873.00 to 877.67 (4.67 tall; 78.33 from the bottom), widest at y 873.67
+    x 375.00 to 394.67 (19.67 wide; 375.00 from the left, 45.33 from the right), y 874.00 to 877.67 (3.67 tall; 78.33 from the bottom), widest at y 874.00
+    x 25.00 to 109.33 (84.33 wide; 25.00 from the left, 330.67 from the right), y 877.00 to 931.00 (54.00 tall; 25.00 from the bottom), widest at y 901.33
+    x 299.67 to 308.00 (8.33 wide; 299.67 from the left, 132.00 from the right), y 886.00 to 893.00 (7.00 tall; 63.00 from the bottom), widest at y 887.67
+    x 364.67 to 376.33 (11.67 wide; 364.67 from the left, 63.67 from the right), y 886.00 to 894.33 (8.33 tall; 61.67 from the bottom), widest at y 887.67
+    x 133.00 to 142.67 (9.67 wide; 133.00 from the left, 297.33 from the right), y 886.33 to 896.00 (9.67 tall; 60.00 from the bottom), widest at y 887.33
+    x 144.33 to 154.00 (9.67 wide; 144.33 from the left, 286.00 from the right), y 886.33 to 896.00 (9.67 tall; 60.00 from the bottom), widest at y 887.33
+    x 371.33 to 376.67 (5.33 wide; 371.33 from the left, 63.33 from the right), y 888.00 to 893.67 (5.67 tall; 62.33 from the bottom), widest at y 888.00
+    x 217.33 to 222.00 (4.67 wide; 217.33 from the left, 218.00 from the right), y 895.00 to 899.00 (4.00 tall; 57.00 from the bottom), widest at y 896.67
+    x 364.67 to 380.00 (15.33 wide; 364.67 from the left, 60.00 from the right), y 895.67 to 904.00 (8.33 tall; 52.00 from the bottom), widest at y 902.00
+    x 371.33 to 379.67 (8.33 wide; 371.33 from the left, 60.33 from the right), y 896.33 to 902.00 (5.67 tall; 54.00 from the bottom), widest at y 901.67
+    x 133.00 to 142.67 (9.67 wide; 133.00 from the left, 297.33 from the right), y 897.67 to 907.33 (9.67 tall; 48.67 from the bottom), widest at y 898.67
+    x 144.33 to 154.00 (9.67 wide; 144.33 from the left, 286.00 from the right), y 897.67 to 907.33 (9.67 tall; 48.67 from the bottom), widest at y 898.67
+    x 293.67 to 301.67 (8.00 wide; 293.67 from the left, 138.33 from the right), y 901.67 to 908.67 (7.00 tall; 47.33 from the bottom), widest at y 905.00
+    x 376.00 to 381.00 (5.00 wide; 376.00 from the left, 59.00 from the right), y 903.00 to 908.00 (5.00 tall; 48.00 from the bottom), widest at y 903.00
+    x 133.33 to 139.33 (6.00 wide; 133.33 from the left, 300.67 from the right), y 916.00 to 920.00 (4.00 tall; 36.00 from the bottom), widest at y 917.67
+    x 216.00 to 227.00 (11.00 wide; 216.00 from the left, 213.00 from the right), y 916.33 to 921.67 (5.33 tall; 34.33 from the bottom), widest at y 920.33
+    x 219.00 to 227.00 (8.00 wide; 219.00 from the left, 213.00 from the right), y 916.33 to 920.33 (4.00 tall; 35.67 from the bottom), widest at y 917.33
+    x 279.33 to 292.67 (13.33 wide; 279.33 from the left, 147.33 from the right), y 916.33 to 921.67 (5.33 tall; 34.33 from the bottom), widest at y 920.67
+    x 294.33 to 302.67 (8.33 wide; 294.33 from the left, 137.33 from the right), y 916.33 to 921.67 (5.33 tall; 34.33 from the bottom), widest at y 917.00
+    x 359.67 to 373.00 (13.33 wide; 359.67 from the left, 67.00 from the right), y 917.33 to 921.67 (4.33 tall; 34.33 from the bottom), widest at y 919.00
+    x 47.67 to 392.33 (344.67 wide; 47.67 from the left, 47.67 from the right), y 930.00 to 935.00 (5.00 tall; 21.00 from the bottom), widest at y 934.00
+    x 382.00 to 394.67 (12.67 wide; 382.00 from the left, 45.33 from the right), y 930.00 to 934.00 (4.00 tall; 22.00 from the bottom), widest at y 933.67
+  widths-toolbar1-dark (page grey (128, 128, 128)):
+    x 204.33 to 235.67 (31.33 wide; 204.33 from the left, 204.33 from the right), y 880.00 to 884.00 (4.00 tall; 72.00 from the bottom), widest at y 880.67
+    x 221.33 to 237.33 (16.00 wide; 221.33 from the left, 202.67 from the right), y 881.00 to 884.00 (3.00 tall; 72.00 from the bottom), widest at y 881.00
+    x 204.00 to 209.67 (5.67 wide; 204.00 from the left, 230.33 from the right), y 902.67 to 905.67 (3.00 tall; 50.33 from the bottom), widest at y 904.00
+    x 204.33 to 235.67 (31.33 wide; 204.33 from the left, 204.33 from the right), y 924.00 to 928.00 (4.00 tall; 28.00 from the bottom), widest at y 927.00
+    x 228.67 to 237.33 (8.67 wide; 228.67 from the left, 202.67 from the right), y 924.00 to 927.00 (3.00 tall; 29.00 from the bottom), widest at y 926.67
+  widths-toolbar2-dark (page grey (128, 128, 128)):
+    x 45.67 to 58.33 (12.67 wide; 45.67 from the left, 381.67 from the right), y 880.00 to 884.00 (4.00 tall; 72.00 from the bottom), widest at y 880.67
+    x 381.67 to 394.33 (12.67 wide; 381.67 from the left, 45.67 from the right), y 880.00 to 884.00 (4.00 tall; 72.00 from the bottom), widest at y 880.67
+    x 54.67 to 59.33 (4.67 wide; 54.67 from the left, 380.67 from the right), y 881.00 to 884.00 (3.00 tall; 72.00 from the bottom), widest at y 881.00
+    x 390.67 to 395.33 (4.67 wide; 390.67 from the left, 44.67 from the right), y 881.00 to 884.00 (3.00 tall; 72.00 from the bottom), widest at y 881.00
+    x 42.00 to 54.00 (12.00 wide; 42.00 from the left, 386.00 from the right), y 894.00 to 898.67 (4.67 tall; 57.33 from the bottom), widest at y 896.67
+    x 50.67 to 63.00 (12.33 wide; 50.67 from the left, 377.00 from the right), y 894.67 to 899.33 (4.67 tall; 56.67 from the bottom), widest at y 897.00
+    x 40.67 to 56.00 (15.33 wide; 40.67 from the left, 384.00 from the right), y 909.67 to 914.33 (4.67 tall; 41.67 from the bottom), widest at y 911.67
+    x 49.33 to 61.00 (11.67 wide; 49.33 from the left, 379.00 from the right), y 910.00 to 914.67 (4.67 tall; 41.33 from the bottom), widest at y 912.00
+    x 45.67 to 58.33 (12.67 wide; 45.67 from the left, 381.67 from the right), y 924.00 to 928.00 (4.00 tall; 28.00 from the bottom), widest at y 927.00
+    x 54.67 to 59.33 (4.67 wide; 54.67 from the left, 380.67 from the right), y 924.00 to 927.00 (3.00 tall; 29.00 from the bottom), widest at y 926.67
+    x 381.67 to 394.33 (12.67 wide; 381.67 from the left, 45.67 from the right), y 924.00 to 928.00 (4.00 tall; 28.00 from the bottom), widest at y 927.00
+    x 390.67 to 395.33 (4.67 wide; 390.67 from the left, 44.67 from the right), y 924.00 to 927.00 (3.00 tall; 29.00 from the bottom), widest at y 926.67
+  widths-toolbarsearch-dark (page grey (128, 128, 128)):
+    x 47.33 to 392.67 (345.33 wide; 47.33 from the left, 47.33 from the right), y 880.00 to 884.00 (4.00 tall; 72.00 from the bottom), widest at y 880.67
+    x 378.33 to 394.33 (16.00 wide; 378.33 from the left, 45.67 from the right), y 881.00 to 884.00 (3.00 tall; 72.00 from the bottom), widest at y 881.00
+    x 44.00 to 53.33 (9.33 wide; 44.00 from the left, 386.67 from the right), y 895.33 to 899.00 (3.67 tall; 57.00 from the bottom), widest at y 897.00
+    x 75.00 to 88.00 (13.00 wide; 75.00 from the left, 352.00 from the right), y 902.67 to 907.67 (5.00 tall; 48.33 from the bottom), widest at y 905.33
+    x 44.00 to 55.67 (11.67 wide; 44.00 from the left, 384.33 from the right), y 906.00 to 909.00 (3.00 tall; 47.00 from the bottom), widest at y 907.00
+    x 53.00 to 57.00 (4.00 wide; 53.00 from the left, 383.00 from the right), y 908.33 to 911.33 (3.00 tall; 44.67 from the bottom), widest at y 908.33
+    x 47.33 to 392.67 (345.33 wide; 47.33 from the left, 47.33 from the right), y 924.00 to 928.00 (4.00 tall; 28.00 from the bottom), widest at y 927.00
+    x 385.00 to 394.33 (9.33 wide; 385.00 from the left, 45.67 from the right), y 924.00 to 927.00 (3.00 tall; 29.00 from the bottom), widest at y 926.67
+  ammy-dark (page grey (0, 0, 0)):
+    x 23.00 to 417.00 (394.00 wide; 23.00 from the left, 23.00 from the right), y 592.67 to 607.00 (14.33 tall; 349.00 from the bottom), widest at y 592.67
+    x 20.00 to 420.00 (400.00 wide; 20.00 from the left, 20.00 from the right), y 642.00 to 694.00 (52.00 tall; 262.00 from the bottom), widest at y 665.00
+    x 21.00 to 419.00 (398.00 wide; 21.00 from the left, 21.00 from the right), y 884.67 to 935.00 (50.33 tall; 21.00 from the bottom), widest at y 906.33
+ light, screen 440 x 956 pt
+  widths-accessory-light (page grey (128, 128, 128)):
+    x 21.67 to 418.33 (396.67 wide; 21.67 from the left, 21.67 from the right), y 817.00 to 865.67 (48.67 tall; 90.33 from the bottom), widest at y 832.67
+    x 69.00 to 419.67 (350.67 wide; 69.00 from the left, 20.33 from the right), y 833.33 to 857.00 (23.67 tall; 99.00 from the bottom), widest at y 838.67
+    x 20.33 to 419.67 (399.33 wide; 20.33 from the left, 20.33 from the right), y 872.33 to 935.67 (63.33 tall; 20.33 from the bottom), widest at y 901.33
+  widths-tab2-light (page grey (128, 128, 128)):
+    x 125.33 to 314.67 (189.33 wide; 125.33 from the left, 125.33 from the right), y 873.00 to 935.67 (62.67 tall; 20.33 from the bottom), widest at y 901.33
+  widths-tab3-light (page grey (128, 128, 128)):
+    x 65.33 to 374.67 (309.33 wide; 65.33 from the left, 65.33 from the right), y 873.00 to 935.67 (62.67 tall; 20.33 from the bottom), widest at y 901.33
+  widths-tab4search-light (page grey (128, 128, 128)):
+    x 20.33 to 419.67 (399.33 wide; 20.33 from the left, 20.33 from the right), y 873.00 to 935.67 (62.67 tall; 20.33 from the bottom), widest at y 901.33
+  widths-tab5-light (page grey (128, 128, 128)):
+    x 20.33 to 419.67 (399.33 wide; 20.33 from the left, 20.33 from the right), y 873.00 to 935.67 (62.67 tall; 20.33 from the bottom), widest at y 901.33
+  widths-toolbar1-light (page grey (128, 128, 128)):
+    x 184.67 to 255.33 (70.67 wide; 184.67 from the left, 184.67 from the right), y 880.00 to 928.00 (48.00 tall; 28.00 from the bottom), widest at y 901.67
+  widths-toolbar2-light (page grey (128, 128, 128)):
+    x 27.33 to 76.67 (49.33 wide; 27.33 from the left, 363.33 from the right), y 879.67 to 928.33 (48.67 tall; 27.67 from the bottom), widest at y 901.67
+    x 363.33 to 412.67 (49.33 wide; 363.33 from the left, 27.33 from the right), y 879.67 to 928.33 (48.67 tall; 27.67 from the bottom), widest at y 901.67
+  widths-toolbarsearch-light (page grey (128, 128, 128)):
+    x 27.33 to 412.67 (385.33 wide; 27.33 from the left, 27.33 from the right), y 880.00 to 928.67 (48.67 tall; 27.33 from the bottom), widest at y 901.67
+  ammy-light (page grey (242, 242, 247)):
+    x 392.67 to 395.67 (3.00 wide; 392.67 from the left, 44.33 from the right), y 663.33 to 668.00 (4.67 tall; 288.00 from the bottom), widest at y 665.33
+    x 394.33 to 397.33 (3.00 wide; 394.33 from the left, 42.67 from the right), y 668.33 to 673.00 (4.67 tall; 283.00 from the bottom), widest at y 668.67
+    x 20.33 to 419.67 (399.33 wide; 20.33 from the left, 20.33 from the right), y 884.00 to 935.67 (51.67 tall; 20.33 from the bottom), widest at y 907.00
+=== ipad-ios27
+  device type: com.apple.CoreSimulator.SimDeviceType.iPad-Air-11-inch-M2 | runtime: com.apple.CoreSimulator.SimRuntime.iOS-27-0 | test runner: | Xcode 27.1 | Build version 27A9275 | Ammy built with: | "CFBundleVersion" => "1" | "DTPlatformVersion" => "26.5" | "D
+ dark, screen 820 x 1180 pt
+  widths-accessory-dark (page grey (128, 128, 128)):
+    x 36.00 to 68.00 (32.00 wide; 36.00 from the left, 752.00 from the right), y 1120.00 to 1152.00 (32.00 tall; 28.00 from the bottom), widest at y 1123.50
+    x 116.00 to 127.50 (11.50 wide; 116.00 from the left, 692.50 from the right), y 1130.00 to 1138.00 (8.00 tall; 42.00 from the bottom), widest at y 1136.00
+    x 737.50 to 750.00 (12.50 wide; 737.50 from the left, 70.00 from the right), y 1130.00 to 1142.00 (12.00 tall; 38.00 from the bottom), widest at y 1135.00
+    x 760.50 to 783.00 (22.50 wide; 760.50 from the left, 37.00 from the right), y 1131.00 to 1141.50 (10.50 tall; 38.50 from the bottom), widest at y 1135.00
+    x 95.50 to 109.00 (13.50 wide; 95.50 from the left, 711.00 from the right), y 1133.00 to 1138.50 (5.50 tall; 41.50 from the bottom), widest at y 1136.50
+    x 130.00 to 139.50 (9.50 wide; 130.00 from the left, 680.50 from the right), y 1133.00 to 1138.00 (5.00 tall; 42.00 from the bottom), widest at y 1134.00
+    x 143.50 to 158.00 (14.50 wide; 143.50 from the left, 662.00 from the right), y 1133.00 to 1142.00 (9.00 tall; 38.00 from the bottom), widest at y 1134.00
+    x 81.50 to 90.50 (9.00 wide; 81.50 from the left, 729.50 from the right), y 1135.00 to 1140.00 (5.00 tall; 40.00 from the bottom), widest at y 1136.50
+  widths-tab2-dark (page grey (128, 128, 128)):
+  widths-tab3-dark (page grey (128, 128, 128)):
+  widths-tab4search-dark (page grey (128, 128, 128)):
+  widths-tab5-dark (page grey (128, 128, 128)):
+  widths-toolbar1-dark (page grey (128, 128, 128)):
+    x 404.00 to 419.50 (15.50 wide; 404.00 from the left, 400.50 from the right), y 1137.50 to 1144.00 (6.50 tall; 36.00 from the bottom), widest at y 1142.50
+  widths-toolbar2-dark (page grey (128, 128, 128)):
+  widths-toolbarsearch-dark (page grey (128, 128, 128)):
+  ammy-dark (page grey (0, 0, 0)):
+    x 21.00 to 799.00 (778.00 wide; 21.00 from the left, 21.00 from the right), y 1108.50 to 1159.00 (50.50 tall; 21.00 from the bottom), widest at y 1129.50
+    x 800.50 to 811.00 (10.50 wide; 800.50 from the left, 9.00 from the right), y 1161.00 to 1175.50 (14.50 tall; 4.50 from the bottom), widest at y 1172.50
+ light, screen 820 x 1180 pt
+  widths-accessory-light (page grey (128, 128, 128)):
+    x 20.50 to 799.50 (779.00 wide; 20.50 from the left, 20.50 from the right), y 1111.50 to 1160.50 (49.00 tall; 19.50 from the bottom), widest at y 1128.00
+    x 68.00 to 800.50 (732.50 wide; 68.00 from the left, 19.50 from the right), y 1128.50 to 1152.00 (23.50 tall; 28.00 from the bottom), widest at y 1132.00
+  widths-tab2-light (page grey (128, 128, 128)):
+  widths-tab3-light (page grey (128, 128, 128)):
+  widths-tab4search-light (page grey (128, 128, 128)):
+  widths-tab5-light (page grey (128, 128, 128)):
+  widths-toolbar1-light (page grey (128, 128, 128)):
+    x 375.00 to 445.50 (70.50 wide; 375.00 from the left, 374.50 from the right), y 1115.50 to 1160.50 (45.00 tall; 19.50 from the bottom), widest at y 1134.00
+  widths-toolbar2-light (page grey (128, 128, 128)):
+    x 9.50 to 54.50 (45.00 wide; 9.50 from the left, 765.50 from the right), y 1115.50 to 1160.50 (45.00 tall; 19.50 from the bottom), widest at y 1134.00
+    x 765.50 to 810.50 (45.00 wide; 765.50 from the left, 9.50 from the right), y 1115.50 to 1160.50 (45.00 tall; 19.50 from the bottom), widest at y 1134.00
+  widths-toolbarsearch-light (page grey (128, 128, 128)):
+  ammy-light (page grey (242, 242, 247)):
+    x 20.50 to 799.50 (779.00 wide; 20.50 from the left, 20.50 from the right), y 1108.00 to 1159.50 (51.50 tall; 20.50 from the bottom), widest at y 1129.00
+    x 800.50 to 811.00 (10.50 wide; 800.50 from the left, 9.00 from the right), y 1161.00 to 1175.50 (14.50 tall; 4.50 from the bottom), widest at y 1172.50
+=== se-ios27
+  device type: com.apple.CoreSimulator.SimDeviceType.iPhone-SE-3rd-generation | runtime: com.apple.CoreSimulator.SimRuntime.iOS-27-0 | test runner: | Xcode 27.1 | Build version 27A9275 | Ammy built with: | "CFBundleVersion" => "1" | "DTPlatformVersion" => "26.5"
+ dark, screen 375 x 667 pt
+  widths-accessory-dark (page grey (128, 128, 128)):
+    x 37.00 to 69.00 (32.00 wide; 37.00 from the left, 306.00 from the right), y 536.00 to 568.00 (32.00 tall; 99.00 from the bottom), widest at y 539.50
+    x 117.00 to 128.50 (11.50 wide; 117.00 from the left, 246.50 from the right), y 546.00 to 554.00 (8.00 tall; 113.00 from the bottom), widest at y 552.00
+    x 291.50 to 304.00 (12.50 wide; 291.50 from the left, 71.00 from the right), y 546.00 to 558.00 (12.00 tall; 109.00 from the bottom), widest at y 551.00
+    x 314.50 to 337.00 (22.50 wide; 314.50 from the left, 38.00 from the right), y 547.00 to 557.50 (10.50 tall; 109.50 from the bottom), widest at y 551.00
+    x 96.50 to 110.00 (13.50 wide; 96.50 from the left, 265.00 from the right), y 549.00 to 554.50 (5.50 tall; 112.50 from the bottom), widest at y 552.50
+    x 131.00 to 140.50 (9.50 wide; 131.00 from the left, 234.50 from the right), y 549.00 to 554.00 (5.00 tall; 113.00 from the bottom), widest at y 550.00
+    x 144.50 to 159.00 (14.50 wide; 144.50 from the left, 216.00 from the right), y 549.00 to 558.00 (9.00 tall; 109.00 from the bottom), widest at y 550.00
+    x 82.50 to 91.50 (9.00 wide; 82.50 from the left, 283.50 from the right), y 551.00 to 556.00 (5.00 tall; 111.00 from the bottom), widest at y 552.50
+    x 25.00 to 106.00 (81.00 wide; 25.00 from the left, 269.00 from the right), y 588.00 to 642.00 (54.00 tall; 25.00 from the bottom), widest at y 611.50
+    x 116.00 to 137.00 (21.00 wide; 116.00 from the left, 238.00 from the right), y 597.50 to 607.50 (10.00 tall; 59.50 from the bottom), widest at y 599.00
+    x 252.00 to 260.50 (8.50 wide; 252.00 from the left, 114.50 from the right), y 597.50 to 604.50 (7.00 tall; 62.50 from the bottom), widest at y 599.00
+    x 116.00 to 137.00 (21.00 wide; 116.00 from the left, 238.00 from the right), y 608.50 to 618.50 (10.00 tall; 48.50 from the bottom), widest at y 610.50
+    x 246.00 to 254.00 (8.00 wide; 246.00 from the left, 121.00 from the right), y 613.50 to 620.00 (6.50 tall; 47.00 from the bottom), widest at y 616.00
+    x 116.00 to 137.00 (21.00 wide; 116.00 from the left, 238.00 from the right), y 627.00 to 632.00 (5.00 tall; 35.00 from the bottom), widest at y 627.50
+    x 237.50 to 265.00 (27.50 wide; 237.50 from the left, 110.00 from the right), y 627.00 to 632.50 (5.50 tall; 34.50 from the bottom), widest at y 628.00
+    x 177.50 to 200.50 (23.00 wide; 177.50 from the left, 174.50 from the right), y 627.50 to 632.50 (5.00 tall; 34.50 from the bottom), widest at y 631.00
+  widths-tab2-dark (page grey (128, 128, 128)):
+    x 97.50 to 191.50 (94.00 wide; 97.50 from the left, 183.50 from the right), y 588.00 to 642.00 (54.00 tall; 25.00 from the bottom), widest at y 611.50
+    x 234.00 to 242.50 (8.50 wide; 234.00 from the left, 132.50 from the right), y 597.50 to 604.50 (7.00 tall; 62.50 from the bottom), widest at y 599.00
+    x 228.00 to 236.00 (8.00 wide; 228.00 from the left, 139.00 from the right), y 613.50 to 620.00 (6.50 tall; 47.00 from the bottom), widest at y 616.00
+    x 219.50 to 247.00 (27.50 wide; 219.50 from the left, 128.00 from the right), y 627.00 to 632.50 (5.50 tall; 34.50 from the bottom), widest at y 628.00
+  widths-tab3-dark (page grey (128, 128, 128)):
+    x 37.50 to 143.00 (105.50 wide; 37.50 from the left, 232.00 from the right), y 588.00 to 642.00 (54.00 tall; 25.00 from the bottom), widest at y 611.50
+    x 174.00 to 202.00 (28.00 wide; 174.00 from the left, 173.00 from the right), y 596.50 to 618.50 (22.00 tall; 48.50 from the bottom), widest at y 601.50
+    x 286.50 to 296.00 (9.50 wide; 286.50 from the left, 79.00 from the right), y 598.50 to 608.00 (9.50 tall; 59.00 from the bottom), widest at y 602.00
+    x 274.00 to 282.50 (8.50 wide; 274.00 from the left, 92.50 from the right), y 600.00 to 608.00 (8.00 tall; 59.00 from the bottom), widest at y 603.00
+    x 270.00 to 301.00 (31.00 wide; 270.00 from the left, 74.00 from the right), y 610.00 to 618.50 (8.50 tall; 48.50 from the bottom), widest at y 615.00
+    x 177.00 to 206.00 (29.00 wide; 177.00 from the left, 169.00 from the right), y 626.00 to 632.50 (6.50 tall; 34.50 from the bottom), widest at y 628.00
+    x 275.50 to 316.50 (41.00 wide; 275.50 from the left, 58.50 from the right), y 627.50 to 632.00 (4.50 tall; 35.00 from the bottom), widest at y 628.00
+  widths-tab4search-dark (page grey (128, 128, 128)):
+    x 25.00 to 106.00 (81.00 wide; 25.00 from the left, 269.00 from the right), y 588.00 to 642.00 (54.00 tall; 25.00 from the bottom), widest at y 611.50
+    x 116.00 to 137.00 (21.00 wide; 116.00 from the left, 238.00 from the right), y 597.50 to 607.50 (10.00 tall; 59.50 from the bottom), widest at y 599.00
+    x 252.00 to 260.50 (8.50 wide; 252.00 from the left, 114.50 from the right), y 597.50 to 604.50 (7.00 tall; 62.50 from the bottom), widest at y 599.00
+    x 116.00 to 137.00 (21.00 wide; 116.00 from the left, 238.00 from the right), y 608.50 to 618.50 (10.00 tall; 48.50 from the bottom), widest at y 610.50
+    x 246.00 to 254.00 (8.00 wide; 246.00 from the left, 121.00 from the right), y 613.50 to 620.00 (6.50 tall; 47.00 from the bottom), widest at y 616.00
+    x 116.00 to 137.00 (21.00 wide; 116.00 from the left, 238.00 from the right), y 627.00 to 632.00 (5.00 tall; 35.00 from the bottom), widest at y 627.50
+    x 237.50 to 265.00 (27.50 wide; 237.50 from the left, 110.00 from the right), y 627.00 to 632.50 (5.50 tall; 34.50 from the bottom), widest at y 628.00
+    x 177.50 to 200.50 (23.00 wide; 177.50 from the left, 174.50 from the right), y 627.50 to 632.50 (5.00 tall; 34.50 from the bottom), widest at y 631.00
+  widths-tab5-dark (page grey (128, 128, 128)):
+    x 25.00 to 106.00 (81.00 wide; 25.00 from the left, 269.00 from the right), y 588.00 to 642.00 (54.00 tall; 25.00 from the bottom), widest at y 611.50
+    x 116.00 to 137.00 (21.00 wide; 116.00 from the left, 238.00 from the right), y 597.50 to 607.50 (10.00 tall; 59.50 from the bottom), widest at y 599.00
+    x 252.00 to 260.50 (8.50 wide; 252.00 from the left, 114.50 from the right), y 597.50 to 604.50 (7.00 tall; 62.50 from the bottom), widest at y 599.00
+    x 116.00 to 137.00 (21.00 wide; 116.00 from the left, 238.00 from the right), y 608.50 to 618.50 (10.00 tall; 48.50 from the bottom), widest at y 610.50
+    x 246.00 to 254.00 (8.00 wide; 246.00 from the left, 121.00 from the right), y 613.50 to 620.00 (6.50 tall; 47.00 from the bottom), widest at y 616.00
+    x 116.00 to 137.00 (21.00 wide; 116.00 from the left, 238.00 from the right), y 627.00 to 632.00 (5.00 tall; 35.00 from the bottom), widest at y 627.50
+    x 237.50 to 265.00 (27.50 wide; 237.50 from the left, 110.00 from the right), y 627.00 to 632.50 (5.50 tall; 34.50 from the bottom), widest at y 628.00
+    x 177.50 to 200.50 (23.00 wide; 177.50 from the left, 174.50 from the right), y 627.50 to 632.50 (5.00 tall; 34.50 from the bottom), widest at y 631.00
+  widths-toolbar1-dark (page grey (128, 128, 128)):
+    x 181.50 to 197.00 (15.50 wide; 181.50 from the left, 178.00 from the right), y 614.50 to 621.00 (6.50 tall; 46.00 from the bottom), widest at y 619.50
+  widths-toolbar2-dark (page grey (128, 128, 128)):
+  widths-toolbarsearch-dark (page grey (128, 128, 128)):
+    x 89.50 to 101.00 (11.50 wide; 89.50 from the left, 274.00 from the right), y 612.00 to 621.00 (9.00 tall; 46.00 from the bottom), widest at y 619.50
+    x 73.00 to 88.00 (15.00 wide; 73.00 from the left, 287.00 from the right), y 613.50 to 619.00 (5.50 tall; 48.00 from the bottom), widest at y 615.50
+  ammy-dark (page grey (0, 0, 0)):
+    x 49.50 to 54.00 (4.50 wide; 49.50 from the left, 321.00 from the right), y 413.50 to 418.50 (5.00 tall; 248.50 from the bottom), widest at y 413.50
+    x 93.00 to 105.00 (12.00 wide; 93.00 from the left, 270.00 from the right), y 413.50 to 418.50 (5.00 tall; 248.50 from the bottom), widest at y 417.00
+    x 128.50 to 137.50 (9.00 wide; 128.50 from the left, 237.50 from the right), y 413.50 to 418.50 (5.00 tall; 248.50 from the bottom), widest at y 417.00
+    x 149.00 to 157.50 (8.50 wide; 149.00 from the left, 217.50 from the right), y 413.50 to 418.00 (4.50 tall; 249.00 from the bottom), widest at y 417.00
+    x 180.00 to 191.50 (11.50 wide; 180.00 from the left, 183.50 from the right), y 413.50 to 419.00 (5.50 tall; 248.00 from the bottom), widest at y 415.00
+    x 207.50 to 217.00 (9.50 wide; 207.50 from the left, 158.00 from the right), y 413.50 to 418.50 (5.00 tall; 248.50 from the bottom), widest at y 416.50
+    x 222.50 to 235.50 (13.00 wide; 222.50 from the left, 139.50 from the right), y 413.50 to 418.50 (5.00 tall; 248.50 from the bottom), widest at y 417.00
+    x 241.50 to 257.00 (15.50 wide; 241.50 from the left, 118.00 from the right), y 413.50 to 418.50 (5.00 tall; 248.50 from the bottom), widest at y 417.00
+    x 290.50 to 298.50 (8.00 wide; 290.50 from the left, 76.50 from the right), y 413.50 to 418.50 (5.00 tall; 248.50 from the bottom), widest at y 413.50
+    x 75.00 to 90.00 (15.00 wide; 75.00 from the left, 285.00 from the right), y 414.00 to 418.50 (4.50 tall; 248.50 from the bottom), widest at y 415.00
+    x 200.00 to 204.50 (4.50 wide; 200.00 from the left, 170.50 from the right), y 414.00 to 418.50 (4.50 tall; 248.50 from the bottom), widest at y 414.00
+    x 48.00 to 72.50 (24.50 wide; 48.00 from the left, 302.50 from the right), y 427.50 to 434.50 (7.00 tall; 232.50 from the bottom), widest at y 428.50
+    x 214.50 to 232.00 (17.50 wide; 214.50 from the left, 143.00 from the right), y 428.00 to 434.50 (6.50 tall; 232.50 from the bottom), widest at y 428.50
+    x 32.50 to 46.00 (13.50 wide; 32.50 from the left, 329.00 from the right), y 429.50 to 434.50 (5.00 tall; 232.50 from the bottom), widest at y 433.00
+    x 273.50 to 293.50 (20.00 wide; 273.50 from the left, 81.50 from the right), y 429.50 to 434.50 (5.00 tall; 232.50 from the bottom), widest at y 433.00
+    x 16.00 to 359.00 (343.00 wide; 16.00 from the left, 16.00 from the right), y 461.50 to 565.50 (104.00 tall; 101.50 from the bottom), widest at y 484.00
+    x 16.00 to 359.00 (343.00 wide; 16.00 from the left, 16.00 from the right), y 595.50 to 652.50 (57.00 tall; 14.50 from the bottom), widest at y 623.00
+ light, screen 375 x 667 pt
+  widths-accessory-light (page grey (128, 128, 128)):
+    x 21.50 to 353.50 (332.00 wide; 21.50 from the left, 21.50 from the right), y 527.50 to 576.50 (49.00 tall; 90.50 from the bottom), widest at y 544.00
+    x 69.00 to 354.50 (285.50 wide; 69.00 from the left, 20.50 from the right), y 544.50 to 568.00 (23.50 tall; 99.00 from the bottom), widest at y 548.00
+    x 20.50 to 354.50 (334.00 wide; 20.50 from the left, 20.50 from the right), y 583.50 to 646.50 (63.00 tall; 20.50 from the bottom), widest at y 610.00
+  widths-tab2-light (page grey (128, 128, 128)):
+    x 93.00 to 282.00 (189.00 wide; 93.00 from the left, 93.00 from the right), y 583.50 to 646.50 (63.00 tall; 20.50 from the bottom), widest at y 610.00
+  widths-tab3-light (page grey (128, 128, 128)):
+    x 33.00 to 342.50 (309.50 wide; 33.00 from the left, 32.50 from the right), y 583.50 to 646.50 (63.00 tall; 20.50 from the bottom), widest at y 610.00
+  widths-tab4search-light (page grey (128, 128, 128)):
+    x 20.50 to 354.50 (334.00 wide; 20.50 from the left, 20.50 from the right), y 583.50 to 646.50 (63.00 tall; 20.50 from the bottom), widest at y 610.00
+  widths-tab5-light (page grey (128, 128, 128)):
+    x 20.50 to 354.50 (334.00 wide; 20.50 from the left, 20.50 from the right), y 583.50 to 646.50 (63.00 tall; 20.50 from the bottom), widest at y 610.00
+  widths-toolbar1-light (page grey (128, 128, 128)):
+    x 152.50 to 223.00 (70.50 wide; 152.50 from the left, 152.00 from the right), y 590.50 to 639.50 (49.00 tall; 27.50 from the bottom), widest at y 611.00
+  widths-toolbar2-light (page grey (128, 128, 128)):
+    x 27.50 to 76.50 (49.00 wide; 27.50 from the left, 298.50 from the right), y 590.50 to 639.50 (49.00 tall; 27.50 from the bottom), widest at y 611.00
+    x 298.50 to 347.50 (49.00 wide; 298.50 from the left, 27.50 from the right), y 590.50 to 639.50 (49.00 tall; 27.50 from the bottom), widest at y 611.00
+  widths-toolbarsearch-light (page grey (128, 128, 128)):
+    x 27.50 to 347.50 (320.00 wide; 27.50 from the left, 27.50 from the right), y 590.50 to 639.50 (49.00 tall; 27.50 from the bottom), widest at y 611.00
+  ammy-light (page grey (242, 242, 247)):
+    x 49.50 to 54.00 (4.50 wide; 49.50 from the left, 321.00 from the right), y 413.50 to 418.50 (5.00 tall; 248.50 from the bottom), widest at y 413.50
+    x 93.00 to 105.00 (12.00 wide; 93.00 from the left, 270.00 from the right), y 413.50 to 418.50 (5.00 tall; 248.50 from the bottom), widest at y 417.00
+    x 149.00 to 157.50 (8.50 wide; 149.00 from the left, 217.50 from the right), y 413.50 to 418.00 (4.50 tall; 249.00 from the bottom), widest at y 417.00
+    x 180.00 to 191.50 (11.50 wide; 180.00 from the left, 183.50 from the right), y 413.50 to 418.50 (5.00 tall; 248.50 from the bottom), widest at y 415.00
+    x 211.00 to 217.00 (6.00 wide; 211.00 from the left, 158.00 from the right), y 413.50 to 418.50 (5.00 tall; 248.50 from the bottom), widest at y 417.00
+    x 222.50 to 232.00 (9.50 wide; 222.50 from the left, 143.00 from the right), y 413.50 to 418.50 (5.00 tall; 248.50 from the bottom), widest at y 417.00
+    x 241.50 to 257.00 (15.50 wide; 241.50 from the left, 118.00 from the right), y 413.50 to 418.50 (5.00 tall; 248.50 from the bottom), widest at y 417.00
+    x 290.50 to 298.50 (8.00 wide; 290.50 from the left, 76.50 from the right), y 413.50 to 418.50 (5.00 tall; 248.50 from the bottom), widest at y 413.50
+    x 200.00 to 204.50 (4.50 wide; 200.00 from the left, 170.50 from the right), y 414.00 to 418.50 (4.50 tall; 248.50 from the bottom), widest at y 414.00
+    x 48.00 to 65.50 (17.50 wide; 48.00 from the left, 309.50 from the right), y 427.50 to 434.50 (7.00 tall; 232.50 from the bottom), widest at y 428.50
+    x 208.50 to 223.00 (14.50 wide; 208.50 from the left, 152.00 from the right), y 428.00 to 434.00 (6.00 tall; 233.00 from the bottom), widest at y 431.00
+    x 32.50 to 46.00 (13.50 wide; 32.50 from the left, 329.00 from the right), y 429.50 to 434.50 (5.00 tall; 232.50 from the bottom), widest at y 433.00
+    x 273.50 to 293.50 (20.00 wide; 273.50 from the left, 81.50 from the right), y 429.50 to 434.50 (5.00 tall; 232.50 from the bottom), widest at y 433.00
+    x 246.50 to 252.00 (5.50 wide; 246.50 from the left, 123.00 from the right), y 484.50 to 490.50 (6.00 tall; 176.50 from the bottom), widest at y 484.50
+    x 68.00 to 74.50 (6.50 wide; 68.00 from the left, 300.50 from the right), y 486.50 to 491.50 (5.00 tall; 175.50 from the bottom), widest at y 486.50
+    x 77.50 to 83.50 (6.00 wide; 77.50 from the left, 291.50 from the right), y 486.50 to 491.50 (5.00 tall; 175.50 from the bottom), widest at y 486.50
+    x 277.50 to 283.50 (6.00 wide; 277.50 from the left, 91.50 from the right), y 486.50 to 491.50 (5.00 tall; 175.50 from the bottom), widest at y 486.50
+    x 48.50 to 54.50 (6.00 wide; 48.50 from the left, 320.50 from the right), y 487.00 to 491.50 (4.50 tall; 175.50 from the bottom), widest at y 491.00
+    x 287.00 to 292.50 (5.50 wide; 287.00 from the left, 82.50 from the right), y 487.50 to 493.50 (6.00 tall; 173.50 from the bottom), widest at y 487.50
+    x 42.50 to 54.00 (11.50 wide; 42.50 from the left, 321.00 from the right), y 536.50 to 541.50 (5.00 tall; 125.50 from the bottom), widest at y 540.50
+    x 76.00 to 82.50 (6.50 wide; 76.00 from the left, 292.50 from the right), y 538.50 to 543.50 (5.00 tall; 123.50 from the bottom), widest at y 538.50
+    x 58.00 to 68.50 (10.50 wide; 58.00 from the left, 306.50 from the right), y 540.50 to 545.50 (5.00 tall; 121.50 from the bottom), widest at y 544.00
+    x 20.50 to 354.50 (334.00 wide; 20.50 from the left, 20.50 from the right), y 595.00 to 646.50 (51.50 tall; 20.50 from the bottom), widest at y 616.00
