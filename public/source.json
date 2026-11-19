@@ -9,12 +9,12 @@
       "versions": [
         {
           "version": "1.0",
-          "date": "2026-11-17T05:30:14+00:00",
-          "localizedDescription": "Build: the workflows' actions move off Node 20\n\nactions/checkout goes from v4 to v7 and softprops/action-gh-release from v2 to v3. GitHub's run annotation said both target Node 20, which is deprecated, and that it was forcing them onto Node 24.",
-          "downloadURL": "https://github.com/kaydenpmd/Ammy/releases/download/v1.0-b201/Ammy-1.0-b201-7f39d4e.ipa",
-          "size": 591219,
-          "sha256": "e8b021934a2d67bdfcd751919b5657bd795c35fcc8423d61202af222d0642eb9",
-          "buildVersion": "201",
+          "date": "2026-11-19T00:02:11+00:00",
+          "localizedDescription": "Keep Picture in Picture above the Start and Stop buttons\n\nA Picture in Picture video in a bottom corner now rests just above the Start and Stop buttons instead of covering them, as it does above a tab bar in Apple's own apps. With the keyboard up, it rests above Stop and Restart too.",
+          "downloadURL": "https://github.com/kaydenpmd/Ammy/releases/download/v1.0-b208/Ammy-1.0-b208-3e73c3a.ipa",
+          "size": 594682,
+          "sha256": "e86bf93882b2af00765d7bb128abdf3481ace6d5a83beddc909e99af2095429a",
+          "buildVersion": "208",
           "minOSVersion": "26.0"
         }
       ],
