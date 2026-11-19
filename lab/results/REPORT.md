@@ -1,0 +1,7 @@
+# wide-bar-lab, 19 Nov 2026
+
+Ammy's bar at Apple's wide bottom button's placement (38 pt from each side and from the bottom), beside the bar as released (21 and 21), and whether Apple's wide button rides above the keyboard. iOS 27.0 simulators (24A434), Xcode 27.1 (27A9275), an iPhone SE (3rd generation) and an iPhone 17e, dark. The write-up, pictures and every screenshot are in the design library, `apple/ios-bottom-bar-widths/`; this folder keeps each run's frame lists.
+
+- Run 44527315193: Ammy at both placements (`frames-ammy.txt`). At 38 and 38 the button has Apple's Continue's frame at the sides and bottom (299 wide on the SE, 314 on the 17e); `.controlSize(.extraLarge)` leaves it 50.5 tall. On the SE the page's rows show around the narrower button (History at the top of the page, the Key label with the keyboard up); on the 17e both are clean.
+- Runs 44531445473 and 44534193959: Settings' Apple Account sheet, Sign in Manually (`frames-signin.txt`). Its Continue (36 pt in, 52 tall) is part of the page; with the keyboard up nothing moves and the keyboard covers it. The return key is labelled "continue".
+- Run 44536424946: the age range page behind "Don't have an Apple Account?" has no field, and the simulator ends the flow there. Settings' and Contacts' bottom search bars (`frames-search.txt`) ride up to 10 pt above the keyboard, 48 pt tall, 8 pt from the left edge with a close button 12 pt to the right, on both phones.
