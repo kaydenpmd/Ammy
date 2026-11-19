@@ -1199,6 +1199,11 @@ struct ContentView: View {
     /// stored address has already been resolved by an interactive start.
     @MainActor
     private func autoStartIfPossible() async {
+        // Lab: never start a real session; the tests pretend one.
+        if Lab.active {
+            if UserDefaults.standard.bool(forKey: "labRunning") { controller.labPretendRunning() }
+            return
+        }
         guard !stoppedByUser, !controller.isRunning, canAutoStart else { return }
         await controller.start()
     }

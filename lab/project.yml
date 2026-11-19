@@ -1,0 +1,51 @@
+name: WideBarLab
+
+# wide-bar-lab only, never merged. Host is an empty app for the UI tests to belong to; they drive the real Ammy (built from this branch, its bar placed at launch) and Apple's own apps by bundle identifier.
+
+options:
+  bundleIdPrefix: com.local
+  deploymentTarget:
+    iOS: "26.0"
+
+targets:
+  Host:
+    type: application
+    platform: iOS
+    sources:
+      - path: Host
+    info:
+      path: Host/Info.plist
+      properties:
+        CFBundleDisplayName: Host
+        UILaunchScreen: {}
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+        "UISupportedInterfaceOrientations~ipad":
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationPortraitUpsideDown
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.local.widebarhost
+        SWIFT_VERSION: "5.0"
+        GENERATE_INFOPLIST_FILE: NO
+        TARGETED_DEVICE_FAMILY: "1,2"
+    scheme:
+      testTargets:
+        - WideBarUITests
+
+  WideBarUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources:
+      - path: WideBarUITests
+    dependencies:
+      - target: Host
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.local.widebarhost.uitests
+        SWIFT_VERSION: "5.0"
+        GENERATE_INFOPLIST_FILE: YES
+        TEST_TARGET_NAME: Host
+        TARGETED_DEVICE_FAMILY: "1,2"

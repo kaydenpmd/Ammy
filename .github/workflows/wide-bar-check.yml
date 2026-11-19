@@ -1,0 +1,156 @@
+name: Wide bar check (the bar where iOS puts its wide buttons)
+
+# Runs only on the wide-bar-check branch, never on main, and releases nothing.
+# The owner's choice, 19 Nov 2026: with no keyboard the bottom buttons match iOS's wide bottom button (38 pt from each side and from the bottom); with the keyboard, the same width, 10 pt above it; the same for the split buttons. The wide-bar branch makes that change. This builds it as build-ipa.yml builds a release, with only a way to show a session without sending anything (Ammy/LabSwitch.swift), and photographs it with Start, Stop, Stop and Restart, the keyboard, the end of the page, the largest ordinary text size and History. Dark mode, iOS 27.0, an iPhone SE, an iPhone 17e and an iPad Air 11.
+
+on:
+  push:
+    branches: [wide-bar-check]
+  workflow_dispatch:
+
+env:
+  TESTS: "test1Ammy"
+
+jobs:
+  compile:
+    runs-on: macos-26
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Build Ammy for the simulator, as build-ipa.yml builds it
+        run: |
+          set -o pipefail
+          xcodebuild -version
+          xcodegen generate
+          xcodebuild build \
+            -project Ammy.xcodeproj -scheme Ammy -configuration Release \
+            -destination 'generic/platform=iOS Simulator' \
+            -derivedDataPath build-ammy \
+            CODE_SIGNING_ALLOWED=NO 2>&1 | grep -E "error|BUILD" | tail -20
+          tar -czf Ammy-sim.tgz -C build-ammy/Build/Products/Release-iphonesimulator Ammy.app
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: ammy-sim
+          path: Ammy-sim.tgz
+
+  lab:
+    needs: compile
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: se-ios27
+            device: "iPhone SE (3rd generation)"
+          - name: 17e-ios27
+            device: "iPhone 17e"
+          - name: ipad-ios27
+            device: "iPad Air 11"
+    runs-on: xcode-27
+    timeout-minutes: 80
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Select Xcode
+        run: |
+          X=/Applications/Xcode_27.2_Release_Candidate.app
+          [ -d "$X" ] || X=/Applications/Xcode.app
+          sudo xcode-select -s "$X"
+          xcodebuild -version
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Generate the lab project
+        run: cd lab && xcodegen generate
+
+      - name: Create and boot the simulator
+        id: sim
+        run: |
+          set -euo pipefail
+          mkdir -p out
+          # The software keyboard, not a hardware one.
+          defaults write com.apple.iphonesimulator ConnectHardwareKeyboard -bool false || true
+          TYPE=$(xcrun simctl list devicetypes -j | NAME="${{ matrix.device }}" python3 -c '
+          import json, os, sys
+          ts = [t for t in json.load(sys.stdin)["devicetypes"] if t["name"].startswith(os.environ["NAME"])]
+          print(ts[-1]["identifier"])')
+          RUNTIME=$(xcrun simctl list runtimes -j | python3 -c '
+          import json, sys
+          rs = [r for r in json.load(sys.stdin)["runtimes"] if r["platform"] == "iOS" and r["isAvailable"] and r["version"].startswith("27.0")]
+          print(rs[-1]["identifier"])')
+          UDID=$(xcrun simctl create "Lab ${{ matrix.name }}" "$TYPE" "$RUNTIME")
+          echo "udid=$UDID" >> "$GITHUB_OUTPUT"
+          xcrun simctl boot "$UDID"
+          for attempt in 1 2 3; do
+            if xcrun simctl bootstatus "$UDID" -b; then break; fi
+            sleep 10
+          done
+          xcrun simctl ui "$UDID" appearance dark
+          { echo "device type: $TYPE"; echo "runtime: $RUNTIME"; echo "test runner:"; xcodebuild -version; } > out/device.txt
+          xcrun simctl list runtimes -j | RT="$RUNTIME" python3 -c '
+          import json, os, sys
+          for r in json.load(sys.stdin)["runtimes"]:
+              if r["identifier"] == os.environ["RT"]:
+                  print(json.dumps(r, indent=1))' > out/runtime.json
+          # Which apps this simulator has, for the test to skip the rest (a launch of a missing app ends the test).
+          xcrun simctl listapps "$UDID" > out/apps.txt || true
+          APPS=$(python3 -c '
+          import re
+          print(",".join(sorted(set(re.findall(r"CFBundleIdentifier = \"?([\w.\-]+)\"?;", open("out/apps.txt").read())))))' || true)
+          echo "apps=$APPS" >> "$GITHUB_OUTPUT"
+          echo "$APPS" | tr ',' '\n' | grep -c apple || true
+          cat out/device.txt
+
+      - name: Build the lab app and UI tests
+        run: |
+          set -o pipefail
+          cd lab
+          xcodebuild build-for-testing \
+            -project WideBarLab.xcodeproj -scheme Host \
+            -destination "id=${{ steps.sim.outputs.udid }}" \
+            -derivedDataPath dd \
+            CODE_SIGNING_ALLOWED=NO 2>&1 | grep -E "error|BUILD" | tail -30
+
+      - uses: actions/download-artifact@v7
+        with:
+          name: ammy-sim
+
+      - name: Install Ammy
+        run: |
+          UDID="${{ steps.sim.outputs.udid }}"
+          mkdir -p ammy-app && tar -xzf Ammy-sim.tgz -C ammy-app
+          { echo "Ammy built with:"; plutil -p ammy-app/Ammy.app/Info.plist | grep -E "DTSDKName|DTXcode|DTPlatformVersion|CFBundleVersion"; } | tee -a out/device.txt
+          xcrun simctl install "$UDID" ammy-app/Ammy.app
+          xcrun simctl privacy "$UDID" grant media-library com.local.ammy || true
+
+      - name: Run
+        run: |
+          UDID="${{ steps.sim.outputs.udid }}"
+          for only in $TESTS; do
+            for attempt in 1 2; do
+              TEST_RUNNER_LAB_OUT="$PWD/out" TEST_RUNNER_LAB_APPS="${{ steps.sim.outputs.apps }}" xcodebuild test-without-building \
+                -project lab/WideBarLab.xcodeproj -scheme Host \
+                -destination "id=$UDID" \
+                -derivedDataPath lab/dd \
+                -parallel-testing-enabled NO \
+                -only-testing:"WideBarUITests/WideBarUITests/$only" \
+                CODE_SIGNING_ALLOWED=NO > "out/xcodebuild-$only-$attempt.log" 2>&1 || echo "$only: tests exited $?"
+              xcrun simctl terminate "$UDID" com.local.ammy > /dev/null 2>&1 || true
+              grep -E "Test Case|error:" "out/xcodebuild-$only-$attempt.log" | tail -20 || true
+              # A launch that XCUITest loses ("does not have a process ID") fails the test at once, so only a pass ends the tries.
+              if grep -q "' passed" "out/xcodebuild-$only-$attempt.log"; then break; fi
+            done
+          done
+          ls out | wc -l
+
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: lab-${{ matrix.name }}
+          path: out
