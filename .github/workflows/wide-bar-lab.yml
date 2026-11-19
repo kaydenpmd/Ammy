@@ -11,7 +11,7 @@ on:
 
 # Which tests the Run step runs. Run 44527315193 ran test1Ammy and test2Reference; its reference walk stopped at the Apple Account sheet, so this run goes through that sheet alone.
 env:
-  TESTS: "test3SignIn"
+  TESTS: "test3SignIn test4Search"
 
 jobs:
   compile:

@@ -233,7 +233,15 @@ final class WideBarUITests: XCTestCase {
             shot("\(flow)__2")
             dump(settings, "\(flow)__2")
             if !tryKeyboard(settings, "\(flow)__2") {
-                // A page in between (a choice of whose account, say): press on and try again.
+                // Run 44534193959: the page in between asks an age range, on cards. Adult leads on to the pages with fields.
+                if tapLabel(settings, containing: "Adult", flow) {
+                    shot("\(flow)__2b")
+                    dump(settings, "\(flow)__2b")
+                    if tryKeyboard(settings, "\(flow)__2b") {
+                        settings.terminate()
+                        continue
+                    }
+                }
                 for step in 3...5 {
                     guard let label = ["Continue", "Next", "Create", "Myself", "OK"].first(where: { settings.buttons[$0].firstMatch.exists && settings.buttons[$0].firstMatch.isHittable }) else { break }
                     log("\(flow) step \(step): pressing '\(label)'")
@@ -245,6 +253,25 @@ final class WideBarUITests: XCTestCase {
                 }
             }
             settings.terminate()
+        }
+        log("done")
+    }
+
+    // MARK: 4. What Apple does float above the keyboard: a bottom search field
+
+    /// Settings' and Contacts' search fields sit in the bottom toolbar. Tapped, where do they go, and how far above the keyboard?
+    @MainActor
+    func test4Search() {
+        logName = "frames-search.txt"
+        for (tag, bundle) in [("settings", "com.apple.Preferences"), ("contacts", "com.apple.MobileAddressBook")] {
+            let app = XCUIApplication(bundleIdentifier: bundle)
+            app.launch()
+            _ = app.wait(for: .runningForeground, timeout: 20)
+            Thread.sleep(forTimeInterval: 3)
+            shot("\(tag)-search__0")
+            dump(app, "\(tag)-search__0", tree: false)
+            _ = tryKeyboard(app, "\(tag)-search")
+            app.terminate()
         }
         log("done")
     }
