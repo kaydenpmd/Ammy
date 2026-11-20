@@ -630,3 +630,17 @@ The `wide-bar-check` lab (never merged; iOS 27.0 simulators, dark) photographed 
 What it costs, which the owner saw in the wide-bar-lab pictures before choosing: on an SE the page's rows run 16 pt from the sides, so they show around the narrower buttons: the History row, with the page at the top. Not seen on a device.
 
 Run 44656542914, with the keyboard up: the buttons are 21 pt from each side (333 wide on the SE, 348 on the 17e, 778 on the iPad; Stop and Restart 162.5 each on the SE, as in build 208) and still end 10 pt above the keyboard, and they are back at 38 once it has gone. The recording shows the width changing with the keyboard's own animation, not in a step: on the 17e the left edge goes 38, 36, 32, 29, 25, 24, 22 over about a third of a second as the buttons rise, and back the same way; the SE's sparser recording shows 38, 27, 22, 21. On the SE the first try lost Ammy's process at a launch, the flake seen before, and the second passed.
+
+## 20 Nov 2026: the landing page in Apple's style
+
+The owner: "change my online page for apps.kaydenpmd.net to apple style". `public/index.html` was a dark GitHub-like page (filled buttons, a URL box, uppercase section labels). It is now laid out as Settings › General: a header card with the app's icon, name and the version line, then inset groups, from the design library's page specs, by device as artifacts are: iOS 27 on a phone, iPadOS 27.2 with touch at 600 px or wider, macOS 27's System Settings with a hovering mouse, light and dark. The header card wasn't in the specs yet, so it was measured from the library's captures and written into all three (`apple/ios-pages-for-artifacts`, `ipados-pages-for-artifacts`, `macos-pages-for-artifacts`, each a "Header card" section).
+
+- Add to SideStore, Add to AltStore and Copy are action rows (the row is the button, its title in the tint, no chevron), with the source's address as the group's footer. SideStore stays first, for the reason in the page's comment.
+- What's new, Before you install and Manual install are groups under Settings-style headers; About and Screenshots appear only when the source has them (it has neither now). The SHA-256 is the Manual install group's footer.
+- The bar's title (the app's name) is hidden while the name in the card is in view, as Settings › General does, and cuts in once it has gone under the bar; the fade and its timing aren't measured.
+- Every piece of text is the page's own; none was added. "Requires iOS 26.0 or later." lost its bold, and Before you install is hidden when the source gives no minimum, rather than showing an empty card.
+- The tint is iOS 27's system blue (#0088FF light, #0091FF dark) and no longer comes from the listing's `tintColor`, which is the older #007AFF.
+- Pretendard (`public/fonts/`, 1.3.9, unmodified, with its OFL licence) stands in for SF Pro where the device has none; a browser with SF Pro never fetches it.
+- `404.html` got the same look and keeps its text and its reason for existing.
+
+Checked before pushing with Playwright through Edge, against a local server: 375 x 812 with touch, 800 x 1280 with touch and 1280 x 800 with a mouse, dark and light. The header card sits 35 px under the 54 px bar on the phone and tablet and 12 px under the 52 px band on the desktop, as measured. Playwright's full-page capture loses touch emulation (it showed the desktop layout at phone width); a viewport capture doesn't.

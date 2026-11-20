@@ -53,7 +53,7 @@ scripts/build_source.py              Regenerates public/source.json
 scripts/make_icon.py                 Draws the app icon, like Albums' script of the same name
 scripts/measure_marquee.py           Times a scrolling line in a screen recording
 source.config.json                   AltStore listing metadata (user-facing copy)
-public/                              Cloudflare Pages site: landing page, source.json
+public/                              Cloudflare Pages site: landing page (an Apple settings page; HISTORY.md, 20 Nov 2026), source.json
 PUBLISHING.md                        One-time setup for the AltStore source
 HISTORY.md                           How everything got this way
 local/                               Private notes and data, never committed (.git/info/exclude)
