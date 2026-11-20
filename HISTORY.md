@@ -673,3 +673,5 @@ Checked against the local server as a phone, a tablet and a desktop, dark and li
 ## 20 Nov 2026: the View buttons come back
 
 After seeing what the source page copies, Overcast's developer page on Apple's App Store website with a View button on every app: "if apple uses view then we'll keep it but it's still redundant lol". The View buttons are back on the source page and under More by, as they were; the .ipa stays first in the header, in blue. The wording page has its View slot and source-page picture again. The live site went without View buttons for a few minutes in between (d0617e5).
+
+Live by 15:21 (b30c8ab), checked through Edge as a phone, a tablet and a desktop, dark: View on both lockup shelves, .ipa first in blue, page heights as on the local server (Ammy's page 1014 px at phone width, Albums' 978), no console errors; the addresses answer as before.
