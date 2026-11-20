@@ -1,0 +1,5 @@
+# Cloudflare Pages: every app has its page at /app/<slug>, all served by app.html,
+# which reads the slug from the address. The target is /app, not /app.html:
+# Pages redirects .html addresses to their extensionless form, and its own
+# proxying example targets that form.
+/app/*  /app  200

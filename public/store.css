@@ -1,0 +1,208 @@
+/*
+  The source's pages, laid out as Apple's App Store on the web (apps.apple.com,
+  version 2646.1.0-external): index.html as a developer page, app.html as an
+  app page. Every size, colour and breakpoint comes from that site's own CSS,
+  measured on 20 Nov 2026 (design-research/apple/app-store-web/NOTES.md).
+  Left out: the store's own navigation, search and footer.
+*/
+
+/* Pretendard stands in for SF Pro where the device has none: the owner's
+   choice of stand-in, unmodified from the 1.3.9 release, under the SIL Open
+   Font License (fonts/Pretendard-LICENSE.txt). A browser with SF Pro never
+   fetches it. */
+@font-face {
+  font-family: "Pretendard Std"; font-weight: 100 900; font-display: swap;
+  src: url(/fonts/PretendardStdVariable.woff2) format("woff2");
+}
+
+:root {
+  --pageBg: #f5f5f7;
+  --systemPrimary: #000000e0;
+  --systemSecondary: #0000008f;
+  --systemTertiary: #0000007a;
+  --systemQuaternary: #0000001a;
+  --systemGray2: #aeaeb2;
+  --systemGray4: #d1d1d6;
+  --systemQuaternary-vibrant: #e8e8e8;
+  --keyColor: #007aff;
+  --keyColor-rgb: 0, 122, 255;
+  --button-alpha: 1;
+  --bodyGutter: 25px;
+  --font-family: -apple-system, BlinkMacSystemFont, "SF Pro", "Pretendard Std", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  color-scheme: light dark;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --pageBg: #151515;
+    --systemPrimary: #ffffffeb;
+    --systemSecondary: #ffffffa3;
+    --systemTertiary: #fff6;
+    --systemQuaternary: #ffffff1a;
+    --systemGray2: #636366;
+    --systemGray4: #3a3a3c;
+    --systemQuaternary-vibrant: #232323;
+    --button-alpha: 1.33;
+  }
+}
+@media (min-width: 1000px) {
+  :root { --bodyGutter: 40px; }
+}
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; background: var(--pageBg); color: var(--systemPrimary);
+  font: 400 13px/16px var(--font-family);
+  -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
+}
+h1, h2, h3, p, dl, dd, ul { margin: 0; padding: 0; }
+ul { list-style: none; }
+a { color: inherit; text-decoration: none; }
+button { font: inherit; color: inherit; border: 0; background: none; padding: 0; cursor: pointer; }
+[hidden] { display: none !important; }
+:focus-visible { outline: 2px solid var(--keyColor); outline-offset: 2px; }
+
+.page { max-width: 1680px; margin: 0 auto; padding-bottom: 32px; }
+
+/* The developer page's title: large-title-emphasized-tall. */
+.large-title {
+  display: block; padding: 11px var(--bodyGutter);
+  font: 700 26px/34px var(--font-family); letter-spacing: -0.5px; overflow-wrap: break-word;
+}
+
+/* Shelves: 13 px above, 32 px below, a title row 13 px over the content. */
+.shelf { padding: 13px 0 32px; }
+.large-title + .shelf { padding-top: 8px; }
+@media (min-width: 1000px) { .large-title + .shelf { padding-top: 16px; } }
+.shelf-title-row { display: flex; margin: 0 var(--bodyGutter) 13px; }
+.shelf-title { display: flex; align-items: center; gap: 6px; font: 700 17px/22px var(--font-family); }
+.chevron { display: block; width: 7px; height: 12px; fill: var(--systemGray2); }
+.shelf-body { margin: 0 var(--bodyGutter); }
+
+/* The View button (.get-button.gray): the key colour at 6%, 8% in dark. */
+.get-button {
+  display: inline-block; border-radius: 1000px; padding: 7px 16px;
+  font: 700 13px/18px var(--font-family); word-break: keep-all; white-space: nowrap;
+  color: var(--keyColor); background-color: rgba(var(--keyColor-rgb), calc(var(--button-alpha) * .06));
+}
+.button-row { display: flex; flex-wrap: wrap; gap: 10px; }
+
+/* App icons: the corner of a square icon (.rounded-rect) and Apple's own
+   hairline for icons on this site (.with-border). */
+.icon { position: relative; flex: none; border-radius: 23%; background: var(--systemQuaternary); }
+.icon img { display: block; width: 100%; height: 100%; border-radius: inherit; }
+.icon::after { content: ""; position: absolute; inset: 0; border-radius: inherit; box-shadow: 0 0 0 1px var(--systemQuaternary); pointer-events: none; }
+
+/* Lockups. Medium (the developer page): an 85 px icon, the name in title-3,
+   the subtitle in callout, the button 7 px lower. Small (More by): a 64 px
+   icon, the name in title-3-emphasized, the button at the row's end. Both in
+   two rows filled column by column. */
+.lockups {
+  display: grid; grid-auto-flow: column; grid-template-rows: repeat(2, auto);
+  column-gap: 20px; row-gap: 24px; grid-auto-columns: 298px;
+  margin: 0 var(--bodyGutter); overflow-x: auto; overscroll-behavior-x: contain; scrollbar-width: none;
+}
+.lockups::-webkit-scrollbar { display: none; }
+@media (min-width: 1000px) { .lockups { grid-auto-columns: calc(25% - 15px); } }
+@media (min-width: 1580px) { .lockups { grid-auto-columns: calc(20% - 16px); } }
+.lockup { display: flex; align-items: center; min-width: 0; }
+.lockup .icon { width: 85px; height: 85px; margin-inline-end: 16px; }
+.lockup .meta { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+.lockup .name { font: 400 15px/20px var(--font-family); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lockup .subtitle { font: 400 12px/15px var(--font-family); color: var(--systemSecondary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lockup .get-button { align-self: flex-start; margin-top: 7px; }
+
+.lockups.small { column-gap: 10px; }
+@media (min-width: 1000px) { .lockups.small { column-gap: 20px; grid-auto-columns: calc(33.3333% - 13.3333px); } }
+@media (min-width: 1580px) { .lockups.small { grid-auto-columns: calc(25% - 15px); } }
+.lockups.small .icon { width: 64px; height: 64px; }
+.lockups.small .meta { flex: 1; margin-inline-end: 16px; }
+.lockups.small .name { font-weight: 600; }
+.lockups.small .get-button { margin: 0 0 0 auto; align-self: center; flex: none; }
+
+/* The source's address under its buttons, in body text. */
+.source-buttons { margin: 0 var(--bodyGutter); }
+.source-url { margin: 10px var(--bodyGutter) 0; color: var(--systemSecondary); overflow-wrap: anywhere; }
+
+/* ---- The app page ---- */
+
+/* The header: a band of the icon's own colours (the icon, covering the
+   band, under a 100 px blur), darkening towards the bottom; the icon with a
+   blurred copy of itself behind it as a glow. */
+.hero {
+  position: relative; display: flex; align-items: center; height: 200px; overflow: hidden;
+  transform: translate(0); color: #ffffffeb;
+  background: linear-gradient(to bottom, #0000 20%, #000c), var(--background-image, none), #000;
+  background-position: 50%; background-size: cover;
+  border-bottom: 1px solid var(--systemQuaternary-vibrant);
+  border-bottom-left-radius: 2px; border-bottom-right-radius: 2px;
+}
+@media (min-width: 1000px) { .hero { height: 286px; } }
+.hero-blur {
+  position: absolute; inset: 0; z-index: 1;
+  -webkit-backdrop-filter: blur(100px) saturate(1.5); backdrop-filter: blur(100px) saturate(1.5);
+}
+.hero-content { display: flex; gap: 1em; margin: 0 var(--bodyGutter); max-width: 840px; }
+@media (min-width: 1000px) { .hero-content { gap: 1.5em; } }
+@media (min-width: 1260px) { .hero-content { gap: 2em; } }
+.hero-icon { position: relative; z-index: 2; display: flex; align-items: center; flex-shrink: 0; width: 128px; }
+@media (min-width: 1000px) { .hero-icon { width: 194px; } }
+.hero-icon .icon { width: 100%; height: auto; aspect-ratio: 1; border: 2px solid #ffffff1a; box-shadow: 0 0 30px #00000054; }
+.hero-icon .icon::after { content: none; }
+.hero-icon .icon img { border-radius: calc(23% - 2px); }
+.hero-glow { position: absolute; top: 0; left: 0; width: 100%; z-index: -1; filter: blur(60px); transform: scale(1.5); }
+.hero-glow img { display: block; width: 100%; border-radius: 23%; }
+.hero-text { position: relative; z-index: 2; display: flex; flex-direction: column; justify-content: center; min-width: 0; }
+.hero h1 {
+  color: #fff; font: 700 17px/22px var(--font-family); margin-bottom: 4px;
+  text-shadow: 0 0 5px #0003; text-wrap: pretty; overflow-wrap: anywhere;
+}
+@media (min-width: 484px) { .hero h1 { font: 700 22px/26px var(--font-family); } }
+@media (min-width: 1000px) { .hero h1 { font: 700 34px/40px var(--font-family); letter-spacing: -.02em; } }
+.hero .subtitle { color: #f6f6f699; mix-blend-mode: plus-lighter; font: 400 13px/16px var(--font-family); margin-bottom: 4px; text-wrap: pretty; }
+@media (min-width: 1000px) { .hero .subtitle { font: 700 17px/22px var(--font-family); margin-bottom: 8px; } }
+.hero .button-row { margin-top: 10px; }
+/* Share's capsule, the only button the web page has in this place. */
+.hero-button {
+  display: flex; align-items: center; height: 27px; padding: 0 16px; border-radius: 27px;
+  background: #ffffff1a; mix-blend-mode: plus-lighter; color: #ffffffeb;
+  font: 600 13px/16px var(--font-family); white-space: nowrap;
+}
+@media (min-width: 1000px) { .hero-button { height: 32px; border-radius: 32px; } }
+
+/* What's new: the notes beside the version and date. */
+.whats-new { display: flex; margin: 0 var(--bodyGutter); font: 400 13px/18px var(--font-family); }
+.whats-new .notes { flex-grow: 1; white-space: break-spaces; overflow-wrap: anywhere; }
+@media (min-width: 1000px) { .whats-new .notes { flex-grow: 0; width: 66%; } }
+@media (min-width: 1580px) { .whats-new .notes { width: 50%; } }
+.whats-new .metadata { display: flex; flex-direction: column; flex-grow: 1; gap: 4px; margin: 0 0 8px 8px; text-align: end; color: var(--systemSecondary); }
+.whats-new time { white-space: nowrap; }
+
+/* The description. */
+.description { margin: 0 var(--bodyGutter); font: 400 13px/18px var(--font-family); white-space: break-spaces; overflow-wrap: anywhere; }
+@media (min-width: 1260px) { .description { width: 66%; } }
+
+/* Information: label over value, one column, three from 1000 px. */
+.info { display: grid; grid-template-columns: 1fr; gap: 24px 10px; padding: 0 var(--bodyGutter); }
+@media (min-width: 1000px) { .info { grid-template-columns: repeat(3, 1fr); column-gap: 20px; } }
+.info dt { color: var(--systemSecondary); margin-bottom: 4px; }
+.info dd { overflow-wrap: anywhere; }
+.info code { font: 400 13px/16px var(--mono); word-break: break-all; }
+
+/* Links that leave the page: full-width rows under 1000 px, a centred row
+   from 1000 px, each ending in an arrow. */
+.links { display: flex; justify-content: center; align-items: center; column-gap: 20px; }
+.links li { display: block; }
+.links a { display: inline-flex; align-items: center; color: var(--keyColor); }
+.links a::after { content: "\2197"; display: inline-block; margin-inline-start: 2px; }
+@media (max-width: 999px) {
+  .links { flex-direction: column; align-items: flex-start; }
+  .links li { width: 100%; padding: 10px var(--bodyGutter); border-bottom: 1px solid var(--systemGray4); }
+  .links li:first-child { border-top: 1px solid var(--systemGray4); }
+  .links a { font-size: 18px; line-height: 22px; }
+}
+
+/* A page that isn't there. */
+.missing { margin: 0 var(--bodyGutter); font: 400 13px/18px var(--font-family); color: var(--systemSecondary); }
+.missing + .button-row { margin: 16px var(--bodyGutter) 0; }

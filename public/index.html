@@ -3,355 +3,71 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Ammy</title>
+<title></title>
 <link rel="icon" href="/source-icon.jpg">
 <link rel="apple-touch-icon" href="/source-icon.jpg">
+<link rel="stylesheet" href="/store.css">
 <!--
-  The page is laid out as an Apple settings page with a header card, like
-  Settings > General: the app's icon, name and version in a card at the top,
-  then inset groups. Every number comes from the design library
-  (design-research/apple/ios-pages-for-artifacts, ipados-pages-for-artifacts and
-  macos-pages-for-artifacts, each with a "Header card" section), not from
-  memory. Three layouts, chosen by the device, never the user agent: a phone
-  (iOS 27), touch at 600 px or wider (iPadOS 27.2), and a hovering mouse
-  (macOS 27). Light and dark both.
+  The source's page, laid out as a developer's page on Apple's web App Store:
+  the source's name as the large title, then every app in source.json as a
+  lockup that opens its page (app.html, at /app/<slug>). Sizes and colours are
+  in store.css, from design-research/apple/app-store-web/NOTES.md.
 -->
-<style>
-  /* Pretendard stands in for SF Pro where the device has no SF Pro: the
-     owner's choice of stand-in. Unmodified from the 1.3.9 release, under the
-     SIL Open Font License (fonts/Pretendard-LICENSE.txt). A browser that has
-     -apple-system never fetches it. */
-  @font-face {
-    font-family: "Pretendard Std"; font-weight: 100 900; font-display: swap;
-    src: url(/fonts/PretendardStdVariable.woff2) format("woff2");
-  }
-
-  /* UIKit's system colours (ios-system-colors): grouped background, cell,
-     labels, separator, and iOS 27's blue and red. */
-  :root {
-    --bg: #f2f2f7; --cell: #ffffff;
-    --label: #000000; --label2: rgba(60,60,67,0.6);
-    --sep: rgba(60,60,67,0.29); --fill: rgba(120,120,128,0.12);
-    --tint: #0088ff; --red: #ff383c; --barline: transparent;
-    --font: -apple-system, "SF Pro Text", "Pretendard Std", system-ui, sans-serif;
-    --font-display: -apple-system, "SF Pro Display", "Pretendard Std", system-ui, sans-serif;
-    --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
-    color-scheme: light dark;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --bg: #000000; --cell: #1c1c1e;
-      --label: #ffffff; --label2: rgba(235,235,245,0.6);
-      --sep: rgba(84,84,88,0.65); --fill: rgba(118,118,128,0.24);
-      --tint: #0091ff; --red: #ff4245;
-    }
-  }
-
-  body {
-    margin: 0; background: var(--bg); color: var(--label);
-    font-family: var(--font); font-size: 17px; line-height: 22px;
-    -webkit-font-smoothing: antialiased; -webkit-text-size-adjust: 100%;
-    -webkit-tap-highlight-color: transparent;
-  }
-  [hidden] { display: none !important; }
-
-  /* iOS 27, a pushed Settings page: a 54 pt bar whose title stays hidden
-     while the header card shows the name, groups 16 pt from the screen's
-     sides, 35 pt apart. */
-  .bar {
-    position: sticky; top: 0; z-index: 5; height: 54px; background: var(--bg);
-    border-bottom: 1px solid var(--barline); box-sizing: border-box;
-  }
-  .bar-in { display: flow-root; max-width: 640px; margin: 0 auto; padding: 0 64px; box-sizing: border-box; }
-  .bar h2 {
-    margin: 11.5px 0 0; font: 600 17px/21px var(--font); text-align: center;
-    overflow: hidden; text-overflow: ellipsis; white-space: nowrap; visibility: hidden;
-  }
-  .bar.titled h2 { visibility: visible; }
-  .col { max-width: 640px; margin: 0 auto; padding: 35px 16px 48px; box-sizing: border-box; }
-  .gap { height: 35px; }
-
-  /* Inset groups: corner 26, text 20 pt inside on iOS 27.2 (16 on 27.0),
-     text rows 53 pt, hairline separators. */
-  .group { background: var(--cell); border-radius: 26px; overflow: hidden; }
-  .row {
-    display: flex; align-items: center; position: relative; box-sizing: border-box;
-    width: 100%; min-height: 53px; padding: 15.5px 20px; margin: 0;
-    border: 0; background: none; font: inherit; color: inherit; text-align: left;
-    text-decoration: none; overflow-wrap: anywhere;
-  }
-  .row + .row::before {
-    content: ""; position: absolute; top: 0; left: 20px; right: 20px;
-    height: 0.5px; background: var(--sep);
-  }
-  /* A row that does something is the button itself: its title in the tint,
-     no chevron, since it opens another app or copies (settings-action-rows). */
-  .act { color: var(--tint); cursor: pointer; }
-  .act:focus-visible { outline: 2px solid var(--tint); outline-offset: -2px; border-radius: inherit; }
-  .text { margin: 0; padding: 15.5px 20px; white-space: pre-wrap; overflow-wrap: anywhere; }
-  .header { margin: 0; padding: 0 20px 8px; font-size: 17px; line-height: 22px; font-weight: 600; color: var(--label2); }
-  .footer { margin: 0; padding: 7px 20px 0; font-size: 13px; line-height: 18px; color: var(--label2); overflow-wrap: anywhere; }
-  .footer code { font-family: var(--mono); font-size: 12px; word-break: break-all; }
-
-  /* The header card, as Settings > General draws it on iOS 27.0: content
-     15 pt from the card's top and bottom, a 60 pt icon, the name 15 pt below
-     it at 22 pt bold, the description 4 pt below that at 17 pt in the
-     secondary colour. */
-  .head { padding: 15px 20px; }
-  .icon { position: relative; width: 60px; height: 60px; border-radius: 22.37%; background: var(--fill); }
-  .icon img { display: block; width: 100%; height: 100%; border-radius: inherit; }
-  /* The owner's rule: a hairline on every picture, one device pixel in the
-     separator colour, inside its edge (ios-pages-for-artifacts, Pictures). */
-  .icon::after, .shot::after {
-    content: ""; position: absolute; inset: 0; border-radius: inherit;
-    box-shadow: inset 0 0 0 0.5px var(--sep); pointer-events: none;
-  }
-  .head h1 { margin: 15px 0 0; font: 700 22px/26.5px var(--font-display); overflow-wrap: anywhere; }
-  .head .icon[hidden] + h1 { margin-top: 0; }
-  .desc { margin-top: 4px; color: var(--label2); overflow-wrap: anywhere; }
-  .desc p { margin: 0; }
-  .desc .err { color: var(--red); }
-
-  /* Pictures sit inside a group card. */
-  .shots { display: flex; gap: 12px; overflow-x: auto; padding: 16px; }
-  .shot { position: relative; flex: none; border-radius: 10px; }
-  .shot img { display: block; height: 380px; width: auto; border-radius: inherit; }
-
-  /* iPadOS 27.2, Settings on an iPad Air 11-inch: a single page is one
-     column like the detail column, groups 20 pt from both sides, at most
-     820 pt wide, text 18 pt inside the cards; the header card's name is 20 pt
-     below the icon and the description 8 pt below the name. */
-  @media (min-width: 600px) and (hover: none), (min-width: 600px) and (pointer: coarse), (min-width: 600px) and (pointer: none) {
-    .bar-in { max-width: 820px; }
-    .col { max-width: 820px; padding-left: 20px; padding-right: 20px; }
-    .row, .text { padding-left: 18px; padding-right: 18px; }
-    .row + .row::before { left: 18px; right: 18px; }
-    .header, .footer { padding-left: 18px; padding-right: 18px; }
-    .head h1 { margin-top: 20px; }
-    .desc { margin-top: 8px; }
-  }
-
-  /* macOS 27.0.1, System Settings in dark mode at 1x: a 52 pt band with a
-     1 px line under it, the detail column's groups 20 pt in, 12 pt below the
-     band, 10 pt apart, corner 12, text 13 pt 11 pt inside, text rows 37 pt,
-     1 px separators. The header card is centred: a 48 pt icon 26 pt from the
-     card's top, the name 12 pt below it at 22 pt bold, the description right
-     under it at 13 pt, 20 pt from the card's bottom. Light mode isn't
-     measured, so it keeps iOS's colours. */
-  @media (hover: hover) and (pointer: fine) {
-    :root { --barline: var(--sep); }
-    @media (prefers-color-scheme: dark) {
-      :root {
-        --bg: rgb(30,30,30); --cell: rgb(37,37,37); --sep: rgb(47,47,47); --barline: rgb(46,46,46);
-        --label: rgba(255,255,255,0.85); --label2: rgba(255,255,255,0.55);
-      }
-    }
-    body { font-size: 13px; line-height: 16px; }
-    .bar { height: 52px; }
-    .bar-in { max-width: 700px; padding: 0 31px; }
-    .bar h2 { margin-top: 16px; font: 700 15px/18px var(--font); text-align: left; }
-    .col { max-width: 700px; padding: 12px 20px 48px; }
-    .gap { height: 10px; }
-    .group { border-radius: 12px; }
-    .row { min-height: 37px; padding: 10.5px 11px; }
-    .row + .row::before { left: 10px; right: 11px; height: 1px; }
-    .text { padding: 10.5px 11px; }
-    .header { font-size: 13px; line-height: 16px; font-weight: 700; color: var(--label); padding: 20px 11px 10px; }
-    .footer { font-size: 11px; line-height: 14px; padding: 6px 11px 0; }
-    .footer code { font-size: 10px; }
-    .head { padding: 26px 10px 20px; text-align: center; }
-    .icon { width: 48px; height: 48px; margin: 0 auto; }
-    .head h1 { margin-top: 12px; font: 700 22px/26px var(--font-display); }
-    .desc { margin-top: 0; }
-    .shots { padding: 10px; }
-  }
-</style>
 </head>
 <body>
+<main class="page">
 
-<div class="bar" id="bar"><div class="bar-in"><h2 id="barTitle" aria-hidden="true"></h2></div></div>
-
-<div class="col">
-
-  <div class="group head">
-    <div class="icon" id="iconBox" hidden><img id="icon" alt=""></div>
-    <h1 id="name">Loading…</h1>
-    <div class="desc">
-      <p id="subtitle" hidden></p>
-      <p id="meta" hidden></p>
-    </div>
-  </div>
-
-  <div class="gap"></div>
+  <h1 class="large-title" id="name">Loading…</h1>
 
   <!-- SideStore first, deliberately. AltStore's AltServer wants iTunes and
        iCloud direct from Apple, which the Microsoft Store versions can't
        satisfy; SideStore refreshes on-device and doesn't hit that wall. The
        AltStore button is here because the source format is shared, not as a
-       recommendation. -->
-  <div class="group">
-    <a class="row act" id="side" href="#">Add to SideStore</a>
-    <a class="row act" id="alt" href="#">Add to AltStore</a>
-    <button class="row act" id="copy" type="button">Copy</button>
-  </div>
-  <p class="footer" id="url">…</p>
-
-  <section id="descWrap" hidden>
-    <div class="gap"></div>
-    <h2 class="header">About</h2>
-    <div class="group"><p class="text" id="desc"></p></div>
+       recommendation. The developer page has no buttons of its own; these
+       are its View button's capsule, in the row the app page uses. -->
+  <section class="shelf" id="sourceShelf">
+    <div class="button-row source-buttons">
+      <a class="get-button" id="side" href="#">Add to SideStore</a>
+      <a class="get-button" id="alt" href="#">Add to AltStore</a>
+      <button class="get-button" id="copy" type="button">Copy</button>
+    </div>
+    <p class="source-url" id="url"></p>
   </section>
 
-  <section id="shotsWrap" hidden>
-    <div class="gap"></div>
-    <h2 class="header">Screenshots</h2>
-    <div class="group"><div class="shots" id="shots"></div></div>
+  <section class="shelf" id="appsShelf" hidden>
+    <div class="lockups" id="apps"></div>
   </section>
 
-  <section id="logWrap" hidden>
-    <div class="gap"></div>
-    <h2 class="header">What's new</h2>
-    <div class="group"><p class="text" id="log"></p></div>
-  </section>
+  <p class="missing" id="error" hidden></p>
 
-  <section id="minosWrap" hidden>
-    <div class="gap"></div>
-    <h2 class="header">Before you install</h2>
-    <div class="group"><p class="text" id="minos"></p></div>
-  </section>
-
-  <section id="dlWrap" hidden>
-    <div class="gap"></div>
-    <h2 class="header">Manual install</h2>
-    <div class="group"><a class="row act" id="ipa" href="#">.ipa</a></div>
-    <p class="footer" id="hashLi" hidden>SHA-256: <code id="hash"></code></p>
-  </section>
-
-  <div class="gap"></div>
-  <p class="footer" id="foot"></p>
-
-</div>
-
+</main>
+<script src="/store.js"></script>
 <script>
 (function () {
-  // source.json is served next to this page. Change if you move it.
-  var SOURCE_URL = new URL('source.json', location.href).href;
+  var S = Store, T = S.TEXT;
   var $ = function (id) { return document.getElementById(id); };
 
-  $('url').textContent = SOURCE_URL;
-  $('alt').href  = 'altstore://source?url='  + SOURCE_URL;
-  $('side').href = 'sidestore://source?url=' + SOURCE_URL;
+  $('side').textContent = T.addSideStore;
+  $('alt').textContent = T.addAltStore;
+  $('copy').textContent = T.copy;
+  $('url').textContent = S.SOURCE_URL;
+  S.sourceLinks($('side'), $('alt'));
+  $('copy').addEventListener('click', function () { S.copySourceURL($('copy')); });
 
-  $('copy').addEventListener('click', function () {
-    var done = function () {
-      var b = $('copy'), old = b.textContent;
-      b.textContent = 'Copied';
-      setTimeout(function () { b.textContent = old; }, 1400);
-    };
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(SOURCE_URL).then(done, done);
-    } else {
-      var t = document.createElement('textarea');
-      t.value = SOURCE_URL;
-      document.body.appendChild(t); t.select();
-      try { document.execCommand('copy'); } catch (e) {}
-      document.body.removeChild(t); done();
-    }
-  });
-
-  // The bar's title stays hidden while the name in the header card is in
-  // view, and shows once the name has gone under the bar, as Settings >
-  // General does on iOS 27.
-  var bar = $('bar'), pending = false;
-  function placeTitle() {
-    pending = false;
-    var below = $('name').getBoundingClientRect().bottom > bar.getBoundingClientRect().bottom;
-    bar.classList.toggle('titled', !below);
-  }
-  function setName(text) {
-    $('name').textContent = text;
-    $('barTitle').textContent = text;
-  }
-  addEventListener('scroll', function () {
-    if (!pending) { pending = true; requestAnimationFrame(placeTitle); }
-  }, { passive: true });
-  addEventListener('resize', placeTitle);
-
-  function megabytes(n) {
-    if (!n) return '';
-    var mb = n / 1048576;
-    return (mb >= 10 ? mb.toFixed(0) : mb.toFixed(1)) + ' MB';
-  }
-
-  fetch(SOURCE_URL, { cache: 'no-cache' })
-    .then(function (r) {
-      if (!r.ok) throw new Error('HTTP ' + r.status);
-      return r.json();
-    })
+  S.loadSource()
     .then(function (src) {
-      var app = (src.apps || [])[0];
-      if (!app) throw new Error('no apps listed in source.json');
-
-      document.title = app.name + (src.name ? ' — ' + src.name : '');
-      setName(app.name);
-      if (app.subtitle) { $('subtitle').textContent = app.subtitle; $('subtitle').hidden = false; }
-      if (app.iconURL) { $('icon').src = app.iconURL; $('iconBox').hidden = false; }
-      if (src.name) $('foot').textContent = src.name;
-
-      var v = (app.versions || [])[0];
-      if (v) {
-        var bits = ['Version ' + v.version];
-        if (v.buildVersion) bits[0] += ' (build ' + v.buildVersion + ')';
-        if (v.date) {
-          bits.push(new Date(v.date).toLocaleDateString(undefined, {
-            year: 'numeric', month: 'short', day: 'numeric'
-          }));
-        }
-        if (v.size) bits.push(megabytes(v.size));
-        $('meta').textContent = bits.join(' · ');
-        $('meta').hidden = false;
-
-        if (v.minOSVersion) {
-          $('minos').textContent = 'Requires iOS ' + v.minOSVersion + ' or later.';
-          $('minosWrap').hidden = false;
-        }
-        if (v.localizedDescription) {
-          $('log').textContent = v.localizedDescription;
-          $('logWrap').hidden = false;
-        }
-        if (v.downloadURL) {
-          $('ipa').href = v.downloadURL;
-          $('dlWrap').hidden = false;
-          if (v.sha256) { $('hash').textContent = v.sha256; $('hashLi').hidden = false; }
-        }
-      }
-
-      if (app.localizedDescription) {
-        $('desc').textContent = app.localizedDescription;
-        $('descWrap').hidden = false;
-      }
-
-      var shots = (app.screenshots || [])
-        .map(function (s) { return typeof s === 'string' ? s : (s && s.imageURL); })
-        .filter(Boolean);
-      if (shots.length) {
-        shots.forEach(function (u) {
-          var box = document.createElement('div');
-          var img = document.createElement('img');
-          box.className = 'shot';
-          img.src = u; img.alt = ''; img.loading = 'lazy';
-          box.appendChild(img);
-          $('shots').appendChild(box);
-        });
-        $('shotsWrap').hidden = false;
-      }
-      placeTitle();
+      var apps = src.apps || [];
+      if (!apps.length) throw new Error('no apps listed in source.json');
+      document.title = src.name || '';
+      $('name').textContent = src.name || '';
+      apps.forEach(function (app) { $('apps').appendChild(S.lockup(app, false)); });
+      $('appsShelf').hidden = false;
     })
     .catch(function (e) {
-      setName('Source unavailable');
-      $('subtitle').textContent = 'Could not load source.json (' + e.message + ')';
-      $('subtitle').className = 'err';
-      $('subtitle').hidden = false;
+      document.title = T.unavailable;
+      $('name').textContent = T.unavailable;
+      $('error').textContent = T.couldNotLoad(e.message);
+      $('error').hidden = false;
     });
 })();
 </script>

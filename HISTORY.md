@@ -644,3 +644,16 @@ The owner: "change my online page for apps.kaydenpmd.net to apple style". `publi
 - `404.html` got the same look and keeps its text and its reason for existing.
 
 Checked before pushing with Playwright through Edge, against a local server: 375 x 812 with touch, 800 x 1280 with touch and 1280 x 800 with a mouse, dark and light. The header card sits 35 px under the 54 px bar on the phone and tablet and 12 px under the 52 px band on the desktop, as measured. Playwright's full-page capture loses touch emulation (it showed the desktop layout at phone width); a viewport capture doesn't.
+
+## 20 Nov 2026: the site becomes the source's, laid out as the App Store
+
+The owner, once the Settings-style page was live: "and i don't want it to land on ammy i have other apps on my source make it more of a general page / how about an app store app page". The site is now the source's. `index.html` is laid out as a developer's page on Apple's App Store website: the source's name as the large title, Add to SideStore, Add to AltStore and Copy in the capsule of Apple's View button, the source's address, then a medium lockup per app. `app.html` is an app's page, at `/app/<slug>` through `_redirects`: the icon and name over a band made from the icon, What's new, Information (developer, size, category, compatibility, SHA-256), the .ipa link and More by. `store.css` and `store.js` are shared, and `404.html` got the same look.
+
+- Measured from apps.apple.com (web build 2646.1.0-external) on 20 Nov 2026 with Playwright through Edge, as a phone, a tablet and a desktop, dark and light, and written up in the design library (`apple/app-store-web/`). The stylesheet's own values were copied: tokens, breakpoints (484, 1000, 1260, 1580, 1940), lockup grids, the hero.
+- An iPhone user agent can't be captured: the site hands it to the App Store app and the navigation aborts, so the phone captures used an Android one.
+- Labels the source has no words for (View, Information, Developer, Size, Category, Compatibility, More by) show Apple's as samples, and the Not found page's button says `[text]`, pending the owner's wording page, the artifact "Kayden's Source Wording".
+- The rewrite targets `/app`, not `/app.html`: Pages redirects `.html` addresses to their extensionless form, and Cloudflare's own proxying example targets that form.
+
+The owner asked why the website and not the App Store app ("why do you not want the app"). The app isn't in the iOS simulator, so it couldn't be measured the way Settings is, and the website was the one version measurable exactly, from its own CSS. But Apple sends every iPhone to the app, so no iPhone ever shows the phone layout that was copied. The offer: phones and iPads copy the app, from the owner's iPhone screenshots of an app's page and a developer's page, dark and light; desktops keep the website's layout, which is what Apple shows there. Not yet chosen.
+
+Checked before pushing against a local server that answers as Pages does (`.claude/serve_public.py`, not committed): the source page, both app pages, an unknown app and an unknown address, as a phone (390 x 844, touch), a tablet (800 x 1280, touch) and a desktop (1280 x 900), dark and light, with no console errors. The owner saw the phone and desktop pictures and said "put it all up for now"; pushed with the samples and the placeholder in place.

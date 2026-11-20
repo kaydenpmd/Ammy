@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title></title>
+<link rel="icon" href="/source-icon.jpg">
+<link rel="apple-touch-icon" href="/source-icon.jpg">
+<link rel="stylesheet" href="/store.css">
+<!--
+  One app's page, laid out as an app's page on Apple's web App Store. It's
+  served at /app/<slug> (_redirects), the slug being the last part of the
+  app's bundle ID; /app?id=<slug> works too. Sections appear only when
+  source.json has something for them. Sizes and colours are in store.css,
+  from design-research/apple/app-store-web/NOTES.md.
+-->
+</head>
+<body>
+<main class="page">
+
+  <header class="hero" id="hero">
+    <div class="hero-blur"></div>
+    <div class="hero-content">
+      <div class="hero-icon">
+        <div class="icon" id="icon"></div>
+        <div class="hero-glow" aria-hidden="true"><img id="glow" alt="" hidden></div>
+      </div>
+      <div class="hero-text">
+        <h1 id="name">Loading…</h1>
+        <p class="subtitle" id="subtitle" hidden></p>
+        <!-- SideStore first, for the reason given on the source page. -->
+        <div class="button-row" id="buttons" hidden>
+          <a class="hero-button" id="side" href="#"></a>
+          <a class="hero-button" id="alt" href="#"></a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <section class="shelf" id="descShelf" hidden>
+    <p class="description" id="desc"></p>
+  </section>
+
+  <section class="shelf" id="newShelf" hidden>
+    <div class="shelf-title-row"><h2 class="shelf-title" id="newTitle"></h2></div>
+    <div class="whats-new">
+      <p class="notes" id="notes"></p>
+      <div class="metadata"><span id="version"></span><time id="date"></time></div>
+    </div>
+  </section>
+
+  <section class="shelf" id="infoShelf" hidden>
+    <div class="shelf-title-row"><h2 class="shelf-title" id="infoTitle"></h2></div>
+    <dl class="info" id="info"></dl>
+  </section>
+
+  <section class="shelf" id="linkShelf" hidden>
+    <ul class="links"><li><a id="ipa" href="#"></a></li></ul>
+  </section>
+
+  <section class="shelf" id="moreShelf" hidden>
+    <div class="shelf-title-row">
+      <a class="shelf-title" href="/"><span id="moreTitle"></span><svg class="chevron" viewBox="0 0 51.108 87.687" aria-hidden="true"><path d="M51.108 43.834c-.018-1.997-.718-3.638-2.334-5.23L11.214 1.877C9.974.6 8.453 0 6.64 0 2.96 0 .001 2.897.001 6.55 0 8.326.765 10.004 2.068 11.344l33.398 32.472L2.07 76.325C.784 77.665 0 79.305 0 81.137c0 3.653 2.96 6.55 6.641 6.55 1.796 0 3.334-.601 4.572-1.877l37.561-36.746c1.636-1.591 2.334-3.25 2.334-5.23"/></svg></a>
+    </div>
+    <div class="lockups small" id="more"></div>
+  </section>
+
+  <div id="missing" hidden>
+    <p class="missing" id="missingText"></p>
+    <div class="button-row"><a class="get-button" id="toSource" href="/"></a></div>
+  </div>
+
+</main>
+<script src="/store.js"></script>
+<script>
+(function () {
+  var S = Store, T = S.TEXT;
+  var $ = function (id) { return document.getElementById(id); };
+
+  var m = location.pathname.match(/^\/app\/([^\/]+)/);
+  var slug = decodeURIComponent(m ? m[1] : (new URLSearchParams(location.search).get('id') || '')).toLowerCase();
+
+  function info(label, value, mono) {
+    if (!value) return;
+    var item = S.el('div');
+    item.appendChild(S.el('dt', null, label));
+    var dd = S.el('dd');
+    if (mono) dd.appendChild(S.el('code', null, value)); else dd.textContent = value;
+    item.appendChild(dd);
+    $('info').appendChild(item);
+  }
+
+  function missing(title, text) {
+    document.title = title;
+    $('hero').hidden = true;
+    var h = S.el('h1', 'large-title', title);
+    document.querySelector('.page').insertBefore(h, $('missing'));
+    $('missingText').textContent = text;
+    $('toSource').textContent = T.toSource;
+    $('missing').hidden = false;
+  }
+
+  S.loadSource()
+    .then(function (src) {
+      var apps = src.apps || [];
+      var app = apps.filter(function (a) { return S.slugOf(a) === slug; })[0];
+      if (!app) { missing(T.notFound, T.notPublished); return; }
+
+      document.title = app.name + (src.name ? ' — ' + src.name : '');
+      $('name').textContent = app.name;
+      if (app.subtitle) { $('subtitle').textContent = app.subtitle; $('subtitle').hidden = false; }
+      if (app.iconURL) {
+        $('icon').appendChild(S.icon(app.iconURL, 194).firstChild);
+        $('glow').src = app.iconURL; $('glow').hidden = false;
+        $('hero').style.setProperty('--background-image', 'url("' + app.iconURL.replace(/"/g, '%22') + '")');
+      }
+      $('side').textContent = T.addSideStore;
+      $('alt').textContent = T.addAltStore;
+      S.sourceLinks($('side'), $('alt'));
+      $('buttons').hidden = false;
+
+      if (app.localizedDescription) {
+        $('desc').textContent = app.localizedDescription;
+        $('descShelf').hidden = false;
+      }
+
+      var v = (app.versions || [])[0] || {};
+      if (v.localizedDescription) {
+        $('newTitle').textContent = T.whatsNew;
+        $('notes').textContent = v.localizedDescription;
+        $('version').textContent = T.version(v.version, v.buildVersion);
+        if (v.date) { $('date').textContent = S.formatDate(v.date); $('date').dateTime = v.date; }
+        $('newShelf').hidden = false;
+      }
+
+      $('infoTitle').textContent = T.information;
+      info(T.developer, app.developerName);
+      info(T.size, S.megabytes(v.size));
+      info(T.category, S.categoryName(app.category));
+      if (v.minOSVersion) info(T.compatibility, T.requires(v.minOSVersion));
+      info(T.sha256, v.sha256, true);
+      $('infoShelf').hidden = !$('info').children.length;
+
+      if (v.downloadURL) {
+        $('ipa').href = v.downloadURL;
+        $('ipa').textContent = T.ipa;
+        $('linkShelf').hidden = false;
+      }
+
+      var others = apps.filter(function (a) { return a !== app; });
+      if (others.length) {
+        $('moreTitle').textContent = T.moreBy(app.developerName || src.name || '');
+        others.forEach(function (a) { $('more').appendChild(S.lockup(a, true)); });
+        $('moreShelf').hidden = false;
+      }
+    })
+    .catch(function (e) {
+      missing(T.unavailable, T.couldNotLoad(e.message));
+    });
+})();
+</script>
+</body>
+</html>

@@ -31,8 +31,8 @@ Discord has **no Rich Presence SDK on iOS**. The sanctioned path is a local IPC 
 
 **Ammy is a sender**: it reads Apple Music's now-playing state and POSTs it to an HTTPS endpoint the user chooses. It's built to pair with Issun and works with anything that accepts the POST.
 
-- `public/index.html`, `NSAppleMusicUsageDescription` in `project.yml` and the app's UI stay **receiver-agnostic**: never name Discord. The UI says **Endpoint**, not Relay.
-- The listing's subtitle and description, the README and the landing page's prose are the owner's to write (3 Nov 2026). Until then: no subtitle, empty `localizedDescription`, README is the name only, landing page has its buttons and facts from `source.json`. Don't fill them in.
+- The site (`public/`), `NSAppleMusicUsageDescription` in `project.yml` and the app's UI stay **receiver-agnostic**: never name Discord. The UI says **Endpoint**, not Relay.
+- The listing's subtitle and description, the README and the site's prose are the owner's to write (3 Nov 2026). Until then: no subtitle, empty `localizedDescription`, README is the name only, the site has its buttons and facts from `source.json`. Don't fill them in.
 - All interface text is the owner's too (global CLAUDE.md, the wording page).
 - Check non-prose surfaces: the listing's accent colour is system blue `#007AFF`; it was once Discord's blurple and carried the old framing.
 - This file documents the Discord receiver, accurately. The rule is about what Ammy is, not about removing Discord facts.
@@ -53,7 +53,7 @@ scripts/build_source.py              Regenerates public/source.json
 scripts/make_icon.py                 Draws the app icon, like Albums' script of the same name
 scripts/measure_marquee.py           Times a scrolling line in a screen recording
 source.config.json                   AltStore listing metadata (user-facing copy)
-public/                              Cloudflare Pages site: landing page (an Apple settings page; HISTORY.md, 20 Nov 2026), source.json
+public/                              Cloudflare Pages site (The site, below) and source.json
 PUBLISHING.md                        One-time setup for the AltStore source
 HISTORY.md                           How everything got this way
 local/                               Private notes and data, never committed (.git/info/exclude)
@@ -198,6 +198,13 @@ Push to `main` runs `.github/workflows/publish-source.yml`, unless the push touc
 Albums is in this source too: its CI pushes `public/source.json` here, so `main` can move under you (`PUBLISHING.md`). The repo is public because macOS minutes bill at 10× on private repos.
 
 Install path is **SideStore** (needs only iTunes); AltStore works for those who have it, but nobody is sent to get it. Free accounts expire in 7 days; a paid account makes it 365 for that account only.
+
+## The site
+
+`apps.kaydenpmd.net` is the source's page, not Ammy's (the owner, 20 Nov 2026: "make it more of a general page"). `index.html` lists every app in `source.json` under the source's name and buttons; each app has a page at `/app/<slug>`, the last part of its bundle ID, served by `app.html` through `_redirects`. Both copy Apple's App Store website, measured in the design library (`apple/app-store-web/`), at every width.
+
+- iPhones never see the website's phone layout: Apple hands them to the App Store app. Whether phones and iPads should copy the app instead is the owner's open question (20 Nov 2026). The app has to be measured from the owner's iPhone screenshots; the simulator has no App Store.
+- Labels marked `sample` in `public/store.js` are Apple's words, and the Not found page's button is `[text]`, live "for now" (the owner, 20 Nov 2026) until the owner fills in the artifact "Kayden's Source Wording".
 
 ## The receiver on the PC
 
