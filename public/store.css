@@ -4,8 +4,8 @@
   app page. Every size, colour and breakpoint comes from that site's own CSS,
   measured on 20 Nov 2026 (design-research/apple/app-store-web/NOTES.md).
   Left out: the store's own navigation, search and footer. Where the owner
-  chose otherwise (20 Nov 2026): no View button on the lockups, and the .ipa
-  button first in the app page's header, in blue.
+  chose otherwise (20 Nov 2026): the .ipa button first in the app page's
+  header, in blue.
 */
 
 /* Pretendard stands in for SF Pro where the device has none: the owner's
@@ -106,9 +106,9 @@ button { font: inherit; color: inherit; border: 0; background: none; padding: 0;
 .icon::after { content: ""; position: absolute; inset: 0; border-radius: inherit; box-shadow: 0 0 0 1px var(--systemQuaternary); pointer-events: none; }
 
 /* Lockups. Medium (the developer page): an 85 px icon, the name in title-3,
-   the subtitle in callout. Small (More by): a 64 px icon, the name in
-   title-3-emphasized. Both in two rows filled column by column. The App
-   Store's View button is left out, as the owner chose. */
+   the subtitle in callout, the button 7 px lower. Small (More by): a 64 px
+   icon, the name in title-3-emphasized, the button at the row's end. Both in
+   two rows filled column by column. */
 .lockups {
   display: grid; grid-auto-flow: column; grid-template-rows: repeat(2, auto);
   column-gap: 20px; row-gap: 24px; grid-auto-columns: 298px;
@@ -122,13 +122,15 @@ button { font: inherit; color: inherit; border: 0; background: none; padding: 0;
 .lockup .meta { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
 .lockup .name { font: 400 15px/20px var(--font-family); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .lockup .subtitle { font: 400 12px/15px var(--font-family); color: var(--systemSecondary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lockup .get-button { align-self: flex-start; margin-top: 7px; }
 
 .lockups.small { column-gap: 10px; }
 @media (min-width: 1000px) { .lockups.small { column-gap: 20px; grid-auto-columns: calc(33.3333% - 13.3333px); } }
 @media (min-width: 1580px) { .lockups.small { grid-auto-columns: calc(25% - 15px); } }
 .lockups.small .icon { width: 64px; height: 64px; }
-.lockups.small .meta { flex: 1; }
+.lockups.small .meta { flex: 1; margin-inline-end: 16px; }
 .lockups.small .name { font-weight: 600; }
+.lockups.small .get-button { margin: 0 0 0 auto; align-self: center; flex: none; }
 
 /* The source's address under its buttons, in body text. */
 .source-buttons { margin: 0 var(--bodyGutter); }

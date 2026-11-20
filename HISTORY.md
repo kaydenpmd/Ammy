@@ -669,3 +669,7 @@ The owner, on the live site: "view button is redundant / move the ipa button to 
 - The wording page lost its View slot and its source-page picture (nothing left to word there); the app page's picture was re-shot. No answers had been written yet, so nothing was lost.
 
 Checked against the local server as a phone, a tablet and a desktop, dark and light: on a phone .ipa and Add to SideStore share the first row and Add to AltStore wraps under them; no console errors.
+
+## 20 Nov 2026: the View buttons come back
+
+After seeing what the source page copies, Overcast's developer page on Apple's App Store website with a View button on every app: "if apple uses view then we'll keep it but it's still redundant lol". The View buttons are back on the source page and under More by, as they were; the .ipa stays first in the header, in blue. The wording page has its View slot and source-page picture again. The live site went without View buttons for a few minutes in between (d0617e5).
