@@ -3,7 +3,9 @@
   version 2646.1.0-external): index.html as a developer page, app.html as an
   app page. Every size, colour and breakpoint comes from that site's own CSS,
   measured on 20 Nov 2026 (design-research/apple/app-store-web/NOTES.md).
-  Left out: the store's own navigation, search and footer.
+  Left out: the store's own navigation, search and footer. Where the owner
+  chose otherwise (20 Nov 2026): no View button on the lockups, and the .ipa
+  button first in the app page's header, in blue.
 */
 
 /* Pretendard stands in for SF Pro where the device has none: the owner's
@@ -26,6 +28,7 @@
   --systemQuaternary-vibrant: #e8e8e8;
   --keyColor: #007aff;
   --keyColor-rgb: 0, 122, 255;
+  --systemPrimary-onDark: #ffffffd9;
   --button-alpha: 1;
   --bodyGutter: 25px;
   --font-family: -apple-system, BlinkMacSystemFont, "SF Pro", "Pretendard Std", "Helvetica Neue", Helvetica, Arial, sans-serif;
@@ -44,6 +47,14 @@
     --systemQuaternary-vibrant: #232323;
     --button-alpha: 1.33;
   }
+}
+/* Text on the key colour: Apple's stylesheet gives it 85% white where the
+   system font is Apple's, 92% elsewhere, and full white for more contrast. */
+@supports not (font: -apple-system-body) {
+  :root { --systemPrimary-onDark: #ffffffeb; }
+}
+@media (prefers-contrast: more) {
+  :root { --systemPrimary-onDark: #fff; }
 }
 @media (min-width: 1000px) {
   :root { --bodyGutter: 40px; }
@@ -95,9 +106,9 @@ button { font: inherit; color: inherit; border: 0; background: none; padding: 0;
 .icon::after { content: ""; position: absolute; inset: 0; border-radius: inherit; box-shadow: 0 0 0 1px var(--systemQuaternary); pointer-events: none; }
 
 /* Lockups. Medium (the developer page): an 85 px icon, the name in title-3,
-   the subtitle in callout, the button 7 px lower. Small (More by): a 64 px
-   icon, the name in title-3-emphasized, the button at the row's end. Both in
-   two rows filled column by column. */
+   the subtitle in callout. Small (More by): a 64 px icon, the name in
+   title-3-emphasized. Both in two rows filled column by column. The App
+   Store's View button is left out, as the owner chose. */
 .lockups {
   display: grid; grid-auto-flow: column; grid-template-rows: repeat(2, auto);
   column-gap: 20px; row-gap: 24px; grid-auto-columns: 298px;
@@ -111,15 +122,13 @@ button { font: inherit; color: inherit; border: 0; background: none; padding: 0;
 .lockup .meta { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
 .lockup .name { font: 400 15px/20px var(--font-family); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .lockup .subtitle { font: 400 12px/15px var(--font-family); color: var(--systemSecondary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.lockup .get-button { align-self: flex-start; margin-top: 7px; }
 
 .lockups.small { column-gap: 10px; }
 @media (min-width: 1000px) { .lockups.small { column-gap: 20px; grid-auto-columns: calc(33.3333% - 13.3333px); } }
 @media (min-width: 1580px) { .lockups.small { grid-auto-columns: calc(25% - 15px); } }
 .lockups.small .icon { width: 64px; height: 64px; }
-.lockups.small .meta { flex: 1; margin-inline-end: 16px; }
+.lockups.small .meta { flex: 1; }
 .lockups.small .name { font-weight: 600; }
-.lockups.small .get-button { margin: 0 0 0 auto; align-self: center; flex: none; }
 
 /* The source's address under its buttons, in body text. */
 .source-buttons { margin: 0 var(--bodyGutter); }
@@ -170,6 +179,9 @@ button { font: inherit; color: inherit; border: 0; background: none; padding: 0;
   font: 600 13px/16px var(--font-family); white-space: nowrap;
 }
 @media (min-width: 1000px) { .hero-button { height: 32px; border-radius: 32px; } }
+/* The .ipa button: that capsule in the colours of Apple's blue Get button
+   (.get-button.blue), not blended, so the blue stays the key colour. */
+.hero-button.blue { background-color: var(--keyColor); color: var(--systemPrimary-onDark); mix-blend-mode: normal; }
 
 /* What's new: the notes beside the version and date. */
 .whats-new { display: flex; margin: 0 var(--bodyGutter); font: 400 13px/18px var(--font-family); }
@@ -189,19 +201,6 @@ button { font: inherit; color: inherit; border: 0; background: none; padding: 0;
 .info dt { color: var(--systemSecondary); margin-bottom: 4px; }
 .info dd { overflow-wrap: anywhere; }
 .info code { font: 400 13px/16px var(--mono); word-break: break-all; }
-
-/* Links that leave the page: full-width rows under 1000 px, a centred row
-   from 1000 px, each ending in an arrow. */
-.links { display: flex; justify-content: center; align-items: center; column-gap: 20px; }
-.links li { display: block; }
-.links a { display: inline-flex; align-items: center; color: var(--keyColor); }
-.links a::after { content: "\2197"; display: inline-block; margin-inline-start: 2px; }
-@media (max-width: 999px) {
-  .links { flex-direction: column; align-items: flex-start; }
-  .links li { width: 100%; padding: 10px var(--bodyGutter); border-bottom: 1px solid var(--systemGray4); }
-  .links li:first-child { border-top: 1px solid var(--systemGray4); }
-  .links a { font-size: 18px; line-height: 22px; }
-}
 
 /* A page that isn't there. */
 .missing { margin: 0 var(--bodyGutter); font: 400 13px/18px var(--font-family); color: var(--systemSecondary); }

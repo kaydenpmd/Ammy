@@ -28,8 +28,10 @@
       <div class="hero-text">
         <h1 id="name">Loading…</h1>
         <p class="subtitle" id="subtitle" hidden></p>
-        <!-- SideStore first, for the reason given on the source page. -->
+        <!-- The .ipa first and in blue, the owner's choice (20 Nov 2026); then
+             SideStore before AltStore, for the reason given on the source page. -->
         <div class="button-row" id="buttons" hidden>
+          <a class="hero-button blue" id="ipa" href="#" hidden></a>
           <a class="hero-button" id="side" href="#"></a>
           <a class="hero-button" id="alt" href="#"></a>
         </div>
@@ -52,10 +54,6 @@
   <section class="shelf" id="infoShelf" hidden>
     <div class="shelf-title-row"><h2 class="shelf-title" id="infoTitle"></h2></div>
     <dl class="info" id="info"></dl>
-  </section>
-
-  <section class="shelf" id="linkShelf" hidden>
-    <ul class="links"><li><a id="ipa" href="#"></a></li></ul>
   </section>
 
   <section class="shelf" id="moreShelf" hidden>
@@ -114,6 +112,12 @@
         $('glow').src = app.iconURL; $('glow').hidden = false;
         $('hero').style.setProperty('--background-image', 'url("' + app.iconURL.replace(/"/g, '%22') + '")');
       }
+      var v = (app.versions || [])[0] || {};
+      if (v.downloadURL) {
+        $('ipa').href = v.downloadURL;
+        $('ipa').textContent = T.ipa;
+        $('ipa').hidden = false;
+      }
       $('side').textContent = T.addSideStore;
       $('alt').textContent = T.addAltStore;
       S.sourceLinks($('side'), $('alt'));
@@ -124,7 +128,6 @@
         $('descShelf').hidden = false;
       }
 
-      var v = (app.versions || [])[0] || {};
       if (v.localizedDescription) {
         $('newTitle').textContent = T.whatsNew;
         $('notes').textContent = v.localizedDescription;
@@ -140,12 +143,6 @@
       if (v.minOSVersion) info(T.compatibility, T.requires(v.minOSVersion));
       info(T.sha256, v.sha256, true);
       $('infoShelf').hidden = !$('info').children.length;
-
-      if (v.downloadURL) {
-        $('ipa').href = v.downloadURL;
-        $('ipa').textContent = T.ipa;
-        $('linkShelf').hidden = false;
-      }
 
       var others = apps.filter(function (a) { return a !== app; });
       if (others.length) {

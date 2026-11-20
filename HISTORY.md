@@ -659,3 +659,13 @@ The owner asked why the website and not the App Store app ("why do you not want 
 Checked before pushing against a local server that answers as Pages does (`.claude/serve_public.py`, not committed): the source page, both app pages, an unknown app and an unknown address, as a phone (390 x 844, touch), a tablet (800 x 1280, touch) and a desktop (1280 x 900), dark and light, with no console errors. The owner saw the phone and desktop pictures and said "put it all up for now"; pushed with the samples and the placeholder in place.
 
 Live by 15:12 the same day (0c08364), checked with curl and through Edge. `/`, `/app/ammy`, `/app/albums`, `/app/ammy/` and `/app?id=ammy` answer 200 with no redirect, the rule serving `app.html`; `/app/nothing` answers 200 and the page shows Not found itself; `/nope` answers 404 with `404.html`; `/app.html` redirects once to `/app`, as Pages' extensionless rule says. Rendered as a phone, a tablet and a desktop, dark, the pages have the local copy's heights (Ammy's page 1103 px at phone width, Albums' 1067) and no console errors but the 404 page's own 404 and its `/favicon.ico`.
+
+## 20 Nov 2026: no View buttons, and the .ipa in the header
+
+The owner, on the live site: "view button is redundant / move the ipa button to be at the top with sidestore and altstore and before them and blue".
+
+- The lockups (the source page's apps, More by) lose Apple's View button: the whole lockup already opens the app's page. Their name and subtitle now sit centred beside the icon.
+- The .ipa link leaves its row of links under Information and becomes the first button in the app page's header. It keeps the header capsule's size (27 px, 32 from 1000 px), so the three line up, in the colours of Apple's own blue button, `.get-button.blue` from the same stylesheet: the key colour #007aff, text `--systemPrimary-onDark` (85% white where the system font is Apple's, 92% elsewhere, white with more contrast), not blended. The web page has no blue button in its header; the owner asked for one.
+- The wording page lost its View slot and its source-page picture (nothing left to word there); the app page's picture was re-shot. No answers had been written yet, so nothing was lost.
+
+Checked against the local server as a phone, a tablet and a desktop, dark and light: on a phone .ipa and Add to SideStore share the first row and Add to AltStore wraps under them; no console errors.

@@ -11,7 +11,6 @@
     addAltStore: 'Add to AltStore',
     copy: 'Copy',
     copied: 'Copied',
-    view: 'View',                                   // sample
     whatsNew: "What's new",
     version: function (v, build) { return 'Version ' + v + (build ? ' (build ' + build + ')' : ''); },
     information: 'Information',                     // sample
@@ -71,9 +70,10 @@
     return box;
   }
 
-  // A lockup: icon, name, the subtitle or, as the App Store does for an app
-  // without one, its category, and the View button. The whole lockup opens
-  // the app's page.
+  // A lockup: icon, name, and the subtitle or, as the App Store does for an
+  // app without one, its category. The whole lockup opens the app's page.
+  // The App Store's View button is left out: the owner found it redundant
+  // (20 Nov 2026).
   function lockup(app, small) {
     var a = el('a', 'lockup');
     a.href = appURL(app);
@@ -82,9 +82,7 @@
     meta.appendChild(el('h3', 'name', app.name));
     var sub = app.subtitle || categoryName(app.category);
     if (sub) meta.appendChild(el('p', 'subtitle', sub));
-    var button = el('span', 'get-button', TEXT.view);
-    if (small) { a.appendChild(meta); a.appendChild(button); }
-    else { meta.appendChild(button); a.appendChild(meta); }
+    a.appendChild(meta);
     return a;
   }
 

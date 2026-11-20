@@ -201,7 +201,7 @@ Install path is **SideStore** (needs only iTunes); AltStore works for those who 
 
 ## The site
 
-`apps.kaydenpmd.net` is the source's page, not Ammy's (the owner, 20 Nov 2026: "make it more of a general page"). `index.html` lists every app in `source.json` under the source's name and buttons; each app has a page at `/app/<slug>`, the last part of its bundle ID, served by `app.html` through `_redirects`. Both copy Apple's App Store website, measured in the design library (`apple/app-store-web/`), at every width.
+`apps.kaydenpmd.net` is the source's page, not Ammy's (the owner, 20 Nov 2026: "make it more of a general page"). `index.html` lists every app in `source.json` under the source's name and buttons; each app has a page at `/app/<slug>`, the last part of its bundle ID, served by `app.html` through `_redirects`. Both copy Apple's App Store website, measured in the design library (`apple/app-store-web/`), at every width, except where the owner chose otherwise on 20 Nov 2026: no View button on the lockups ("view button is redundant"), and the .ipa button first in the app page's header, before Add to SideStore and Add to AltStore, in Apple's blue.
 
 - iPhones never see the website's phone layout: Apple hands them to the App Store app. Whether phones and iPads should copy the app instead is the owner's open question (20 Nov 2026). The app has to be measured from the owner's iPhone screenshots; the simulator has no App Store.
 - Labels marked `sample` in `public/store.js` are Apple's words, and the Not found page's button is `[text]`, live "for now" (the owner, 20 Nov 2026) until the owner fills in the artifact "Kayden's Source Wording".
