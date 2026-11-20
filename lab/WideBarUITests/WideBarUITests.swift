@@ -83,7 +83,7 @@ final class WideBarUITests: XCTestCase {
         logName = "frames-ammy.txt"
         // wide-bar-check: one placement, the wide-bar branch's own constants (38 from the sides and the bottom, 10 above the keyboard). The launch switch is gone, so these numbers go unread.
         let placements = [
-            Placement(name: "new", side: 38, bottom: 38, keyboardGap: 10, size: "large"),
+            Placement(name: "new2", side: 38, bottom: 38, keyboardGap: 10, size: "large"),
         ]
         for p in placements {
             // Start, at the top of the page.
@@ -135,6 +135,23 @@ final class WideBarUITests: XCTestCase {
                 Thread.sleep(forTimeInterval: 1.5)
                 shot("\(p.name)__kbKey")
                 dump(app, "\(p.name)__kbKey", tree: false)
+            }
+            app.terminate()
+
+            // For the recording: Start alone, the keyboard up and down again, each moment stamped, so the frames between show how the buttons widen and narrow on the way.
+            app = launchAmmy(p, running: false)
+            let field = app.textFields["URL"]
+            if field.waitForExistence(timeout: 5) {
+                Thread.sleep(forTimeInterval: 1.0)
+                log("\(p.name) motion: tapping URL")
+                field.tap()
+                Thread.sleep(forTimeInterval: 3.0)
+                dump(app, "\(p.name)__motion_up", tree: false)
+                log("\(p.name) motion: pressing Return")
+                field.typeText("\n")
+                Thread.sleep(forTimeInterval: 3.0)
+                dump(app, "\(p.name)__motion_down", tree: false)
+                log("\(p.name) motion: done")
             }
             app.terminate()
 

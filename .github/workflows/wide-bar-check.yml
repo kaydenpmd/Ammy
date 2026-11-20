@@ -1,7 +1,7 @@
 name: Wide bar check (the bar where iOS puts its wide buttons)
 
 # Runs only on the wide-bar-check branch, never on main, and releases nothing.
-# The owner's choice, 19 Nov 2026: with no keyboard the bottom buttons match iOS's wide bottom button (38 pt from each side and from the bottom); with the keyboard, the same width, 10 pt above it; the same for the split buttons. The wide-bar branch makes that change. This builds it as build-ipa.yml builds a release, with only a way to show a session without sending anything (Ammy/LabSwitch.swift), and photographs it with Start, Stop, Stop and Restart, the keyboard, the end of the page, the largest ordinary text size and History. Dark mode, iOS 27.0, an iPhone SE, an iPhone 17e and an iPad Air 11.
+# The owner's choice, 19 Nov 2026: with no keyboard the bottom buttons match iOS's wide bottom button (38 pt from each side and from the bottom); with the keyboard, 10 pt above it, and (the owner's second message) at the previous wider width, 21 pt from the sides; the same for the split buttons. Run 44542740072 checked the first version; this one also records the screen, to see the buttons widen as the keyboard comes up. The wide-bar branch makes that change. This builds it as build-ipa.yml builds a release, with only a way to show a session without sending anything (Ammy/LabSwitch.swift), and photographs it with Start, Stop, Stop and Restart, the keyboard, the end of the page, the largest ordinary text size and History. Dark mode, iOS 27.0, an iPhone SE, an iPhone 17e and an iPad Air 11.
 
 on:
   push:
@@ -132,6 +132,10 @@ jobs:
       - name: Run
         run: |
           UDID="${{ steps.sim.outputs.udid }}"
+          python3 -c 'import time; print(time.time())' > out/record-start.txt
+          xcrun simctl io "$UDID" recordVideo --codec=h264 --force out/lab.mp4 > out/record.log 2>&1 &
+          REC=$!
+          sleep 3
           for only in $TESTS; do
             for attempt in 1 2; do
               TEST_RUNNER_LAB_OUT="$PWD/out" TEST_RUNNER_LAB_APPS="${{ steps.sim.outputs.apps }}" xcodebuild test-without-building \
@@ -147,6 +151,8 @@ jobs:
               if grep -q "' passed" "out/xcodebuild-$only-$attempt.log"; then break; fi
             done
           done
+          kill -INT $REC || true
+          wait $REC || true
           ls out | wc -l
 
       - uses: actions/upload-artifact@v7

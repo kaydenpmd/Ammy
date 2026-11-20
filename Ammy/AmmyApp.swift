@@ -712,10 +712,17 @@ struct ContentView: View {
     /// phone whatever the window reserves.
     private static let edgeGap: CGFloat = 38
 
-    /// From each side of the screen to the buttons: the same wide button's
-    /// 38 pt, measured with `edgeGap` (21, the tab bar's, until build 208).
-    /// With two buttons it's the pair that spans this width.
+    /// From each side of the screen to the buttons, with no keyboard: the
+    /// same wide button's 38 pt, measured with `edgeGap` (21, the tab bar's,
+    /// until build 208). With two buttons it's the pair that spans this
+    /// width.
     private static let sideGap: CGFloat = 38
+
+    /// The same with the keyboard up: the width the bar had until build 208,
+    /// 21 pt from each side, as a floating tab bar sits. The owner's choice,
+    /// 19 Nov 2026, after seeing the narrower buttons over the keyboard:
+    /// "let's make em the previous wider width when the keyboard is up".
+    private static let keyboardSideGap: CGFloat = 21
 
     /// From the buttons' bottom edge to the keyboard's top while it's up.
     /// iOS's wide button has no place there (on its sign-in page the keyboard
@@ -1152,11 +1159,12 @@ struct ContentView: View {
         //
         // With the keyboard up the bar sits on the keyboard's top edge, which
         // has no reserved zone beneath it, so the gap is `keyboardGap` from
-        // that edge on every phone. The sides are the same either way, and
-        // the same for one button or two.
+        // that edge on every phone, and the buttons take their wider span,
+        // `keyboardSideGap` from each side. One button or two, the rules are
+        // the same.
         .padding(.top, Self.barGap)
         .padding(.bottom, keyboardUp ? Self.keyboardGap : Self.edgeGap - bottomSafeArea)
-        .padding(.horizontal, Self.sideGap)
+        .padding(.horizontal, keyboardUp ? Self.keyboardSideGap : Self.sideGap)
     }
 
     @MainActor
