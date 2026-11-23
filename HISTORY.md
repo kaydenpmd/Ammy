@@ -675,3 +675,35 @@ Checked against the local server as a phone, a tablet and a desktop, dark and li
 After seeing what the source page copies, Overcast's developer page on Apple's App Store website with a View button on every app: "if apple uses view then we'll keep it but it's still redundant lol". The View buttons are back on the source page and under More by, as they were; the .ipa stays first in the header, in blue. The wording page has its View slot and source-page picture again. The live site went without View buttons for a few minutes in between (d0617e5).
 
 Live by 15:21 (b30c8ab), checked through Edge as a phone, a tablet and a desktop, dark: View on both lockup shelves, .ipa first in blue, page heights as on the local server (Ammy's page 1014 px at phone width, Albums' 978), no console errors; the addresses answer as before.
+
+## 22 and 23 Nov 2026: the App Store app, researched without the owner's phone
+
+iPhones and iPads never see Apple's App Store website (they are handed to the app), so if the site's phone and tablet layouts are to copy Apple they have to copy the app, and I had said that would need the owner's own screenshots. The owner: "try out your own research for app store screens". The research is in the design library, `apple/app-store-ios/` and `apple/app-store-ipados/`; nothing on the site changed, and whether the phone and tablet layouts switch to the app is still the owner's question.
+
+Where it looked:
+
+- The owner's own screenshots already in iCloud Photos: 45 contact sheets of the 1,435 since 1 Sep 2026 turned up eight App Store captures, three of them the screens wanted (a product page's top, What's New, Search results): those three are dark, on the iPhone SE at exactly 2 px per pt, iOS 27.0 or 27.0.1 by their dates. A fourth is a crop of Search results on iOS 27.2 or 27.2.1.
+- Apple's pictures (Support articles, the user guides, Developer News), the press, forums and the fediverse: Apple publishes no native-resolution screenshot of the App Store and nothing in dark; other people's native screenshots cover 390, 393, 402 and 430 pt phones.
+- Apple's session videos, as frames from the 4K streams: WWDC26 session 205, the keynote and the Meet with Apple recap for iOS and iPadOS 27 (beta), WWDC25 session 328 and a Tech Talk for iOS 26. A phone's screen is about 864 px wide in them (a 402 pt phone at 2.15 px per pt); the iPad's is 2568 px (1210 x 834 pt at 2.122).
+- Exact routes that don't exist: the simulator has no App Store app, Apple's iOS 27 UI kit has no App Store parts, nobody publishes measurements, and App Store Connect's Device Preview is a simplified drawing.
+
+What it found:
+
+- Exact, in dark, from the owner's phone: the round buttons (44 pt, 16 from the sides), the icon (118 pt at x 20, a continuous corner 0.26 of its width), name 22 semibold and subtitle 15 regular from x 154, the ribbon (0.5 pt hairlines from x 20 to the screen's right edge, 105 pt cells, 40 pt separators, labels 11 semibold, sub-values 13), screenshot cards 20 in and 10 apart, What's New, and lockups (60 or 62 pt icon, a 74 x 32 capsule ending 20 from the right).
+- The light video frames give the same numbers in pt wherever both show a thing, and add what the owner's captures lack: the Get capsule at rest (74 x 32, on the text column, its foot level with the icon's), the compact bar after scrolling, the header-image variant (about 260 pt tall). Other people's screenshots give the same values at every width, so the layout is fixed in pt and only the number of ribbon cells and the cards' width follow the screen.
+- The iPad: only four keynote frames, light, landscape: a 140 pt icon at a 52 pt margin, name 28 semibold, the same Get capsule, seven equal ribbon cells across the width. No native capture, no dark, nothing below the screenshots.
+- Not found anywhere: the developer page on iOS 27, 26 or 18 (the newest picture is an iOS 12 beta), the Get button at rest in dark, any native light capture, the Information list and Accessibility on iOS 27 (iOS 26 only), any motion. Section 10 of the iPhone spec lists the capture pass on the owner's phone that would settle each.
+
+How it ran: four workflows. The first gathered and chose the pictures. The second measured them and hit the Opus weekly limit (it resets 24 Nov 2026, 7 pm Central); the owner switched the session to Fable 5.2 and said "Try again". Resumed on Fable, with a third workflow for the video frames, the helpers ran out the 5-hour window three times before finishing, at about 3 million subagent tokens a window; most of their measuring was already on disk. The fourth, on 23 Nov, ran on Sonnet and assembled the results from that saved data instead of measuring again: ten helpers (five to assemble, two independent checks, three to write the specs and picture lists), 5.5 million tokens, 81 minutes, none failed.
+
+Two mistakes of mine along the way. My prompt for filling gaps called only screen recordings "measurable", so Apple's flat 4K frames, the best light and iPad references, were skipped by the measuring step and needed a pass of their own. And when the limit cut the measuring short I resumed it on the session's model at max effort, though what was left was mostly assembling saved numbers into tables: that is Sonnet's work, as the global rule already says, and it finished in one run once moved there.
+
+Checked on 23 Nov with a script of my own (half-level crossings on the raw pixels), not the helpers' code. Every number re-read agreed with the specs:
+
+- The owner's product page (IMG_4686): icon 20.00 to 138.00 by 84.00 to 202.00 pt; the hairline on pixel row 444 only, columns 40 to 749, #2A2A2B; separators on columns 249, 459 and 669, rows 498 to 577; the first card from x 20, y 332, the gap between the cards 236.5 to 246.5; back button 16.01 to 59.99, share 315.01 to 358.99.
+- The iPhone video frame (205-01): screen 1488.08 to 2351.96 px across and 140.03 to 2019.98 down; Get capsule 154.06 to 228.42 across, 212.0 to 244.0 down, fill (0, 127, 255); hairline on rows 707 and 708 (y 264.2 pt); separators 124.87, 229.83, 334.79; first card 20.02 to 254.61, the next from 264.69. My first centroids for the hairline and the third separator were half a pixel off because the window took in noise; the spec's readings were the right ones.
+- The iPad video frame: screen 636.11 to 3203.89 by 195.26 to 1964.85 px; Get capsule 220.17 to 294.14 by 537.94 to 569.96, fill (0, 124, 253); icon 52.12 to 192.10; hairline y 606.11 from 52.08 to 1157.82; the header image's foot at 409.92.
+
+Corrected in the library, things the helpers reported and left unedited: the iPad zoom frame at 21:49.357 is 6.72 px per pt, not 6.23 (that is the next frame's; by eye its cell is about 8 % larger); the iOS 26 frames are a 402 pt phone at 2.158 px per pt, not the 2.198 or 2.009 first noted. The library's `INDEX.md` has a row for each folder.
+
+The research takes 2.3 GB in iCloud Drive, 2.0 GB of it Apple's session videos, which can be downloaded again.
