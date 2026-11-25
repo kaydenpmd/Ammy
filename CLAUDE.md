@@ -52,6 +52,7 @@ project.yml                          XcodeGen spec — no .xcodeproj is committe
 scripts/build_source.py              Regenerates public/source.json
 scripts/make_icon.py                 Draws the app icon, like Albums' script of the same name
 scripts/measure_marquee.py           Times a scrolling line in a screen recording
+scripts/continuous_corner.py         Writes the icon clip paths in public/store.css
 source.config.json                   AltStore listing metadata (user-facing copy)
 public/                              Cloudflare Pages site (The site, below) and source.json
 PUBLISHING.md                        One-time setup for the AltStore source
@@ -201,9 +202,14 @@ Install path is **SideStore** (needs only iTunes); AltStore works for those who 
 
 ## The site
 
-`apps.kaydenpmd.net` is the source's page, not Ammy's (the owner, 20 Nov 2026: "make it more of a general page"). `index.html` lists every app in `source.json` under the source's name and buttons; each app has a page at `/app/<slug>`, the last part of its bundle ID, served by `app.html` through `_redirects`. Both copy Apple's App Store website, measured in the design library (`apple/app-store-web/`), at every width, except where the owner chose otherwise on 20 Nov 2026: the .ipa button first in the app page's header, before Add to SideStore and Add to AltStore, in Apple's blue. The View buttons stay because Apple has them, though the owner finds them redundant: "if apple uses view then we'll keep it but it's still redundant lol".
+`apps.kaydenpmd.net` is the source's page, not Ammy's (the owner, 20 Nov 2026: "make it more of a general page"). `index.html` lists every app in `source.json` under the source's name and buttons; each app has a page at `/app/<slug>`, the last part of its bundle ID, served by `app.html` through `_redirects`. Both copy Apple's App Store website, measured in the design library (`apple/app-store-web/`), except an app's page on a phone, which copies the App Store app (below), and where the owner chose otherwise on 20 Nov 2026: the .ipa button first in the app page's header, before Add to SideStore and Add to AltStore, in Apple's blue. The View buttons stay because Apple has them, though the owner finds them redundant: "if apple uses view then we'll keep it but it's still redundant lol".
 
-- iPhones never see the website's phone layout: Apple hands them to the App Store app. Whether phones and iPads should copy the app instead is the owner's open question (20 Nov 2026); nothing on the site follows the app yet.
+- **On a phone, an app's page is the App Store app's product page** (built 25 Nov 2026; the owner's yes was for app pages on phones only), because Apple hands every iPhone to the app and none sees the website's phone layout. It is the last block of `store.css`, applied by touch and width (`(hover: none) and (pointer: coarse)`, under 600 px), never the user agent, to `html.product`; the markup is shared, and a page with no app drops the class. The front page, tablets and desktops keep the website: the iPad spec is estimates, and no picture of the app's developer page exists for iOS 27.
+- **Committed and not pushed**, as of 25 Nov 2026: pushing `public/` publishes. It waits for the owner to see the pictures (`local/phone-layout/`), pick how the header's three buttons sit, and say yes.
+- **The three buttons are the owner's to arrange**, the app having one: `data-buttons` on the header takes `pair` (in place for now), `card` or `stack`. Once chosen, the other two leave `store.css`.
+- Its numbers are the spec's (`apple/app-store-ios/NOTES.md`; section 12 there says how a page gets them): exact in dark; in light every colour is the system's named one, because no exact light picture of the app exists. Provisional beyond that: Information (iOS 26's form), the description, the distances between sections below What's New, and the version line's distance under its heading (32.5, the owner's phone; other phones' differ).
+- The ribbon has one cell, Size. The app's Category and Developer cells show an Apple glyph as their value, which the site can't carry, and its other cells are things `source.json` doesn't say. Not copied either: the back and share buttons, screenshots (the source has none), the "more" link, the compact bar.
+- **Check a phone layout in Playwright's WebKit, not Edge** (the scripts are in `local/phone-layout/scripts/`). Edge's phone emulation lays out at 1x and draws hairlines a whole pixel thick, and Chromium rounds a font's ascent in device pixels where WebKit, the iPhone's engine, rounds in CSS px, so its baselines land up to 1 px off.
 - The app is researched in the design library, `apple/app-store-ios/` and `apple/app-store-ipados/` (23 Nov 2026), each with its spec in `NOTES.md` and its pictures listed in `IMAGES.md`. Exact, in dark, from the owner's iPhone SE: the top of the product page, the ribbon, What's New and the lockups. Estimates: everything in light and the whole iPad, from Apple's WWDC26 video frames and renders. Found nowhere for iOS 27: the developer page, and most of the sections below What's New. Section 10 of the iPhone spec lists what a capture pass on the owner's phone would settle; the simulator has no App Store.
 - Labels marked `sample` in `public/store.js` are Apple's words, and the Not found page's button is `[text]`, live "for now" (the owner, 20 Nov 2026) until the owner fills in the artifact "Kayden's Source Wording".
 
@@ -252,6 +258,7 @@ As of 16 Nov 2026. Ammy 184 is on the owner's phone (installed 14 Nov 2026); Iss
 - the new icon in SideStore
 - the bar's distance from the edge by touch, on a Face ID phone and the SE
 - the uploaded-JPEG artwork path
+- the site's phone layout of an app's page (25 Nov 2026), checked only in WebKit on the PC: the rounded numbers (`ui-rounded`), light's colours taken from the system by name, and the hairlines haven't been seen on an iPhone
 
 ## Scanning a receiver's QR code
 

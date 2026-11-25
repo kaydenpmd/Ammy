@@ -44,10 +44,15 @@
   }
   function appURL(app) { return '/app/' + encodeURIComponent(slugOf(app)); }
 
-  function megabytes(n) {
-    if (!n) return '';
+  // A size as its number and its unit, which the ribbon shows on two lines.
+  function megabyteParts(n) {
+    if (!n) return null;
     var mb = n / 1048576;
-    return (mb >= 10 ? mb.toFixed(0) : mb.toFixed(1)) + ' MB';
+    return [mb >= 10 ? mb.toFixed(0) : mb.toFixed(1), 'MB'];
+  }
+  function megabytes(n) {
+    var parts = megabyteParts(n);
+    return parts ? parts.join(' ') : '';
   }
 
   // source.json's categories are lower case ("entertainment").
@@ -120,7 +125,7 @@
 
   window.Store = {
     SOURCE_URL: SOURCE_URL, TEXT: TEXT, el: el, slugOf: slugOf, appURL: appURL,
-    megabytes: megabytes, categoryName: categoryName, formatDate: formatDate,
+    megabytes: megabytes, megabyteParts: megabyteParts, categoryName: categoryName, formatDate: formatDate,
     icon: icon, lockup: lockup, sourceLinks: sourceLinks, copySourceURL: copySourceURL,
     loadSource: loadSource
   };

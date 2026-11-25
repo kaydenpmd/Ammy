@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="product">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -8,17 +8,26 @@
 <link rel="apple-touch-icon" href="/source-icon.jpg">
 <link rel="stylesheet" href="/store.css">
 <!--
-  One app's page, laid out as an app's page on Apple's web App Store. It's
-  served at /app/<slug> (_redirects), the slug being the last part of the
-  app's bundle ID; /app?id=<slug> works too. Sections appear only when
-  source.json has something for them. Sizes and colours are in store.css,
-  from design-research/apple/app-store-web/NOTES.md.
+  One app's page. It's served at /app/<slug> (_redirects), the slug being the
+  last part of the app's bundle ID; /app?id=<slug> works too. Sections appear
+  only when source.json has something for them.
+
+  Two layouts share this markup, and store.css picks between them. With a
+  mouse, or touch at 600 px or wider, it's an app's page on Apple's web App
+  Store (design-research/apple/app-store-web/NOTES.md). On a phone (touch,
+  under 600 px) it's the product page of the App Store app, which is what an
+  iPhone shows in place of that website
+  (design-research/apple/app-store-ios/NOTES.md). The class "product" on
+  <html> is what the phone layout hangs on; a page with no app drops it.
 -->
 </head>
 <body>
 <main class="page">
 
-  <header class="hero" id="hero">
+  <!-- data-buttons picks how the three buttons sit on a phone: "pair", "card"
+       or "stack" (store.css). The app has one button here, so which of the
+       three stays is the owner's to choose; the other two go once they have. -->
+  <header class="hero" id="hero" data-buttons="pair">
     <div class="hero-blur"></div>
     <div class="hero-content">
       <div class="hero-icon">
@@ -32,18 +41,25 @@
              SideStore before AltStore, for the reason given on the source page. -->
         <div class="button-row" id="buttons" hidden>
           <a class="hero-button blue" id="ipa" href="#" hidden></a>
-          <a class="hero-button" id="side" href="#"></a>
-          <a class="hero-button" id="alt" href="#"></a>
+          <div class="add-buttons">
+            <a class="hero-button" id="side" href="#"></a>
+            <a class="hero-button" id="alt" href="#"></a>
+          </div>
         </div>
       </div>
     </div>
   </header>
 
-  <section class="shelf" id="descShelf" hidden>
+  <!-- The App Store app's ribbon, on a phone only. -->
+  <div class="ribbon" id="ribbon" hidden>
+    <dl class="ribbon-cells" id="cells"></dl>
+  </div>
+
+  <section class="shelf shelf-desc" id="descShelf" hidden>
     <p class="description" id="desc"></p>
   </section>
 
-  <section class="shelf" id="newShelf" hidden>
+  <section class="shelf shelf-new" id="newShelf" hidden>
     <div class="shelf-title-row"><h2 class="shelf-title" id="newTitle"></h2></div>
     <div class="whats-new">
       <p class="notes" id="notes"></p>
@@ -51,14 +67,16 @@
     </div>
   </section>
 
-  <section class="shelf" id="infoShelf" hidden>
+  <section class="shelf shelf-info" id="infoShelf" hidden>
     <div class="shelf-title-row"><h2 class="shelf-title" id="infoTitle"></h2></div>
     <dl class="info" id="info"></dl>
   </section>
 
-  <section class="shelf" id="moreShelf" hidden>
+  <section class="shelf shelf-more" id="moreShelf" hidden>
     <div class="shelf-title-row">
-      <a class="shelf-title" href="/"><span id="moreTitle"></span><svg class="chevron" viewBox="0 0 51.108 87.687" aria-hidden="true"><path d="M51.108 43.834c-.018-1.997-.718-3.638-2.334-5.23L11.214 1.877C9.974.6 8.453 0 6.64 0 2.96 0 .001 2.897.001 6.55 0 8.326.765 10.004 2.068 11.344l33.398 32.472L2.07 76.325C.784 77.665 0 79.305 0 81.137c0 3.653 2.96 6.55 6.641 6.55 1.796 0 3.334-.601 4.572-1.877l37.561-36.746c1.636-1.591 2.334-3.25 2.334-5.23"/></svg></a>
+      <!-- Two chevrons: the website's, and the app's for a phone, drawn from
+           its measured box (9.29 x 15.59) and stroke (2.88). -->
+      <a class="shelf-title" href="/"><span id="moreTitle"></span><svg class="chevron" viewBox="0 0 51.108 87.687" aria-hidden="true"><path d="M51.108 43.834c-.018-1.997-.718-3.638-2.334-5.23L11.214 1.877C9.974.6 8.453 0 6.64 0 2.96 0 .001 2.897.001 6.55 0 8.326.765 10.004 2.068 11.344l33.398 32.472L2.07 76.325C.784 77.665 0 79.305 0 81.137c0 3.653 2.96 6.55 6.641 6.55 1.796 0 3.334-.601 4.572-1.877l37.561-36.746c1.636-1.591 2.334-3.25 2.334-5.23"/></svg><svg class="chevron-app" viewBox="0 0 9.29 15.59" aria-hidden="true"><path d="M1.44 1.44 7.85 7.795 1.44 14.15"/></svg></a>
     </div>
     <div class="lockups small" id="more"></div>
   </section>
@@ -78,9 +96,11 @@
   var m = location.pathname.match(/^\/app\/([^\/]+)/);
   var slug = decodeURIComponent(m ? m[1] : (new URLSearchParams(location.search).get('id') || '')).toLowerCase();
 
+  // A row of Information. A value too long for one line (the SHA-256) is
+  // marked "long", and on a phone goes under its label.
   function info(label, value, mono) {
     if (!value) return;
-    var item = S.el('div');
+    var item = S.el('div', mono ? 'long' : null);
     item.appendChild(S.el('dt', null, label));
     var dd = S.el('dd');
     if (mono) dd.appendChild(S.el('code', null, value)); else dd.textContent = value;
@@ -88,8 +108,18 @@
     $('info').appendChild(item);
   }
 
+  // A cell of the ribbon: label, value, and the line under the value.
+  function cell(label, value, sub) {
+    var item = S.el('div', 'cell');
+    item.appendChild(S.el('dt', null, label));
+    item.appendChild(S.el('dd', 'value', value));
+    item.appendChild(S.el('dd', 'sub', sub));
+    $('cells').appendChild(item);
+  }
+
   function missing(title, text) {
     document.title = title;
+    document.documentElement.classList.remove('product');
     $('hero').hidden = true;
     var h = S.el('h1', 'large-title', title);
     document.querySelector('.page').insertBefore(h, $('missing'));
@@ -122,6 +152,14 @@
       $('alt').textContent = T.addAltStore;
       S.sourceLinks($('side'), $('alt'));
       $('buttons').hidden = false;
+
+      // The ribbon holds only cells whose value is text. The app's Category
+      // and Developer cells show one of Apple's glyphs as their value, which
+      // this site has no right to carry, and its other cells (ratings, age
+      // rating, chart, language) are things the source doesn't say.
+      var size = S.megabyteParts(v.size);
+      if (size) cell(T.size, size[0], size[1]);
+      $('ribbon').hidden = !$('cells').children.length;
 
       if (app.localizedDescription) {
         $('desc').textContent = app.localizedDescription;

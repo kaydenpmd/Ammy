@@ -6,6 +6,9 @@
   Left out: the store's own navigation, search and footer. Where the owner
   chose otherwise (20 Nov 2026): the .ipa button first in the app page's
   header, in blue.
+
+  On a phone an app's page is laid out as the App Store app instead: the last
+  block of this file.
 */
 
 /* Pretendard stands in for SF Pro where the device has none: the owner's
@@ -207,3 +210,295 @@ button { font: inherit; color: inherit; border: 0; background: none; padding: 0;
 /* A page that isn't there. */
 .missing { margin: 0 var(--bodyGutter); font: 400 13px/18px var(--font-family); color: var(--systemSecondary); }
 .missing + .button-row { margin: 16px var(--bodyGutter) 0; }
+
+/* Used by the phone layout below; nothing to see elsewhere. */
+.add-buttons { display: contents; }
+.ribbon, .chevron-app { display: none; }
+
+/* ---- An app's page on a phone: the App Store app ---- */
+
+/*
+  apps.apple.com hands every iPhone to the App Store app, so on a phone (touch
+  and under 600 px wide, never the user agent) an app's page copies that app's
+  product page, not the website. Sizes are the app's points as CSS px, from
+  design-research/apple/app-store-ios/NOTES.md (written 23 Nov 2026): exact in
+  dark, from the owner's iPhone SE on iOS 27.0 or 27.0.1 and other people's
+  iOS 27 screenshots; provisional where a line says so. The front page and the
+  page for an app that isn't there keep the website's phone layout.
+
+  Text is placed by its baseline. Every font in the stack has SF Pro's ascent
+  and descent (1950 and 494 of 2048), which browsers round to whole pixels:
+  21 and 5 at 22 px, 16 and 4 at 17, 15 and 4 at 16, 14 and 4 at 15, 12 and 3
+  at 13, 10 and 3 at 11. A line's baseline is its ascent plus half of what
+  the line height adds, under the line's top; the line heights and margins
+  below are chosen to put each baseline where the app has it.
+
+  Not copied, because the site has nothing for them: the round back and share
+  buttons (the icon starts 20 px down, their distance above it), ratings,
+  screenshots, the "more" link that shortens long text, the compact bar after
+  scrolling, and the tab bar.
+*/
+@media (hover: none) and (pointer: coarse) and (max-width: 599.98px) {
+
+  /* Light is provisional: Apple publishes no exact light picture of the app,
+     so each colour is the system's own named one with that colour's value
+     (iOS 26 and later). The capsule's and the notice's fills are the ones
+     whose dark values are the measured #1C1C1E and #151517. */
+  .product {
+    --as-page: #fff;                 /* systemBackground */
+    --as-label: #000;                /* label */
+    --as-secondary: #3c3c4399;       /* secondaryLabel */
+    --as-ribbon-label: #aeaeb2;      /* systemGray2: the nearest named grey to Apple's pictures */
+    --as-ribbon-value: #3c3c4399;    /* secondaryLabel */
+    --as-hairline: #e5e5ea;          /* systemGray5 */
+    --as-capsule: #7676801f;         /* tertiarySystemFill */
+    --as-notice: #74748014;          /* quaternarySystemFill */
+    --as-blue: #08f;                 /* systemBlue */
+    --as-on-blue: #fff;              /* the Get button's label */
+    /* The ring just inside an icon's edge: one translucent grey that gives
+       both rings measured in dark (#E5E5E5 on a white icon, #262626 on a
+       black one). Not measured in light. */
+    --as-ring: #ababab38;
+    /* Thinner than a device pixel on any phone, so the browser draws exactly
+       one device pixel, as the app does: 0.5 px at 2x, 0.33 at 3x. */
+    --hairline: 0.33px;
+  }
+  /* Where the browser knows the system's own colours (Safari), light uses
+     them by name, so they follow the phone's settings. */
+  @supports (color: -apple-system-secondary-label) {
+    @media (prefers-color-scheme: light) {
+      .product { --as-secondary: -apple-system-secondary-label; --as-ribbon-value: -apple-system-secondary-label; }
+    }
+  }
+  @supports (color: -apple-system-blue) {
+    @media (prefers-color-scheme: light) { .product { --as-blue: -apple-system-blue; } }
+  }
+  /* Dark is measured (the owner's iPhone SE, iOS 27.0 or 27.0.1). The app's
+     dark Get button was never captured at rest, so the blue fill is the
+     blue of its capsule labels. */
+  @media (prefers-color-scheme: dark) {
+    .product {
+      --as-page: #000;
+      --as-label: #fff;
+      --as-secondary: #8d8d92;
+      --as-ribbon-label: #76767a;
+      --as-ribbon-value: #8e8e92;
+      --as-hairline: #2a2a2b;
+      --as-capsule: #1c1c1e;
+      --as-notice: #151517;
+      --as-blue: #0090ff;
+    }
+  }
+
+  .product body { background: var(--as-page); color: var(--as-label); }
+  .product .page { display: flex; flex-direction: column; max-width: none; }
+
+  /* The header: a 118 px icon 20 px in, the text column 16 px after it
+     (x 154), the name's baseline 21 px under the icon's top, the subtitle's
+     23 px under that, and the button with its foot on the icon's foot. The
+     rule above the ribbon is 20 px under the icon. */
+  .product .hero {
+    display: block; height: auto; overflow: visible; transform: none; padding-bottom: 20px;
+    color: inherit; background: none; border: 0; border-radius: 0;
+  }
+  .product .hero-blur, .product .hero-glow { display: none; }
+  .product .hero-content {
+    display: grid; grid-template-columns: 118px minmax(0, 1fr); grid-template-rows: auto auto 1fr;
+    gap: 0 16px; margin: 0; max-width: none; padding: 20px 20px 0;
+  }
+  .product .hero-text, .product .button-row { display: contents; }
+  .product .hero-icon { grid-area: 1 / 1 / 4 / 2; display: block; width: 118px; height: 118px; }
+  .product .hero h1 {
+    grid-area: 1 / 2; margin: 0; color: var(--as-label);
+    font: 600 22px/26px var(--font-family); letter-spacing: 0; text-shadow: none;
+  }
+  .product .hero .subtitle {
+    grid-area: 2 / 2; margin: 3px 0 0; color: var(--as-secondary); mix-blend-mode: normal;
+    font: 400 15px/20px var(--font-family);
+  }
+
+  /* Icons: Apple's continuous corner, 0.26 of the width (the paths are
+     written by scripts/continuous_corner.py), and the 1 px ring inside the
+     edge. The band of light iOS adds inside an icon's top and bottom edges
+     isn't copied. */
+  .product .hero-icon .icon {
+    width: 118px; height: 118px; aspect-ratio: auto; border: 0; border-radius: 0; box-shadow: none;
+    clip-path: path("M46.85 0L71.15 0C84.64 0 91.38 0 97.47 2.01L98.64 2.3C106.57 5.18 112.82 11.43 115.7 19.36C118 26.62 118 33.36 118 46.85L118 71.15C118 84.64 118 91.38 115.99 97.47L115.7 98.64C112.82 106.57 106.57 112.82 98.64 115.7C91.38 118 84.64 118 71.15 118L46.85 118C33.36 118 26.62 118 20.53 115.99L19.36 115.7C11.43 112.82 5.18 106.57 2.3 98.64C0 91.38 0 84.64 0 71.15L0 46.85C0 33.36 0 26.62 2.01 20.53L2.3 19.36C5.18 11.43 11.43 5.18 19.36 2.3C26.62 0 33.36 0 46.85 0Z");
+  }
+  .product .hero-icon .icon img { border-radius: 0; }
+  .product .hero-icon .icon::after {
+    content: ""; box-shadow: none; background: var(--as-ring);
+    clip-path: path(evenodd, "M46.85 0L71.15 0C84.64 0 91.38 0 97.47 2.01L98.64 2.3C106.57 5.18 112.82 11.43 115.7 19.36C118 26.62 118 33.36 118 46.85L118 71.15C118 84.64 118 91.38 115.99 97.47L115.7 98.64C112.82 106.57 106.57 112.82 98.64 115.7C91.38 118 84.64 118 71.15 118L46.85 118C33.36 118 26.62 118 20.53 115.99L19.36 115.7C11.43 112.82 5.18 106.57 2.3 98.64C0 91.38 0 84.64 0 71.15L0 46.85C0 33.36 0 26.62 2.01 20.53L2.3 19.36C5.18 11.43 11.43 5.18 19.36 2.3C26.62 0 33.36 0 46.85 0ZM46.32 1L71.68 1C84.73 1 91.25 1 97.14 2.94L98.28 3.22C105.95 6.01 111.99 12.05 114.78 19.72C117 26.75 117 33.27 117 46.32L117 71.68C117 84.73 117 91.25 115.06 97.14L114.78 98.28C111.99 105.95 105.95 111.99 98.28 114.78C91.25 117 84.73 117 71.68 117L46.32 117C33.27 117 26.75 117 20.86 115.06L19.72 114.78C12.05 111.99 6.01 105.95 3.22 98.28C1 91.25 1 84.73 1 71.68L1 46.32C1 33.27 1 26.75 2.94 20.86L3.22 19.72C6.01 12.05 12.05 6.01 19.72 3.22C26.75 1 33.27 1 46.32 1Z");
+  }
+
+  /* The app's capsule: 32 px tall, 74 wide for Get, Open and View, the label
+     16 bold with its baseline 21.5 px down (a 19 px line centred in the 32).
+     The .ipa is its blue Get; the other two are the grey capsule of its
+     lists. A capsule wider than 74 is in no picture of the app. */
+  .product .hero-button {
+    box-sizing: border-box; justify-content: center; height: 32px; min-width: 74px; padding: 0 17px;
+    border-radius: 16px; background: var(--as-capsule); color: var(--as-blue); mix-blend-mode: normal;
+    font: 700 16px/19px var(--font-family);
+  }
+  .product .hero-button.blue {
+    grid-area: 3 / 2; align-self: end; justify-self: start;
+    background: var(--as-blue); color: var(--as-on-blue);
+  }
+
+  /* Three buttons where the app has one. Each arrangement uses a place the
+     app itself puts something between the icon and the ribbon.
+     "pair": the two Add buttons side by side where a pre-order's capsule
+     goes, 12.95 px under the icon and 33.91 above the rule, 12 px apart as
+     its Write a Review and App Support buttons are. */
+  .product .hero[data-buttons="pair"] { padding-bottom: 33.91px; }
+  .product .hero[data-buttons="pair"] .add-buttons {
+    grid-area: 4 / 1 / 5 / 3; display: flex; flex-wrap: wrap; gap: 12px; margin-top: 12.95px;
+  }
+  .product .hero[data-buttons="pair"] .add-buttons .hero-button { flex: 1 1 150px; min-width: 0; padding: 0 4px; }
+  /* "card": the two as links in the card TestFlight's notice uses, 58 px
+     tall, 17.15 px under the icon and 19.97 above the rule, two lines of
+     15 px text 20 apart, the first baseline 24.32 px down. */
+  .product .hero[data-buttons="card"] { padding-bottom: 19.97px; }
+  .product .hero[data-buttons="card"] .add-buttons {
+    grid-area: 4 / 1 / 5 / 3; display: block; margin-top: 17.15px; padding: 9.32px 0 8.68px;
+    border-radius: 26.85px; background: var(--as-notice); text-align: center;
+  }
+  .product .hero[data-buttons="card"] .add-buttons .hero-button {
+    display: block; height: auto; min-width: 0; padding: 0; border-radius: 0; background: none;
+    font: 400 15px/20px var(--font-family);
+  }
+  /* "stack": all three across the page under the icon, 8 px apart as the
+     app's stacked buttons are, and nothing where Get goes. */
+  .product .hero[data-buttons="stack"] { padding-bottom: 33.91px; }
+  .product .hero[data-buttons="stack"] .hero-button.blue { grid-area: 4 / 1 / 5 / 3; justify-self: stretch; margin-top: 12.95px; }
+  .product .hero[data-buttons="stack"] .add-buttons {
+    grid-area: 5 / 1 / 6 / 3; display: flex; flex-direction: column; gap: 8px; margin-top: 8px;
+  }
+
+  /* The ribbon, between two hairlines that start 20 px in and run to the
+     screen's edge. Cells are 105 px, or wider when their text needs it; the
+     label's baseline is 24 px under the top rule, the value's 32 under that,
+     the line below 22 further, the bottom rule 15.5 further; separators are
+     40 px tall from 27 px down, at a cell's right edge. A cell's text is
+     centred with 8 px each side, the first cell starting at the margin, which
+     puts its centre at x 68.5; a wider cell is its text plus 16 (112 for the
+     app's "In-App Controls"). The values are SF Pro Rounded Semibold, which
+     is ui-rounded on Apple's devices. */
+  .product .ribbon { display: block; position: relative; height: 93.5px; }
+  .product .ribbon::before, .product .ribbon::after {
+    content: ""; position: absolute; left: 20px; right: 0; border-top: var(--hairline) solid var(--as-hairline);
+  }
+  .product .ribbon::before { top: 0; }
+  .product .ribbon::after { top: 93.5px; }
+  .product .ribbon-cells { display: flex; margin: 0; padding: 0 0 0 20px; overflow-x: auto; scrollbar-width: none; }
+  .product .ribbon-cells::-webkit-scrollbar { display: none; }
+  .product .cell {
+    position: relative; flex: none; box-sizing: border-box; min-width: 105px; padding: 14px 8px 12.5px;
+    text-align: center; white-space: nowrap;
+  }
+  .product .cell:first-child { padding-left: 0; }
+  .product .cell::after {
+    content: ""; position: absolute; right: 0; top: 27px; height: 40px;
+    border-right: var(--hairline) solid var(--as-hairline);
+  }
+  .product .cell:last-child::after { content: none; }
+  .product .cell dt { font: 600 11px/13px var(--font-family); text-transform: uppercase; color: var(--as-ribbon-label); }
+  .product .cell .value { margin-top: 8px; font: 600 22px/26px ui-rounded, var(--font-family); color: var(--as-ribbon-value); }
+  .product .cell .sub { margin-top: 5px; font: 400 13px/15px var(--font-family); color: var(--as-ribbon-value); }
+
+  /* Sections, in the app's order: What's New, the description, Information,
+     More by. Headings are 22 bold, 20 px in. */
+  .product .shelf { padding: 0; }
+  .product .shelf-title-row { margin: 0 20px; }
+  .product .shelf-title { align-items: baseline; gap: 8px; font: 700 22px/26px var(--font-family); }
+  /* The chevron after a heading that opens something: 9.29 x 15.59 with a
+     2.88 px stroke, standing on the baseline 8 px after the text. */
+  .product .chevron { display: none; }
+  .product .chevron-app {
+    display: block; flex: none; width: 9.29px; height: 15.59px; fill: none;
+    stroke: var(--as-secondary); stroke-width: 2.88; stroke-linecap: round; stroke-linejoin: round;
+  }
+
+  /* What's New: the heading's baseline 31.69 px under the ribbon's rule; the
+     version and, at the right, the date 32.5 under that (the app has 32.5,
+     32 and 34.3 on three phones, unexplained; this is the owner's); the
+     notes 30 further, in lines 20 apart. */
+  .product .shelf-new { padding-top: 10.69px; }
+  .product .whats-new { flex-direction: column; margin: 0 20px; font: 400 15px/20px var(--font-family); }
+  .product .whats-new .metadata {
+    order: -1; flex-direction: row; justify-content: space-between; gap: 16px; margin: 12.5px 0 10px;
+    text-align: start; color: var(--as-secondary);
+  }
+  .product .whats-new .notes { flex: none; width: auto; }
+
+  /* The description, as the app has it under a hairline 20 px in from both
+     sides: its first baseline 30.67 px under the rule, lines 20 apart. The
+     app's rule follows a row of device names, 27.32 px under that row's
+     baseline, which is the distance kept here from the text above. Measured
+     on one dark screenshot (iOS 26.4 or later): provisional. */
+  .product .shelf-desc { order: 1; position: relative; margin-top: 22.32px; padding-top: 15.67px; }
+  .product .shelf-desc::before {
+    content: ""; position: absolute; top: 0; left: 20px; right: 20px; border-top: var(--hairline) solid var(--as-hairline);
+  }
+  .product .description { width: auto; margin: 0 20px; font: 400 15px/20px var(--font-family); }
+  /* With no What's New above it, the ribbon's own rule stands in for the
+     description's. */
+  .product .shelf-desc:has(+ .shelf-new[hidden]) { margin-top: 0; }
+  .product .shelf-desc:has(+ .shelf-new[hidden])::before { content: none; }
+
+  /* Information. No picture of it exists for iOS 27, so this is iOS 26's:
+     the heading's baseline 67.68 px under the text above (the app's distance
+     from What's New to its next heading), rows 48 px apart, the label grey
+     and the value at the right, a rule 18 px under each baseline but the
+     last. A long value goes under its label, in lines 20 apart. Provisional. */
+  .product .shelf-info { order: 2; margin-top: 41.68px; }
+  /* Straight after the ribbon, its heading sits where What's New's would. */
+  .product .shelf-desc[hidden] + .shelf-new[hidden] + .shelf-info { margin-top: 10.69px; }
+  .product .info { display: block; margin-top: 13px; padding: 0 20px; font: 400 15px/20px var(--font-family); }
+  .product .info > div { position: relative; display: flex; justify-content: space-between; gap: 16px; padding: 15px 0 13px; }
+  .product .info > div + div::before {
+    content: ""; position: absolute; top: 0; left: 0; right: 0; border-top: var(--hairline) solid var(--as-hairline);
+  }
+  .product .info dt { flex: none; margin: 0; color: var(--as-secondary); }
+  .product .info dd { text-align: end; }
+  .product .info > .long { display: block; }
+  .product .info > .long dd { text-align: start; }
+  .product .info code { font: inherit; }
+
+  /* More by: the app's shelf of lockups. The heading's baseline is 60.98 px
+     under Information's last line (iOS 26's distance to the next heading),
+     the first icon 18 px under the heading's baseline. A lockup: a 62 px
+     icon, the name 17 regular 10 px after it (two lines at most, 20 apart),
+     the subtitle 13 regular with its baseline 20 px lower, and a 74 x 32
+     capsule ending 20 px from the edge, all centred on the icon. Rows are
+     78 px apart, three to a column, with a hairline 7.59 px under each icon
+     from the text to the capsule's end; the next column starts 10 px after. */
+  .product .shelf-more { order: 3; margin-top: 21.98px; }
+  .product .shelf-info[hidden] + .shelf-more { margin-top: 41.68px; }
+  .product .lockups.small {
+    grid-template-rows: repeat(3, auto); grid-auto-columns: 100%; column-gap: 10px; row-gap: 16px;
+    margin: 13px 0 0; padding: 0 20px;
+  }
+  .product .lockup { position: relative; height: 62px; }
+  .product .lockup:not(:nth-child(3n)):not(:last-child)::after {
+    content: ""; position: absolute; top: 69.59px; left: 72px; right: 0; border-top: var(--hairline) solid var(--as-hairline);
+  }
+  .product .lockup .icon {
+    width: 62px; height: 62px; margin-inline-end: 10px; border-radius: 0;
+    clip-path: path("M24.76 0L37.24 0C44.37 0 47.93 0 51.15 1.06L51.77 1.21C55.96 2.74 59.26 6.04 60.79 10.23C62 14.07 62 17.63 62 24.76L62 37.24C62 44.37 62 47.93 60.94 51.15L60.79 51.77C59.26 55.96 55.96 59.26 51.77 60.79C47.93 62 44.37 62 37.24 62L24.76 62C17.63 62 14.07 62 10.85 60.94L10.23 60.79C6.04 59.26 2.74 55.96 1.21 51.77C0 47.93 0 44.37 0 37.24L0 24.76C0 17.63 0 14.07 1.06 10.85L1.21 10.23C2.74 6.04 6.04 2.74 10.23 1.21C14.07 0 17.63 0 24.76 0Z");
+  }
+  .product .lockup .icon::after {
+    box-shadow: none; background: var(--as-ring);
+    clip-path: path(evenodd, "M24.76 0L37.24 0C44.37 0 47.93 0 51.15 1.06L51.77 1.21C55.96 2.74 59.26 6.04 60.79 10.23C62 14.07 62 17.63 62 24.76L62 37.24C62 44.37 62 47.93 60.94 51.15L60.79 51.77C59.26 55.96 55.96 59.26 51.77 60.79C47.93 62 44.37 62 37.24 62L24.76 62C17.63 62 14.07 62 10.85 60.94L10.23 60.79C6.04 59.26 2.74 55.96 1.21 51.77C0 47.93 0 44.37 0 37.24L0 24.76C0 17.63 0 14.07 1.06 10.85L1.21 10.23C2.74 6.04 6.04 2.74 10.23 1.21C14.07 0 17.63 0 24.76 0ZM24.24 1L37.76 1C44.45 1 47.8 1 50.82 2L51.4 2.14C55.33 3.57 58.43 6.67 59.86 10.6C61 14.2 61 17.55 61 24.24L61 37.76C61 44.45 61 47.8 60 50.82L59.86 51.4C58.43 55.33 55.33 58.43 51.4 59.86C47.8 61 44.45 61 37.76 61L24.24 61C17.55 61 14.2 61 11.18 60L10.6 59.86C6.67 58.43 3.57 55.33 2.14 51.4C1 47.8 1 44.45 1 37.76L1 24.24C1 17.55 1 14.2 2 11.18L2.14 10.6C3.57 6.67 6.67 3.57 10.6 2.14C14.2 1 17.55 1 24.24 1Z");
+  }
+  .product .lockup .meta { gap: 0; margin-inline-end: 16px; }
+  .product .lockup .name {
+    display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; white-space: normal;
+    font: 400 17px/20px var(--font-family);
+  }
+  .product .lockup .subtitle { margin-top: 3px; font: 400 13px/17px var(--font-family); color: var(--as-secondary); }
+  .product .lockup .get-button {
+    display: flex; align-items: center; justify-content: center; box-sizing: border-box; width: 74px; height: 32px;
+    padding: 0; border-radius: 16px; font: 700 16px/19px var(--font-family); color: var(--as-blue); background: var(--as-capsule);
+  }
+}
