@@ -212,7 +212,6 @@ button { font: inherit; color: inherit; border: 0; background: none; padding: 0;
 .missing + .button-row { margin: 16px var(--bodyGutter) 0; }
 
 /* Used by the phone layout below; nothing to see elsewhere. */
-.add-buttons { display: contents; }
 .ribbon, .chevron-app { display: none; }
 
 /* ---- An app's page on a phone: the App Store app ---- */
@@ -242,8 +241,8 @@ button { font: inherit; color: inherit; border: 0; background: none; padding: 0;
 
   /* Light is provisional: Apple publishes no exact light picture of the app,
      so each colour is the system's own named one with that colour's value
-     (iOS 26 and later). The capsule's and the notice's fills are the ones
-     whose dark values are the measured #1C1C1E and #151517. */
+     (iOS 26 and later). The grey capsule's fill is the one whose dark value
+     is the measured #1C1C1E. */
   .product {
     --as-page: #fff;                 /* systemBackground */
     --as-label: #000;                /* label */
@@ -252,7 +251,6 @@ button { font: inherit; color: inherit; border: 0; background: none; padding: 0;
     --as-ribbon-value: #3c3c4399;    /* secondaryLabel */
     --as-hairline: #e5e5ea;          /* systemGray5 */
     --as-capsule: #7676801f;         /* tertiarySystemFill */
-    --as-notice: #74748014;          /* quaternarySystemFill */
     --as-blue: #08f;                 /* systemBlue */
     --as-on-blue: #fff;              /* the Get button's label */
     /* The ring just inside an icon's edge: one translucent grey that gives
@@ -285,7 +283,6 @@ button { font: inherit; color: inherit; border: 0; background: none; padding: 0;
       --as-ribbon-value: #8e8e92;
       --as-hairline: #2a2a2b;
       --as-capsule: #1c1c1e;
-      --as-notice: #151517;
       --as-blue: #0090ff;
     }
   }
@@ -295,19 +292,19 @@ button { font: inherit; color: inherit; border: 0; background: none; padding: 0;
 
   /* The header: a 118 px icon 20 px in, the text column 16 px after it
      (x 154), the name's baseline 21 px under the icon's top, the subtitle's
-     23 px under that, and the button with its foot on the icon's foot. The
-     rule above the ribbon is 20 px under the icon. */
+     23 px under that; then the buttons, and the rule above the ribbon
+     33.91 px under them. */
   .product .hero {
-    display: block; height: auto; overflow: visible; transform: none; padding-bottom: 20px;
+    display: block; height: auto; overflow: visible; transform: none; padding-bottom: 33.91px;
     color: inherit; background: none; border: 0; border-radius: 0;
   }
   .product .hero-blur, .product .hero-glow { display: none; }
   .product .hero-content {
-    display: grid; grid-template-columns: 118px minmax(0, 1fr); grid-template-rows: auto auto 1fr;
+    display: grid; grid-template-columns: 118px minmax(0, 1fr); grid-template-rows: auto 1fr;
     gap: 0 16px; margin: 0; max-width: none; padding: 20px 20px 0;
   }
   .product .hero-text, .product .button-row { display: contents; }
-  .product .hero-icon { grid-area: 1 / 1 / 4 / 2; display: block; width: 118px; height: 118px; }
+  .product .hero-icon { grid-area: 1 / 1 / 3 / 2; display: block; width: 118px; height: 118px; }
   .product .hero h1 {
     grid-area: 1 / 2; margin: 0; color: var(--as-label);
     font: 600 22px/26px var(--font-family); letter-spacing: 0; text-shadow: none;
@@ -331,49 +328,23 @@ button { font: inherit; color: inherit; border: 0; background: none; padding: 0;
     clip-path: path(evenodd, "M46.85 0L71.15 0C84.64 0 91.38 0 97.47 2.01L98.64 2.3C106.57 5.18 112.82 11.43 115.7 19.36C118 26.62 118 33.36 118 46.85L118 71.15C118 84.64 118 91.38 115.99 97.47L115.7 98.64C112.82 106.57 106.57 112.82 98.64 115.7C91.38 118 84.64 118 71.15 118L46.85 118C33.36 118 26.62 118 20.53 115.99L19.36 115.7C11.43 112.82 5.18 106.57 2.3 98.64C0 91.38 0 84.64 0 71.15L0 46.85C0 33.36 0 26.62 2.01 20.53L2.3 19.36C5.18 11.43 11.43 5.18 19.36 2.3C26.62 0 33.36 0 46.85 0ZM46.32 1L71.68 1C84.73 1 91.25 1 97.14 2.94L98.28 3.22C105.95 6.01 111.99 12.05 114.78 19.72C117 26.75 117 33.27 117 46.32L117 71.68C117 84.73 117 91.25 115.06 97.14L114.78 98.28C111.99 105.95 105.95 111.99 98.28 114.78C91.25 117 84.73 117 71.68 117L46.32 117C33.27 117 26.75 117 20.86 115.06L19.72 114.78C12.05 111.99 6.01 105.95 3.22 98.28C1 91.25 1 84.73 1 71.68L1 46.32C1 33.27 1 26.75 2.94 20.86L3.22 19.72C6.01 12.05 12.05 6.01 19.72 3.22C26.75 1 33.27 1 46.32 1Z");
   }
 
-  /* The app's capsule: 32 px tall, 74 wide for Get, Open and View, the label
-     16 bold with its baseline 21.5 px down (a 19 px line centred in the 32).
-     The .ipa is its blue Get; the other two are the grey capsule of its
-     lists. A capsule wider than 74 is in no picture of the app. */
+  /* The buttons. The app has one, a blue Get in the text column with its foot
+     on the icon's foot; the page has three, and of three arrangements shown
+     the owner chose this one (25 Nov 2026): all three across the page under
+     the icon, .ipa first, nothing where Get goes. Each is the app's capsule,
+     32 px tall, the label 16 bold with its baseline 21.5 px down (a 19 px
+     line centred in the 32): the .ipa in the blue of its Get, the other two
+     in the grey of its lists. The first is 12.95 px under the icon and the
+     rule 33.91 under the last, as with a pre-order's capsule, which the app
+     puts in this place; they are 8 px apart, as its stacked buttons are. A
+     capsule wider than 74 px is in no picture of the app. */
   .product .hero-button {
-    box-sizing: border-box; justify-content: center; height: 32px; min-width: 74px; padding: 0 17px;
+    grid-column: 1 / -1; box-sizing: border-box; justify-content: center; height: 32px; margin-top: 8px;
     border-radius: 16px; background: var(--as-capsule); color: var(--as-blue); mix-blend-mode: normal;
     font: 700 16px/19px var(--font-family);
   }
-  .product .hero-button.blue {
-    grid-area: 3 / 2; align-self: end; justify-self: start;
-    background: var(--as-blue); color: var(--as-on-blue);
-  }
-
-  /* Three buttons where the app has one. Each arrangement uses a place the
-     app itself puts something between the icon and the ribbon.
-     "pair": the two Add buttons side by side where a pre-order's capsule
-     goes, 12.95 px under the icon and 33.91 above the rule, 12 px apart as
-     its Write a Review and App Support buttons are. */
-  .product .hero[data-buttons="pair"] { padding-bottom: 33.91px; }
-  .product .hero[data-buttons="pair"] .add-buttons {
-    grid-area: 4 / 1 / 5 / 3; display: flex; flex-wrap: wrap; gap: 12px; margin-top: 12.95px;
-  }
-  .product .hero[data-buttons="pair"] .add-buttons .hero-button { flex: 1 1 150px; min-width: 0; padding: 0 4px; }
-  /* "card": the two as links in the card TestFlight's notice uses, 58 px
-     tall, 17.15 px under the icon and 19.97 above the rule, two lines of
-     15 px text 20 apart, the first baseline 24.32 px down. */
-  .product .hero[data-buttons="card"] { padding-bottom: 19.97px; }
-  .product .hero[data-buttons="card"] .add-buttons {
-    grid-area: 4 / 1 / 5 / 3; display: block; margin-top: 17.15px; padding: 9.32px 0 8.68px;
-    border-radius: 26.85px; background: var(--as-notice); text-align: center;
-  }
-  .product .hero[data-buttons="card"] .add-buttons .hero-button {
-    display: block; height: auto; min-width: 0; padding: 0; border-radius: 0; background: none;
-    font: 400 15px/20px var(--font-family);
-  }
-  /* "stack": all three across the page under the icon, 8 px apart as the
-     app's stacked buttons are, and nothing where Get goes. */
-  .product .hero[data-buttons="stack"] { padding-bottom: 33.91px; }
-  .product .hero[data-buttons="stack"] .hero-button.blue { grid-area: 4 / 1 / 5 / 3; justify-self: stretch; margin-top: 12.95px; }
-  .product .hero[data-buttons="stack"] .add-buttons {
-    grid-area: 5 / 1 / 6 / 3; display: flex; flex-direction: column; gap: 8px; margin-top: 8px;
-  }
+  .product .hero-button:first-child, .product .hero-button[hidden] + .hero-button { margin-top: 12.95px; }
+  .product .hero-button.blue { background: var(--as-blue); color: var(--as-on-blue); }
 
   /* The ribbon, between two hairlines that start 20 px in and run to the
      screen's edge. Cells are 105 px, or wider when their text needs it; the

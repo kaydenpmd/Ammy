@@ -45,7 +45,7 @@ There is no build step. Pages serves the folder as-is.
 
 ### 3. Fill in `source.config.json`
 
-The description and subtitle are yours to write. Until you do, the description is empty and there's no subtitle; add a `"subtitle"` to the `app` block when you have one. The app's `iconURL` is `https://apps.kaydenpmd.net/ammy-icon.png?v=2`. `public/ammy-icon.png` is a copy of the app icon's `AppIcon.png`, which `scripts/make_icon.py` draws, so copy it again whenever the icon is redrawn, and bump the `?v=`: SideStore can keep showing a cached icon for as long as its address stays the same, which it did after the 28 Oct 2026 icon change.
+The description and subtitle are yours to write. The subtitle is the `app` block's `"subtitle"`, written on 25 Nov 2026; the description is empty until you write it. The app's `iconURL` is `https://apps.kaydenpmd.net/ammy-icon.png?v=2`. `public/ammy-icon.png` is a copy of the app icon's `AppIcon.png`, which `scripts/make_icon.py` draws, so copy it again whenever the icon is redrawn, and bump the `?v=`: SideStore can keep showing a cached icon for as long as its address stays the same, which it did after the 28 Oct 2026 icon change.
 
 Screenshots are an empty list. AltStore shows them on the app page, and the simulator build `build-ipa.yml` already produces is an easy way to capture iPad ones on hardware you don't own.
 

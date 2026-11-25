@@ -736,6 +736,12 @@ How it was checked, and what went wrong first.
 
 Not seen on an iPhone yet: `ui-rounded` for the ribbon's value, light's colours taken from the system by name, and the hairlines. The pictures, the table and the scripts are in `local/phone-layout/`; the design library's spec has a section 12 on what building the page showed.
 
+The owner's answer to the three arrangements, the same day: "c, and seems like every app on the app store has a tagline so make mine "Send your music somewhere"".
+
+- C stays: .ipa, Add to SideStore and Add to AltStore across the page under the icon, 8 px apart, nothing where the app's Get goes. The other two arrangements, the `data-buttons` switch and the wrapper round the two Add buttons are gone, so the header's markup is what it was before this work.
+- The tagline is Ammy's `subtitle` in `source.config.json`, the owner's words as given. A push of the config alone builds nothing, and publishing it by hand would offer everyone a new build for one line of text, so `public/source.json` got it from the release script's own `apply_app_metadata`, run without a release: the diff is the one line the next release would have written. It shows under the name on every layout of Ammy's page, takes the category's place on Ammy's lockups (the front page, More by on Albums' page) and is what SideStore and AltStore list under the name. Albums has none.
+- Checked again in WebKit: 2,010 comparisons at the three widths, dark and light, none off; the subtitle now measures on the real page (x 154, baseline 23 px under the name's). In Edge the site as it was before this work and the edited one, both given the new `source.json`, are pixel-identical in all 66 comparisons, so outside an app's page on a phone the tagline is the only thing that changed.
+
 ## 25 Nov 2026: what keeps Ammy off the App Store, checked again
 
 The owner: "i'm actually tired of fixing sidestore what is keeping ammy off the app store currently". The 10 Sept decision (Open work item 4) called the App Store structurally impossible because of the keepalive. This checks that against the rules and iOS as they stand today. Nothing was decided and nothing in the app changed.

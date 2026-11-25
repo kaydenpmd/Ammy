@@ -26,7 +26,8 @@
           "NSAppleMusicUsageDescription": "Reads what you're currently playing so it can be sent to the endpoint you choose.",
           "NSCameraUsageDescription": "Scans a QR code to fill in the endpoint's address and key."
         }
-      }
+      },
+      "subtitle": "Send your music somewhere"
     },
     {
       "name": "Albums",

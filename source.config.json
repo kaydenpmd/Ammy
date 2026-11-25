@@ -12,6 +12,7 @@
     "name": "Ammy",
     "bundleIdentifier": "com.local.ammy",
     "developerName": "kaydenpmd",
+    "subtitle": "Send your music somewhere",
     "localizedDescription": "",
     "iconURL": "https://apps.kaydenpmd.net/ammy-icon.png?v=2",
     "tintColor": "#007AFF",
