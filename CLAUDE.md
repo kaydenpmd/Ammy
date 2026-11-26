@@ -206,7 +206,7 @@ Install path is **SideStore** (needs only iTunes); AltStore works for those who 
 
 - **On a phone, an app's page is the App Store app's product page** (built 25 Nov 2026; the owner's yes was for app pages on phones only), because Apple hands every iPhone to the app and none sees the website's phone layout. It is the last block of `store.css`, applied by touch and width (`(hover: none) and (pointer: coarse)`, under 600 px), never the user agent, to `html.product`; the markup is shared, and a page with no app drops the class. The front page, tablets and desktops keep the website: the iPad spec is estimates. The app's developer page, which the front page would copy, was captured in dark on the owner's phone on 26 Nov 2026 (spec section 7.0); whether the front page follows on phones is the owner's call.
 - **Live since 26 Nov 2026** (`8c0692d`; the owner, after the pictures: "Push it"). The pictures, the table of spec against page and the measuring scripts are in `local/phone-layout/`.
-- **Checked on the owner's iPhone** (26 Nov 2026, dark, beside Netflix Game Controller's product page): the rounded numbers, hairlines and colours are right, and the text at 11, 15, 16 and 22 px sat half a point off, because Safari on iOS rounds a font's ascent and descent up where the WebKit the page was built with rounds to the nearest. `ff64b81` sets the margins for iOS; it is committed and not pushed, waiting on the owner's yes.
+- **Checked on the owner's iPhone** (26 Nov 2026, dark, beside Netflix Game Controller's product page): the rounded numbers, hairlines and colours are right, and the text at 11, 15, 16 and 22 px sat half a point off, because Safari on iOS rounds a font's ascent and descent up where the WebKit the page was built with rounds to the nearest. `ff64b81` sets the margins for iOS, live since 26 Nov 2026 (the owner: "Push it").
 - **The header's three buttons run across the page under the icon**, .ipa first, with nothing where the app's one Get goes: the owner's choice of three arrangements shown (25 Nov 2026: "c").
 - Its numbers are the spec's (`apple/app-store-ios/NOTES.md`; section 12 there says how a page gets them): exact in dark; in light every colour is the system's named one, because no exact light picture of the app exists. Provisional beyond that: Information (iOS 26's form), the description, the distances between sections below What's New, and the version line's distance under its heading (32.5, the owner's phone; other phones' differ).
 - The ribbon has one cell, Size. The app's Category and Developer cells show an Apple glyph as their value, which the site can't carry, and its other cells are things `source.json` doesn't say. Not copied either: the back and share buttons, screenshots (the source has none), the "more" link, the compact bar.
@@ -259,7 +259,7 @@ As of 16 Nov 2026. Ammy 184 is on the owner's phone (installed 14 Nov 2026); Iss
 - the new icon in SideStore
 - the bar's distance from the edge by touch, on a Face ID phone and the SE
 - the uploaded-JPEG artwork path
-- the site's phone layout of an app's page in light, with its colours taken from the system by name (dark was checked on the owner's iPhone, 26 Nov 2026), and the text as retuned for iOS's rounding (`ff64b81`)
+- the site's phone layout of an app's page in light, with its colours taken from the system by name (dark was checked on the owner's iPhone, 26 Nov 2026), and the text as retuned for iOS's rounding (`ff64b81`, predicted right by the WebKit check, not yet photographed)
 
 ## Scanning a receiver's QR code
 
