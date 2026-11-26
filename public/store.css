@@ -120,7 +120,24 @@ button { font: inherit; color: inherit; border: 0; background: none; padding: 0;
 .lockups::-webkit-scrollbar { display: none; }
 @media (min-width: 1000px) { .lockups { grid-auto-columns: calc(25% - 15px); } }
 @media (min-width: 1580px) { .lockups { grid-auto-columns: calc(20% - 16px); } }
-.lockup { display: flex; align-items: center; min-width: 0; }
+.lockup { position: relative; display: flex; align-items: center; min-width: 0; }
+/* The name is the link to the app's page, stretched over the whole lockup
+   and under its .ipa button, so the lockup opens the page as it did when it
+   was one link. */
+.lockup .name a::after { content: ""; position: absolute; inset: 0; }
+.lockup .name a:focus-visible { outline: none; }
+.lockup .name a:focus-visible::after { outline: 2px solid var(--keyColor); outline-offset: 2px; }
+.lockup .get-button { position: relative; z-index: 1; }
+/* The .ipa button's symbol, Pretendard's circled down arrow (store.js): its
+   ink 0.8 em across, 12.84 px at the phone's 16 px label, where the App
+   Store's own symbols in its Write a Review and App Support buttons are 13.15
+   and 13.67; placed on the baseline as the font sets it, and its ink 6 px
+   before the label's (5.95 and 5.98 in those buttons; SF Pro's bold period
+   starts 1.41 px into its advance at 16 px). */
+.get-button .symbol {
+  display: inline-block; width: .8025em; height: .8038em; margin-inline-end: .287em;
+  vertical-align: -.048em; fill: currentColor;
+}
 .lockup .icon { width: 85px; height: 85px; margin-inline-end: 16px; }
 .lockup .meta { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
 .lockup .name { font: 400 15px/20px var(--font-family); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
