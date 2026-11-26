@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="home">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -9,9 +9,11 @@
 <link rel="stylesheet" href="/store.css">
 <!--
   The source's page, laid out as a developer's page on Apple's web App Store:
-  the source's name as the large title, then every app in source.json as a
-  lockup that opens its page (app.html, at /app/<slug>). Sizes and colours are
-  in store.css, from design-research/apple/app-store-web/NOTES.md.
+  its title as the large title, then every app in source.json as a lockup
+  that opens its page (app.html, at /app/<slug>). Sizes and colours are in
+  store.css, from design-research/apple/app-store-web/NOTES.md. On a phone
+  (touch, under 600 px) store.css lays it out from the App Store app's
+  developer page instead, by the class "home" on <html>.
 -->
 </head>
 <body>
@@ -58,8 +60,8 @@
     .then(function (src) {
       var apps = src.apps || [];
       if (!apps.length) throw new Error('no apps listed in source.json');
-      document.title = src.name || '';
-      $('name').textContent = src.name || '';
+      document.title = T.title;
+      $('name').textContent = T.title;
       apps.forEach(function (app) { $('apps').appendChild(S.lockup(app, false)); });
       $('appsShelf').hidden = false;
     })

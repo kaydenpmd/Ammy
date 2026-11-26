@@ -222,8 +222,9 @@ button { font: inherit; color: inherit; border: 0; background: none; padding: 0;
   product page, not the website. Sizes are the app's points as CSS px, from
   design-research/apple/app-store-ios/NOTES.md (written 23 Nov 2026): exact in
   dark, from the owner's iPhone SE on iOS 27.0 or 27.0.1 and other people's
-  iOS 27 screenshots; provisional where a line says so. The front page and the
-  page for an app that isn't there keep the website's phone layout.
+  iOS 27 screenshots; provisional where a line says so. The page for an app
+  that isn't there keeps the website's phone layout; the source's own page
+  has a phone layout of its own, the last block of this file.
 
   Text is placed by its baseline. Every font in the stack has SF Pro's ascent
   and descent (1950 and 494 of 2048), and Safari on iOS rounds both up to
@@ -246,7 +247,7 @@ button { font: inherit; color: inherit; border: 0; background: none; padding: 0;
      so each colour is the system's own named one with that colour's value
      (iOS 26 and later). The grey capsule's fill is the one whose dark value
      is the measured #1C1C1E. */
-  .product {
+  .product, .home {
     --as-page: #fff;                 /* systemBackground */
     --as-label: #000;                /* label */
     --as-secondary: #3c3c4399;       /* secondaryLabel */
@@ -268,17 +269,17 @@ button { font: inherit; color: inherit; border: 0; background: none; padding: 0;
      them by name, so they follow the phone's settings. */
   @supports (color: -apple-system-secondary-label) {
     @media (prefers-color-scheme: light) {
-      .product { --as-secondary: -apple-system-secondary-label; --as-ribbon-value: -apple-system-secondary-label; }
+      .product, .home { --as-secondary: -apple-system-secondary-label; --as-ribbon-value: -apple-system-secondary-label; }
     }
   }
   @supports (color: -apple-system-blue) {
-    @media (prefers-color-scheme: light) { .product { --as-blue: -apple-system-blue; } }
+    @media (prefers-color-scheme: light) { .product, .home { --as-blue: -apple-system-blue; } }
   }
   /* Dark is measured (the owner's iPhone SE, iOS 27.0 or 27.0.1). The app's
      dark Get button was never captured at rest, so the blue fill is the
      blue of its capsule labels. */
   @media (prefers-color-scheme: dark) {
-    .product {
+    .product, .home {
       --as-page: #000;
       --as-label: #fff;
       --as-secondary: #8d8d92;
@@ -458,22 +459,83 @@ button { font: inherit; color: inherit; border: 0; background: none; padding: 0;
   .product .lockup:not(:nth-child(3n)):not(:last-child)::after {
     content: ""; position: absolute; top: 69.59px; left: 72px; right: 0; border-top: var(--hairline) solid var(--as-hairline);
   }
-  .product .lockup .icon {
+  .product .lockup .icon, .home .lockup .icon {
     width: 62px; height: 62px; margin-inline-end: 10px; border-radius: 0;
     clip-path: path("M24.76 0L37.24 0C44.37 0 47.93 0 51.15 1.06L51.77 1.21C55.96 2.74 59.26 6.04 60.79 10.23C62 14.07 62 17.63 62 24.76L62 37.24C62 44.37 62 47.93 60.94 51.15L60.79 51.77C59.26 55.96 55.96 59.26 51.77 60.79C47.93 62 44.37 62 37.24 62L24.76 62C17.63 62 14.07 62 10.85 60.94L10.23 60.79C6.04 59.26 2.74 55.96 1.21 51.77C0 47.93 0 44.37 0 37.24L0 24.76C0 17.63 0 14.07 1.06 10.85L1.21 10.23C2.74 6.04 6.04 2.74 10.23 1.21C14.07 0 17.63 0 24.76 0Z");
   }
-  .product .lockup .icon::after {
+  .product .lockup .icon::after, .home .lockup .icon::after {
     box-shadow: none; background: var(--as-ring);
     clip-path: path(evenodd, "M24.76 0L37.24 0C44.37 0 47.93 0 51.15 1.06L51.77 1.21C55.96 2.74 59.26 6.04 60.79 10.23C62 14.07 62 17.63 62 24.76L62 37.24C62 44.37 62 47.93 60.94 51.15L60.79 51.77C59.26 55.96 55.96 59.26 51.77 60.79C47.93 62 44.37 62 37.24 62L24.76 62C17.63 62 14.07 62 10.85 60.94L10.23 60.79C6.04 59.26 2.74 55.96 1.21 51.77C0 47.93 0 44.37 0 37.24L0 24.76C0 17.63 0 14.07 1.06 10.85L1.21 10.23C2.74 6.04 6.04 2.74 10.23 1.21C14.07 0 17.63 0 24.76 0ZM24.24 1L37.76 1C44.45 1 47.8 1 50.82 2L51.4 2.14C55.33 3.57 58.43 6.67 59.86 10.6C61 14.2 61 17.55 61 24.24L61 37.76C61 44.45 61 47.8 60 50.82L59.86 51.4C58.43 55.33 55.33 58.43 51.4 59.86C47.8 61 44.45 61 37.76 61L24.24 61C17.55 61 14.2 61 11.18 60L10.6 59.86C6.67 58.43 3.57 55.33 2.14 51.4C1 47.8 1 44.45 1 37.76L1 24.24C1 17.55 1 14.2 2 11.18L2.14 10.6C3.57 6.67 6.67 3.57 10.6 2.14C14.2 1 17.55 1 24.24 1Z");
   }
-  .product .lockup .meta { gap: 0; margin-inline-end: 16px; }
-  .product .lockup .name {
+  /* The text stops 10 short of the capsule, the gap the shelf leaves between
+     icon and text: Apple's truncated lines run to x 267 (IMG_4076), past
+     where a 16 px gap would stop them. */
+  .product .lockup .meta { gap: 0; margin-inline-end: 10px; }
+  .product .lockup .name, .home .lockup .name {
     display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; white-space: normal;
     font: 400 17px/20px var(--font-family);
   }
-  .product .lockup .subtitle { margin-top: 3px; font: 400 13px/17px var(--font-family); color: var(--as-secondary); }
-  .product .lockup .get-button {
+  .product .lockup .subtitle, .home .lockup .subtitle { margin-top: 3px; font: 400 13px/17px var(--font-family); color: var(--as-secondary); }
+  .product .lockup .get-button, .home .lockup .get-button {
     display: flex; align-items: center; justify-content: center; box-sizing: border-box; width: 74px; height: 32px;
     padding: 0 0 1px; border-radius: 16px; font: 700 16px/19px var(--font-family); color: var(--as-blue); background: var(--as-capsule);
   }
+}
+
+/* ---- The source's page on a phone ---- */
+
+/*
+  On a phone the source's page (index.html, the class "home" on <html>) is
+  built from the App Store app's developer page, measured on the owner's
+  iPhone SE on 26 Nov 2026 (design-research/apple/app-store-ios/NOTES.md, 7.0),
+  and cut down to what the owner asked for that day: "kayden's apps /
+  buttons / pile of apps". Left out: the back button, Latest Release, shelf
+  headings, the tab bar, and the source's address under the buttons (Copy
+  still copies it). Colours and the lockup's look are the app page's, above.
+*/
+@media (hover: none) and (pointer: coarse) and (max-width: 599.98px) {
+  .home body { background: var(--as-page); color: var(--as-label); }
+  .home .page { max-width: none; }
+
+  /* The title: the developer page's large title, 34 bold, lines 41 apart,
+     its baseline 46 under the top, the distance the App Store puts it under
+     its back button, which this page doesn't have. It starts at x 16 on a
+     375 pt phone and at 20 on a 402 pt one (the Apps tab's large title,
+     #9), as iOS's own large titles move with the width; the switch at
+     400 px is a reading of those two widths, no more. */
+  .home .large-title {
+    padding: 13.5px 16px 0; color: var(--as-label);
+    font: 700 34px/41px var(--font-family); letter-spacing: 0;
+  }
+  @media (min-width: 400px) { .home .large-title { padding-left: 20px; padding-right: 20px; } }
+
+  /* The buttons: the app page's capsules (32 px tall, 16 bold, the label's
+     baseline 21.5 down), one under another 8 px apart across the page, as
+     the owner asked for when there are three. The first is 30 px under the
+     title's baseline, where the App Store's Apps tab puts the capsules under
+     its large title (29.96, #9). */
+  .home .large-title + .shelf { padding: 0; margin-top: 21.5px; }
+  .home .source-buttons { display: flex; flex-direction: column; gap: 8px; margin: 0 20px; }
+  .home .source-buttons .get-button {
+    display: flex; align-items: center; justify-content: center; box-sizing: border-box; height: 32px;
+    padding: 0 16px 1px; border-radius: 16px; font: 700 16px/19px var(--font-family);
+    color: var(--as-blue); background: var(--as-capsule);
+  }
+  .home .source-url { display: none; }
+
+  /* The apps: the developer page's shelf rows, one under another in one
+     untitled section, the View capsule at each row's end. The first icon is
+     33.91 px under the last button, the room the App Store leaves under a
+     capsule in that place on a product page (the app page has it under the
+     same buttons); rows are 78 apart, with a hairline 7.59 under each icon
+     but the last, from the text to the capsule's end. */
+  .home #appsShelf { padding: 0; margin-top: 33.91px; }
+  .home .lockups { display: block; margin: 0; padding: 0 20px; overflow: visible; }
+  .home .lockup { position: relative; height: 62px; }
+  .home .lockup + .lockup { margin-top: 16px; }
+  .home .lockup:not(:last-child)::after {
+    content: ""; position: absolute; top: 69.59px; left: 72px; right: 0; border-top: var(--hairline) solid var(--as-hairline);
+  }
+  .home .lockup .meta { flex: 1; gap: 0; margin-inline-end: 84px; }  /* the capsule's 74 and the 10 before it */
+  .home .lockup .get-button { position: absolute; top: 15px; right: 0; margin: 0; }
 }

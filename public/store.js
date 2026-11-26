@@ -7,6 +7,7 @@
   // own words, shown until the owner writes theirs (the wording page); the
   // rest is the old landing page's text.
   var TEXT = {
+    title: "Kayden's Apps",                         // the source page's title, the owner's (26 Nov 2026)
     addSideStore: 'Add to SideStore',
     addAltStore: 'Add to AltStore',
     copy: 'Copy',
