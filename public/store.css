@@ -562,3 +562,38 @@ button { font: inherit; color: inherit; border: 0; background: none; padding: 0;
   .home .lockup .meta { flex: 1; gap: 0; margin-inline-end: 84px; }  /* the capsule's 74 and the 10 before it */
   .home .lockup .get-button { position: absolute; top: 15px; right: 0; margin: 0; }
 }
+
+/* ---- Moving between pages on a phone: iOS's push and pop ---- */
+
+/*
+  A page opened by a link on the site slides in from the right over the page
+  it came from, which moves left by 0.2975 of its width; going back slides the
+  top page off to the right and brings the one beneath back (store.js tells
+  them apart). The springs are iOS 27.2's, measured from the owner's iPhone SE
+  screen recordings of 2 Nov 2026 (design-research/apple/
+  ios-pages-for-artifacts/NOTES.md, Motion): the push damped 1.08 at
+  24.9 rad/s, 435 ms to within half a point, the pop 1.16 at 27 rad/s, 450 ms,
+  each sampled at 60 points. Not measured, so left out: any dimming of the
+  page beneath, a shadow on the top page, and the highlight on a tapped row.
+  Safari's own swipe back keeps Safari's motion, and a reduced-motion setting
+  turns it all off.
+*/
+@media (hover: none) and (pointer: coarse) and (max-width: 599.98px) and (prefers-reduced-motion: no-preference) {
+  @view-transition { navigation: auto; }
+}
+::view-transition-group(root) { animation: none; }
+::view-transition-old(root), ::view-transition-new(root) {
+  mix-blend-mode: normal; animation-fill-mode: both;
+  animation-duration: 435ms; animation-timing-function: linear(0, 0.0143, 0.0506, 0.1006, 0.1588, 0.2208, 0.2837, 0.3456, 0.4051, 0.4614, 0.5141, 0.5628, 0.6075, 0.6484, 0.6855, 0.7191, 0.7494, 0.7767, 0.8012, 0.8231, 0.8427, 0.8602, 0.8758, 0.8897, 0.9021, 0.9132, 0.923, 0.9317, 0.9394, 0.9463, 0.9524, 0.9578, 0.9626, 0.9668, 0.9706, 0.974, 0.9769, 0.9796, 0.9819, 0.984, 0.9858, 0.9874, 0.9888, 0.9901, 0.9912, 0.9922, 0.9931, 0.9939, 0.9946, 0.9952, 0.9958, 0.9963, 0.9967, 0.9971, 0.9974, 0.9977, 0.998, 0.9982, 0.9984, 0.9986, 1);
+}
+::view-transition-new(root) { animation-name: ios-push-in; }
+::view-transition-old(root) { animation-name: ios-push-under; }
+html.pop::view-transition-old(root), html.pop::view-transition-new(root) {
+  animation-duration: 450ms; animation-timing-function: linear(0, 0.0176, 0.0606, 0.1181, 0.1829, 0.25, 0.3164, 0.3802, 0.4403, 0.4961, 0.5474, 0.5943, 0.6368, 0.6752, 0.7098, 0.7409, 0.7688, 0.7938, 0.8161, 0.8361, 0.8539, 0.8698, 0.884, 0.8966, 0.9079, 0.918, 0.9269, 0.9349, 0.942, 0.9484, 0.954, 0.959, 0.9635, 0.9675, 0.9711, 0.9742, 0.977, 0.9796, 0.9818, 0.9838, 0.9856, 0.9871, 0.9885, 0.9898, 0.9909, 0.9919, 0.9928, 0.9936, 0.9943, 0.9949, 0.9955, 0.996, 0.9964, 0.9968, 0.9971, 0.9975, 0.9977, 0.998, 0.9982, 0.9984, 1);
+}
+html.pop::view-transition-old(root) { z-index: 1; animation-name: ios-pop-off; }
+html.pop::view-transition-new(root) { animation-name: ios-pop-under; }
+@keyframes ios-push-in { from { transform: translateX(100%); } }
+@keyframes ios-push-under { to { transform: translateX(-29.75%); } }
+@keyframes ios-pop-off { to { transform: translateX(100%); } }
+@keyframes ios-pop-under { from { transform: translateX(-29.75%); } }

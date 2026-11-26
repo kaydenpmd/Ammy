@@ -123,11 +123,14 @@
     $('missing').hidden = false;
   }
 
-  S.loadSource()
-    .then(function (src) {
+  // Draws the page from source.json. Returns false, having drawn nothing,
+  // when the app isn't in this session's saved copy, which may be older than
+  // the app.
+  function show(src, saved) {
       var apps = src.apps || [];
       var app = apps.filter(function (a) { return S.slugOf(a) === slug; })[0];
-      if (!app) { missing(T.notFound, T.notPublished); return; }
+      if (!app && saved) return false;
+      if (!app) { missing(T.notFound, T.notPublished); return true; }
 
       document.title = app.name + (src.name ? ' — ' + src.name : '');
       $('name').textContent = app.name;
@@ -183,10 +186,15 @@
         others.forEach(function (a) { $('more').appendChild(S.lockup(a, true)); });
         $('moreShelf').hidden = false;
       }
-    })
-    .catch(function (e) {
-      missing(T.unavailable, T.couldNotLoad(e.message));
-    });
+      return true;
+  }
+
+  // At once from this session's copy of source.json when there is one, so
+  // the page has its content when it slides in on a phone, and the copy
+  // refreshed for next time; otherwise from the network.
+  var saved = S.cachedSource();
+  if (saved && show(saved, true)) S.loadSource().catch(function () {});
+  else S.loadSource().then(function (src) { show(src, false); }, function (e) { missing(T.unavailable, T.couldNotLoad(e.message)); });
 })();
 </script>
 </body>

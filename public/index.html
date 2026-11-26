@@ -56,21 +56,29 @@
   S.sourceLinks($('side'), $('alt'));
   $('copy').addEventListener('click', function () { S.copySourceURL($('copy')); });
 
-  S.loadSource()
-    .then(function (src) {
-      var apps = src.apps || [];
-      if (!apps.length) throw new Error('no apps listed in source.json');
-      document.title = T.title;
-      $('name').textContent = T.title;
-      apps.forEach(function (app) { $('apps').appendChild(S.lockup(app, false)); });
-      $('appsShelf').hidden = false;
-    })
-    .catch(function (e) {
-      document.title = T.unavailable;
-      $('name').textContent = T.unavailable;
-      $('error').textContent = T.couldNotLoad(e.message);
-      $('error').hidden = false;
-    });
+  function show(src) {
+    var apps = src.apps || [];
+    if (!apps.length) throw new Error('no apps listed in source.json');
+    document.title = T.title;
+    $('name').textContent = T.title;
+    apps.forEach(function (app) { $('apps').appendChild(S.lockup(app, false)); });
+    $('appsShelf').hidden = false;
+  }
+  function failed(e) {
+    document.title = T.unavailable;
+    $('name').textContent = T.unavailable;
+    $('error').textContent = T.couldNotLoad(e.message);
+    $('error').hidden = false;
+  }
+
+  // At once from this session's copy of source.json when there is one, so
+  // the page has its content when it slides in on a phone, and the copy
+  // refreshed for next time; otherwise from the network.
+  var saved = S.cachedSource();
+  var drawn = false;
+  if (saved) try { show(saved); drawn = true; } catch (e) {}
+  if (drawn) S.loadSource().catch(function () {});
+  else S.loadSource().then(show).catch(failed);
 })();
 </script>
 </body>

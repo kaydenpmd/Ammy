@@ -70,7 +70,9 @@
     if (url) {
       var img = el('img');
       img.src = url; img.alt = ''; img.width = size; img.height = size;
-      if (size < 100) img.loading = 'lazy';
+      // Drawn with the page's first frame when it's already loaded, so a page
+      // sliding in on a phone brings its icons with it.
+      img.decoding = 'sync';
       box.appendChild(img);
     }
     return box;
@@ -135,17 +137,46 @@
     }
   }
 
+  // source.json, fetched fresh each time and kept for the session, so the
+  // next page can draw itself from it at once: a page that slides in on a
+  // phone has to have its content in its first frame.
+  var CACHE = 'store.source';
   function loadSource() {
     return fetch(SOURCE_URL, { cache: 'no-cache' }).then(function (r) {
       if (!r.ok) throw new Error('HTTP ' + r.status);
-      return r.json();
+      return r.text();
+    }).then(function (text) {
+      var src = JSON.parse(text);
+      try { sessionStorage.setItem(CACHE, text); } catch (e) {}
+      return src;
     });
   }
+  function cachedSource() {
+    try { var text = sessionStorage.getItem(CACHE); return text ? JSON.parse(text) : null; } catch (e) { return null; }
+  }
+
+  // Which way a page moves on a phone (store.css, the view transition): one
+  // reached by following a link on the site slides in over the page before
+  // (iOS's push); any other arrival, as by going back, slides that page off
+  // to uncover it (iOS's pop).
+  var LINKED = 'store.linked';
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest && e.target.closest('a[href]');
+    if (a && a.origin === location.origin) try { sessionStorage.setItem(LINKED, '1'); } catch (x) {}
+  }, true);
+  window.addEventListener('pagereveal', function (e) {
+    var linked = false;
+    try { linked = sessionStorage.getItem(LINKED) === '1'; sessionStorage.removeItem(LINKED); } catch (x) {}
+    if (!e.viewTransition) return;
+    var root = document.documentElement;
+    root.classList.toggle('pop', !linked);
+    e.viewTransition.finished.then(function () { root.classList.remove('pop'); }, function () { root.classList.remove('pop'); });
+  });
 
   window.Store = {
     SOURCE_URL: SOURCE_URL, TEXT: TEXT, el: el, slugOf: slugOf, appURL: appURL,
     megabytes: megabytes, megabyteParts: megabyteParts, categoryName: categoryName, formatDate: formatDate,
     icon: icon, lockup: lockup, sourceLinks: sourceLinks, copySourceURL: copySourceURL,
-    loadSource: loadSource
+    loadSource: loadSource, cachedSource: cachedSource
   };
 })();
