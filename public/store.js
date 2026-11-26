@@ -84,26 +84,6 @@
   // gets no button. The name links to the app's page, and store.css stretches that
   // link over the whole lockup, under the button, so the rest of the lockup
   // still opens the page.
-  // The .ipa button's symbol: the circled down arrow of Pretendard (glyph
-  // U+E139 at weight 700, from fonts/PretendardStdVariable.woff2, under the
-  // SIL Open Font License in fonts/), drawn from its outline, in font units
-  // with y up, so phones needn't fetch the font for it. Not an SF Symbol:
-  // Apple licenses those for apps on its own platforms only.
-  var DOWNLOAD = 'M95 724Q95 947 205.5 1136.5Q316 1326 505 1436.5Q694 1547 917 1547Q1140 1547 1329.5 1436.5Q1519 1326 1629 1136.5Q1739 947 1739 724Q1739 501 1629 312.0Q1519 123 1329.5 12.0Q1140 -99 917 -99Q694 -99 505 12.0Q316 123 205.5 312.0Q95 501 95 724ZM1498 724Q1498 881 1420 1015.5Q1342 1150 1208 1228.0Q1074 1306 917 1306Q760 1306 626.5 1228.0Q493 1150 414 1016.0Q335 882 335 724Q335 567 414 433.5Q493 300 626.5 221.5Q760 143 917 143Q1074 143 1208 221.5Q1342 300 1420 433.5Q1498 567 1498 724ZM988 625 1157 795 1256 695 917 358 580 695 678 795 845 625 846 1086H990Z';
-  function downloadSymbol() {
-    var NS = 'http://www.w3.org/2000/svg';
-    var svg = document.createElementNS(NS, 'svg');
-    svg.setAttribute('class', 'symbol');
-    svg.setAttribute('viewBox', '95 -1547 1644 1646');
-    svg.setAttribute('aria-hidden', 'true');
-    svg.setAttribute('focusable', 'false');
-    var path = document.createElementNS(NS, 'path');
-    path.setAttribute('transform', 'scale(1 -1)');
-    path.setAttribute('d', DOWNLOAD);
-    svg.appendChild(path);
-    return svg;
-  }
-
   function lockup(app, small) {
     var box = el('div', 'lockup');
     box.appendChild(icon(app.iconURL, small ? 64 : 85));
@@ -119,8 +99,13 @@
     var v = (app.versions || [])[0] || {};
     if (v.downloadURL) {
       var button = el('a', 'get-button');
+      // The symbol is a character of Pretendard, the font the site serves:
+      // U+E139, its circled down arrow (store.css sets it in that font). Not an
+      // SF Symbol: Apple licenses those for apps on its own platforms only.
       var label = el('span');
-      label.appendChild(downloadSymbol());
+      var symbol = el('span', 'symbol', '\uE139');
+      symbol.setAttribute('aria-hidden', 'true');
+      label.appendChild(symbol);
       label.appendChild(document.createTextNode(TEXT.ipa));
       button.appendChild(label);
       button.href = v.downloadURL;
