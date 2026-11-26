@@ -226,11 +226,14 @@ button { font: inherit; color: inherit; border: 0; background: none; padding: 0;
   page for an app that isn't there keep the website's phone layout.
 
   Text is placed by its baseline. Every font in the stack has SF Pro's ascent
-  and descent (1950 and 494 of 2048), which browsers round to whole pixels:
-  21 and 5 at 22 px, 16 and 4 at 17, 15 and 4 at 16, 14 and 4 at 15, 12 and 3
-  at 13, 10 and 3 at 11. A line's baseline is its ascent plus half of what
-  the line height adds, under the line's top; the line heights and margins
-  below are chosen to put each baseline where the app has it.
+  and descent (1950 and 494 of 2048), and Safari on iOS rounds both up to
+  whole pixels: 21 and 6 at 22 px, 17 and 5 at 17, 16 and 4 at 16, 15 and 4
+  at 15, 13 and 4 at 13, 11 and 3 at 11 (measured on the owner's iPhone SE,
+  26 Nov 2026). A line's baseline is its ascent plus half of what the line
+  height adds, under the line's top; the line heights and margins below are
+  chosen to put each baseline where the app has it on an iPhone. Other
+  engines round to the nearest pixel (WebKit on Windows) or in device pixels
+  (Chromium), so text at 11, 15, 16 and 22 px lands half a pixel off there.
 
   Not copied, because the site has nothing for them: the round back and share
   buttons (the icon starts 20 px down, their distance above it), ratings,
@@ -306,11 +309,11 @@ button { font: inherit; color: inherit; border: 0; background: none; padding: 0;
   .product .hero-text, .product .button-row { display: contents; }
   .product .hero-icon { grid-area: 1 / 1 / 3 / 2; display: block; width: 118px; height: 118px; }
   .product .hero h1 {
-    grid-area: 1 / 2; margin: 0; color: var(--as-label);
+    grid-area: 1 / 2; margin: 0; padding-top: .5px; color: var(--as-label);
     font: 600 22px/26px var(--font-family); letter-spacing: 0; text-shadow: none;
   }
   .product .hero .subtitle {
-    grid-area: 2 / 2; margin: 3px 0 0; color: var(--as-secondary); mix-blend-mode: normal;
+    grid-area: 2 / 2; margin: 2px 0 0; color: var(--as-secondary); mix-blend-mode: normal;
     font: 400 15px/20px var(--font-family);
   }
 
@@ -333,13 +336,14 @@ button { font: inherit; color: inherit; border: 0; background: none; padding: 0;
      the owner chose this one (25 Nov 2026): all three across the page under
      the icon, .ipa first, nothing where Get goes. Each is the app's capsule,
      32 px tall, the label 16 bold with its baseline 21.5 px down (a 19 px
-     line centred in the 32): the .ipa in the blue of its Get, the other two
-     in the grey of its lists. The first is 12.95 px under the icon and the
-     rule 33.91 under the last, as with a pre-order's capsule, which the app
-     puts in this place; they are 8 px apart, as its stacked buttons are. A
-     capsule wider than 74 px is in no picture of the app. */
+     line centred in the 31 above a 1 px pad): the .ipa in the blue of its
+     Get, the other two in the grey of its lists. The first is 12.95 px under
+     the icon and the rule 33.91 under the last, as with a pre-order's
+     capsule, which the app puts in this place; they are 8 px apart, as its
+     stacked buttons are. A capsule wider than 74 px is in no picture of the
+     app. */
   .product .hero-button {
-    grid-column: 1 / -1; box-sizing: border-box; justify-content: center; height: 32px; margin-top: 8px;
+    grid-column: 1 / -1; box-sizing: border-box; justify-content: center; height: 32px; padding: 0 16px 1px; margin-top: 8px;
     border-radius: 16px; background: var(--as-capsule); color: var(--as-blue); mix-blend-mode: normal;
     font: 700 16px/19px var(--font-family);
   }
@@ -364,7 +368,7 @@ button { font: inherit; color: inherit; border: 0; background: none; padding: 0;
   .product .ribbon-cells { display: flex; margin: 0; padding: 0 0 0 20px; overflow-x: auto; scrollbar-width: none; }
   .product .ribbon-cells::-webkit-scrollbar { display: none; }
   .product .cell {
-    position: relative; flex: none; box-sizing: border-box; min-width: 105px; padding: 14px 8px 12.5px;
+    position: relative; flex: none; box-sizing: border-box; min-width: 105px; padding: 13.5px 8px 12.5px;
     text-align: center; white-space: nowrap;
   }
   .product .cell:first-child { padding-left: 0; }
@@ -374,8 +378,8 @@ button { font: inherit; color: inherit; border: 0; background: none; padding: 0;
   }
   .product .cell:last-child::after { content: none; }
   .product .cell dt { font: 600 11px/13px var(--font-family); text-transform: uppercase; color: var(--as-ribbon-label); }
-  .product .cell .value { margin-top: 8px; font: 600 22px/26px ui-rounded, var(--font-family); color: var(--as-ribbon-value); }
-  .product .cell .sub { margin-top: 5px; font: 400 13px/15px var(--font-family); color: var(--as-ribbon-value); }
+  .product .cell .value { margin-top: 9px; font: 600 22px/26px ui-rounded, var(--font-family); color: var(--as-ribbon-value); }
+  .product .cell .sub { margin-top: 4.5px; font: 400 13px/15px var(--font-family); color: var(--as-ribbon-value); }
 
   /* Sections, in the app's order: What's New, the description, Information,
      More by. Headings are 22 bold, 20 px in. */
@@ -394,10 +398,10 @@ button { font: inherit; color: inherit; border: 0; background: none; padding: 0;
      version and, at the right, the date 32.5 under that (the app has 32.5,
      32 and 34.3 on three phones, unexplained; this is the owner's); the
      notes 30 further, in lines 20 apart. */
-  .product .shelf-new { padding-top: 10.69px; }
+  .product .shelf-new { padding-top: 11.19px; }
   .product .whats-new { flex-direction: column; margin: 0 20px; font: 400 15px/20px var(--font-family); }
   .product .whats-new .metadata {
-    order: -1; flex-direction: row; justify-content: space-between; gap: 16px; margin: 12.5px 0 10px;
+    order: -1; flex-direction: row; justify-content: space-between; gap: 16px; margin: 11.5px 0 10px;
     text-align: start; color: var(--as-secondary);
   }
   .product .whats-new .notes { flex: none; width: auto; }
@@ -407,7 +411,7 @@ button { font: inherit; color: inherit; border: 0; background: none; padding: 0;
      app's rule follows a row of device names, 27.32 px under that row's
      baseline, which is the distance kept here from the text above. Measured
      on one dark screenshot (iOS 26.4 or later): provisional. */
-  .product .shelf-desc { order: 1; position: relative; margin-top: 22.32px; padding-top: 15.67px; }
+  .product .shelf-desc { order: 1; position: relative; margin-top: 22.82px; padding-top: 15.17px; }
   .product .shelf-desc::before {
     content: ""; position: absolute; top: 0; left: 20px; right: 20px; border-top: var(--hairline) solid var(--as-hairline);
   }
@@ -422,11 +426,11 @@ button { font: inherit; color: inherit; border: 0; background: none; padding: 0;
      from What's New to its next heading), rows 48 px apart, the label grey
      and the value at the right, a rule 18 px under each baseline but the
      last. A long value goes under its label, in lines 20 apart. Provisional. */
-  .product .shelf-info { order: 2; margin-top: 41.68px; }
+  .product .shelf-info { order: 2; margin-top: 42.68px; }
   /* Straight after the ribbon, its heading sits where What's New's would. */
-  .product .shelf-desc[hidden] + .shelf-new[hidden] + .shelf-info { margin-top: 10.69px; }
-  .product .info { display: block; margin-top: 13px; padding: 0 20px; font: 400 15px/20px var(--font-family); }
-  .product .info > div { position: relative; display: flex; justify-content: space-between; gap: 16px; padding: 15px 0 13px; }
+  .product .shelf-desc[hidden] + .shelf-new[hidden] + .shelf-info { margin-top: 11.19px; }
+  .product .info { display: block; margin-top: 12.5px; padding: 0 20px; font: 400 15px/20px var(--font-family); }
+  .product .info > div { position: relative; display: flex; justify-content: space-between; gap: 16px; padding: 14.5px 0 13.5px; }
   .product .info > div + div::before {
     content: ""; position: absolute; top: 0; left: 0; right: 0; border-top: var(--hairline) solid var(--as-hairline);
   }
@@ -444,11 +448,11 @@ button { font: inherit; color: inherit; border: 0; background: none; padding: 0;
      capsule ending 20 px from the edge, all centred on the icon. Rows are
      78 px apart, three to a column, with a hairline 7.59 px under each icon
      from the text to the capsule's end; the next column starts 10 px after. */
-  .product .shelf-more { order: 3; margin-top: 21.98px; }
-  .product .shelf-info[hidden] + .shelf-more { margin-top: 41.68px; }
+  .product .shelf-more { order: 3; margin-top: 22.48px; }
+  .product .shelf-info[hidden] + .shelf-more { margin-top: 42.68px; }
   .product .lockups.small {
     grid-template-rows: repeat(3, auto); grid-auto-columns: 100%; column-gap: 10px; row-gap: 16px;
-    margin: 13px 0 0; padding: 0 20px;
+    margin: 12.5px 0 0; padding: 0 20px;
   }
   .product .lockup { position: relative; height: 62px; }
   .product .lockup:not(:nth-child(3n)):not(:last-child)::after {
@@ -470,6 +474,6 @@ button { font: inherit; color: inherit; border: 0; background: none; padding: 0;
   .product .lockup .subtitle { margin-top: 3px; font: 400 13px/17px var(--font-family); color: var(--as-secondary); }
   .product .lockup .get-button {
     display: flex; align-items: center; justify-content: center; box-sizing: border-box; width: 74px; height: 32px;
-    padding: 0; border-radius: 16px; font: 700 16px/19px var(--font-family); color: var(--as-blue); background: var(--as-capsule);
+    padding: 0 0 1px; border-radius: 16px; font: 700 16px/19px var(--font-family); color: var(--as-blue); background: var(--as-capsule);
   }
 }
