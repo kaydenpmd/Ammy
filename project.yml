@@ -59,9 +59,16 @@ targets:
         # Interface text, and receiver-agnostic like the line above.
         NSCameraUsageDescription: >-
           Scans a QR code to fill in the endpoint's address and key.
-        # Required for the silent-audio keepalive in KeepAlive.swift.
-        UIBackgroundModes:
-          - audio
+        # LAB (continued-task-lab, 27 Nov 2026): no audio background mode,
+        # so only the continued processing task in ContinuedTask.swift keeps
+        # the app running. Its identifier has to be allowed here and begin
+        # with the bundle ID. SideStore renames the bundle ID to
+        # com.local.ammy.<TEAMID>, so the wildcards are here too, and the
+        # journal records which identifier iOS took.
+        BGTaskSchedulerPermittedIdentifiers:
+          - com.local.ammy.session
+          - com.local.ammy.session.*
+          - com.local.ammy.*
 
     settings:
       base:

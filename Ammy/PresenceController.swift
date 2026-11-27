@@ -225,7 +225,10 @@ final class PresenceController: ObservableObject {
     /// Every failure that reached the status row, kept for the history screen.
     let events = EventLog()
 
-    private let keepAlive = KeepAlive()
+    // LAB (continued-task-lab, 27 Nov 2026): a continued processing task in
+    // place of the silent audio. Same calls as KeepAlive's, plus the
+    // destination its Live Activity shows; see ContinuedTask.swift.
+    private let keepAlive = ContinuedTask()
     private let watchdog = SilenceWatchdog()
     private var relay: PresenceRelay?
     private var bag = Set<AnyCancellable>()
@@ -331,6 +334,7 @@ final class PresenceController: ObservableObject {
         activeKey = key
 
         self.relay = relay
+        keepAlive.destination = resolved.host() ?? endpoint
         keepAlive.start()
 
         // Before anything can be scheduled. An unauthorized center accepts

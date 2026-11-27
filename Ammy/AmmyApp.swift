@@ -10,7 +10,10 @@ extension Bundle {
     var displayVersion: String {
         let short = infoDictionary?["CFBundleShortVersionString"] as? String ?? "?"
         let build = infoDictionary?["CFBundleVersion"] as? String ?? "?"
-        return "\(short) (\(build))"
+        // LAB (continued-task-lab): marks the lab in the Version row, the
+        // journal and every push, so Issun's lines can't be taken for a main
+        // build with the same number.
+        return "\(short) (\(build)) lab"
     }
 
     /// The app's name as the Home Screen shows it: "Ammy". Sent with every push
