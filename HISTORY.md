@@ -795,6 +795,27 @@ Getting the lab's events into Issun's log needs no new Issun build. Issun alread
 
 The title and subtitle the Live Activity shows are the owner's words; until they write them, `[text]`.
 
+**The lab, built (27 Nov 2026).** Branch `continued-task-lab`, commit `edf6f41`, build 241, in a worktree at `local/continued-task-lab`. It compiled on CI on the first try with no warnings, and its Info.plist has no `UIBackgroundModes` and permits `com.local.ammy.session`, `com.local.ammy.session.*` and `com.local.ammy.*`. The IPA went to the owner in the conversation and to iCloud Drive's `Ammy lab` folder; a copy is in `local/continued-task-lab-ipa/`. Not installed as of this writing.
+
+What the build does:
+
+- It never creates a `KeepAlive`. `ContinuedTask.swift` has the same calls, and PresenceController changes in two lines: the type, and the host the Live Activity shows.
+- While a session runs it keeps one task running, submitted with the `.fail` strategy at Start and whenever none is running and the app comes to the front, leaves it, goes to the background, pushes or ticks. After a refusal it waits 30 s, or a change of app state, before asking again.
+- A task reports one unit of progress every 10 s against 8,640, a day's worth.
+- When a task ends while a session is on, a new one is submitted at once, wherever the app is.
+- A gap between ticks is logged with the wall clock and with the uptime clock, which stops while the phone sleeps. A gap with the phone awake marks a running task as doubted, and it's ended only when the app next comes to the front. The first version ended it from the tick; the altitude review pointed out that phone sleep would have made the lab measure its own rule.
+- It registers `<bundle ID>.session`, `<bundle ID>.session.lab`, `com.local.ammy.session` and `com.local.ammy.session.lab`, and its first journal line after launch says which iOS took. It moves to the next identifier only on notPermitted while the app is in front and before any task has run.
+- It reports its version as "1.0 (241) lab" in the Version row, the journal and every push, so Issun's stamps show it apart from a main build with the same number. Pushing this note makes main's count 241, so main's next release is 242 or later and SideStore will offer it over the lab.
+- The interface-text trial (26 Nov 2026) made the Live Activity's words Claude's: "Sending to Endpoint" over the endpoint's host. Title-style is a choice, since Apple gives no rule for a Live Activity's capitals and Apple's own apps' weren't captured. Not yet shown to the owner for an OK; nothing public carries it.
+
+How Issun shows the lab's lines, with no new Issun build. `engine` is a task running, `want` a session wanting one, `resumes` tasks started, `fails` refused submissions, `heals` tasks ended, `route` is always `lab-task`, and `failstage` is the newest event's kind: started, ended, submit or register. `last_error` is that event in words, and Issun logs every new one as a `[keepalive] resume failed:` line, whatever the event. The journal also has lock and unlock, app state, Low Power Mode, memory warnings and the thermal state as a number (0 nominal, 1 fair, 2 serious, 3 critical).
+
+What answers the two questions. A day of check-ins with no gaps answers how long a task lasts, and `heals` with tasks starting again answers whether a new one can start in the background. A gap that ends "suspended, no pushes failed", after a `last_error` saying a new task was refused in the background, answers the second the other way.
+
+`/simplify` ran before the commit, with four reviewers. Taken: one static for registration; one check for when to submit, with a loop in place of a recursion; the backoff after refusals; the identifier rule above; the task held together with its start time; one table of watched notifications; a second of slack on the timer; every event through `last_error`; the version mark. Skipped: moving the shared bookkeeping and the app-state, background-time and thermal names into `KeepAlive.swift` and `Diagnostics.swift`, files the lab leaves alone; and reporting progress every 30 s instead of every 10 s, kept as a margin.
+
+To go back to main, install the release from the source.
+
 ## 26 Nov 2026: the phone page on the owner's iPhone, and the developer page
 
 The owner sent nine screenshots from the iPhone SE, dark, taken between 01:12 and 01:19: Ammy's page in Safari, Netflix Game Controller's product page "to compare it to", and seven developer pages "for you because i decided to be nice", the page the front page would copy and that no one had pictured for iOS 27.
