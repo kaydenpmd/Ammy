@@ -779,6 +779,22 @@ Not known: how the live scrobblers stay running (install one and watch, or read 
 
 For Ammy: the Start button and the iOS 26 floor already fit, and it would put a Live Activity on the Lock Screen for as long as Ammy sends, whose title and subtitle are the owner's to write. Not known: how long a task lasts on the owner's phone through a normal day, whether a new one can be started once iOS has ended one in the background, and what App Review would say. A lab build on the owner's phone, with the journal, would answer the first two.
 
+**The lab, designed and not yet built (27 Nov 2026).** The owner said yes to a lab build that keeps Ammy awake with the continued processing task in place of the silent audio. The usage limit ran out before any code was written. What Apple's pages say that the lab has to follow, from the reference pages and WWDC25 session 227, read in the browser on 27 Nov 2026:
+
+- The request is made on behalf of the app in front, and submitted from the foreground.
+- Its identifier must be in `BGTaskSchedulerPermittedIdentifiers` and begin with the bundle ID. A wildcard form, `<bundle ID>.<context>.*`, takes a suffix added at registration and submission.
+- The launch handler can be registered at any time, not only at launch. Registering the same identifier twice kills the app.
+- The `.fail` strategy makes a submission that can't start at once fail (`immediateRunIneligible`) instead of joining a queue.
+- A task that reports no progress is ended, and slow progress makes the system ask the person whether to continue.
+- Closing the app in the app switcher cancels the task and tells the app nothing.
+- No background mode is named for it.
+
+The risk to check first: SideStore renames the bundle ID to `com.local.ammy.<TEAMID>` (Albums' CLAUDE.md), so an identifier written into Info.plist as `com.local.ammy.…` may not begin with the bundle ID the phone sees. The lab should build the identifier from `Bundle.main.bundleIdentifier`, list a wildcard as well, and journal the bundle ID, the identifiers Info.plist holds at run time, and what `register` returns.
+
+Getting the lab's events into Issun's log needs no new Issun build. Issun already logs, as each push arrives, every rise in `resume_failures` and `self_heals`, every flip of `engine_running` and `running`, and every new `last_error`. So the lab can put refused submissions, ended tasks and whether a task is running onto those keys, with its newest event's text in `last_error`.
+
+The title and subtitle the Live Activity shows are the owner's words; until they write them, `[text]`.
+
 ## 26 Nov 2026: the phone page on the owner's iPhone, and the developer page
 
 The owner sent nine screenshots from the iPhone SE, dark, taken between 01:12 and 01:19: Ammy's page in Safari, Netflix Game Controller's product page "to compare it to", and seven developer pages "for you because i decided to be nice", the page the front page would copy and that no one had pictured for iOS 27.
