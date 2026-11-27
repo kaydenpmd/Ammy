@@ -4,11 +4,11 @@
 
 **Keeping it that way.** When something changes, edit this file to say what is true now, in as few lines as it takes, and write the story (what was tried, measured, seen or rejected, with dates and evidence) at the end of `HISTORY.md` under a dated heading. Rules and current facts here; narrative there. Code comments that cite "CLAUDE.md" and a section name mean `HISTORY.md` when the section is only a pointer here.
 
-**Check `git log` and `/version`, not this file, for what has shipped.** Documented state decays in whichever direction you aren't looking.
+**Check `git log` and `/version`, not this file, for what has shipped.** This file isn't updated with every release.
 
 ## What it is
 
-Apple Music on iPhone → Discord Rich Presence on a Windows desktop.
+Ammy and Issun show what Apple Music plays on an iPhone as Discord Rich Presence on a Windows desktop.
 
 ```
 iPhone ──https──▶ <machine>.<tailnet>.ts.net (Tailscale Funnel) ──▶ Issun, 127.0.0.1:8787 ──IPC──▶ Discord desktop
@@ -25,16 +25,16 @@ Retired on 25 Sept 2026, by the owner: relay.py ("kill relay.py it's obsolete"; 
 
 ## Why it's built this way
 
-Discord has **no Rich Presence SDK on iOS**. The sanctioned path is a local IPC socket (`\\.\pipe\discord-ipc-0`) that only the desktop client exposes. Setting presence from the phone would mean a Gateway WebSocket with a user token: self-botting, against ToS, accounts terminated. So the phone never talks to Discord; it POSTs JSON to the receiver, which uses IPC. **Any change that moves Discord communication onto the phone is wrong.** The cost, accepted: presence needs the PC awake with Discord open.
+Discord has **no Rich Presence SDK on iOS**. The sanctioned path is a local IPC socket (`\\.\pipe\discord-ipc-0`) that only the desktop client exposes. Setting presence from the phone would mean a Gateway WebSocket with a user token, which is self-botting, against ToS, and gets accounts terminated. So the phone never talks to Discord; it POSTs JSON to the receiver, which uses IPC. **Any change that moves Discord communication onto the phone is wrong.** The accepted cost is that presence needs the PC awake with Discord open.
 
 ## What Ammy is, in anything a user reads
 
 **Ammy is a sender**: it reads Apple Music's now-playing state and POSTs it to an HTTPS endpoint the user chooses. It's built to pair with Issun and works with anything that accepts the POST.
 
-- The site (`public/`), `NSAppleMusicUsageDescription` in `project.yml` and the app's UI stay **receiver-agnostic**: never name Discord. The UI says **Endpoint**, not Relay.
+- The site (`public/`), `NSAppleMusicUsageDescription` in `project.yml` and the app's UI stay **receiver-agnostic** and never name Discord. The UI says **Endpoint**, not Relay.
 - The listing's subtitle and description, the README and the site's prose are the owner's to write (3 Nov 2026). The subtitle is written: "Send your music somewhere" (the owner, 25 Nov 2026), `subtitle` in `source.config.json`'s `app` block. Still unwritten: `localizedDescription` is empty, the README is the name only, the site has its buttons and facts from `source.json`. Don't fill them in.
 - Since 26 Nov 2026 interface text is Claude's to write by the platform's rules, and the owner OKs it before it ships (global CLAUDE.md, a trial since 26 Nov 2026).
-- Check non-prose surfaces: the listing's accent colour is system blue `#007AFF`; it was once Discord's blurple and carried the old framing.
+- Check what isn't prose too: the listing's accent colour is system blue `#007AFF`; it was once Discord's blurple, from the old framing.
 - This file documents the Discord receiver, accurately. The rule is about what Ammy is, not about removing Discord facts.
 
 ## The icon
@@ -46,7 +46,7 @@ An album cover being sent: Albums' black tile with two waves leaving it in Album
 ## Layout
 
 ```
-project.yml                          XcodeGen spec — no .xcodeproj is committed
+project.yml                          XcodeGen spec; no .xcodeproj is committed
 .github/workflows/publish-source.yml On push to main: build, GitHub Release, source.json
 .github/workflows/build-ipa.yml      Called by the above; unsigned IPA + simulator build
 scripts/build_source.py              Regenerates public/source.json
@@ -74,14 +74,14 @@ Ammy/
 
 ## Telling builds apart
 
-- **Receiver**: `GET /version` answers `issun <version> (<build>)`, and every response carries it in `X-Ammy-Relay`. Never write the current version here; ask `/version`.
-- **iOS app**: the **Version** row, e.g. `1.0 (7)`. The build number is `git rev-list --count HEAD` of the built commit; the IPA is `Ammy-1.0-b7-a1b2c3d.ipa`. `MARKETING_VERSION` in `project.yml` is the only number a human sets.
+- **Receiver**: `GET /version` answers `issun <version> (<build>)`, and every response has it in `X-Ammy-Relay`. Never write the current version here; ask `/version`.
+- **iOS app**: the **Version** row, such as `1.0 (7)`. The build number is `git rev-list --count HEAD` of the built commit; the IPA is `Ammy-1.0-b7-a1b2c3d.ipa`. `MARKETING_VERSION` in `project.yml` is the only number a human sets.
 
 Receiver routes: `POST /now-playing` (the phone writes; 204 on success, 401 key, 404 path, 400 bad JSON), `GET /now-playing` (a projection, never the raw push, never triggers a lookup), `/health` (exactly `ok`; Shortcuts test for it), `/status` (`alive`/`stale`), `/diag` (the phone's last self-report, authenticated), `/art/<hash>.jpg` (open, because Discord's CDN can't send the key).
 
 ## The push
 
-What every push carries that a receiver relies on:
+What every push includes that a receiver relies on:
 
 - `seq`, milliseconds since epoch (not a counter, which resets on relaunch). The receiver drops a push whose `seq` isn't newer, and logs it.
 - `app_uptime_s`, `app_version` and `diag` (Diagnostics, below). A push whose uptime fell further than its `seq` did comes from a new process and supersedes the old session (Issun's `PhoneState`).
@@ -96,11 +96,11 @@ Each has its full story in `HISTORY.md` under "Gotchas already paid for" or the 
 
 **The bottom bar.**
 - The bar is a `safeAreaBar` on the **`NavigationStack`, not the Form**. On the Form it makes the large title jump on collapse (a SwiftUI defect; lab on `jitter-lab`, Feedback report drafted there, waiting to be filed from the owner's account). Seen fixed on the owner's SE, build 150.
-- Because a stack doesn't pass its bar's inset to lists (FB23732628), the page gets the bar's room as **UIKit** safe area: `BarRoom`, a view controller inside the page, sets `additionalSafeAreaInsets.bottom` on the view controller the navigation controller holds for the page, from the window's own inset up to the bar's top edge, the keyboard included while it's up (`barRoom`). Since build 208; builds 158–201 used `.safeAreaPadding(.bottom, barHeight)`, the same room for the Form but inside SwiftUI only. Not `contentMargins`, which replaces the list's own 20 pt instead of adding to it.
-- The page carries a copy of the bar while sliding to and from History (`PageTransitions`, `viewWillDisappear` to `viewDidAppear`); the stack's bar steps aside without animating. The copy lays out inside the page's safe area, which ends at the bar's top, so it's offset down by `barHeight`. **Don't fade the stack's bar**: tried in builds 150–154, looked worse.
+- Because a stack doesn't pass its bar's inset to lists (FB23732628), the page gets the bar's room as **UIKit** safe area: `BarRoom`, a view controller inside the page, sets `additionalSafeAreaInsets.bottom` on the view controller the navigation controller holds for the page, from the window's own inset up to the bar's top edge, the keyboard included while it's up (`barRoom`). Since build 208; builds 158 to 201 used `.safeAreaPadding(.bottom, barHeight)`, the same room for the Form but inside SwiftUI only. Not `contentMargins`, which replaces the list's own 20 pt instead of adding to it.
+- The page shows a copy of the bar while sliding to and from History (`PageTransitions`, `viewWillDisappear` to `viewDidAppear`); the stack's bar steps aside without animating. The copy lays out inside the page's safe area, which ends at the bar's top, so it's offset down by `barHeight`. **Don't fade the stack's bar**: tried in builds 150 to 154, looked worse.
 - `bottomSafeArea` is read from a `Color.clear` background with `.ignoresSafeArea(.keyboard)`, so it stays 0 or 34 while the keyboard is up. The bar pads `edgeGap` (38 pt) above the screen edge, or `keyboardGap` (10 pt) above the keyboard when it's up. Reading it without ignoring the keyboard hid the bar behind it from build 77 to 172. iOS leaves the keyboard out of screenshots while the secure Key field is focused; trust frames.
 - **The buttons sit where iOS puts its own wide bottom button**, the owner's choice (19 Nov 2026, build 212): "bottom button no keyboard: match the higher more narrow standard you found / bottom button with keyboard: same width but 10 points above the keyboard / same for split buttons". `sideGap` and `edgeGap` are 38 pt, the Continue on iOS's Welcome and What's New sheets; `keyboardGap` is 10 pt, the bottom search bar's distance above the keyboard, since the wide button has no place there (on Apple's sign-in page the keyboard covers it). With the keyboard up the sides go back to `keyboardSideGap`, 21 pt, the bar's width until build 208 (the owner, after the first pictures: "let's make em the previous wider width when the keyboard is up"); the width changes with the keyboard's own animation. They're measured numbers, as the system exposes none (design library `apple/ios-bottom-bar-widths/`). The height stays the system's large control, 50.5 pt; Apple's button is 52, which no control size gives. On an SE, with no keyboard, the page's rows show around the narrower buttons, which the owner saw before choosing. Until build 208 the bar sat at the floating tab bar's 21 pt, sides, bottom and keyboard alike. `.padding(.horizontal)` with no argument is 16 pt, which is wrong.
-- **Don't draw a background behind the bar.** `safeAreaBar` applies the system's scroll edge effect, which iOS 27 changed and Ammy followed for free.
+- **Don't draw a background behind the bar.** `safeAreaBar` applies the system's scroll edge effect, which iOS 27 changed and Ammy picked up with no change of its own.
 - Rejected, not worth retrying: `safeAreaInset`, `contentMargins` with an overlay, `UIScrollEdgeElementContainerInteraction`, a `.bottomBar` toolbar.
 - **Picture in Picture rests above the bar** (build 208). iOS rests PiP 10 pt above the bottom safe area the app reports to SpringBoard (`primaryWindowOverlayInsets`; 24 pt on iPad), and only UIKit's safe area counts: tab bars, bottom toolbars and `additionalSafeAreaInsets`, never `safeAreaBar` or `.safeAreaPadding`. `BarRoom` is what reports the bar, so whatever reserves the bar's room has to stay in UIKit's safe area. With the keyboard up the room includes the keyboard, so PiP rests above Stop and Restart too; over History, which has no bar, it drops to the bottom (HISTORY.md, 18 Nov 2026; design library `apple/ios-pip-placement/`).
 
@@ -120,7 +120,7 @@ Each has its full story in `HISTORY.md` under "Gotchas already paid for" or the 
 - No background-task hold (parked 11 Nov 2026; the lab found ways it gets the app killed outright). Revisit only with journal evidence, and then with the guards in HISTORY.md, "The keepalive hold, parked".
 
 **Notifications.**
-- `requestAuthorization` must be called: `add()` on an unauthorized center succeeds and delivers nothing. `PresenceController.start()` does it.
+- `requestAuthorization` must be called, because `add()` on an unauthorized center succeeds and delivers nothing. `PresenceController.start()` does it.
 - `SilenceWatchdog` is inverted on purpose: a notification 15 minutes out, re-scheduled on every successful push, so it fires only if Ammy stops. It survives force quit and power-off. Don't replace it with death detection.
 
 **Failures.**
@@ -137,7 +137,7 @@ Each has its full story in `HISTORY.md` under "Gotchas already paid for" or the 
 
 Issun's log is `%LOCALAPPDATA%\Issun\issun.log`, its check-in history `%LOCALAPPDATA%\Issun\uptime.log`, and its window's Diagnostics section shows the summary. **Read them from PowerShell, not the Bash tool**, which shows a stale sandboxed copy.
 
-The app can't report its own death, so every push carries a `diag` snapshot, and the receiver prints the last one onto the "phone stopped checking in" line:
+The app can't report its own death, so every push includes a `diag` snapshot, and the receiver prints the last one onto the "phone stopped checking in" line:
 
 ```
 phone stopped checking in  last seen 00:39:33  last state: engine=yes want=yes
@@ -150,7 +150,7 @@ mem=19MB state=background lpm=no thermal=fair appup=3554s devup=31067s
 - `appup` is wall time since launch, so on a death line it's that process's lifetime. `devup` stops while the phone sleeps, so `appup` > `devup` is normal.
 - `mem` is `phys_footprint` (what jetsam measures). Memory, Low Power Mode and thermal state have each been ruled out as causes.
 
-**The phone's journal** (`KeepAliveJournal`, since build 167): every keepalive event goes to `keepalive.log` in Application Support (400 lines), and every 10 s tick stamps `keepalive.alive`. The next launch sends the previous run's last 25 lines (`prev_tail`) and stamp (`prev_alive`) until a push lands, and Issun (build 48 on) prints them once as `[keepalive] previous run ...` and `[keepalive] journal: ...` lines. Other fields: `fail_stage`, `fail_code`, `fail_run`, `fail_run_max`, `down_s`, `secs_since_fail`, `int_on_resume`, `int_reason`, `secs_since_began`, `secs_since_ended`; `last_error` ends with the code and its four characters (e.g. `[2003329396 'what']`).
+**The phone's journal** (`KeepAliveJournal`, since build 167): every keepalive event goes to `keepalive.log` in Application Support (400 lines), and every 10 s tick stamps `keepalive.alive`. The next launch sends the previous run's last 25 lines (`prev_tail`) and stamp (`prev_alive`) until a push succeeds, and Issun (build 48 on) prints them once as `[keepalive] previous run ...` and `[keepalive] journal: ...` lines. Other fields: `fail_stage`, `fail_code`, `fail_run`, `fail_run_max`, `down_s`, `secs_since_fail`, `int_on_resume`, `int_reason`, `secs_since_began`, `secs_since_ended`; `last_error` ends with the code and its four characters (such as `[2003329396 'what']`).
 
 **Killed or unreachable?** Both are silence to the receiver. Two fields decide it on the gap line: `app_uptime_s` (same process if it advanced by about the gap) and `pushfail=consecutive/total` with `offline=Ns` (the app knew it was failing). Verdicts read "the path failed, not the app", "suspended, no pushes failed", "stopped on the phone", "it died", or, in Issun's code since 15 and 16 Nov 2026, "updated, <old> -> <new>" when a new build ended the gap and "the phone restarted, devup <old>s -> <new>s" when a new boot did. A death line always shows `pushfail=0`; that's expected.
 
@@ -196,7 +196,7 @@ Push to `main` runs `.github/workflows/publish-source.yml`, unless the push touc
 
 **Pushing to main is releasing.** The newest commit's message, minus trailers, becomes the release notes and SideStore's What's New. `build_source.py` joins a paragraph's lines into one for SideStore (`reflow()`, 18 Nov 2026).
 
-Albums is in this source too: its CI pushes `public/source.json` here, so `main` can move under you (`PUBLISHING.md`). The repo is public because macOS minutes bill at 10× on private repos.
+Albums is in this source too: its CI pushes `public/source.json` here, so `main` can change while you work (`PUBLISHING.md`). The repo is public because macOS minutes bill at 10× on private repos.
 
 Install path is **SideStore** (needs only iTunes); AltStore works for those who have it, but nobody is sent to get it. Free accounts expire in 7 days; a paid account makes it 365 for that account only.
 
@@ -209,7 +209,7 @@ Install path is **SideStore** (needs only iTunes); AltStore works for those who 
 - **Checked on the owner's iPhone** (26 Nov 2026, dark, beside Netflix Game Controller's product page): the rounded numbers, hairlines and colours are right, and the text at 11, 15, 16 and 22 px sat half a point off, because Safari on iOS rounds a font's ascent and descent up where the WebKit the page was built with rounds to the nearest. `ff64b81` sets the margins for iOS, live since 26 Nov 2026 (the owner: "Push it").
 - **The header's three buttons run across the page under the icon**, .ipa first, with nothing where the app's one Get goes: the owner's choice of three arrangements shown (25 Nov 2026: "c").
 - Its numbers are the spec's (`apple/app-store-ios/NOTES.md`; section 12 there says how a page gets them): exact in dark; in light every colour is the system's named one, because no exact light picture of the app exists. Provisional beyond that: Information (iOS 26's form), the description, the distances between sections below What's New, and the version line's distance under its heading (32.5, the owner's phone; other phones' differ).
-- The ribbon has one cell, Size. The app's Category and Developer cells show an Apple glyph as their value, which the site can't carry, and its other cells are things `source.json` doesn't say. Not copied either: the back and share buttons, screenshots (the source has none), the "more" link, the compact bar.
+- The ribbon has one cell, Size. The app's Category and Developer cells show an Apple glyph as their value, which the site can't show, and its other cells are things `source.json` doesn't say. Not copied either: the back and share buttons, screenshots (the source has none), the "more" link, the compact bar.
 - **Check a phone layout in Playwright's WebKit, not Edge, and predict iOS from it** (the scripts are in `local/phone-layout/scripts/`). Edge's phone emulation lays out at 1x and draws hairlines a whole pixel thick. WebKit on Windows rounds a font's ascent and descent to the nearest CSS px, Safari on iOS rounds them up, so `shoot.py` adds the difference for each text size (+0.5 px at 11, 15 and 16, −0.5 at 22, none at 13 and 17). A screenshot from the owner's phone is the real check.
 - The app is researched in the design library, `apple/app-store-ios/` and `apple/app-store-ipados/` (23 Nov 2026), each with its spec in `NOTES.md` and its pictures listed in `IMAGES.md`. Exact, in dark, from the owner's iPhone SE: the top of the product page, the ribbon, What's New and the lockups. Estimates: everything in light and the whole iPad, from Apple's WWDC26 video frames and renders. Found nowhere for iOS 27: the developer page, and most of the sections below What's New. Section 10 of the iPhone spec lists what a capture pass on the owner's phone would settle; the simulator has no App Store.
 - **On a phone, the front page is the App Store app's developer page, cut down to the owner's three pieces** (26 Nov 2026: "kayden's apps / buttons / pile of apps"; "the actual app store has a lot of details that i don't want"): the large title, the source's three buttons one under another across the page (the owner: side by side for two, "3 or more then vertical"), then every app as a shelf row with its View capsule, in one untitled list. No back button, Latest Release, shelf headings, tab bar or address line (Copy still copies it). The last block of `store.css`, on `html.home`, from spec section 7.0 (measured from the owner's captures of 26 Nov 2026); the buttons sit 30 under the title as the Apps tab's capsules do, and the list 33.91 under them as on the app page.
@@ -232,13 +232,13 @@ Issun, at `%LOCALAPPDATA%\Programs\Issun\Issun.exe`, started in the tray from th
 ## When Ammy can't connect
 
 1. Check Issun answers locally (`127.0.0.1:8787/health`).
-2. Look up the ts.net name with DNS-over-HTTPS (Google, Cloudflare). **NXDOMAIN → toggle Funnel**; the record comes back in seconds:
+2. Look up the ts.net name with DNS-over-HTTPS (Google, Cloudflare). **On NXDOMAIN, toggle Funnel**; the record comes back in seconds:
    ```
    tailscale funnel --https=443 off
    tailscale funnel --bg --https=443 localhost:8787
    ```
    Resolvers can cache the NXDOMAIN for five minutes; on the phone, Airplane Mode on and off clears it.
-3. Name resolves but check-host.net still gets "Broken pipe" after a minute or two → the 24 Sept failure (Funnel stops serving while saying "Funnel on"); a reboot fixed it.
+3. If the name resolves but check-host.net still gets "Broken pipe" after a minute or two, it's the 24 Sept failure (Funnel stops serving while saying "Funnel on"); a reboot fixed it.
 
 **Test from outside, never from the PC**, whose lookups of its own name are answered with the tailnet address. check-host.net agrees with the phone; Claude's web fetcher has got through when nothing else could, so don't trust it alone. Funnel setup needs `--bg` (or it dies with the shell), MagicDNS, HTTPS certificates and the `funnel` attribute. Turn off "Auto-generate from OS hostname" so renaming the PC doesn't move the address.
 
@@ -246,10 +246,10 @@ Issun, at `%LOCALAPPDATA%\Programs\Issun\Issun.exe`, started in the tray from th
 
 As of 16 Nov 2026. Ammy 184 is on the owner's phone (installed 14 Nov 2026); Issun is a local build of its `main` (ask `/version`).
 
-**Deaths.** Since 1 Nov 2026: seven on the same boot, the last three on the night of 13–14 Nov (build 177), and eight phone restarts, which end the app too and leave it closed until it's opened. The phone's journal (14 Nov 2026) showed most deaths follow an interruption that freezes the app before it can restart the silence. Build 181's restart at `.began` answers that, and on 15 Nov 2026 the journal showed it working on the phone: `engine stopped, trying`, `playing again after 0 failed tries, down 0s`, then `still playing` at +1 s and +3 s.
+**Deaths.** Since 1 Nov 2026: seven on the same boot, the last three on the night of 13 to 14 Nov (build 177), and eight phone restarts, which end the app too and leave it closed until it's opened. The phone's journal (14 Nov 2026) showed most deaths follow an interruption that freezes the app before it can restart the silence. Build 181's restart at `.began` answers that, and on 15 Nov 2026 the journal showed it working on the phone: `engine stopped, trying`, `playing again after 0 failed tries, down 0s`, then `still playing` at +1 s and +3 s.
 184 hasn't died: its first process ran 42.6 hours, through 31 interruptions, until the phone restarted at about 22:36 on 15 Nov 2026.
 
-**Next: keep reading Issun's log on 184.** On a death line, check `devup` first. A death's `[keepalive] journal:` lines show how far it got. If deaths end between `.began` and a restart's outcome, that's the evidence for a short hold, built with the lab's guards. Still unknown: what the owner was doing on the phone at 23:58, 01:19 and 01:47 on 13–14 Nov 2026, which would name the interrupter.
+**Next: keep reading Issun's log on 184.** On a death line, check `devup` first. A death's `[keepalive] journal:` lines show how far it got. If deaths end between `.began` and a restart's outcome, that's the evidence for a short hold, built with the lab's guards. Still unknown: what the owner was doing on the phone at 23:58, 01:19 and 01:47 on 13 to 14 Nov 2026, which would name the interrupter.
 
 **Not yet seen on a device**, as of the notes. Each of these was checked only in the simulator or not at all:
 - the bar above the keyboard (fixed 12 Nov 2026), and iPad's floating and hardware keyboards
@@ -268,7 +268,7 @@ As of 16 Nov 2026. Ammy 184 is on the owner's phone (installed 14 Nov 2026); Iss
 
 ## Scanning a receiver's QR code
 
-The **Scan QR Code** row under URL and Key opens VisionKit's scanner (`CodeScanner.swift`). A code holding `{"endpoint": "...", "key": "..."}` fills whichever fields it carries and closes the sheet. A code with neither, or a non-https endpoint, is ignored and logged. Plain JSON, not a link, so neither app names the other. Hidden where VisionKit can't scan. `NSCameraUsageDescription` is the owner's wording and must match `source.config.json`'s `appPermissions`.
+The **Scan QR Code** row under URL and Key opens VisionKit's scanner (`CodeScanner.swift`). A code holding `{"endpoint": "...", "key": "..."}` fills whichever fields it holds and closes the sheet. A code with neither, or a non-https endpoint, is ignored and logged. Plain JSON, not a link, so neither app names the other. Hidden where VisionKit can't scan. `NSCameraUsageDescription` is the owner's wording and must match `source.config.json`'s `appPermissions`.
 
 ## Open work
 
