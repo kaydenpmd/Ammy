@@ -78,6 +78,20 @@
     return box;
   }
 
+  // ".ipa" with a circled down arrow before it, the label of every button
+  // that downloads an app (the owner, 26 Nov 2026). The arrow is a character
+  // of Pretendard, the font the site serves: U+E139 (store.css sets it in that
+  // font). Not an SF Symbol: Apple licenses those for apps on its own
+  // platforms only.
+  function ipaLabel() {
+    var label = el('span');
+    var symbol = el('span', 'symbol', '\uE139');
+    symbol.setAttribute('aria-hidden', 'true');
+    label.appendChild(symbol);
+    label.appendChild(document.createTextNode(TEXT.ipa));
+    return label;
+  }
+
   // A lockup: icon, name, the subtitle or, as the App Store does for an app
   // without one, its category, and a button that downloads the app's .ipa,
   // in place of Apple's View (the owner, 26 Nov 2026: "remove the view
@@ -101,15 +115,7 @@
     var v = (app.versions || [])[0] || {};
     if (v.downloadURL) {
       var button = el('a', 'get-button');
-      // The symbol is a character of Pretendard, the font the site serves:
-      // U+E139, its circled down arrow (store.css sets it in that font). Not an
-      // SF Symbol: Apple licenses those for apps on its own platforms only.
-      var label = el('span');
-      var symbol = el('span', 'symbol', '\uE139');
-      symbol.setAttribute('aria-hidden', 'true');
-      label.appendChild(symbol);
-      label.appendChild(document.createTextNode(TEXT.ipa));
-      button.appendChild(label);
+      button.appendChild(ipaLabel());
       button.href = v.downloadURL;
       if (small) box.appendChild(button); else meta.appendChild(button);
     }
@@ -176,7 +182,7 @@
   window.Store = {
     SOURCE_URL: SOURCE_URL, TEXT: TEXT, el: el, slugOf: slugOf, appURL: appURL,
     megabytes: megabytes, megabyteParts: megabyteParts, categoryName: categoryName, formatDate: formatDate,
-    icon: icon, lockup: lockup, sourceLinks: sourceLinks, copySourceURL: copySourceURL,
+    icon: icon, lockup: lockup, ipaLabel: ipaLabel, sourceLinks: sourceLinks, copySourceURL: copySourceURL,
     loadSource: loadSource, cachedSource: cachedSource
   };
 })();
